@@ -1,116 +1,423 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>MUCOM88</title>
-<link rel="stylesheet" href="stylesheet.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MUCOMSX — MUCOM88 for MSX</title>
+<meta name="description" content="MUCOMSX brings the MUCOM88 MML music toolchain to the MSX, targeting the MAKOTO (YM2608) cartridge. Edit, compile, play and export entirely on real hardware.">
+<style>
+:root{
+  --bg:#f4f1ea; --panel:#fffdf8; --ink:#1d1b16; --muted:#5d584c;
+  --line:#ddd6c6; --accent:#b4451f; --accent2:#1f5f7a;
+  --code-bg:#211f1a; --code-ink:#e8e2d2;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans KR","Noto Sans JP",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#15140f; --panel:#1e1c16; --ink:#eae5d8; --muted:#a29b89;
+    --line:#332f25; --accent:#e8794c; --accent2:#7fbcd8;
+    --code-bg:#0e0d0a; --code-ink:#e8e2d2;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+     font-size:16px;line-height:1.7;-webkit-text-size-adjust:100%}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+code,kbd{font-family:var(--mono);font-size:.88em}
+code{background:rgba(127,127,127,.15);padding:.12em .38em;border-radius:4px}
+pre{background:var(--code-bg);color:var(--code-ink);padding:18px 20px;border-radius:10px;
+    overflow-x:auto;line-height:1.55;font-size:13.5px;border:1px solid var(--line)}
+pre code{background:none;padding:0;color:inherit;font-size:inherit}
+kbd{background:var(--panel);border:1px solid var(--line);border-bottom-width:2px;
+    border-radius:5px;padding:.1em .45em;font-size:.82em;white-space:nowrap}
+
+/* ---------- hero ---------- */
+header.hero{text-align:center;padding:52px 0 40px;border-bottom:1px solid var(--line)}
+/* Mucomsx_logo.png is the brush lettering with a transparent background,
+   so it sits on the page colour cleanly; inverted it turns white for dark mode. */
+header.hero img{width:min(720px,100%);height:auto}
+@media (prefers-color-scheme:dark){
+  header.hero img{filter:invert(1)}
+}
+.tagline{font-size:1.18rem;font-weight:600;margin:26px 0 6px}
+.tagline .sep{color:var(--muted);font-weight:400;margin:0 .5em}
+.subtag{color:var(--muted);margin:0;font-size:.97rem}
+.nav{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.nav a{border:1px solid var(--line);background:var(--panel);border-radius:999px;
+       padding:7px 16px;font-size:.9rem;color:var(--ink)}
+.nav a:hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+.nav a.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.nav a.primary:hover{opacity:.88;color:#fff}
+
+/* ---------- sections ---------- */
+section{padding:46px 0;border-bottom:1px solid var(--line)}
+h2{font-size:1.5rem;margin:0 0 6px;letter-spacing:-.01em}
+h2 .ko{color:var(--muted);font-weight:400;font-size:.95rem;margin-left:.6em}
+.lead{color:var(--muted);margin:0 0 26px;max-width:70ch}
+h3{font-size:1.06rem;margin:30px 0 10px}
+
+/* ---------- trilingual grid ---------- */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px}
+.tri article{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+.tri h4{margin:0 0 10px;font-size:.78rem;letter-spacing:.11em;text-transform:uppercase;
+        color:var(--accent);font-weight:700}
+.tri p{margin:0 0 12px;font-size:.93rem;line-height:1.75}
+.tri p:last-child{margin-bottom:0}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto;margin:18px 0}
+table{border-collapse:collapse;width:100%;font-size:.93rem;min-width:520px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.76rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700}
+tbody tr:last-child td{border-bottom:none}
+td strong{white-space:nowrap}
+
+/* ---------- tool cards ---------- */
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:8px}
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
+.tool .name{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--accent);margin:0}
+.tool .role{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:2px 0 12px}
+.tool p{margin:0 0 14px;font-size:.92rem}
+.docs{display:flex;gap:8px;flex-wrap:wrap}
+.docs a{font-size:.8rem;border:1px solid var(--line);border-radius:6px;padding:3px 10px;color:var(--ink)}
+.docs a:hover{border-color:var(--accent2);color:var(--accent2);text-decoration:none}
+
+/* ---------- callout ---------- */
+.note{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;
+      padding:16px 20px;margin:22px 0;font-size:.93rem}
+.note strong{color:var(--accent)}
+
+/* ---------- download ---------- */
+.cta{display:inline-block;background:var(--accent);color:#fff;font-weight:600;
+     padding:13px 28px;border-radius:9px;margin:6px 0 18px}
+.cta:hover{opacity:.88;color:#fff;text-decoration:none}
+
+/* ---------- footer ---------- */
+footer{padding:38px 0 56px;text-align:center;color:var(--muted);font-size:.88rem}
+footer p{margin:5px 0}
+
+@media (max-width:820px){
+  .tri{grid-template-columns:1fr}
+  header.hero{padding:34px 0 30px}
+  section{padding:34px 0}
+}
+</style>
 </head>
-
 <body>
-	<div class="title-container">
-		<div class="logo">
-			<a href="html/Mucomsx_middle.png" target="blank"><img src="html/Mucomsx_middle.png" alt="MUCOMsx" style="width: 800px; max-width: 100%;"></a>
-		</div>
-		
-		<!-- 한국어 텍스트 -->
-		<h3 class="setsumei01" style="margin-bottom: 10px;">
-			MUCOMSX는 코시로 유조(古代祐三)가 직접 개발한, NEC PC-8801mkⅡSR 이후에 탑재된 YM2203 및 YM2608(사운드 보드Ⅱ)을 대상으로 하는 악곡 제작용 툴인 MUCOM88프로젝트를 MSX용으로 개발한 프로젝트입니다. MSX로 출시된 YM2608카트리지인 MAKOTO Cartridge에 대응합니다. 
-		</h3>
-		<p class="setsumei02" style="margin-bottom: 30px;">
-			이 사이트에서는 오리지널 MUCOMSX의 툴들을 공개하고 있습니다.<br>
-			동작은 실기 및 에뮬레이터 상을 상정하고 있습니다.<br>
-			소프트웨어의 사용 방법은 첨부된 텍스트를 참조해 주십시오.
-		</p>
 
-		<!-- 일본어 텍스트 -->
-		<h3 class="setsumei01" style="margin-bottom: 10px;">
-			MUCOMSXは、古代祐三が自ら開発した、NEC PC-8801mkⅡSR以降に搭載されたYM2203及びYM2608(サウンドボードⅡ)を対象とする楽曲制作用ツールであるMUCOM88プロジェクトをMSX用に開発したプロジェクトです。MSX向けに発売されたYM2608カートリッジであるMAKOTO Cartridgeに対応しています。
-		</h3>
-		<p class="setsumei02" style="margin-bottom: 30px;">
-			このサイトではオリジナルのMUCOMSXのツール類を公開しております。<br>
-			動作は実機、及びエミュレータ上を想定しております。<br>
-			ソフトウェアの使用方法は添付のテキストを参照ください。
-		</p>
+<header class="hero">
+  <div class="wrap">
+    <a href="html/Mucomsx.png" target="_blank" rel="noopener">
+      <img src="html/Mucomsx_logo.png" alt="MUCOMSX">
+    </a>
+    <p class="tagline">MUCOM88 for MSX<span class="sep">·</span>MAKOTO (YM2608)</p>
+    <p class="subtag">Compose in MML &middot; Compile on the MSX itself &middot; Play on real hardware &middot; Export MUB / VGM</p>
+    <nav class="nav">
+      <a class="primary" href="https://github.com/ToughkidDev/MUCOMSX/releases">Download</a>
+      <a href="#tools">Tools</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#requirements">Requirements</a>
+      <a href="#quickstart">Quick start</a>
+      <a href="#docs">Documentation</a>
+      <a href="https://github.com/ToughkidDev/MUCOMSX">GitHub</a>
+    </nav>
+  </div>
+</header>
 
-		<!-- 영어 텍스트 -->
-		<h3 class="setsumei01" style="margin-bottom: 10px;">
-			MUCOMSX is a project that brings the MUCOM88 project—a music production tool originally developed by Yuzo Koshiro for the YM2203 and YM2608 (Sound Board II) chips on the NEC PC-8801mkIISR and later models—to the MSX platform. It supports the MAKOTO Cartridge, a YM2608 cartridge released for the MSX.
-		</h3>
-		<p class="setsumei02">
-			On this website, we provide the original MUCOMSX tools.<br>
-			They are intended to be run on actual hardware or emulators.<br>
-			For instructions on how to use the software, please refer to the attached text file.
-		</p>
-	</div>
-	
-	<div class="download">
-		<h2 class="mokuji">■ダウンロード</h2>
-		<div class="nkm">
-			<div class="diskimage">
-				<h3>PC-8801用ディスクイメージ形式(.d88)。MUCOM88＋ALPHA-DOS＋VoiceEditor＋SDK</h3>
-				<a href="files/MUCOM88_20190121.zip">MUCOM88_20190121.zip</a>
-				
-			</div>
-			<div class="sample">
-				<h3>MUCOM88用サンプルMML集</h3>
-				<a href="files/MCM_sample_20190124.zip">MCM_sample_20190124.zip</a>
-				
-			</div>	
-		</div>
-	</div>
-	<div class="license">
-		<h2 class="mokuji">■ライセンス</h2>
-		<div class="nkm">
-			<!-- 한국어 -->
-			<p style="margin-bottom: 20px;">
-				MUCOM88은 ALPHA-DOS 상에서 동작하는 FM 음원 드라이버와 음악 제작 툴의 총칭입니다(License: CC BY-NC-SA 4.0).<br>
-				(ALPHA-DOS는 8bit PC인 NEC PC-8801 시리즈 상에서 동작하는 운영체제입니다(License: CC BY-NC-ND 4.0)).<br>
-				MML로 작성된 악곡을 내장 FM 음원 및 사운드 보드 II 음원 상에서 연주할 수 있습니다.
-			</p>
+<section id="about">
+  <div class="wrap">
+    <h2>About <span class="ko">프로젝트 소개 · 概要</span></h2>
+    <p class="lead">
+      MUCOMSX brings <strong>MUCOM88</strong> — the FM music toolchain Yuzo Koshiro (古代祐三) developed for
+      the YM2203 and YM2608 (Sound Board II) of the NEC PC-8801mkⅡSR and later — to the MSX.
+      The whole cycle runs on the machine itself: write MML, compile it, hear it, export it,
+      without ever moving a file to a PC.
+    </p>
+    <div class="tri">
+      <article>
+        <h4>한국어</h4>
+        <p><strong>MUCOMSX</strong>는 코시로 유조(古代祐三)가 직접 개발한, NEC PC-8801mkⅡSR 이후에 탑재된 YM2203 및 YM2608(사운드 보드Ⅱ)을 대상으로 하는 악곡 제작용 툴인 <strong>MUCOM88</strong> 프로젝트를 MSX용으로 개발한 프로젝트입니다. MSX로 출시된 YM2608 카트리지인 <strong>MAKOTO Cartridge</strong>에 대응합니다.</p>
+        <p>편집·컴파일·연주·내보내기까지 전 과정을 MSX에서 처리합니다. 동작은 실기 및 에뮬레이터 상을 상정하고 있습니다. 사용 방법은 각 툴의 설명서를 참조해 주십시오.</p>
+      </article>
+      <article>
+        <h4>日本語</h4>
+        <p><strong>MUCOMSX</strong>は、古代祐三が自ら開発した、NEC PC-8801mkⅡSR以降に搭載されたYM2203及びYM2608(サウンドボードⅡ)を対象とする楽曲制作用ツールである<strong>MUCOM88</strong>プロジェクトをMSX用に開発したプロジェクトです。MSX向けに発売されたYM2608カートリッジである<strong>MAKOTO Cartridge</strong>に対応しています。</p>
+        <p>編集・コンパイル・演奏・書き出しまでの全工程をMSX上で完結できます。動作は実機、及びエミュレータ上を想定しております。使用方法は各ツールの説明書をご参照ください。</p>
+      </article>
+      <article>
+        <h4>English</h4>
+        <p><strong>MUCOMSX</strong> is a project that brings the <strong>MUCOM88</strong> project — a music production tool originally developed by Yuzo Koshiro for the YM2203 and YM2608 (Sound Board II) chips on the NEC PC-8801mkIISR and later models — to the MSX platform. It supports the <strong>MAKOTO Cartridge</strong>, a YM2608 cartridge released for the MSX.</p>
+        <p>Editing, compiling, playback and export all run on the MSX. The tools are intended to run on real hardware or emulators. For usage, see each tool's manual.</p>
+      </article>
+    </div>
+  </div>
+</section>
 
-			<!-- 일본어 -->
-			<p style="margin-bottom: 20px;">
-				MUCOM88は、ALPHA-DOS上で動作するFM音源ドライバーと音楽製作ツールの総称です(License: CC BY-NC-SA 4.0)。<br>
-				(ALPHA-DOSは、8bitパソコン・NEC PC-8801シリーズ上で動作するオペレーティングシステムです(License: CC BY-NC-ND 4.0))<br>
- 				MML記述による楽曲を、内蔵FM音源、及びサウンドボードII音源上で演奏させることが可能です。
-			</p>
+<section id="tools">
+  <div class="wrap">
+    <h2>The toolchain <span class="ko">구성 도구 · ツール構成</span></h2>
+    <p class="lead">Three programs cover the whole workflow. Every manual is available in Korean, Japanese and English.</p>
 
-			<!-- 영어 -->
-			<p>
-				MUCOM88 is a collective term for an FM sound driver and music production tools that run on ALPHA-DOS (License: CC BY-NC-SA 4.0).<br>
-				(ALPHA-DOS is an operating system for the 8-bit NEC PC-8801 series computers (License: CC BY-NC-ND 4.0).)<br>
-				It enables music written in MML to be played on the built-in FM sound source and Sound Board II.
-			</p>
-		</div>
-	</div>
-	<div class="link">
-		<h2 class="mokuji">■リンク</h2>
-		<div class="nkm">
-			<a href="https://onitama.tv/mucom88/" target="blank">MUCOM88 Windows</a>
-			
-			<!-- 한국어 -->
-			<p class="as2" style="margin-bottom: 20px;">
-				Windows 상에서 단독으로 동작하는 MUCOM88이 공개되어 있습니다.<br>
-				다른 소프트웨어 등이 필요하지 않아 가볍게 MUCOM88을 즐길 수 있습니다. 【ONION software 제공】
-			</p>
+    <div class="tools">
+      <div class="tool">
+        <p class="name">MUCEDIT.COM</p>
+        <p class="role">Editor</p>
+        <p>Full-screen MML editor for the MSX. 80-column, VS Code-style keys, block selection, undo/redo and search. Calls MUCPLAY to compile, play and export without leaving the editor.</p>
+        <div class="docs">
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEdit.md">한국어</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditJ.md">日本語</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditE.md">English</a>
+        </div>
+      </div>
+      <div class="tool">
+        <p class="name">MUCPLAY.COM</p>
+        <p class="role">Compiler &amp; player</p>
+        <p>Compiles <code>.MUC</code> and plays it, or keeps a song resident in memory so you can recompile and replay without reloading. Exports <code>.MUB</code> and <code>.VGM</code>. The compiler is built in.</p>
+        <div class="docs">
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCPlay/MUCPlay.md">한국어</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCPlay/MUCPlayJ.md">日本語</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCPlay/MUCPlayE.md">English</a>
+        </div>
+      </div>
+      <div class="tool">
+        <p class="name">MUBPLAY.COM</p>
+        <p class="role">MUB player</p>
+        <p>Standalone player for finished <code>.MUB</code> files. Repeat control, a load-test mode for checking a file, and VGM export.</p>
+        <div class="docs">
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlay.md">한국어</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayJ.md">日本語</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayE.md">English</a>
+        </div>
+      </div>
+    </div>
 
-			<!-- 일본어 -->
-			<p class="as2" style="margin-bottom: 20px;">
-				Windows上で単独動作する、MUCOM88が公開されています。<br>
-				他のソフトなどが不要のため、気軽にMUCOM88が楽しめます。【ONION software様】
-			</p>
+    <h3>File formats</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Extension</th><th>What it is</th><th>How to play it</th></tr></thead>
+        <tbody>
+          <tr><td><strong><code>.MUC</code></strong></td><td>MML source text. Human-readable and editable.</td><td><code>MUCPLAY SONG.MUC</code></td></tr>
+          <tr><td><strong><code>.MUB</code></strong></td><td>Compiled song data, carrying voices, tags and PCM as needed.</td><td><code>MUBPLAY SONG.MUB</code></td></tr>
+          <tr><td><strong><code>.VGM</code></strong></td><td>A log of chip commands and timing — not an audio recording.</td><td><code>VGMPLAY SONG.VGM</code></td></tr>
+        </tbody>
+      </table>
+    </div>
 
-			<!-- 영어 -->
-			<p class="as2">
-				A standalone version of MUCOM88 for Windows is available.<br>
-				Since no additional software is required, you can easily enjoy MUCOM88. [ONION software]
-			</p>
-		</div>
-	</div>
-	<div class="footer">
-		<p><a href="https://www.ancient.co.jp/~mucom88/" target="_blank">Copyright Yuzo Koshiro 2018</a></p>
-		<p><a href="https://toughkiddev.github.io/MUCOMSX/" target="_blank">MUCOMSX by ToughkidCST 2026</a></p>
-		<p><a href="https://github.com/ToughkidDev/MUCOMSX" target="_blank">MUCOMSX GitHub - https://github.com/ToughkidDev/MUCOMSX</a></p>
-	</div>
+    <div class="note">
+      <strong>Why MUB rather than VGM?</strong> A VGM records every register write as it happens; a MUB stores the
+      <em>score</em> and lets the player perform it. For the same song a MUB is dramatically smaller — which matters
+      a great deal on a floppy or SD card, especially once PCM is involved.
+    </div>
+  </div>
+</section>
+
+<section id="workflow">
+  <div class="wrap">
+    <h2>How a song moves through the tools <span class="ko">작업 흐름 · 作業の流れ</span></h2>
+    <p class="lead">One source file, one resident session, three ways out of it.</p>
+<pre><code>   ┌─────────────┐
+   │  SONG.MUC   │   MML source — write it in MUCEDIT, or any text editor
+   └──────┬──────┘
+          │  MUCPLAY  /LOAD → /COMPILE      (or F1→2 inside MUCEDIT)
+          ▼
+   ┌─────────────┐
+   │   session   │   compiled song, resident in mapper RAM
+   └──┬───┬───┬──┘
+      │   │   │
+  /PLAY  /MUB  /VGM                        (or F1→3, F1→4, F1→5)
+      │   │   │
+      ▼   ▼   ▼
+   listen  SONG.MUB   SONG.VGM
+           └─ MUBPLAY SONG.MUB</code></pre>
+    <div class="note">
+      <strong>Saving, compiling and playing are three different actions.</strong>
+      Saving updates the <code>.MUC</code> on disk. Compiling turns what is <em>currently in memory</em> into
+      playback data. Playing performs the most recent compile. Edit and press play without compiling in
+      between, and you will hear the previous version.
+    </div>
+  </div>
+</section>
+
+<section id="requirements">
+  <div class="wrap">
+    <h2>Requirements <span class="ko">동작 환경 · 動作環境</span></h2>
+    <div class="tablewrap">
+      <table>
+        <tbody>
+          <tr><td><strong>Machine</strong></td><td>MSX2 or later with an 80-column text screen. MSX2+ class recommended; turbo R is taken into account.</td></tr>
+          <tr><td><strong>OS</strong></td><td>MSX-DOS 2, or Nextor providing the same functionality</td></tr>
+          <tr><td><strong>Memory</strong></td><td>Memory mapper RAM — <strong>512 KB recommended</strong></td></tr>
+          <tr><td><strong>Sound</strong></td><td><strong>MAKOTO cartridge (YM2608)</strong> for playback</td></tr>
+          <tr><td><strong>Storage</strong></td><td>A writable disk or storage device — compiling uses temporary files</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Reference configuration used for integration testing</h3>
+<pre><code>Panasonic FS-A1WX
+MegaFlashROM SCC+ SD
+MAKOTO
+MSX-DOS2 / Nextor</code></pre>
+    <div class="note">
+      Installed RAM and <em>usable free</em> RAM are not the same thing — DOS, resident programs and any song
+      session you are holding all consume memory. A build for <strong>Neotron-B (YM2610B)</strong> is in preparation
+      and is a separate executable; please do not mix it with the MAKOTO build.
+    </div>
+  </div>
+</section>
+
+<section id="quickstart">
+  <div class="wrap">
+    <h2>Quick start <span class="ko">빠른 시작 · クイックスタート</span></h2>
+
+    <h3>Just listen to a song</h3>
+<pre><code>CD SONG
+MUCPLAY SONG.MUC</code></pre>
+    <p class="lead">Press any character key or <kbd>Esc</kbd> to stop.</p>
+
+    <h3>Edit, hear, repeat</h3>
+<pre><code>MUCEDIT SONG.MUC</code></pre>
+    <p class="lead">Inside the editor: <kbd>F1</kbd> <kbd>2</kbd> to compile → read the result →
+       <kbd>F1</kbd> <kbd>3</kbd> to play. Like what you hear? <kbd>Ctrl</kbd>+<kbd>S</kbd> to save.
+       You do <strong>not</strong> have to save before compiling — MUCEDIT compiles the buffer in memory.</p>
+
+    <h3>Work from DOS and export</h3>
+<pre><code>MUCPLAY /LOAD SONG.MUC      ← read the source into memory
+MUCPLAY /COMPILE            ← compile it (nothing is written to disk yet)
+MUCPLAY /PLAY               ← listen
+MUCPLAY /MUB SONG.MUB       ← export compiled song data
+MUCPLAY /VGM SONG.VGM       ← export a chip-command log
+MUCPLAY /RELEASE            ← free the session when you are done</code></pre>
+    <p class="lead">Edited the <code>.MUC</code> in another editor? Run <code>/LOAD</code> again —
+       <code>/COMPILE</code> alone recompiles the copy already in memory.</p>
+
+    <h3>MML at a glance</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Channel</th><th>Sound source</th></tr></thead>
+        <tbody>
+          <tr><td><code>A</code> <code>B</code> <code>C</code></td><td>FM 1–3</td></tr>
+          <tr><td><code>D</code> <code>E</code> <code>F</code></td><td><strong>SSG</strong> 1–3</td></tr>
+          <tr><td><code>G</code></td><td>Rhythm</td></tr>
+          <tr><td><code>H</code> <code>I</code> <code>J</code></td><td>FM 4–6</td></tr>
+          <tr><td><code>K</code></td><td>ADPCM / PCM</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead">FM is <strong>not</strong> a continuous run from A to F — <code>D</code>, <code>E</code>,
+       <code>F</code> are SSG, and FM continues at <code>H</code>.</p>
+<pre><code>#mucom88 1.7
+#title First Steps
+#composer ToughkidCST
+
+D T120 C128 o4 l8 v10 q0 cdef gab&gt;c4 r4
+E C128 o3 l4 v8 c r g r c r g r
+F C128 o2 l2 v7 c g c g</code></pre>
+    <p class="lead">Case matters: <code>c</code> is a note but <code>C</code> sets the base clock;
+       <code>t225</code> is a raw Timer-B value while <code>T120</code> is BPM.</p>
+
+    <h3>One gotcha worth knowing up front</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Command</th><th><code>/L5</code> means</th></tr></thead>
+        <tbody>
+          <tr><td><code>MUCPLAY SONG.MUC /L5</code></td><td>play 5 times</td></tr>
+          <tr><td><code>MUCPLAY /VGM SONG.VGM /L5</code></td><td>export <strong>5 playthroughs</strong></td></tr>
+          <tr><td><code>MUBPLAY SONG.MUB /L5</code></td><td>play 5 times</td></tr>
+          <tr><td><code>MUBPLAY SONG.MUB /V /L5</code></td><td>export <strong>5 seconds</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="docs">
+  <div class="wrap">
+    <h2>Documentation <span class="ko">문서 · ドキュメント</span></h2>
+    <p class="lead">Every manual is available in all three languages. The MUCEdit manual is the most complete
+       starting point: it covers the editor, the MML syntax, every compile error code, the source warnings,
+       and a troubleshooting chapter.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tool</th><th>한국어</th><th>日本語</th><th>English</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>MUCEdit</strong> — editor</td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEdit.md">MUCEdit.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditJ.md">MUCEditJ.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditE.md">MUCEditE.md</a></td>
+          </tr>
+          <tr>
+            <td><strong>MUCPlay</strong> — compiler &amp; player</td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCPlay/MUCPlay.md">MUCPlay.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCPlay/MUCPlayJ.md">MUCPlayJ.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCPlay/MUCPlayE.md">MUCPlayE.md</a></td>
+          </tr>
+          <tr>
+            <td><strong>MUBPlay</strong> — MUB player</td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlay.md">MUBPlay.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayJ.md">MUBPlayJ.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayE.md">MUBPlayE.md</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <h2>Downloads <span class="ko">다운로드 · ダウンロード</span></h2>
+    <p class="lead">Builds of <code>MUCEDIT.COM</code>, <code>MUCPLAY.COM</code> and <code>MUBPLAY.COM</code>
+       are published on the repository's releases page.</p>
+    <a class="cta" href="https://github.com/ToughkidDev/MUCOMSX/releases">Download from Releases →</a>
+    <h3>Related, from the original PC-8801 project</h3>
+    <div class="tablewrap">
+      <table>
+        <tbody>
+          <tr>
+            <td><strong>MUCOM88 for Windows</strong></td>
+            <td>Runs standalone, nothing else required. 【<a href="https://onitama.tv/mucom88/">ONION software</a>】</td>
+          </tr>
+          <tr>
+            <td><strong>MUCOM88 / ALPHA-DOS / VoiceEditor / SDK</strong></td>
+            <td>PC-8801 disk images and SDK — see the <a href="https://www.ancient.co.jp/~mucom88/">official MUCOM88 site</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="license">
+  <div class="wrap">
+    <h2>License <span class="ko">라이선스 · ライセンス</span></h2>
+    <div class="tri">
+      <article>
+        <h4>한국어</h4>
+        <p><strong>MUCOM88</strong>은 ALPHA-DOS 상에서 동작하는 FM 음원 드라이버와 음악 제작 툴의 총칭입니다 (License: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>). ALPHA-DOS는 8bit PC인 NEC PC-8801 시리즈 상에서 동작하는 운영체제입니다 (License: <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>). MML로 작성된 악곡을 내장 FM 음원 및 사운드 보드 II 음원 상에서 연주할 수 있습니다.</p>
+      </article>
+      <article>
+        <h4>日本語</h4>
+        <p><strong>MUCOM88</strong>は、ALPHA-DOS上で動作するFM音源ドライバーと音楽製作ツールの総称です (License: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>)。ALPHA-DOSは、8bitパソコン・NEC PC-8801シリーズ上で動作するオペレーティングシステムです (License: <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>)。MML記述による楽曲を、内蔵FM音源、及びサウンドボードII音源上で演奏させることが可能です。</p>
+      </article>
+      <article>
+        <h4>English</h4>
+        <p><strong>MUCOM88</strong> is a collective term for an FM sound driver and music production tools that run on ALPHA-DOS (License: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>). ALPHA-DOS is an operating system for the 8-bit NEC PC-8801 series computers (License: <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</a>). It enables music written in MML to be played on the built-in FM sound source and Sound Board II.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><a href="https://www.ancient.co.jp/~mucom88/" target="_blank" rel="noopener">MUCOM88 — Copyright Yuzo Koshiro 2018</a></p>
+    <p><a href="https://toughkiddev.github.io/MUCOMSX/" target="_blank" rel="noopener">MUCOMSX by ToughkidCST, 2026</a></p>
+    <p><a href="https://github.com/ToughkidDev/MUCOMSX" target="_blank" rel="noopener">github.com/ToughkidDev/MUCOMSX</a></p>
+  </div>
+</footer>
+
 </body>
 </html>
