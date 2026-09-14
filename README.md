@@ -1,65 +1,257 @@
+<div align="center">
+
+<img src="html/Mucomsx_middle.png" alt="MUCOMSX" width="720">
+
 # MUCOMSX
 
-## 🌐 Description / 프로젝트 소개 / 概要
+**MUCOM88 for MSX** — an MML music toolchain for the MAKOTO (YM2608) cartridge
 
-### 한국어
+Compose in MML · Compile on the MSX itself · Play on real hardware · Export MUB / VGM
+
+[Documentation](#-documentation--문서--ドキュメント) ·
+[Quick start](#-quick-start--빠른-시작--クイックスタート) ·
+[Downloads](#-downloads--다운로드--ダウンロード) ·
+[Project site](https://toughkiddev.github.io/MUCOMSX/)
+
+</div>
+
+---
+
+## 🌐 About / 프로젝트 소개 / 概要
+
+**MUCOMSX** brings **MUCOM88** — the FM music production toolchain Yuzo Koshiro (古代祐三) developed for the YM2203 and YM2608 (Sound Board II) of the NEC PC-8801mkIISR and later — to the MSX. It targets the **MAKOTO Cartridge**, the YM2608 cartridge released for MSX.
+
+What makes MUCOMSX different from a port of the editor alone: **the whole cycle runs on the MSX.** You write MML, compile it, hear it, and export the result without ever leaving the machine. No cross-assembler on a PC, no shuttling files back and forth.
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+**한국어**
 
 **MUCOMSX**는 코시로 유조(古代祐三)가 직접 개발한, NEC PC-8801mkⅡSR 이후에 탑재된 YM2203 및 YM2608(사운드 보드Ⅱ)을 대상으로 하는 악곡 제작용 툴인 **MUCOM88** 프로젝트를 MSX용으로 개발한 프로젝트입니다. MSX로 출시된 YM2608 카트리지인 **MAKOTO Cartridge**에 대응합니다.
 
-이 사이트에서는 오리지널 MUCOMSX의 툴들을 공개하고 있습니다. 동작은 실기 및 에뮬레이터 상을 상정하고 있습니다. 소프트웨어의 사용 방법은 첨부된 텍스트를 참조해 주십시오.
+편집·컴파일·연주·내보내기까지 전 과정을 MSX 실기에서 처리합니다. 동작은 실기 및 에뮬레이터 상을 상정하고 있습니다.
 
-### 日本語
+</td>
+<td width="33%" valign="top">
+
+**日本語**
 
 **MUCOMSX**は、古代祐三が自ら開発した、NEC PC-8801mkⅡSR以降に搭載されたYM2203及びYM2608(サウンドボードⅡ)を対象とする楽曲制作用ツールである**MUCOM88**プロジェクトをMSX用に開発したプロジェクトです。MSX向けに発売されたYM2608カートリッジである**MAKOTO Cartridge**に対応しています。
 
-このサイトではオリジナルのMUCOMSXのツール類を公開しております。動作は実機、及びエミュレータ上を想定しております。ソフトウェアの使用方法は添付のテキストを参照ください。
+編集・コンパイル・演奏・書き出しまでの全工程をMSX実機上で完結できます。動作は実機、及びエミュレータ上を想定しております。
 
-### English
+</td>
+<td width="33%" valign="top">
 
-**MUCOMSX** is a project that brings the **MUCOM88** project—a music production tool originally developed by Yuzo Koshiro for the YM2203 and YM2608 (Sound Board II) chips on the NEC PC-8801mkIISR and later models—to the MSX platform. It supports the **MAKOTO Cartridge**, a YM2608 cartridge released for the MSX.
+**English**
 
-On this website, we provide the original MUCOMSX tools. They are intended to be run on actual hardware or emulators. For instructions on how to use the software, please refer to the attached text file.
+**MUCOMSX** is a project that brings the **MUCOM88** project — a music production tool originally developed by Yuzo Koshiro for the YM2203 and YM2608 (Sound Board II) chips on the NEC PC-8801mkIISR and later models — to the MSX platform. It supports the **MAKOTO Cartridge**, a YM2608 cartridge released for the MSX.
 
-## 💿 Downloads
+Editing, compiling, playback and export all run on the MSX itself. The tools are intended to run on real hardware or emulators.
 
-* **PC-8801용 디스크 이미지 형식(.d88)** (MUCOM88＋ALPHA-DOS＋VoiceEditor＋SDK): [MUCOM88_20190121.zip](files/MUCOM88_20190121.zip)
+</td>
+</tr>
+</table>
 
-* **MUCOM88용 샘플 MML 모음**: [MCM_sample_20190124.zip](files/MCM_sample_20190124.zip)
+---
 
-*(※ 다운로드 링크는 `files/` 폴더 내에 실제 파일이 업로드되어 있어야 정상 작동합니다.)*
+## 🧰 The toolchain / 구성 도구 / ツール構成
+
+Three programs cover the whole workflow. Each has its own manual in Korean, Japanese and English.
+
+| Program | Role | Manual |
+|---|---|---|
+| **`MUCEDIT.COM`** | Full-screen MML **editor** for the MSX. 80-column, VS Code-style keys, block select, undo/redo, search. Calls MUCPLAY to compile, play and export without leaving the editor. | [KO](MUCEdit/MUCEdit.md) · [JA](MUCEdit/MUCEditJ.md) · [EN](MUCEdit/MUCEditE.md) |
+| **`MUCPLAY.COM`** | **Compiler and player.** Compiles `.MUC` and plays it, or keeps a song resident in memory so you can recompile and replay without reloading. Exports `.MUB` and `.VGM`. | [KO](MUCPlay/MUCPlay.md) · [JA](MUCPlay/MUCPlayJ.md) · [EN](MUCPlay/MUCPlayE.md) |
+| **`MUBPLAY.COM`** | Standalone **player** for finished `.MUB` files. Repeat control, load testing, VGM export. | [KO](MUBPlay/MUBPlay.md) · [JA](MUBPlay/MUBPlayJ.md) · [EN](MUBPlay/MUBPlayE.md) |
+| **`MUC2MUB.COM`** | Separate MUC → MUB compiler. **Not required for normal use** — the compiler is already inside MUCPLAY. | — |
+
+### File formats
+
+| Extension | What it is | How to play it |
+|---|---|---|
+| **`.MUC`** | MML source text. Human-readable and editable. | `MUCPLAY SONG.MUC` — compiles internally, then plays |
+| **`.MUB`** | Compiled song data. Carries voices, tags and PCM as needed. | `MUBPLAY SONG.MUB` |
+| **`.VGM`** | A log of chip commands and timing. Not an audio recording. | `VGMPLAY SONG.VGM`, in a YM2608-capable player |
+
+> **Why MUB and not just VGM?** A VGM records every register write as it happens; a MUB stores the *score* and lets the player perform it. For the same song a MUB is dramatically smaller — which matters a great deal on a floppy or SD card, especially with PCM.
+
+---
+
+## 🔁 How a song moves through the tools
+
+```text
+   ┌─────────────┐
+   │  SONG.MUC   │   MML source — write it in MUCEDIT, or any text editor
+   └──────┬──────┘
+          │  MUCPLAY  /LOAD → /COMPILE      (or F1→2 inside MUCEDIT)
+          ▼
+   ┌─────────────┐
+   │   session   │   compiled song, resident in mapper RAM
+   └──┬───┬───┬──┘
+      │   │   │
+  /PLAY  /MUB  /VGM                        (or F1→3, F1→4, F1→5)
+      │   │   │
+      ▼   ▼   ▼
+   listen  SONG.MUB   SONG.VGM
+           └─ MUBPLAY SONG.MUB
+```
+
+The single most useful thing to understand: **saving, compiling and playing are three different actions.** Saving updates the `.MUC` on disk. Compiling turns what is *currently in memory* into playback data. Playing performs the most recent compile. Edit and press play without compiling in between, and you will hear the old version.
+
+---
+
+## 🖥 Requirements / 동작 환경 / 動作環境
+
+| | |
+|---|---|
+| **Machine** | MSX2 or later with an 80-column text screen (MSX2+ class recommended; turbo R considered) |
+| **OS** | MSX-DOS 2, or Nextor providing the same functionality |
+| **Memory** | Memory mapper RAM — **512 KB recommended** |
+| **Sound** | **MAKOTO cartridge (YM2608)** for playback |
+| **Storage** | A writable disk or storage device — compiling uses temporary files |
+
+Reference configuration used for integration testing:
+
+```text
+Panasonic FS-A1WX
+MegaFlashROM SCC+ SD
+MAKOTO
+MSX-DOS2 / Nextor
+```
+
+> Installed RAM and *usable free* RAM are not the same thing — DOS, resident programs and any song session you are holding all consume memory. A build for **Neotron-B (YM2610B)** is in preparation and is a separate executable; do not mix it with the MAKOTO build.
+
+---
+
+## 🚀 Quick start / 빠른 시작 / クイックスタート
+
+### Just listen to a song
+
+```text
+CD SONG
+MUCPLAY SONG.MUC
+```
+
+Press any character key or `Esc` to stop.
+
+### Edit, hear, repeat
+
+```text
+MUCEDIT SONG.MUC
+```
+
+Then, inside the editor: `F1` `2` to compile → read the result → `F1` `3` to play. Like what you hear? `Ctrl+S` to save. You do **not** have to save before compiling — MUCEDIT compiles the buffer in memory.
+
+### Work from DOS and export
+
+```text
+MUCPLAY /LOAD SONG.MUC      ← read the source into memory
+MUCPLAY /COMPILE            ← compile it (nothing is written to disk yet)
+MUCPLAY /PLAY               ← listen
+MUCPLAY /MUB SONG.MUB       ← export compiled song data
+MUCPLAY /VGM SONG.VGM       ← export a chip-command log
+MUCPLAY /RELEASE            ← free the session when you are done
+```
+
+Edited the `.MUC` in another editor? Run `/LOAD` again — `/COMPILE` alone recompiles the copy already in memory.
+
+---
+
+## 🎹 MML at a glance
+
+Channels are a single uppercase letter at the very start of the line, followed by a space or tab.
+
+| Channel | Sound source |
+|---|---|
+| `A` `B` `C` | FM 1–3 |
+| `D` `E` `F` | **SSG** 1–3 |
+| `G` | Rhythm |
+| `H` `I` `J` | FM 4–6 |
+| `K` | ADPCM / PCM |
+
+FM is **not** a continuous run from A to F — `D`, `E`, `F` are SSG, and FM continues at `H`.
+
+```muc
+#mucom88 1.7
+#title First Steps
+#composer ToughkidCST
+
+D T120 C128 o4 l8 v10 q0 cdef gab>c4 r4
+E C128 o3 l4 v8 c r g r c r g r
+F C128 o2 l2 v7 c g c g
+```
+
+Case matters: `c` is a note but `C` sets the base clock; `t225` is a raw Timer-B value while `T120` is BPM. The editor manual covers the full syntax, error codes and warnings.
+
+### One gotcha worth knowing up front
+
+`/L` does not mean the same thing everywhere:
+
+| Command | `/L5` means |
+|---|---|
+| `MUCPLAY SONG.MUC /L5` | play 5 times |
+| `MUCPLAY /VGM SONG.VGM /L5` | export **5 playthroughs** |
+| `MUBPLAY SONG.MUB /L5` | play 5 times |
+| `MUBPLAY SONG.MUB /V /L5` | export **5 seconds** |
+
+---
+
+## 📚 Documentation / 문서 / ドキュメント
+
+Every manual is available in all three languages.
+
+| Tool | 한국어 | 日本語 | English |
+|---|---|---|---|
+| MUCEdit — editor | [MUCEdit.md](MUCEdit/MUCEdit.md) | [MUCEditJ.md](MUCEdit/MUCEditJ.md) | [MUCEditE.md](MUCEdit/MUCEditE.md) |
+| MUCPlay — compiler & player | [MUCPlay.md](MUCPlay/MUCPlay.md) | [MUCPlayJ.md](MUCPlay/MUCPlayJ.md) | [MUCPlayE.md](MUCPlay/MUCPlayE.md) |
+| MUBPlay — MUB player | [MUBPlay.md](MUBPlay/MUBPlay.md) | [MUBPlayJ.md](MUBPlay/MUBPlayJ.md) | [MUBPlayE.md](MUBPlay/MUBPlayE.md) |
+
+The MUCEdit manual is the most complete starting point: it covers the editor, the MML syntax, every compile error code, the source warnings, and a troubleshooting chapter.
+
+---
+
+## 💿 Downloads / 다운로드 / ダウンロード
+
+Builds of `MUCEDIT.COM`, `MUCPLAY.COM` and `MUBPLAY.COM` are published on the repository's releases page.
+
+### ➡️ [**Download from Releases**](https://github.com/ToughkidDev/MUCOMSX/releases)
+
+Related, from the original PC-8801 project:
+
+* **MUCOM88 for Windows** — [ONION software](https://onitama.tv/mucom88/), runs standalone, nothing else required
+* **MUCOM88 / ALPHA-DOS / VoiceEditor / SDK** — see the [official MUCOM88 site](https://www.ancient.co.jp/~mucom88/)
+
+---
 
 ## ⚖️ License / 라이선스 / ライセンス
 
-### 한국어
-
-**MUCOM88**은 ALPHA-DOS 상에서 동작하는 FM 음원 드라이버와 음악 제작 툴의 총칭입니다(License: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)).
-(ALPHA-DOS는 8bit PC인 NEC PC-8801 시리즈 상에서 동작하는 운영체제입니다(License: [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/))).
-MML로 작성된 악곡을 내장 FM 음원 및 사운드 보드 II 음원 상에서 연주할 수 있습니다.
-
-### 日本語
-
-**MUCOM88**は、ALPHA-DOS上で動作するFM音源ドライバーと音楽製作ツールの総称です(License: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/))。
-(ALPHA-DOSは、8bitパソコン・NEC PC-8801シリーズ上で動作するオペレーティングシステムです(License: [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)))。
-MML記述による楽曲を、内蔵FM音源、及びサウンドボードII音源上で演奏させることが可能です。
-
-### English
-
-**MUCOM88** is a collective term for an FM sound driver and music production tools that run on ALPHA-DOS (License: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)).
-(ALPHA-DOS is an operating system for the 8-bit NEC PC-8801 series computers (License: [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)).)
+**MUCOM88** is a collective term for an FM sound driver and music production tools that run on ALPHA-DOS — License: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+ALPHA-DOS is an operating system for the 8-bit NEC PC-8801 series — License: [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/).
 It enables music written in MML to be played on the built-in FM sound source and Sound Board II.
+
+<details>
+<summary>한국어 / 日本語</summary>
+
+**한국어** — **MUCOM88**은 ALPHA-DOS 상에서 동작하는 FM 음원 드라이버와 음악 제작 툴의 총칭입니다(License: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)). (ALPHA-DOS는 8bit PC인 NEC PC-8801 시리즈 상에서 동작하는 운영체제입니다(License: [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/))). MML로 작성된 악곡을 내장 FM 음원 및 사운드 보드 II 음원 상에서 연주할 수 있습니다.
+
+**日本語** — **MUCOM88**は、ALPHA-DOS上で動作するFM音源ドライバーと音楽製作ツールの総称です(License: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/))。(ALPHA-DOSは、8bitパソコン・NEC PC-8801シリーズ上で動作するオペレーティングシステムです(License: [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/)))。MML記述による楽曲を、内蔵FM音源、及びサウンドボードII音源上で演奏させることが可能です。
+
+</details>
+
+---
 
 ## 🔗 Links & Credits
 
-* [**MUCOM88 Windows (ONION software)**](https://onitama.tv/mucom88/)
+* [**MUCOM88 (Copyright Yuzo Koshiro 2018)**](https://www.ancient.co.jp/~mucom88/) — the original project
+* [**MUCOM88 Windows**](https://onitama.tv/mucom88/) — standalone Windows build 【ONION software】
+* [**MUCOMSX project site**](https://toughkiddev.github.io/MUCOMSX/)
+* [**MUCOMSX on GitHub**](https://github.com/ToughkidDev/MUCOMSX)
 
-  * Windows 상에서 단독으로 동작하는 MUCOM88이 공개되어 있습니다. 다른 소프트웨어 등이 필요하지 않아 가볍게 MUCOM88을 즐길 수 있습니다. 【ONION software 제공】
+<div align="center">
 
-  * Windows上で単独動作する、MUCOM88が公開されています。他のソフトなどが不要のため、気軽にMUCOM88が楽しめます。【ONION software様】
+MUCOMSX by **ToughkidCST**, 2026 · Built on MUCOM88 by Yuzo Koshiro
 
-  * A standalone version of MUCOM88 for Windows is available. Since no additional software is required, you can easily enjoy MUCOM88. [ONION software]
-
-* [**Copyright Yuzo Koshiro 2018**](https://www.ancient.co.jp/~mucom88/)
-
-* [**MUCOMSX by ToughkidCST 2026**](https://toughkiddev.github.io/MUCOMSX/)
-
-* [**MUCOMSX GitHub Repository**](https://github.com/ToughkidDev/MUCOMSX)
+</div>
