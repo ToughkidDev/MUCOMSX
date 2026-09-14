@@ -8,8 +8,9 @@
 
 Compose in MML · Compile on the MSX itself · Play on real hardware · Export MUB / VGM
 
-[Documentation](#-documentation--문서--ドキュメント) ·
+[Tools](#-the-toolchain--구성-도구--ツール構成) ·
 [Quick start](#-quick-start--빠른-시작--クイックスタート) ·
+[Documentation](#-documentation--문서--ドキュメント) ·
 [Downloads](#-downloads--다운로드--ダウンロード) ·
 [Project site](https://toughkiddev.github.io/MUCOMSX/)
 
@@ -59,14 +60,26 @@ Editing, compiling, playback and export all run on the MSX itself. The tools are
 
 ## 🧰 The toolchain / 구성 도구 / ツール構成
 
-Three programs cover the whole workflow. Each has its own manual in Korean, Japanese and English.
+Four programs cover the whole workflow. Each has its own manual in Korean, Japanese and English.
 
 | Program | Role | Manual |
 |---|---|---|
 | **`MUCEDIT.COM`** | Full-screen MML **editor** for the MSX. 80-column, VS Code-style keys, block select, undo/redo, search. Calls MUCPLAY to compile, play and export without leaving the editor. | [KO](MUCEdit/MUCEdit.md) · [JA](MUCEdit/MUCEditJ.md) · [EN](MUCEdit/MUCEditE.md) |
 | **`MUCPLAY.COM`** | **Compiler and player.** Compiles `.MUC` and plays it, or keeps a song resident in memory so you can recompile and replay without reloading. Exports `.MUB` and `.VGM`. | [KO](MUCPlay/MUCPlay.md) · [JA](MUCPlay/MUCPlayJ.md) · [EN](MUCPlay/MUCPlayE.md) |
+| **`MUC2MUB.COM`** | **Batch compiler.** One command, one `.MUC` in, one `.MUB` out — no session, no playback, no sound hardware needed. Takes sources up to 64 KiB, returns a DOS exit code, and saves through a temporary file so a failure never destroys the previous `.MUB`. | [KO](MUC2MUB/Muc2Mub.md) · [JA](MUC2MUB/Muc2MubJ.md) · [EN](MUC2MUB/Muc2MubE.md) |
 | **`MUBPLAY.COM`** | Standalone **player** for finished `.MUB` files. Repeat control, load testing, VGM export. | [KO](MUBPlay/MUBPlay.md) · [JA](MUBPlay/MUBPlayJ.md) · [EN](MUBPlay/MUBPlayE.md) |
-| **`MUC2MUB.COM`** | Separate MUC → MUB compiler. **Not required for normal use** — the compiler is already inside MUCPLAY. | — |
+
+MUCPLAY and MUC2MUB share the same compiler, so they accept the same MML and report the same error codes. Which one you reach for depends on what you want back.
+
+| If you want to… | Use | Why |
+|---|---|---|
+| Write and revise a song, hearing each change | **MUCEDIT** (+ MUCPLAY) | Edit, compile and play without leaving the editor |
+| Hear a `.MUC` once, right now | **MUCPLAY** | `MUCPLAY SONG.MUC` compiles and plays in one step |
+| Iterate from the DOS prompt and export | **MUCPLAY** session | `/LOAD` → `/COMPILE` → `/PLAY` → `/MUB` `/VGM` |
+| Convert a whole album unattended | **MUC2MUB** | One song per run, driven by a `.BAT`; exit codes to check |
+| Compile a source too large for the editor | **MUC2MUB** | Accepts up to 64 KiB; the editor's buffer is 24 KiB |
+| Compile on a machine with no Makoto | **MUC2MUB** | Compiling needs no sound device — only playback does |
+| Just listen to a finished `.MUB` | **MUBPLAY** | No compiler involved |
 
 ### File formats
 
@@ -82,24 +95,34 @@ Three programs cover the whole workflow. Each has its own manual in Korean, Japa
 
 ## 🔁 How a song moves through the tools
 
+There are two routes from source to song: an **interactive** one you work in, and a **batch** one you script.
+
 ```text
    ┌─────────────┐
    │  SONG.MUC   │   MML source — write it in MUCEDIT, or any text editor
-   └──────┬──────┘
-          │  MUCPLAY  /LOAD → /COMPILE      (or F1→2 inside MUCEDIT)
-          ▼
-   ┌─────────────┐
-   │   session   │   compiled song, resident in mapper RAM
-   └──┬───┬───┬──┘
-      │   │   │
-  /PLAY  /MUB  /VGM                        (or F1→3, F1→4, F1→5)
-      │   │   │
-      ▼   ▼   ▼
-   listen  SONG.MUB   SONG.VGM
-           └─ MUBPLAY SONG.MUB
+   └──┬───────┬──┘
+      │       │
+      │       └──────────────────────────────┐
+      │                                      │  MUC2MUB SONG.MUC
+      │  MUCPLAY /LOAD → /COMPILE            │  (one shot, no session,
+      │  (or F1→2 inside MUCEDIT)            │   no sound hardware)
+      ▼                                      │
+   ┌─────────────┐                           │
+   │   session   │  compiled song, resident  │
+   └──┬───┬───┬──┘  in mapper RAM            │
+      │   │   │                              │
+  /PLAY  /MUB  /VGM        (F1→3, F1→4, F1→5)│
+      │   │   │                              │
+      ▼   ▼   ▼                              ▼
+   listen  SONG.MUB   SONG.VGM           SONG.MUB
+              └────────────┬─────────────────┘
+                           ▼
+                  MUBPLAY SONG.MUB
 ```
 
-The single most useful thing to understand: **saving, compiling and playing are three different actions.** Saving updates the `.MUC` on disk. Compiling turns what is *currently in memory* into playback data. Playing performs the most recent compile. Edit and press play without compiling in between, and you will hear the old version.
+The single most useful thing to understand about the interactive route: **saving, compiling and playing are three different actions.** Saving updates the `.MUC` on disk. Compiling turns what is *currently in memory* into playback data. Playing performs the most recent compile. Edit and press play without compiling in between, and you will hear the old version.
+
+The batch route has no such state. MUC2MUB always reads the `.MUC` **as saved on disk** — so if the editor still holds unsaved changes, it will not see them.
 
 ---
 
@@ -110,7 +133,7 @@ The single most useful thing to understand: **saving, compiling and playing are 
 | **Machine** | MSX2 or later with an 80-column text screen (MSX2+ class recommended; turbo R considered) |
 | **OS** | MSX-DOS 2, or Nextor providing the same functionality |
 | **Memory** | Memory mapper RAM — **512 KB recommended** |
-| **Sound** | **MAKOTO cartridge (YM2608)** for playback |
+| **Sound** | **MAKOTO cartridge (YM2608)** — for playback. Compiling with MUC2MUB needs no sound device |
 | **Storage** | A writable disk or storage device — compiling uses temporary files |
 
 Reference configuration used for integration testing:
@@ -158,6 +181,24 @@ MUCPLAY /RELEASE            ← free the session when you are done
 
 Edited the `.MUC` in another editor? Run `/LOAD` again — `/COMPILE` alone recompiles the copy already in memory.
 
+### Convert without playing — one song, or a whole album
+
+```text
+MUC2MUB SONG.MUC              ← writes SONG.MUB
+MUC2MUB SONG.MUC TEST.MUB     ← or name the output yourself
+```
+
+For a whole album, let DOS drive it. Put this in `BUILD.BAT`:
+
+```text
+@ECHO OFF
+MUC2MUB SONG01.MUC
+MUC2MUB SONG02.MUC
+MUC2MUB SONG03.MUC
+```
+
+MUC2MUB returns `0` on success and `1` on failure, so a shell can check each song. It does **not** stop the batch by itself when one song fails — and a `.MUB` left over from an earlier run will still be sitting there, so never count files to decide whether a batch succeeded.
+
 ---
 
 ## 🎹 MML at a glance
@@ -186,9 +227,9 @@ F C128 o2 l2 v7 c g c g
 
 Case matters: `c` is a note but `C` sets the base clock; `t225` is a raw Timer-B value while `T120` is BPM. The editor manual covers the full syntax, error codes and warnings.
 
-### One gotcha worth knowing up front
+### Two gotchas worth knowing up front
 
-`/L` does not mean the same thing everywhere:
+**`/L` does not mean the same thing everywhere.**
 
 | Command | `/L5` means |
 |---|---|
@@ -196,6 +237,17 @@ Case matters: `c` is a note but `C` sets the base clock; `t225` is a raw Timer-B
 | `MUCPLAY /VGM SONG.VGM /L5` | export **5 playthroughs** |
 | `MUBPLAY SONG.MUB /L5` | play 5 times |
 | `MUBPLAY SONG.MUB /V /L5` | export **5 seconds** |
+
+**Sizes are three separate limits, not one.** They are easy to conflate, and adding RAM raises none of them.
+
+| Limit | Value | Applies to |
+|---|---|---|
+| Editing buffer | **24 KiB** | What MUCEDIT can hold open, after line endings are normalized |
+| Source file | **64 KiB** | What MUC2MUB accepts as input — the whole file, comments included |
+| Compiled song data | **32 KiB** | Notes, channel structure and the voice table together |
+| Final `.MUB` | no fixed limit | Header + data + tags + PCM; routinely larger than the three above |
+
+So a 40 KiB `.MUC` compiles fine with MUC2MUB but will not open in MUCEDIT, and a small source packed with notes can overflow the 32 KiB data area while a comment-heavy large one does not.
 
 ---
 
@@ -207,15 +259,16 @@ Every manual is available in all three languages.
 |---|---|---|---|
 | MUCEdit — editor | [MUCEdit.md](MUCEdit/MUCEdit.md) | [MUCEditJ.md](MUCEdit/MUCEditJ.md) | [MUCEditE.md](MUCEdit/MUCEditE.md) |
 | MUCPlay — compiler & player | [MUCPlay.md](MUCPlay/MUCPlay.md) | [MUCPlayJ.md](MUCPlay/MUCPlayJ.md) | [MUCPlayE.md](MUCPlay/MUCPlayE.md) |
+| MUC2MUB — batch compiler | [Muc2Mub.md](MUC2MUB/Muc2Mub.md) | [Muc2MubJ.md](MUC2MUB/Muc2MubJ.md) | [Muc2MubE.md](MUC2MUB/Muc2MubE.md) |
 | MUBPlay — MUB player | [MUBPlay.md](MUBPlay/MUBPlay.md) | [MUBPlayJ.md](MUBPlay/MUBPlayJ.md) | [MUBPlayE.md](MUBPlay/MUBPlayE.md) |
 
-The MUCEdit manual is the most complete starting point: it covers the editor, the MML syntax, every compile error code, the source warnings, and a troubleshooting chapter.
+**Where to start.** The MUCEdit manual is the broadest introduction — the editor, the MML syntax, every compile error code, the source warnings, and troubleshooting. The MUC2MUB manual goes deepest on the compiler itself: the full error and warning reference, filename and memory rules, the safe-save and recovery procedure, and how to compare a build byte-for-byte against an original `.MUB` using a `.MD5` companion file.
 
 ---
 
 ## 💿 Downloads / 다운로드 / ダウンロード
 
-Builds of `MUCEDIT.COM`, `MUCPLAY.COM` and `MUBPLAY.COM` are published on the repository's releases page.
+Builds of `MUCEDIT.COM`, `MUCPLAY.COM`, `MUC2MUB.COM` and `MUBPLAY.COM` are published on the repository's releases page.
 
 ### ➡️ [**Download from Releases**](https://github.com/ToughkidDev/MUCOMSX/releases)
 

@@ -76,7 +76,7 @@ tbody tr:last-child td{border-bottom:none}
 td strong{white-space:nowrap}
 
 /* ---------- tool cards ---------- */
-.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:8px}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;margin-top:8px}
 .tool{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px}
 .tool .name{font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--accent);margin:0}
 .tool .role{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:2px 0 12px}
@@ -159,7 +159,7 @@ footer p{margin:5px 0}
 <section id="tools">
   <div class="wrap">
     <h2>The toolchain <span class="ko">구성 도구 · ツール構成</span></h2>
-    <p class="lead">Three programs cover the whole workflow. Every manual is available in Korean, Japanese and English.</p>
+    <p class="lead">Four programs cover the whole workflow. Every manual is available in Korean, Japanese and English.</p>
 
     <div class="tools">
       <div class="tool">
@@ -183,6 +183,16 @@ footer p{margin:5px 0}
         </div>
       </div>
       <div class="tool">
+        <p class="name">MUC2MUB.COM</p>
+        <p class="role">Batch compiler</p>
+        <p>One command, one <code>.MUC</code> in, one <code>.MUB</code> out — no session, no playback, no sound hardware needed. Takes sources up to 64 KiB, returns a DOS exit code, and saves through a temporary file so a failure never destroys the previous <code>.MUB</code>.</p>
+        <div class="docs">
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUC2MUB/Muc2Mub.md">한국어</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUC2MUB/Muc2MubJ.md">日本語</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUC2MUB/Muc2MubE.md">English</a>
+        </div>
+      </div>
+      <div class="tool">
         <p class="name">MUBPLAY.COM</p>
         <p class="role">MUB player</p>
         <p>Standalone player for finished <code>.MUB</code> files. Repeat control, a load-test mode for checking a file, and VGM export.</p>
@@ -192,6 +202,27 @@ footer p{margin:5px 0}
           <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayE.md">English</a>
         </div>
       </div>
+    </div>
+
+    <div class="note">
+      MUCPLAY and MUC2MUB share the same compiler, so they accept the same MML and report the same error
+      codes. Which one you reach for depends on what you want back.
+    </div>
+
+    <h3>Which tool should I use?</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>If you want to…</th><th>Use</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Write and revise a song, hearing each change</td><td><strong>MUCEDIT</strong> (+ MUCPLAY)</td><td>Edit, compile and play without leaving the editor</td></tr>
+          <tr><td>Hear a <code>.MUC</code> once, right now</td><td><strong>MUCPLAY</strong></td><td><code>MUCPLAY SONG.MUC</code> compiles and plays in one step</td></tr>
+          <tr><td>Iterate from the DOS prompt and export</td><td><strong>MUCPLAY</strong> session</td><td><code>/LOAD</code> → <code>/COMPILE</code> → <code>/PLAY</code> → <code>/MUB</code> <code>/VGM</code></td></tr>
+          <tr><td>Convert a whole album unattended</td><td><strong>MUC2MUB</strong></td><td>One song per run, driven by a <code>.BAT</code>; exit codes to check</td></tr>
+          <tr><td>Compile a source too large for the editor</td><td><strong>MUC2MUB</strong></td><td>Accepts up to 64 KiB; the editor's buffer is 24 KiB</td></tr>
+          <tr><td>Compile on a machine with no Makoto</td><td><strong>MUC2MUB</strong></td><td>Compiling needs no sound device — only playback does</td></tr>
+          <tr><td>Just listen to a finished <code>.MUB</code></td><td><strong>MUBPLAY</strong></td><td>No compiler involved</td></tr>
+        </tbody>
+      </table>
     </div>
 
     <h3>File formats</h3>
@@ -217,27 +248,36 @@ footer p{margin:5px 0}
 <section id="workflow">
   <div class="wrap">
     <h2>How a song moves through the tools <span class="ko">작업 흐름 · 作業の流れ</span></h2>
-    <p class="lead">One source file, one resident session, three ways out of it.</p>
+    <p class="lead">There are two routes from source to song: an <strong>interactive</strong> one you work in,
+       and a <strong>batch</strong> one you script.</p>
 <pre><code>   ┌─────────────┐
    │  SONG.MUC   │   MML source — write it in MUCEDIT, or any text editor
-   └──────┬──────┘
-          │  MUCPLAY  /LOAD → /COMPILE      (or F1→2 inside MUCEDIT)
-          ▼
-   ┌─────────────┐
-   │   session   │   compiled song, resident in mapper RAM
-   └──┬───┬───┬──┘
-      │   │   │
-  /PLAY  /MUB  /VGM                        (or F1→3, F1→4, F1→5)
-      │   │   │
-      ▼   ▼   ▼
-   listen  SONG.MUB   SONG.VGM
-           └─ MUBPLAY SONG.MUB</code></pre>
+   └──┬───────┬──┘
+      │       │
+      │       └──────────────────────────────┐
+      │                                      │  MUC2MUB SONG.MUC
+      │  MUCPLAY /LOAD → /COMPILE            │  (one shot, no session,
+      │  (or F1→2 inside MUCEDIT)            │   no sound hardware)
+      ▼                                      │
+   ┌─────────────┐                           │
+   │   session   │  compiled song, resident  │
+   └──┬───┬───┬──┘  in mapper RAM            │
+      │   │   │                              │
+  /PLAY  /MUB  /VGM        (F1→3, F1→4, F1→5)│
+      │   │   │                              │
+      ▼   ▼   ▼                              ▼
+   listen  SONG.MUB   SONG.VGM           SONG.MUB
+              └────────────┬─────────────────┘
+                           ▼
+                  MUBPLAY SONG.MUB</code></pre>
     <div class="note">
       <strong>Saving, compiling and playing are three different actions.</strong>
       Saving updates the <code>.MUC</code> on disk. Compiling turns what is <em>currently in memory</em> into
       playback data. Playing performs the most recent compile. Edit and press play without compiling in
       between, and you will hear the previous version.
     </div>
+    <p class="lead">The batch route has no such state. MUC2MUB always reads the <code>.MUC</code>
+       <strong>as saved on disk</strong> — so if the editor still holds unsaved changes, it will not see them.</p>
   </div>
 </section>
 
@@ -250,7 +290,7 @@ footer p{margin:5px 0}
           <tr><td><strong>Machine</strong></td><td>MSX2 or later with an 80-column text screen. MSX2+ class recommended; turbo R is taken into account.</td></tr>
           <tr><td><strong>OS</strong></td><td>MSX-DOS 2, or Nextor providing the same functionality</td></tr>
           <tr><td><strong>Memory</strong></td><td>Memory mapper RAM — <strong>512 KB recommended</strong></td></tr>
-          <tr><td><strong>Sound</strong></td><td><strong>MAKOTO cartridge (YM2608)</strong> for playback</td></tr>
+          <tr><td><strong>Sound</strong></td><td><strong>MAKOTO cartridge (YM2608)</strong> — for playback. Compiling with MUC2MUB needs no sound device</td></tr>
           <tr><td><strong>Storage</strong></td><td>A writable disk or storage device — compiling uses temporary files</td></tr>
         </tbody>
       </table>
@@ -293,6 +333,19 @@ MUCPLAY /RELEASE            ← free the session when you are done</code></pre>
     <p class="lead">Edited the <code>.MUC</code> in another editor? Run <code>/LOAD</code> again —
        <code>/COMPILE</code> alone recompiles the copy already in memory.</p>
 
+    <h3>Convert without playing — one song, or a whole album</h3>
+<pre><code>MUC2MUB SONG.MUC              ← writes SONG.MUB
+MUC2MUB SONG.MUC TEST.MUB     ← or name the output yourself</code></pre>
+    <p class="lead">For a whole album, let DOS drive it. Put this in <code>BUILD.BAT</code>:</p>
+<pre><code>@ECHO OFF
+MUC2MUB SONG01.MUC
+MUC2MUB SONG02.MUC
+MUC2MUB SONG03.MUC</code></pre>
+    <p class="lead">MUC2MUB returns <code>0</code> on success and <code>1</code> on failure, so a shell can check
+       each song. It does <strong>not</strong> stop the batch by itself when one song fails — and a
+       <code>.MUB</code> left over from an earlier run will still be sitting there, so never count files to
+       decide whether a batch succeeded.</p>
+
     <h3>MML at a glance</h3>
     <div class="tablewrap">
       <table>
@@ -318,7 +371,8 @@ F C128 o2 l2 v7 c g c g</code></pre>
     <p class="lead">Case matters: <code>c</code> is a note but <code>C</code> sets the base clock;
        <code>t225</code> is a raw Timer-B value while <code>T120</code> is BPM.</p>
 
-    <h3>One gotcha worth knowing up front</h3>
+    <h3>Two gotchas worth knowing up front</h3>
+    <p class="lead"><strong><code>/L</code> does not mean the same thing everywhere.</strong></p>
     <div class="tablewrap">
       <table>
         <thead><tr><th>Command</th><th><code>/L5</code> means</th></tr></thead>
@@ -330,15 +384,33 @@ F C128 o2 l2 v7 c g c g</code></pre>
         </tbody>
       </table>
     </div>
+
+    <p class="lead"><strong>Sizes are three separate limits, not one.</strong> They are easy to conflate,
+       and adding RAM raises none of them.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Limit</th><th>Value</th><th>Applies to</th></tr></thead>
+        <tbody>
+          <tr><td>Editing buffer</td><td><strong>24 KiB</strong></td><td>What MUCEDIT can hold open, after line endings are normalized</td></tr>
+          <tr><td>Source file</td><td><strong>64 KiB</strong></td><td>What MUC2MUB accepts as input — the whole file, comments included</td></tr>
+          <tr><td>Compiled song data</td><td><strong>32 KiB</strong></td><td>Notes, channel structure and the voice table together</td></tr>
+          <tr><td>Final <code>.MUB</code></td><td>no fixed limit</td><td>Header + data + tags + PCM; routinely larger than the three above</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead">So a 40 KiB <code>.MUC</code> compiles fine with MUC2MUB but will not open in MUCEDIT, and a
+       small source packed with notes can overflow the 32 KiB data area while a comment-heavy large one does not.</p>
   </div>
 </section>
 
 <section id="docs">
   <div class="wrap">
     <h2>Documentation <span class="ko">문서 · ドキュメント</span></h2>
-    <p class="lead">Every manual is available in all three languages. The MUCEdit manual is the most complete
-       starting point: it covers the editor, the MML syntax, every compile error code, the source warnings,
-       and a troubleshooting chapter.</p>
+    <p class="lead">Every manual is available in all three languages. The <strong>MUCEdit</strong> manual is
+       the broadest introduction — the editor, the MML syntax, every compile error code, the source warnings,
+       and troubleshooting. The <strong>MUC2MUB</strong> manual goes deepest on the compiler itself: the full
+       error and warning reference, filename and memory rules, the safe-save and recovery procedure, and how to
+       compare a build byte-for-byte against an original <code>.MUB</code> using a <code>.MD5</code> companion file.</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th>Tool</th><th>한국어</th><th>日本語</th><th>English</th></tr></thead>
@@ -356,6 +428,12 @@ F C128 o2 l2 v7 c g c g</code></pre>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCPlay/MUCPlayE.md">MUCPlayE.md</a></td>
           </tr>
           <tr>
+            <td><strong>MUC2MUB</strong> — batch compiler</td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUC2MUB/Muc2Mub.md">Muc2Mub.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUC2MUB/Muc2MubJ.md">Muc2MubJ.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUC2MUB/Muc2MubE.md">Muc2MubE.md</a></td>
+          </tr>
+          <tr>
             <td><strong>MUBPlay</strong> — MUB player</td>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlay.md">MUBPlay.md</a></td>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayJ.md">MUBPlayJ.md</a></td>
@@ -370,8 +448,8 @@ F C128 o2 l2 v7 c g c g</code></pre>
 <section id="download">
   <div class="wrap">
     <h2>Downloads <span class="ko">다운로드 · ダウンロード</span></h2>
-    <p class="lead">Builds of <code>MUCEDIT.COM</code>, <code>MUCPLAY.COM</code> and <code>MUBPLAY.COM</code>
-       are published on the repository's releases page.</p>
+    <p class="lead">Builds of <code>MUCEDIT.COM</code>, <code>MUCPLAY.COM</code>, <code>MUC2MUB.COM</code>
+       and <code>MUBPLAY.COM</code> are published on the repository's releases page.</p>
     <a class="cta" href="https://github.com/ToughkidDev/MUCOMSX/releases">Download from Releases →</a>
     <h3>Related, from the original PC-8801 project</h3>
     <div class="tablewrap">
