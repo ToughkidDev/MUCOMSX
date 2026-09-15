@@ -1,1 +1,8 @@
-ㅇㅇㅈㅇㅈㅇㅈㅂㅇㅈㅇ
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Read the manuals first / 설명서 먼저 보기 / 先に説明書を読む
+    url: https://github.com/ToughkidDev/MUCOMSX#-documentation--%EB%AC%B8%EC%84%9C--%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88
+    about: Every tool has a manual in Korean, Japanese and English, each with a troubleshooting chapter. / 각 툴 설명서의 문제 해결 장을 먼저 확인해 주세요. / 各ツールの説明書のトラブルシューティングの章をご確認ください。
+  - name: 💿 Downloads / 다운로드 / ダウンロード
+    url: https://github.com/ToughkidDev/MUCOMSX/releases
+    about: Latest builds of MUCEDIT, MUCPLAY, MUC2MUB and MUBPLAY. / 최신 빌드는 릴리스 페이지에 있습니다. / 最新のビルドはリリースページにあります。

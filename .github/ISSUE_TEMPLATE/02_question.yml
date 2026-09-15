@@ -1,0 +1,61 @@
+name: ❓ Question / 질문 / 質問
+description: Ask how something works, or about a situation the manuals do not cover.
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ask in Korean, Japanese or English — whichever is easiest for you.
+        한국어·일본어·영어 중 편한 언어로 물어보세요. 韓国語・日本語・英語のどれでも構いません。
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before asking / 질문 전 확인 / 質問の前に
+      options:
+        - label: I looked for this in the manual for the tool involved. / 해당 툴 설명서에서 찾아보았습니다. / 該当ツールの説明書で探しました。
+          required: false
+        - label: I searched the existing issues. / 기존 이슈를 검색했습니다. / 既存のIssueを検索しました。
+          required: false
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: What is this about / 무엇에 관한 질문인가요 / 何についての質問ですか
+      options:
+        - MML syntax / MML 문법 / MML文法
+        - MUCEDIT — editing / 편집 / 編集
+        - MUCPLAY — compiling and playing / 컴파일과 연주 / コンパイルと再生
+        - MUC2MUB — batch conversion / 배치 변환 / バッチ変換
+        - MUBPLAY — playing a MUB / MUB 재생 / MUBの再生
+        - Voices and PCM / 음색과 PCM / 音色とPCM
+        - MUB / VGM export / 내보내기 / 書き出し
+        - Hardware and setup / 하드웨어와 설치 / ハードウェアとセットアップ
+        - Other / 기타 / その他
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question / 질문 내용 / 質問の内容
+      description: What are you trying to do, and where did it stop making sense? / 무엇을 하려고 하셨고, 어디서 막히셨나요? / 何をしようとして、どこで分からなくなりましたか。
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Setup, if relevant / 관련 환경 / 関連する環境
+      description: Tool and build, machine, DOS, sound cartridge — only if the question depends on them. / 툴과 빌드, 기종, DOS, 음원 카트리지 — 질문과 관계있을 때만. / ツールとビルド、機種、DOS、音源カートリッジ — 質問に関係する場合のみ。
+    validations:
+      required: false
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you already tried / 시도해 본 것 / 試したこと
+      description: Commands you ran, MML you wrote, or what you read. / 실행한 명령, 작성한 MML, 참고한 문서 등. / 実行したコマンド、書いたMML、読んだ資料など。
+    validations:
+      required: false

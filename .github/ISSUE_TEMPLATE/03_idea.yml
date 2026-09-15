@@ -1,0 +1,56 @@
+name: 💡 Idea or improvement / 개선 제안 / 改善の提案
+description: Suggest a feature, a change to the tools, or a fix to the documentation.
+title: "[Idea] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas are welcome in Korean, Japanese or English.
+        한국어·일본어·영어 모두 환영합니다. 韓国語・日本語・英語のいずれでも歓迎します。
+
+        MSX resources are tight — the editor holds 24 KiB of text, compiled song data
+        fits in 32 KiB, and every feature costs mapper RAM — so please describe the
+        problem you want solved, not only the solution you have in mind.
+        MSX는 자원이 빠듯합니다. 무엇을 해결하고 싶은지부터 적어 주세요.
+        MSXは資源が限られています。解決したい問題から書いてください。
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area / 어느 부분 / どの部分
+      options:
+        - MUCEDIT.COM (editor / 에디터 / エディタ)
+        - MUCPLAY.COM (compiler & player / 컴파일러·플레이어 / コンパイラ・プレイヤー)
+        - MUC2MUB.COM (batch compiler / 배치 컴파일러 / バッチコンパイラ)
+        - MUBPLAY.COM (MUB player / MUB 플레이어 / MUBプレイヤー)
+        - MML syntax / MML 문법 / MML文法
+        - Documentation / 문서 / ドキュメント
+        - Project site / 프로젝트 사이트 / プロジェクトサイト
+        - Other / 기타 / その他
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem / 해결하려는 문제 / 解決したい問題
+      description: What is awkward or impossible today? A concrete example of when it bites helps most. / 지금 무엇이 불편하거나 불가능한가요? 언제 그 문제를 겪는지 구체적인 예가 가장 도움이 됩니다. / 現在、何が不便または不可能ですか。どんなときに困るのか具体例があると最も助かります。
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea / 제안 내용 / 提案の内容
+      description: How you imagine it working. A rough sketch is fine. / 어떤 식으로 동작하면 좋을지. 대략적인 스케치도 괜찮습니다. / どのように動くとよいか。大まかなもので構いません。
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Workarounds you use now / 지금 쓰는 우회 방법 / 現在の回避策
+      description: How you get by today, and why it is not enough. / 지금은 어떻게 처리하고 계시며, 왜 부족한가요? / 現在はどう対処していて、なぜ不十分ですか。
+    validations:
+      required: false

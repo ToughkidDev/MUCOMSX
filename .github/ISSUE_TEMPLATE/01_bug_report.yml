@@ -1,0 +1,115 @@
+name: 🐞 Bug report / 버그 제보 / バグ報告
+description: Something crashes, hangs, sounds wrong, or does not do what the manual says.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Korean, Japanese and English are all welcome.
+        한국어·일본어·영어 모두 환영합니다. 韓国語・日本語・英語のいずれでも歓迎します。
+
+        **A small file that reproduces the problem is worth more than a long description.**
+        재현되는 작은 파일 하나가 긴 설명보다 낫습니다. 再現する小さなファイルが長い説明より役立ちます。
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before reporting / 제보 전 확인 / 報告の前に
+      options:
+        - label: I searched the existing issues and this is not a duplicate. / 기존 이슈를 검색했고 중복이 아닙니다. / 既存のIssueを検索し、重複ではありません。
+          required: true
+        - label: I checked the troubleshooting chapter of the relevant manual. / 해당 툴 설명서의 문제 해결 장을 확인했습니다. / 該当ツールの説明書のトラブルシューティングの章を確認しました。
+          required: false
+
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Which tool / 어떤 툴 / どのツール
+      options:
+        - MUCEDIT.COM (editor / 에디터 / エディタ)
+        - MUCPLAY.COM (compiler & player / 컴파일러·플레이어 / コンパイラ・プレイヤー)
+        - MUC2MUB.COM (batch compiler / 배치 컴파일러 / バッチコンパイラ)
+        - MUBPLAY.COM (MUB player / MUB 플레이어 / MUBプレイヤー)
+        - Two or more of them together / 둘 이상 연계 / 2つ以上の連携
+        - Documentation / 문서 / ドキュメント
+        - Other / 기타 / その他
+    validations:
+      required: true
+
+  - type: input
+    id: build
+    attributes:
+      label: Build / 빌드 / ビルド
+      description: File size in bytes, the release you downloaded, or the date you obtained it. SHA-256 is ideal. / 파일 크기, 받은 릴리스, 또는 받은 날짜. SHA-256이면 가장 좋습니다. / ファイルサイズ、入手したリリース、または入手日。SHA-256が最適です。
+      placeholder: "e.g. MUCPLAY.COM 32,512 bytes / Release 2026-09-14 / SHA-256 200ac651..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: machine
+    attributes:
+      label: Machine and system / 기종과 시스템 / 機種とシステム
+      description: Real MSX model or emulator + machine settings, CPU mode, MSX-DOS2 or Nextor version, memory mapper, cartridges, storage. / 실기 기종 또는 에뮬레이터와 설정, CPU 모드, MSX-DOS2/Nextor 버전, 메모리 매퍼, 카트리지, 저장장치. / 実機の機種またはエミュレータと設定、CPUモード、MSX-DOS2/Nextorのバージョン、メモリマッパー、カートリッジ、ストレージ。
+      value: |
+        - Machine / 기종 / 機種:
+        - CPU mode / CPU 모드 / CPUモード:
+        - DOS / Nextor:
+        - Memory mapper / 메모리 매퍼 / メモリマッパー:
+        - Sound cartridge / 음원 카트리지 / 音源カートリッジ:
+        - Storage / 저장장치 / ストレージ:
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: The exact command / 입력한 명령 전체 / 入力したコマンド全体
+      description: The full command line, or the editor key sequence such as F1 → 2 → F1 → 3. / 전체 명령줄, 또는 F1 → 2 → F1 → 3 같은 에디터 키 순서. / コマンドライン全体、またはF1 → 2 → F1 → 3のようなエディタのキー操作。
+      render: text
+      placeholder: |
+        CD SONG
+        MUCPLAY SONG.MUC /L2
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / 재현 순서 / 再現手順
+      description: What you did, in order — open, edit which characters, compile, play, and so on. / 무엇을 어떤 순서로 했는지 — 열기, 어떤 글자 수정, 컴파일, 연주 등. / 何をどの順で行ったか — 開く、どの文字を修正、コンパイル、再生など。
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected vs what happened / 기대한 결과와 실제 결과 / 期待した結果と実際の結果
+      description: Include the error or warning text in full, or describe the section where it sounds wrong. / 오류·경고 문구 전체를 그대로, 또는 이상하게 들리는 구간을 설명해 주세요. / エラー・警告の文言を全文、または おかしく聞こえる区間を説明してください。
+      value: |
+        **Expected / 기대한 결과 / 期待した結果:**
+
+        **Actual / 실제 결과 / 実際の結果:**
+    validations:
+      required: true
+
+  - type: textarea
+    id: song
+    attributes:
+      label: Song files / 곡 파일 / 曲のファイル
+      description: Filename, and if you can share them, attach the .MUC plus its voice and PCM files. If the music cannot be shared, a minimal example with nothing sensitive works just as well. / 파일명, 그리고 가능하다면 .MUC와 음색·PCM 파일을 첨부해 주세요. 공개하기 어려우면 민감한 내용 없는 최소 예제도 좋습니다. / ファイル名と、可能であれば.MUCと音色・PCMファイルを添付してください。公開できない場合は、機微な内容のない最小限の例でも構いません。
+      placeholder: "SONG.MUC (2,375 bytes), VOICE.DAT, PCM01.BIN — drag files into this box to attach"
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else / 그 밖의 정보 / その他
+      description: Screenshots, a recording with sound, evidence files, or notes. / 스크린숏, 소리가 들어간 녹화, 증거 파일, 메모 등. / スクリーンショット、音の入った録画、エビデンスファイル、メモなど。
+    validations:
+      required: false
