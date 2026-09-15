@@ -12,6 +12,7 @@ Compose in MML · Compile on the MSX itself · Play on real hardware · Export M
 [Quick start](#-quick-start--빠른-시작--クイックスタート) ·
 [Documentation](#-documentation--문서--ドキュメント) ·
 [Downloads](#-downloads--다운로드--ダウンロード) ·
+[Issues](#-questions--issues--문의와-제보--質問と報告) ·
 [Project site](https://toughkiddev.github.io/MUCOMSX/)
 
 </div>
@@ -279,6 +280,43 @@ Related, from the original PC-8801 project:
 
 ---
 
+## 💬 Questions & Issues / 문의와 제보 / 質問と報告
+
+Found a bug, hit something the manuals don't cover, or have an idea for the tools?
+Please open a ticket on the repository's issue tracker.
+
+### ➡️ [**github.com/ToughkidDev/MUCOMSX/issues**](https://github.com/ToughkidDev/MUCOMSX/issues)
+
+Search the existing issues first — someone may have hit the same thing. Korean,
+Japanese and English are all welcome.
+
+When reporting a playback or compile problem, these details narrow it down fastest:
+
+| | |
+|---|---|
+| **Which tool and build** | `MUCEDIT.COM` / `MUCPLAY.COM` / `MUC2MUB.COM` / `MUBPLAY.COM`, and its size or the date you obtained it |
+| **Machine** | Real MSX model, or emulator + machine settings; CPU mode |
+| **System** | MSX-DOS2 or Nextor version, memory mapper, cartridges, storage |
+| **The exact command** | The full command line you typed |
+| **The song** | Filename, and if possible the `.MUC` plus its voice and PCM files |
+| **What happened** | The error or warning text in full, or the section where it sounds wrong — and what you expected instead |
+
+A small file that reproduces the problem is worth more than a long description.
+If you can't share the music, a minimal example with nothing sensitive in it works
+just as well. Each tool's manual has a fuller checklist in its troubleshooting
+chapter.
+
+<details>
+<summary>한국어 / 日本語</summary>
+
+**한국어** — 버그를 발견하셨거나, 설명서에 없는 상황을 만나셨거나, 개선 아이디어가 있으시면 저장소의 이슈 게시판에 남겨 주세요: [github.com/ToughkidDev/MUCOMSX/issues](https://github.com/ToughkidDev/MUCOMSX/issues). 먼저 기존 이슈를 검색해 보시면 같은 문제가 이미 올라와 있을 수 있습니다. 한국어·일본어·영어 모두 환영합니다. 재생이나 컴파일 문제를 알려주실 때는 위 표의 항목 — 사용한 툴과 빌드, 기종, 시스템 구성, 입력한 명령 전체, 곡 파일, 오류 문구와 기대한 결과 — 를 함께 적어 주시면 원인을 훨씬 빨리 좁힐 수 있습니다. 긴 설명보다 문제가 재현되는 작은 파일 하나가 더 도움이 됩니다.
+
+**日本語** — バグを見つけた、説明書に載っていない状況に遭遇した、あるいは改善のアイデアがある場合は、リポジトリのIssueへお寄せください: [github.com/ToughkidDev/MUCOMSX/issues](https://github.com/ToughkidDev/MUCOMSX/issues)。まず既存のIssueを検索してみてください。同じ問題がすでに報告されているかもしれません。韓国語・日本語・英語のいずれでも歓迎します。再生やコンパイルの問題を報告される際は、上の表の項目 — 使用したツールとビルド、機種、システム構成、入力したコマンド全体、曲のファイル、エラーの文言と期待した結果 — を併せて記載いただけると、原因をはるかに早く絞り込めます。長い説明よりも、問題が再現する小さなファイルが1つあるほうが役に立ちます。
+
+</details>
+
+---
+
 ## ⚖️ License / 라이선스 / ライセンス
 
 **MUCOM88** is a collective term for an FM sound driver and music production tools that run on ALPHA-DOS — License: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
@@ -302,6 +340,7 @@ It enables music written in MML to be played on the built-in FM sound source and
 * [**MUCOM88 Windows**](https://onitama.tv/mucom88/) — standalone Windows build 【ONION software】
 * [**MUCOMSX project site**](https://toughkiddev.github.io/MUCOMSX/)
 * [**MUCOMSX on GitHub**](https://github.com/ToughkidDev/MUCOMSX)
+* [**Issue tracker**](https://github.com/ToughkidDev/MUCOMSX/issues) — questions, bug reports and ideas
 
 <div align="center">
 
