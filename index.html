@@ -85,6 +85,25 @@ td strong{white-space:nowrap}
 .docs a{font-size:.8rem;border:1px solid var(--line);border-radius:6px;padding:3px 10px;color:var(--ink)}
 .docs a:hover{border-color:var(--accent2);color:var(--accent2);text-decoration:none}
 
+/* ---------- demo videos ---------- */
+.videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;margin-top:8px}
+.video{margin:0}
+.vthumb{display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:12px;
+        overflow:hidden;background:var(--code-bg);cursor:pointer;position:relative;
+        aspect-ratio:16/9;line-height:0}
+.vthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.vthumb:hover{border-color:var(--accent)}
+.vthumb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.vplay{position:absolute;inset:0;margin:auto;width:66px;height:46px;border-radius:10px;
+       background:rgba(20,18,14,.72);transition:background .15s}
+.vplay::after{content:"";position:absolute;inset:0;margin:auto;width:0;height:0;
+              border-style:solid;border-width:11px 0 11px 18px;
+              border-color:transparent transparent transparent #fff}
+.vthumb:hover .vplay{background:var(--accent)}
+.video iframe{width:100%;aspect-ratio:16/9;border:1px solid var(--line);border-radius:12px;display:block}
+.video figcaption{margin-top:12px;font-size:.92rem;line-height:1.6}
+.video figcaption .ko{color:var(--muted);font-size:.86rem}
+
 /* ---------- callout ---------- */
 .note{background:var(--panel);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;
       padding:16px 20px;margin:22px 0;font-size:.93rem}
@@ -117,11 +136,13 @@ footer p{margin:5px 0}
     <p class="subtag">Compose in MML &middot; Compile on the MSX itself &middot; Play on real hardware &middot; Export MUB / VGM</p>
     <nav class="nav">
       <a class="primary" href="https://github.com/ToughkidDev/MUCOMSX/releases">Download</a>
+      <a href="#demos">Demos</a>
       <a href="#tools">Tools</a>
       <a href="#workflow">Workflow</a>
       <a href="#requirements">Requirements</a>
       <a href="#quickstart">Quick start</a>
       <a href="#docs">Documentation</a>
+      <a href="#wiki">Wiki</a>
       <a href="#issues">Issues</a>
       <a href="https://github.com/ToughkidDev/MUCOMSX">GitHub</a>
     </nav>
@@ -154,6 +175,44 @@ footer p{margin:5px 0}
         <p>Editing, compiling, playback and export all run on the MSX. The tools are intended to run on real hardware or emulators. For usage, see each tool's manual.</p>
       </article>
     </div>
+  </div>
+</section>
+
+<section id="demos">
+  <div class="wrap">
+    <h2>See it working <span class="ko">시연 영상 · デモ動画</span></h2>
+    <p class="lead">Short demonstrations of the editor and the standalone player running on MSX.</p>
+    <div class="videos">
+      <figure class="video">
+        <button class="vthumb" type="button" data-vid="Wq0RhtrQlBE"
+                aria-label="Play the MUCEdit demo video">
+          <img src="https://img.youtube.com/vi/Wq0RhtrQlBE/hqdefault.jpg"
+               alt="MUCEdit running on an MSX" loading="lazy" width="480" height="360">
+          <span class="vplay" aria-hidden="true"></span>
+        </button>
+        <figcaption>
+          <strong>MUCEdit</strong> — editing and compiling on the MSX<br>
+          <span class="ko">MUCEdit 시연 · MUCEdit デモ</span> ·
+          <a href="https://www.youtube.com/watch?v=Wq0RhtrQlBE">YouTube</a>
+        </figcaption>
+      </figure>
+      <figure class="video">
+        <button class="vthumb" type="button" data-vid="jpkDOpuv0Ig"
+                aria-label="Play the MUBPlay demo video">
+          <img src="https://img.youtube.com/vi/jpkDOpuv0Ig/hqdefault.jpg"
+               alt="MUBPlay playing a MUB file on an MSX" loading="lazy" width="480" height="360">
+          <span class="vplay" aria-hidden="true"></span>
+        </button>
+        <figcaption>
+          <strong>MUBPlay</strong> — playing a finished MUB<br>
+          <span class="ko">MUBPlay 시연 · MUBPlay デモ</span> ·
+          <a href="https://www.youtube.com/watch?v=jpkDOpuv0Ig">YouTube</a>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="lead" style="margin-top:22px;font-size:.88rem">
+      Thumbnails load from YouTube; the player itself is only loaded once you press play.
+    </p>
   </div>
 </section>
 
@@ -446,6 +505,45 @@ F C128 o2 l2 v7 c g c g</code></pre>
   </div>
 </section>
 
+<section id="wiki">
+  <div class="wrap">
+    <h2>Wiki — writing the music <span class="ko">음악 만들기 · 音楽づくり</span></h2>
+    <p class="lead">The manuals describe <strong>the tools</strong>. The wiki describes <strong>the music</strong> —
+       how MUCOM88 MML is actually written, and how the voices, rhythm patterns and PCM banks a song depends on
+       are produced on Windows and carried over to the MSX. MUCOMSX has no asset-creation tooling of its own,
+       so that half of the workflow lives there.</p>
+    <a class="cta" href="https://github.com/ToughkidDev/MUCOMSX/wiki">Open the wiki →</a>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Page</th><th>한국어</th><th>日本語</th><th>English</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Home</strong> — what the wiki covers, and where to begin</td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Home-ko">Home-ko</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Home-ja">Home-ja</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Home">Home</a></td>
+          </tr>
+          <tr>
+            <td><strong>Workflow</strong> — Windows → MSX, end to end</td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow-ko">Workflow-ko</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow-ja">Workflow-ja</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow">Workflow</a></td>
+          </tr>
+          <tr>
+            <td><strong>Tools &amp; Links</strong> — where to get everything</td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ko">Tools-and-Links-ko</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ja">Tools-and-Links-ja</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links">Tools and Links</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead">More pages are on the way: MML basics and a full command reference, FM voice creation with
+       the voice editor, PCM/ADPCM preparation, rhythm patterns, the size limits that bite in practice, and
+       troubleshooting.</p>
+  </div>
+</section>
+
 <section id="download">
   <div class="wrap">
     <h2>Downloads <span class="ko">다운로드 · ダウンロード</span></h2>
@@ -545,6 +643,24 @@ F C128 o2 l2 v7 c g c g</code></pre>
        &middot; <a href="https://github.com/ToughkidDev/MUCOMSX/issues" target="_blank" rel="noopener">Issues</a></p>
   </div>
 </footer>
+
+<script>
+/* Demo videos: load the YouTube player only when the thumbnail is pressed,
+   so the page stays fast and sets no third-party cookies until you opt in. */
+document.querySelectorAll('.vthumb').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var id = btn.getAttribute('data-vid');
+    if (!id) return;
+    var frame = document.createElement('iframe');
+    frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
+    frame.title = btn.getAttribute('aria-label') || 'Demo video';
+    frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+    frame.allowFullscreen = true;
+    frame.referrerPolicy = 'strict-origin-when-cross-origin';
+    btn.replaceWith(frame);
+  });
+});
+</script>
 
 </body>
 </html>
