@@ -8,9 +8,11 @@
 
 Compose in MML · Compile on the MSX itself · Play on real hardware · Export MUB / VGM
 
+[Demos](#-see-it-working--시연-영상--デモ動画) ·
 [Tools](#-the-toolchain--구성-도구--ツール構成) ·
 [Quick start](#-quick-start--빠른-시작--クイックスタート) ·
 [Documentation](#-documentation--문서--ドキュメント) ·
+[Wiki](https://github.com/ToughkidDev/MUCOMSX/wiki) ·
 [Downloads](#-downloads--다운로드--ダウンロード) ·
 [Issues](#-questions--issues--문의와-제보--質問と報告) ·
 [Project site](https://toughkiddev.github.io/MUCOMSX/)
@@ -52,6 +54,33 @@ What makes MUCOMSX different from a port of the editor alone: **the whole cycle 
 **MUCOMSX** is a project that brings the **MUCOM88** project — a music production tool originally developed by Yuzo Koshiro for the YM2203 and YM2608 (Sound Board II) chips on the NEC PC-8801mkIISR and later models — to the MSX platform. It supports the **MAKOTO Cartridge**, a YM2608 cartridge released for the MSX.
 
 Editing, compiling, playback and export all run on the MSX itself. The tools are intended to run on real hardware or emulators.
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🎬 See it working / 시연 영상 / デモ動画
+
+<table>
+<tr>
+<td width="50%" align="center">
+
+[![MUCEdit demo](https://img.youtube.com/vi/Wq0RhtrQlBE/hqdefault.jpg)](https://www.youtube.com/watch?v=Wq0RhtrQlBE)
+
+**[MUCEdit — editing and compiling on the MSX](https://www.youtube.com/watch?v=Wq0RhtrQlBE)**
+
+MUCEdit 시연 · MUCEdit デモ
+
+</td>
+<td width="50%" align="center">
+
+[![MUBPlay demo](https://img.youtube.com/vi/jpkDOpuv0Ig/hqdefault.jpg)](https://www.youtube.com/watch?v=jpkDOpuv0Ig)
+
+**[MUBPlay — playing a finished MUB](https://www.youtube.com/watch?v=jpkDOpuv0Ig)**
+
+MUBPlay 시연 · MUBPlay デモ
 
 </td>
 </tr>
@@ -264,6 +293,27 @@ Every manual is available in all three languages.
 | MUBPlay — MUB player | [MUBPlay.md](MUBPlay/MUBPlay.md) | [MUBPlayJ.md](MUBPlay/MUBPlayJ.md) | [MUBPlayE.md](MUBPlay/MUBPlayE.md) |
 
 **Where to start.** The MUCEdit manual is the broadest introduction — the editor, the MML syntax, every compile error code, the source warnings, and troubleshooting. The MUC2MUB manual goes deepest on the compiler itself: the full error and warning reference, filename and memory rules, the safe-save and recovery procedure, and how to compare a build byte-for-byte against an original `.MUB` using a `.MD5` companion file.
+
+---
+
+## 📖 Wiki — writing the music / 음악 만들기 / 音楽づくり
+
+The manuals above describe **the tools**. The wiki describes **the music** — how
+MUCOM88 MML is actually written, and how the voices, rhythm patterns and PCM banks
+a song depends on are produced on Windows and carried over to the MSX. MUCOMSX has
+no asset-creation tooling of its own, so that half of the workflow lives there.
+
+### ➡️ [**github.com/ToughkidDev/MUCOMSX/wiki**](https://github.com/ToughkidDev/MUCOMSX/wiki)
+
+| Page | 한국어 | 日本語 | English |
+|---|---|---|---|
+| **Home** — what the wiki covers, and where to begin | [Home-ko](https://github.com/ToughkidDev/MUCOMSX/wiki/Home-ko) | [Home-ja](https://github.com/ToughkidDev/MUCOMSX/wiki/Home-ja) | [Home](https://github.com/ToughkidDev/MUCOMSX/wiki/Home) |
+| **Workflow** — Windows → MSX, end to end | [Workflow-ko](https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow-ko) | [Workflow-ja](https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow-ja) | [Workflow](https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow) |
+| **Tools & Links** — where to get everything | [Tools-and-Links-ko](https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ko) | [Tools-and-Links-ja](https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ja) | [Tools and Links](https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links) |
+
+More pages are on the way: MML basics and a full command reference, FM voice
+creation with the voice editor, PCM/ADPCM preparation, rhythm patterns, the size
+limits that bite in practice, and troubleshooting.
 
 ---
 
