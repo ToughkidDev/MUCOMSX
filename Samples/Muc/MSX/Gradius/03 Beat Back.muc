@@ -1,0 +1,63 @@
+
+#title Beat Back
+#composer Miki Higashino
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{&v8d%3v13o2dd.&v8d%3v13d.&v8d%3v13do4d.&v8d%3v13d.&v8d%3}
+#*1{&v10e%4v14e%8&v10e%4/v14o4e%8&v10e%4v14o2e}
+#*2{&v8e%3v13e.&v8e%3}
+#*3{v13d9&v9d%2v13}
+#*4{v15c+.&v11c+%3v14}
+; ---
+
+#*5{E255,255,24,176,0,255}
+#*6{E255,255,40,208,0,255}
+#*7{E255,255,16,96,0,255}
+#*8{E255,255,20,0,0,255v13}
+#*9{E255,255,24,160,0,255}
+#*10{&v10f+%3}
+#*11{E255,255,8,0,0,255}
+#*12{d9&v9d%2}
+A C96l14t198
+
+D C96l14
+D *9 v14P1o3d%1L*9 v12P1D0o3d.
+D &v9d%2[*3 o4*12 v13o3d*12 *3 d/o5c9&v9
+D c%2v13c9&v9c%2v13o3*12 ]2[v15o5cD-10o4bD0
+D o5c9&v12c%2/v15co3c9&v12c%2v15c9&v12c%2rv13d
+D *12 *3 d]2*5 v15D-11o5e9.&v11e%3[
+D v15D-7d+9.&v11d+%3/v15D0d9.&v11d%3]2v15D-11e.&v11e%3
+D v15D-5f.&v11f%3v13D0o3e.*2 *8 D-22
+D o5f+9&v14f+%2v13D0o3e*5 e.*2 v13ev14
+D D-22o5f+D-5fD-22f+.*10 rv14f+9.*10 [v14
+D f+.*10 r8.v14f+.*10 v14f+D-19a.&v10a%3/v14
+D a.&v10a%3rv14D-22f+9.*10 ]2v14arv13D12o3g+
+D D0o4d+D-14f+D0a+o5cD-7d+D-22f+D-7d+D0co4g
+D D-14f+D0d+D12o3g+%4D0o4d+%4D-14f+%4D0a+%4o5c%4D-7d+%4D0
+D o3go4dfD-19aD-10bD0o5dD-5fD0dD-10o4bD0
+D gfdo3e%4o4d%4f%4D-19a%4D-10b%4D0o5d%4o3d+o4c+e
+D g+a+o5c+D-11eD0c+o4a+fec+o3d+a+o4c+
+D o3d[*9 o5c%52&v9c%2*8 o3c8
+D c/d+8d+8]2D-14o4f+8f+8rf+f+8f+8D0f
+D E255,255,24,144,0,255D-14f+%26&v7f+%4v13f+D0fd+v14c%73&v7
+D c%3&v3c%2*8 d+8d+8v14o3d%1
+
+E C96l14
+E *5 v14P1o2d%1L*5 v12P1D0o2d.
+E &v8d%2[v13d.&v8d%3/v13o3d.*0 v13o2d.&v8d%3]3v13
+E o4d.*0 v15o3d.&v11d%3v14d*4 c+v15c.&v11c%3v14c
+E c+*4 ddv15d+.&v11d+%3v13[o2e.*2 /v13o4e.&v8e%3
+E v13o2e]2v13eo4ed+e.&v8e%3v14[o2e%8*1 ]2v14e
+E D13g%8&v10g%4v14g%8&v10g%4v14D0[e%8*1 ]2v14ef%8&v10f%4
+E v14D13g*6 D-2o5a+%71&v9a+%3&v6a+%4v13a+%4&
+E v11a+%2*7 v13a+8*6 v14D-19a%71&
+E v9a%3&v6a%4v13a%4&v11a%2*7 v13a8
+E *6 v14D0g+%71&v9g+%3&v6g+%4v13D-5f%4&v11f%2
+E *11 v13f%7&v14f%7&v9f%4*7 v13D0[
+E o2d8d8o3d8o2dd8d8d/f8f8]2v14D12g+8g+8rg+g+8g+8
+E D13g*6 v15D12g+%23&v11g+%3&v7g+%4v14g+%4&
+E v12g+%2v14D13g%4&v12g%2v14D-16f+%4&v12f+%2*11
+E v14D0d%8&v15d%7&v8d%3*5 v14D12g+
+E *7 D0o3c8d8c8d8cd+8d+8o2d%1
+

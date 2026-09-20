@@ -1,0 +1,32 @@
+
+#title Aircraft Carrier
+#composer Miki Higashino
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{D-7o5d+D0o4a+o5co4fD-7o5d+D0o4a+}
+#*1{d+%4&v11d+%2/v14d+%4&v11d+%2}
+; ---
+
+#*2{E255,255,12,0,0,255}
+#*3{C96l14}
+A *3 t198
+
+D *3
+D E255,255,16,0,0,255v13P1o3cc+dd+efD-14f+D0gD12
+D g+D-15aD0a+D-14bD0o4c[o4d+D-7o5d+D0o4a+
+D o5c]2[o4g*0 /o5co4d+*0 o5c]2c%5LE255,255,6,0,0,255
+D v10P1D0o5c%1v13D19[ggD-5fD19g]4D-2[a+a+D0g+
+D D-2a+]4D0[o4d+*0 o5co4g*0 o5c]2
+
+E *3
+E E255,255,0,255,0,255v12P1o4c&c+&d&d+&e&f&D-14
+E f+&D0g&g+&D-19a&D0a+&D-10b&D0o5c
+E *2 [v14o3d+8*1 ]8v14d+%5LE255,255,24,176,0,255v10
+E P1D0o3d+%1*2 [v14d+8*1 ]16v14d+
+
+F *3
+F E255,255,20,224,0,255v14P1o5cc+dD-7d+D-11eD-5fD-22
+F f+D19gD0g+D-19aD-2a+D-10bD0o6cr%191Lr%127r%127
+F r%131
+

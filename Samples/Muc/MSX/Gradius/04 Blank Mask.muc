@@ -1,0 +1,34 @@
+
+#title Blank Mask
+#composer Miki Higashino
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{o3c+%7d%7v15d10&v11dv15c+10&v11c+v15D-14f+6&v11f+v14D0c+%7v15d10&v11dv15D-12o2b10&v11b}
+#*1{d9&v8d%2r%7v13c+.&v10c+v13c+9&v8c+%2r%7[v13d.&v10d]3v13D-19o4a9&v8a%2v13D0o5c+9}
+#*2{o4f.&v10fv13f9&v8f%2v13a+9&v8a+%2v13g+.&v10g+v13a+.&v10a+r%7v13o5c+9&v8c+%2v13c+.}
+#*3{&v11cv14f%7d+%7v15D12g+10&v11g+v15D0e10&v11ev15f10&v11fv15d10&v11d}
+#*4{&v10dv13d9&v8d%2r%7v13c+9&v8c+%2v13D-19o4a.&v10a}
+#*5{&v12d%5&v13d.v14c+%1&v12c+%5&v13c+.}
+#*6{v15D-15o2a10&v11av14D0}
+; ---
+
+#*7{E255,255,24,176,0,255}
+#*8{c+%8&v11c+%2}
+A C112l29t198
+
+D C112l29
+D r%1Lr%6E255,255,24,144,0,255v13P1D0o5d%7E255,255,12,0,0,255[v13*1
+D &v8c+%2r%7v13d.&v10d]3v13*1 &v8c+%2r%7[v13*2 &v10c+
+D v13D-7d+9&v8d+%2r%7v13D0*2 &v10c+r%7]2[v13d.&v10d
+D v13*1 &v8c+%2r%7]2v13d.*4 r%7v13D0o5d.*4 D0[v14o5d%1*5 ]2
+D v14D-19o4a%1&v12a%5&v13a.v14D0o5c+%1&v12c+%5&v13c+.v14
+D d%1*5 r%1
+
+E C112l29
+E *7 v15P1D-15o2a%1L*7 v14P1D-15
+E o2a10&v11a%2[v14D0*0 v15D-15a10&v11a]3v14D0*0 D0[v15
+E o3c10*3 v15c10&v11cv15c10*3 ]2[*6 *0 ]2[*6 o3c+%7d%7v15
+E d10&v11dv15c+10&v11c+]2v14D-15o2a%8&v11a%2D0[v14
+E o3*8 v14d%8&v11d%2]3v14*8 v15D-15o2a%1
+

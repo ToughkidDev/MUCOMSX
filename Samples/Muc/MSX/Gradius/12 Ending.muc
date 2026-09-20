@@ -1,0 +1,42 @@
+
+#title Ending
+#composer 
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{v10a.v13a%7&v9av14D0e10&v10e.v13e%7&v9ev14e10&v10e.v13f%7&v9fv13e%7&v9}
+#*1{E255,255,40,208,0,255v14D-10b10&v11b.E255,255,12,0,0,255v13}
+#*2{D-11o5e15E255,255,40,208,0,255v14D0d10&v11d.}
+#*3{v14D-14b10&v10b.}
+#*4{ev13d%7&v9dv14g10&v10g.v13}
+#*5{f10&v10f.v13f%7&v9f}
+#*6{[v13e%7&v9e]3}
+; ---
+
+#*7{E255,255,12,0,0,255v13}
+#*8{E255,255,40,208,0,255v14}
+#*9{D-19a15}
+A C160l41t198
+
+D C160l41
+D *8 P1D-19o4a10&v11a.*7 [
+D *2 *7 c15/D-10o4b15*8 D0
+D o5c10&v11c.*7 D-10o4b15*9 *1 *9
+D *8 D0g10&v11g.*7 *9
+D a15*2 v14D19g%76&v11g.r8.*7 D0o4e15*9
+D ]2*1 D0o5c15[D-10o4b15*9 ]2*8 D0g6&
+D v11g.v14D-19a10&v11a.*7 D-11o5e15D0d15
+D d15E255,255,0,255,0,255v12D19g%91&v8g.&v4g&v1gr%9v14D-19
+D o4a%1
+
+E C160l41
+E E255,255,20,0,0,255v13P1D-19[o5a15a15D-3o6a15D-19o5a15]16a%1
+
+F C160l41
+F E255,255,40,192,0,255v14P1D-15o3a10&*0 *4 D12g+%7&v9g+*3 v14
+F D-15a10&v10a.v13a%7&v9aD0*6 v14*5 v13e%7&v9*4 g%7&v9
+F gv14D12g+10&v10g+.v14D-15a10&*0 ev13d%7&v9dv13D-14
+F b%7&v9bv13b%7&v9bv13D0g%7&v9g*3 v14D0*5 v14c10&v10
+F c.v13c%7&v9cv14f10&v10f.*6 *3 v13D0e%7&v9ev14e14&
+F v10e.v13e%5&D-15a%1
+

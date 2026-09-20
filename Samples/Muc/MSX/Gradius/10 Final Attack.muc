@@ -1,0 +1,44 @@
+
+#title Final Attack
+#composer Miki Higashino
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{D0o3cD-12o2bD-15aD13g}
+#*1{v15o4g%27&v11g%3v15o5c9&v11c%3v15o4a+%27&v11a+%3v15g%27&v11g%3v15}
+#*2{a+D-15aD13gD0f}
+; ---
+
+#*3{E255,255,32,192,0,255v15P1}
+#*4{&v11}
+#*5{E255,255,32,208,0,255}
+#*6{D-11e%5v15D-5}
+#*7{D13o2gD0}
+#*8{v15D0}
+A C160l15t198
+
+D C160l15
+D *3 o5c%1L*3 D0o5c6
+D *4 c%3[*1 f9*4 f%3v15o5c%27*4 c%3v15o4g%27*4 g%3/
+D v14e%5g%5o5c%5*6 f%47*4 f%3v15D-11e9*4 e%3
+D *8 d%7*4 d%3v15c%27*4 c%3*1 f%7*4 f%3v15g%72*4 g%3
+D v14d+%5f%5v15g%52*4 g%3v14d%5e%5f%5g%5D-19a%5D-10b%5*8
+D o5c%27*4 c%3]2v14o4c%5e%5g%5o5c%5v15d%62*4 d%3v14o4a+%5
+D o5c%5d%5v15D-7d+%27*4 d+%3*8 o4a+%27*4 a+%3v14a+%5
+D o5c%5d%5*6 f%27*4 f%3*8 c+%27*4 c+%3v14c+%5
+D D-7d+%5v15D-5f%7*4 f%3[v15D19g%57*4 g%3v14D0c%5d%5D-11
+D e%5D-5f%5]2v15D-2a+*4 a+%3v15D-19a*4 a%3*8 g+14&
+D v11g+%3v15D19g*4 g%3v15D-22f+*4 f+%3v15D-5f14*4
+D f%3v14D-11e%5E255,255,20,96,0,255D-7d+D0d%5E255,255,40,192,0,255
+D c+%37&v10c+%3v15c%1
+
+E C160l15
+E *5 v15P1o3c%1L*5 v14P1D0o3c%9
+E D-12o2bD-15aD13g*0 D0[*2 ]2[*0 ]2D0[fedc]2[
+E *0 ]2D0[*2 ]2[o2d+dco1a+]2o2dcD-13o1bD-16a
+E *7 fed[*0 ]2D0[*2 ]2[*0 ]2D0*2 a+D12g+D13
+E gD0f[o3d+dco2a+]2[D0o3c+co2a+D12g+]2
+E [*7 dD13gD0o3d*7 o3dgd]2D13[
+E v15o2g9&v12g%3]4v14g%5v15g%7&v12g%3v14g%5v15g%37&v12g%3
+E *8 o3c%1
+

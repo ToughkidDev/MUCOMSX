@@ -1,0 +1,81 @@
+
+#title Extra Stage
+#composer 
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{v13D0o3gv15D13o2g}
+#*1{v13o3g+v15o2g+g+v13o3g+v15}
+#*2{v13o3cv15o2ccv13o3cv15}
+#*3{v13o3fv15o2ffv13o3fv15}
+#*4{v15o5c8o4go5d8o4gD-7o5d+8D0o4gD-5o5f8D0o4gD-7o5d+9&v13d+%2v15D0c%7&v13c%2}
+#*5{E255,255,32,192,0,255D-7o5d+9&v13d+%2E255,255,24,160,0,255v15D0o4gE255,255,32,192,0,255}
+#*6{o4gD-7o5d+D0o4gD-5o5fD0o4g}
+#*7{o5d9&v13d%2E255,255,24,160,0,255v15o4g}
+#*8{o4fD-2o5a+D0o4fD19o5gD0o4f}
+#*9{D-5o5f9&v13f%2E255,255,24,160,0,255v15}
+#*10{o4g+D-2o5a+D0o4g+D19o5g}
+#*11{cro5cro4a+rg}
+#*12{o5cD-2a+D0cD19g}
+; ---
+
+#*13{E255,255,16,0,0,255}
+#*14{E255,255,32,192,0,255}
+#*15{E255,255,24,160,0,255}
+#*16{E255,255,20,0,0,255}
+#*17{E255,255,32,208,0,255}
+#*18{E255,255,24,0,0,255}
+#*19{E255,255,28,0,0,255v9o4}
+#*20{E255,255,32,0,0,255v8}
+#*21{E255,255,6,0,0,255v13}
+#*22{D-5o5f}
+#*23{E255,255,20,64,0,255}
+#*24{o4fD-7o5d+}
+A C96l14t198
+
+D C96l14
+D *20 P1o4co5c*19 cc
+D *18 v10o5co4cv11co5c*16 v12
+D o4ccv13o5co4cv14o5co4c*13 v15c
+D *23 o5c&o4g+*20 o5g+
+D *19 g+g+*18 v10o5g+o4g+
+D v11g+o5g+*16 v12o4g+g+v13o5g+o4g+v14
+D o5g+o4g+*13 v15g+o5g+&v12o4f
+D *18 v8*22 *16 v9D0o4ffv10
+D *22 D0o4f*13 v11f*22 v12D0o4ff
+D v13*22 D0o4f*16 v14*22 D0o4f
+D *13 v15f*22 &v12D0o4g*18 v8
+D D19o5g*16 v10D0o4gg*13 v12D19
+D o5gD0o4g*16 v14gD19o5g*13
+D v13gD0o4go3gD19o5gD0o4gD19o5gg
+D E255,255,12,0,0,255D0o6d%5LE255,255,0,255,0,255v10P1D0o6d%1
+D *21 [D0o5co6co5co6c*12 ]2[D0o4g+
+D o6co4g+o6c*10 ]2D0o4fo6co4fo6c*8 *22 D0
+D *24 D0o4fo5d*24 D0o4go5d
+D o4go5co4gD-10bD0go5co4go5d*6 D-10b
+D *14 D0[*4 r%3]3*17 v15c6&v13c%2
+D *13 v14o4g*17 v15o5d9&v13d%2
+D *13 v14o4g*17 v15D-7o5d+9&v13
+D d+%2*13 v14D0o4g*17 v15D-5o5f9
+D &v13f%2*13 v14D-7d+D0dcd
+D *14 v15[D0cro6cr*12 ]2[D0o4g+r
+D o6cr*10 ]2D0o4fro6cr*8 r*22 D-7d+D0
+D *24 D0dD-7d+D0o4gro5dco4go5c
+D D-10o4bD0o5co4go5d*6 D-10b*15 D0[
+D *11 frd+rdrcrd]2*11 *23 v14f8
+D r*15 v15*22 rD-7d+rD0cr
+D *17 D19g8D0o4gD-5o5f8D0o4gD-7o5d+8D0
+D o4go5d8o4go5co4go5do4g*14 [*4
+D r%3]2v15c9&v13c%2*15 v15o4g
+D *14 *7 *5 *9 D0*6 *14 D19o5g9&v13
+D g%2*15 v15D-10o4b*14 *9 D-10
+D o4b*5 *7 *21 D-19ao5aD-10o4bo5b
+
+E C96l14
+E *15 v15P1[o2cv13o3cv15o2c]4*2 D12[
+E o2g+v13o3g+v15o2g+]4*1 D0[o2fv13o3fv15o2f]4*3
+E D13[o2g*0 ]4*0 gv13D0o3g%5L*15 v9P1D0
+E o3g%1[v15o2c*2 o2cc*2 o2c*2 D12o2g+*1 o2g+g+*1
+E o2g+*1 D0o2f*3 o2ff*3 o2f*3 D13o2g*0 g*0 g*0
+E g*0 *0 g/v13D0o3g]5v13D0g%5&v0g%1
+
