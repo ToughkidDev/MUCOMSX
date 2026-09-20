@@ -1,0 +1,28 @@
+
+#title Game Start
+#composer Yoshinori Sasaki, Motoaki Furukawa, Iku Mizutani
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{o6c%3r%1f%3r%1D-13g%3}
+; ---
+
+#*1{o7a%4D-21f%4}
+#*2{D-24o7c10}
+#*3{C128l22}
+A *3 t198
+
+D *3
+D E255,255,20,128,0,255v9P1*0 r%1*2 r%2v7D0*0 r%1v6D-24
+D o7c10r%2v5D0*0 r%1*2 r%2v4D0*0 r%1E255,255,28,160,0,255
+D *2 r%2v3D0*0 r%1D-24o7c%3r%1
+
+E *3
+E E255,255,48,192,0,255v10P1D-35*1 E255,255,12,120,0,255D-24
+E o8c%1&v8c12&v11c.v7D-35*1 D-24o8c7v5D-35
+E *1 v6D-24o8c%22v4D-35*1 D-24o8c12r%20
+
+F *3
+F E255,255,2,128,0,255v9P1D-73o2a&D-24g+&D13g12&D-62f+&
+F D-33f&D0e&D31d+&D0d12&D-40c&D23o1b&D18a+&
+F D-16a&D30g+12&D-24g&D38f+12&D0fr%20
+

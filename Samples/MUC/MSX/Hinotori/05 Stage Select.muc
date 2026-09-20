@@ -1,0 +1,55 @@
+
+#title Stage Select
+#composer Yoshinori Sasaki, Motoaki Furukawa, Iku Mizutani
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{E255,255,6,120,0,255v12D0o4c+%1&v10c+&v12c+&v9c+&v12c+%7E255,255,96,152,0,255v6c+E255,255,12,0,0,255v8D-28o7g+}
+#*1{D-5f8&D0o4g9&v5g%2v6o5c8}
+#*2{&v12g%5&v8g%3v11}
+; ---
+
+#*3{E255,255,6,120,0,255}
+#*4{g.&v7g%4v12}
+#*5{E255,255,96,152,0,255v6}
+#*6{E255,255,12,0,0,255v8}
+#*7{E255,255,8,0,0,255v11}
+#*8{E255,255,4,176,0,255}
+#*9{D12o1g%13}
+A C128l15t198
+
+D C128l15
+D *3 v11P1D-19o4a%13&v7a%3v11D0o5d%13&v7d%3v11
+D D19g%13&v7g%3v11D0o4g%13&v7g%3v11o5c%13&v7c%3v11D-5f%13&
+D v7f%3D0o4g.&v6g%4v7o5c.&v6c%4v7D-5f.&v6f%4
+D E255,255,28,200,0,255v8D0o4e8&D-15o3a4v12D-19o4a.&v7a%4v12
+D D0o5d.&v7d%4v12D19*4 D0o4*4 o5c.
+D &v7c%4v12D-5f.&v7f%4v8D0o4g%13&v5g%3v8o5c%13&v5c%3v8
+D D-5f%13&v5f%3v8D0o4e8&D-19a4[*3 v12D0o4d%1
+D &v10d&v12d&v9d&v12d%7*5 d
+D *6 D-35o7a/*3 v12D0o4c%1&v10
+D c&v12c&v9c&v12c%7*5 c
+D *6 D-13o7g*0 ]2*0
+
+E C128l15
+E *7 P1D-16o1a&v12a%5&v8a%3v11D0o2d&v12
+E d%5&v8d%3v11D13g*2 D12o1g*2 D0o2c&v12c%5&v8c%3v11
+E f&v12f%5&v8f%3E255,255,28,208,0,255v9*9 &v6g%3v9D0
+E o2c%13&v6c%3v9f%13&v6f%3v7*9 &v3g%3v7D0o2c%13&v3
+E c%3v7f%13&v3f%3v12D-16o1a.&v7a%4v12D0o2d.&v7d%4v12
+E D13*4 D12o1*4 D0o2c.&v7c%4v12f.&
+E v7f%4v8*9 &v4g%3v8D0o2c%13&v4c%3v8f%13&v4f%3D12
+E o1g%13&v1g%3v4D0o2c%13&v1c%3v4f%13&v1f%3v12D-15a
+E *7 [a8v8av9o3aa/v11D13o2gg8v8g
+E v9D0o3ggv11D12o2g+g+8v8g+v9o3g+g+v11D-15o2a
+E ]2v11D12g+g+8v8g+v9D0o3gD12g+
+
+F C128l15
+F r8.E255,255,2,0,0,255v8P1D-19o4a8D0o5d8D19g8D0o4g8o5c8
+F *8 *1 E255,255,0,255,0,255v7D-5f%46&v5D59f%2v7D0
+F c%6&v5c%2v7d%6&v5d%2v8D-19o4a9&v6a%2v8D0o5d9&v6
+F d%2v8D19g9&v6g%2v8D0o4g9&v6g%2v8o5c9&v6c%2
+F *8 v8*1 D-5f8r%1v2D0o4c%3r%4v9cgv10D19
+F o5gv9g8E255,255,8,176,0,255v8g%22&v5g%2v10D-5ff8v8f%22&
+F v5f%2v10D-22f+f+8v8f+%22&v5f+%2v10D19gv9g9&v5g%2v6
+F g%22&v2g%2v10D0g+g+8v8g+%22&v5g+%2
+

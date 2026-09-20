@@ -1,0 +1,41 @@
+
+#title Game Over
+#composer Yoshinori Sasaki, Motoaki Furukawa, Iku Mizutani
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{E255,255,96,120,0,255v10P2D0w11o3a%1&P1D-15a%1&P2D0w18g+%4&w7a%1r%1E255,255,20,0,0,255v11P1}
+#*1{v12D-19a%6&v10a%2}
+#*2{v12D0d%6&v10d%2}
+; ---
+
+#*3{f+%1&v9f+%7}
+#*4{E255,255,20,0,0,255}
+#*5{a%1&v9a%7}
+#*6{C128l15}
+#*7{v12d%6&v10d%2}
+#*8{v11g%1&v9g%7}
+A *6 t198
+
+D *6
+D *4 P1D-16[v11o1*5 v11*5 *0 D-16
+D o1*5 ]2D12[*8 *8 *0 D12o1g%1&v9
+D g%7]2D-15[v11*3 v11*3 *0 D-15o1*3
+D ]2D0[*4 v11P1o1f%1&v9f%7v11f%1&v9f%7
+D E255,255,96,120,0,255v10P2w11o3a%1&P1D-15a%1&P2D0w18g+%4&w7
+D a%1r%1]2E255,255,20,184,0,255v12P1D-28d%3&D30c+%4&D60c%1v13
+D D-15o2a%2&D12g+%2&D47g%3&D20f+%1E255,255,48,192,0,255v11D-16
+D o1a%53&v7a%3r%1
+
+E *6
+E E255,255,40,200,0,255v12P1o4e%6&v10e%2*7 [v12e%6
+E &v10e%2*1 a*2 v12e%6&v10e%2/v12g%6&v10g%2*1 *2 ]2[*1 /
+E v12D0o5c%6&v10c%2*7 v12D-10o4b%6&v10b%2]2a
+E v12D-10b%6&v10b%2v12D0g9&v10g%2v12f%6&v10f%2f[v11
+E f%6&v8f%2]3v12g%13&v8g%3v12D-19a%61&v8a%3r%1
+
+F *6
+F E255,255,12,0,0,255v12P1D-15o2aaav11a%4a%4v12aaa
+F aD13gggv11g%4g%4v12ggggD-16f+f+f+v11
+F f+%4f+%4v12f+f+f+f+D0fffv11f%4f%4v12f
+F E255,255,20,224,0,255D13g%13&v9g%3v12D-15a%60&v9a%4r%1
+

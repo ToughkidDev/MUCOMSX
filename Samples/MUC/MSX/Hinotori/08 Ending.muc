@@ -1,0 +1,100 @@
+
+#title Ending
+#composer Yoshinori Sasaki, Motoaki Furukawa, Fumio Miyashita, Iku Mizutani
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{w11o3a%1&P1D-15a%1&P2D0w18g+%4&w7a%1}
+#*1{E255,255,2,0,0,255D13g9&v6gv10g9&v6gE255,255,96,120,0,255v10P2D0}
+#*2{c%8D-19o3a%8D0g%8D-18b%8D0o4d%8g%8v9D-18b%8v10D0g%8d%8D-18o3b%8}
+#*3{E255,255,16,0,0,255v10a%8a%8E255,255,96,120,0,255P2D0}
+#*4{D0o4c%8D-11e%8v9D-27a%8}
+#*5{v10D-27e%5&v7e.v10D-13g%5&v7g.v10D-35}
+#*6{D0o3f%8D-19a%8D0o4c%8f%8v9D-27a%8}
+#*7{&v7a.v10D-10b%5&v7b.v10}
+#*8{v10D-26o5b%5&v7b.v10D-35}
+#*9{D-13g%30&v4D35gv6D-13}
+#*10{v7D-11e9&v5ev7}
+#*11{g%5r.D-18b%5r.D0}
+#*12{g%5&v7g.v10D-19}
+; ---
+
+#*13{E255,255,0,255,0,255}
+#*14{E255,255,2,0,0,255}
+#*15{E255,255,16,0,0,255}
+#*16{E255,255,8,0,0,255}
+#*17{E255,255,96,120,0,255}
+#*18{v10D-19}
+#*19{E255,255,6,0,0,255v7}
+#*20{E255,255,12,0,0,255}
+#*21{P1D13o2g%8}
+A C128l43t198
+
+D C128l43
+D *20 v9P1o2c%8*13 o3c%109&v6c.v9
+D o2d%5&v6d.v9o3d%125&v6d.v9D-16o2b%117&v6b.v9D0g%5&v6
+D g.v9D-19a%61&v6a.v9a%5&v6a.E255,255,20,0,0,255[v7a%8/v9
+D a%8]3v8a%8v6a%8v8D0g%8v6g%8v7g%8v5g%6&v1gv7f%8v5D-19
+D a%6&v1av4D0o3c%5&v1cr%1v3f%6rf%6rD-19a%6rD0
+D o4c%6rf%6rD-27a%6rD0f%6rc%6rD-19o3a%6rv2
+D D0*11 o4d%5r.*11 g%5r.d%5r.D-18o3b%5r%127r%132
+D *13 v7D-35o5a%62&v5D0a*18 o2a%6&v8a
+D v10D0o3c%6&v8cv10e%6&v8e*18 a%6&v8av10D0
+D o2g%6&v8gv10D-16b%6&v8bv10D0o3d%6&v8dv10g%6&v8
+D gL*13 v10P1D-24o6c5.&v7D40c.v8D-24c%5&v5
+D c.[*8 a%5&v7a./v10D-26b6&v7b.v8b%5&v5b.v10D-13g6
+D &v7g.v8g%5&v5g.v10g5.&v7D35g.v8D-13g%5&v5g.*5 a%45&
+D v7D-3a.*5 a5.&v7D-3a.v8D-35a%5&v5a.v10a%13&v7a.]2v10
+D D-13g%29&v7D35g.v10D-13g%13&v7g.v10D-24o6c%5&v7c.*8
+D a%93&v7a.v8a%13&v5a.
+
+E C128l43
+E *14 P1[v10o5c9&v7cv10o4g9&v7gv10e9&
+E v7ev10c9&v7c]2[v10o5d9&v7d*18 o4a9&v7a
+E v10D0g9&v7gv10d9&v7d]2v10D-10b9&v7bv10D-14
+E f+9&v7f+v10D0e9&v7ev10D-14o3b9&v7bv10D-10
+E o4b9&v7bv10D0e%5&v7e.v10D-14f+%5&v7f+.v10D0*12 a%5
+E *7 D0o5c%5&v7c.*13 v10o4g%53&v7g.v8g%6&v6
+E gv10D-15o3a%5&v7a.v9D0o4d%5&v6d.v10f%5&v7f.v9D-19
+E a%5&v6a.v9D0o5d%5&v6d.v8D-11e%5&v5e.v9D-5f%5&v6f.
+E v8D-19a%5&v5a.v8D-15o3a%5&v5a.v7D0o4d%5&v4d.v6f%5&
+E v3f.v5D-19a%5&v2a.v5D0f%5&v2f.v4D-19a%5&v1a.v3D0
+E o5c%5&v1cr%1v2D-5f%6rv5D0o6c4.&D-10o5b%8&D-19a%8v6
+E D-10b%30&v4bv7D19g%30&v5gv7g%46&v5D51gv8D-11e%6&
+E v6ev8D19g%6&v6gv9D-19a%46&v7D0av10D-11e%5&v7e.
+E v10D19*12 a%45&v7D0a.*18 a%13*7 D-19a%5&v7a.v10D19g%29
+E &v7D51g.v10D19g%13&v7g.v10D0o6c%5&v7c.v10D-10o5b%5&
+E v7b.*18 a%93&v7a.v8a8L*14 v10P1D0o2f9&
+E v6f[v10f9&v6f*17 v10P2*0 r%1
+E *14 P1o2f9&v6f/*15 v10D-16f+%8*1
+E *0 r%1*15 *21 g%8D0d+%8*14 e9
+E &v6ev10e9&v6e*17 v10P2*0 r%1
+E *14 P1o2e9&v6e*15 v10e%8
+E *14 D-15a9&v6a*3 *0 r%1*15 P1D13
+E o2g%8*17 P2D0*0 r%1*15 *21
+E *14 D0f9&v6f]2*15 v10f%8*1 *0 r%1
+E *15 *21 *14 g9&v6gv10D-15
+E a9&v6a[*3 *0 r%1/*14 P1D-15o2a9&v6a
+E *15 v10a%8*14 a9&v6a]2
+E *14 P1D13g9&v6g*15 v10g%8
+
+F C128l43
+F *13 v7P1o1c%22&v5c[v7D-24o5c9&v5cv7D0
+F o4g9&v5g*10 D0c9&v5c]2[v7D-8o5d9&v5dv7D-27
+F o4a9&v5av7D0g9&v5gv7d9&v5d]2v7D-18b9&v5
+F bv7D-22f+9&v5f+*10 D-18o3b9&v5bv7o4b9&v5b
+F *19 D-11e%8D-22f+%8D0g%8*13 v8D-27
+F o5e%46&v6D53ev7D-27e9&v5D53er%1E255,255,128,56,0,255v4
+F D2077o8a&D2027fr%7*19 D-19o3a%8D0o4d%8
+F *16 v6f%8D-27a%8D-8o5d%8v5D-27e%8D-21f%8
+F *20 v4D-35a%8D-19o3a%8D-11o4e%8v3D0f%8
+F E255,255,64,0,0,255D-27a%4*13 v4D-24o6c%94&v2D40
+F c*16 v5D-26o5b%8D-35a%8*13 v6D-26
+F b%30&v4D0bv6*9 g%46&v4D35g[*16 v6D-27e%8
+F D-13g%8*13 D-35a%46&v4D-3a]2v6D-35a9&v4D-3
+F a*16 v6D-26b%8D-35a%8*13 *9 g9&v4
+F D35g*16 v6D-24o6c%8D-26o5b%8*13
+F D-35a%86&v4D-3aL*15 v10P1*6 D0f%8v10*2 D0e%8
+F g%8D-18b%8D0o4d%8g%8v9D-18b%8D-24o5c%8D-18o4b%8v10o3b%8*4
+F *18 o3a%8*4 v10*6 v10D0f%8*2 [*18 o3a%8*4 ]3v10D0o3g%8
+F D-18b%8D0o4d%8v9g%8
+

@@ -1,0 +1,36 @@
+
+#title Death
+#composer Yoshinori Sasaki, Motoaki Furukawa, Iku Mizutani
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{eE255,255,0,255,0,255D0d&D-11e}
+; ---
+
+#*1{E255,255,20,0,0,255}
+#*2{E255,255,24,0,0,255}
+#*3{E255,255,20,168,0,255}
+#*4{E255,255,8,0,0,255}
+#*5{E255,255,0,255,0,255}
+#*6{C96l14}
+A *6 t198
+
+D *6
+D *1 v9P1D-19o5aa*5 D19g&D-19
+D a*1 D-11e*0 *1 v10D0cD-10
+D o4bD-19aD0g+v11D-19a%7D0e%7c%7E255,255,12,168,0,255v10e%7
+D &D-15o3a%61&v6a%3r%1
+
+E *6
+E *3 v9P1D-11o5e*0 *3 D-10o4b
+E b*5 D-19a&D-10b*3 v10D-24
+E o5cD-18o4bD-27aD0g+&D-19o5a%7&D-11e%7&D0c%7&D-11
+E e%7&D0o4c%62&v7D64c%2r%1
+
+F *6
+F *2 v11P1D-15o2a*4 o3a8
+F *2 o2aD13g*4 D0o3g8
+F *2 D13o2g*4 D0f8*2
+F ffE255,255,24,216,0,255D13g%11&v8g%3*1 v11D12
+F g+%7g+%7E255,255,2,184,0,255v9D-15a%8&D0o3c%4&e%4&D-19o4a%8&
+F D0o5c%2&v11c%2&D-11e%4&v9D-19a3r%1
+
