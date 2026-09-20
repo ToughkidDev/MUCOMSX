@@ -1,0 +1,39 @@
+
+#title Title
+#composer Yoshinori Sasaki, Motoaki Furukawa, Fumio Miyashita, Iku Mizutani
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{v10D-15a9&v8av10a9&v8a}
+#*1{cv7D-26o5b%6&v5bv7D-35}
+#*2{&v7bv9D-19a%6&v7av10}
+#*3{D19g%29&v7D51g.v10D19}
+#*4{v7D-13g%30&v5gv7}
+#*5{v10D0e9&v8e}
+; ---
+
+#*6{E255,255,0,255,0,255}
+#*7{C128l43}
+A *7 t198
+
+D *7
+D *6 v10P1o2f9&v8f[v10f9&v8fv9f%13&v6
+D f.v9f%13&v6f.v10D13g9&v8gv10g9&v8gv9g%13&v6g.
+D v9g%13&v6g./*5 v10e9&v8ev9e%13&v6e.v9e%13&v6e.*0
+D v9a%13&v6a.v9a%13&v6a.v10D0f9&v8f]2*0 *5 v9e%8e%8
+D v10D-16o1a%77&v7a.r%1
+
+E *7
+E E255,255,24,216,0,255v10P1o6c%45&v7D72c.v9D-10o5b%6*2 D-10
+E b%29&v7D22b.v10*3 g%45&v7D51g.[v9D-11e%6&v7ev9D19
+E g%6&v7gv10D-19a%45&v7D0a.]2v10D-19a%13&v7a.v9D-10
+E b%6*2 *3 g%13&v7g.v9D0o6c%6&v7cv9D-10o5b%6&v7bv10
+E D-19a%125&v7a.r%1
+
+F *7
+F r8.*6 v7P1D-24o6c%46&v5D40*1 a%6&v5av7D-26
+F b%30&v5b*4 g%46&v5D35g[v7D-27e%6&v5ev7D-13g%6&v5
+F gv7D-35a%46&v5D-3a]2v7D-35a9&v5av7D-26b%6&v5b
+F v7D-35a%6&v5a*4 g9&v5gv7D-24o6c%6&v5*1 a%102&v5D-3
+F ar%1
+
