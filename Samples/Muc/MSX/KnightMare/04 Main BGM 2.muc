@@ -1,0 +1,32 @@
+
+#title Main BGM 2
+#composer Miki Higashino
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{[D0dD-14f+D-15o3aD-14o4f+]2D0[c+fD12o3g+D0o4f]2c}
+#*1{o5cdD-7d+D19gE255,255,48,192,0,255D0o6c10&v7c%3v11D19o5g10&v7g%3v11D-22f+%25&v7f+%3r8v11f+10&v7f+%3v11D-5}
+#*2{[o4cd+o3go4d+]2[D0dD-14f+D-15o3aD-14o4f+]2D0[dfD12o3g+D0o4f]2[cd+o3go4d+]3c}
+#*3{E255,255,24,0,0,255v11[D-7d+D19g]4[D-22f+D-19a]4[D-5fD0g+]3D-14o6c+D0f}
+#*4{d+o3go4d+cD-14o3bD0a+D-14bD0}
+#*5{o5cD-10o4bD0g+gfd+}
+#*6{D19gD-5fD-7d+D0}
+; ---
+
+#*7{E255,255,24,0,0,255v11}
+#*8{E255,255,48,192,0,255}
+A C112l15t198
+
+D C112l15
+D *7 P1[*1 f%25&v7f%3r8v11D-7d+10&v7d+%3v11
+D D0c%25&v7c%3r*7 D-10o4bD0a+D-10bD0
+D *1 f%25&v7f%3*7 *6 c+*8 c%39&
+D v7c%3r8*3 *8 d+10&v7d+%3*7
+D c*8 D19o5g6&v7g%3r8*3 d+cD-10o5bD0
+D g+*6 d]3E255,255,0,255,0,255c%1
+
+E C112l15
+E E255,255,24,128,0,255v11P1[[o4cd+o3go4d+]2*0 *4 *2 D-14
+E o3bD0o4cc+*0 *5 d]3[cd+o3go4d+]2*0 *4 *2 D-14
+E o3bD0o4cc+*0 *5 d%8
+
