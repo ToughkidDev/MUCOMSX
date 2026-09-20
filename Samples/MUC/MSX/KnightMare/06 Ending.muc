@@ -1,0 +1,50 @@
+
+#title Ending
+#composer Miki Higashino
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{g%7&v8gv12D-19a%7&v8av12D-10b%7&v8bv12}
+#*1{v12D-11e%7&v8ev12D0}
+#*2{E255,255,40,184,0,255v12P1o5c+%27&v8c+}
+#*3{e%27&v8ev12D0o4g%7&v8gv12}
+#*4{g6&v7g.E255,255,16,0,0,255v12}
+#*5{D0o5d%7&v8dv12}
+#*6{v12D-5f%7&v8f}
+#*7{v12c%7&v8cv12}
+; ---
+
+#*8{E255,255,20,224,0,255}
+#*9{E255,255,16,0,0,255}
+#*10{d%27&v8dv12}
+A C160l41t198
+
+D C160l41
+D r4*2 v12D-19o4a%57&v8av12a%7&v8av12*5 c+%7&v8c+v12
+D c+%27&v8c+v12D-19o4a%37&v8av12D0f%7&v8fv12*0 *5 D-11
+D *3 o5c%7&v8c*1 *10 o4g%27&v8gv12D-11o5e%27&
+D v8ev12D19g%7&v8g*6 *1 *10 D19g%27&v8gD-19[
+D v12a%7&v8a]4*6 v12D-19a%7&v8aD-10[v12b%7&v8b]3v12
+D D19*0 D-19a%107&v8ar%71
+
+E C160l41
+E r4*2 [v12D-27o4a%27&v8a/v12D0f%57&v8f]2v12D-11e%27&
+E v8e[v12D0o4d%27&v8d/v12D-27a%7&v8av12D-18b%7&v8
+E bv12D-8o5d%7&v8dv12D-27*3 D-24o5c%7&v8cv12D-27e%7&
+E v8ev12D-8*10 D0o4g%27&v8gv12c%27&v8c*1 d%7
+E &v8d*7 D-18o3b%27&v8b]2[v12o4f%7&v8f*7 f%7&v8f]2
+E v12g%7&v8gv12d%7&v8dv12g%7&v8gE255,255,8,0,0,255v9g15
+E D-27a15D-18b15D0o5c+15D-27o4a15D0d15E255,255,0,255,0,255c+%77&
+E v6c+r%71
+
+F C160l41
+F r4*8 v12P1D-15o2a6&v7a.[*9
+F v12a15D0o3e15D-15a15/*8 o2a6&v7a.
+F *9 v12a15a15a15*8 a6&v7a.]2D0
+F o3f15d15e15f15g15D-14b15*8 D0c6&v7c.
+F *9 v12c15c15c15*8 D13o2g6&v7
+F g.*9 v12g15D0o3d15g15*8 c6&v7
+F c.v12c6&v7c.v12D13o2g6&v7g.v12*4 D0f15f15o3c15
+F *8 f6&v7f.*9 v12D13o2g15g15D0
+F o3d15*8 *4 D-15o2a15a15D0o3e15
+F *8 D-15a%76&v7a.r%71
+
