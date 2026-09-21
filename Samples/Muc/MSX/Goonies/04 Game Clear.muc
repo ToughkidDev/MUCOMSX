@@ -1,0 +1,23 @@
+
+#title Game Clear
+#composer 
+; muc by ToughkidCST
+
+#*0{E255,255,32,160,0,255v12P1}
+#*1{C112l15}
+A *1 t198
+
+D *1
+D r7*0 D-5o5f8.D-11e8.D0d8cD-19ar
+D D-5f8.D0c8dD-2a+rD19g8D-11eD-5fD19gD-5f8r4.
+
+E *1
+E r7E255,255,16,0,0,255P1[v11o2f8o3f%5&v8f%2v11f%5&v8f%2]2
+E D-15[v11o2a8o3a%5&v8a%2v11a%5&v8a%2]2v11D0o2a+8a+8o3c%5
+E &v8c%2v11o5c%5&v8c%2v11d%5&v8d%2v11D-11e%5&v8e%2v11D0
+E o3f8r4.
+
+F *1
+F r7*0 o5c8.c8.o4a+8D-19aD0o5cr
+F c8.D-19o4a8D0a+D19o5grD-11eD0cr8.D-19o4a8r4.
+

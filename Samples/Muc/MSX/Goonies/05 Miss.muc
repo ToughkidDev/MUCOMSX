@@ -1,0 +1,25 @@
+
+#title Miss
+#composer 
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{o4a%8D0f%8d%8f%8d%8}
+; ---
+
+#*1{E255,255,24,0,0,255v12P1}
+#*2{C128l43}
+A *2 t198
+
+D *2
+D r%46*1 D-27*0 D-18o3b%8v10[D0g+D-18f+
+D ]12r%38
+
+E *2
+E r%46*1 D-19*0 D-14o3b%8v10[D12g+D-14f+
+E ]12r%38
+
+F *2
+F r%46E255,255,40,208,0,255v13P1o3d%19&v8d.&v6dv13D-12o2b%19
+F &v8b.&v6bv10D0[fe]12r%38
+

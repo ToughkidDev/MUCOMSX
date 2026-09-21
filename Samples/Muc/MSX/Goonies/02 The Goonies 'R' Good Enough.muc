@@ -1,0 +1,89 @@
+
+#title The Goonies 'R' Good Enough
+#composer Cyndi Lauper
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{o5d15o4d15g15D-19a15D0o5c15d15}
+#*1{v10o4d%9&v6dv10o3d%9&v6dv11d9&v6d.v10o4d%9&v6dv11o3d9&v6d.v10d%9&v6dv10o4d%9}
+#*2{v12D-15a%9&v8a}
+#*3{d%9&v8dv12d%9&v8d}
+#*4{v12o3f%9&v8fv12o2a+%9&v8a+}
+#*5{&v8fv12f%9&v8f}
+#*6{o6d15o5d15D19g15D-19a15D0o6c15d15}
+#*7{v11D-19a9&v7a.}
+#*8{o4d15o3d15g15D-15a15D0o4c15d15}
+#*9{v12c%9&v8cv12}
+#*10{o6c8D-2o5a+8D-19a8D19g8D-5}
+#*11{v12d%9&v8dv12e%9&v8e}
+#*12{v12o4c%9&v8cv12o3f%9}
+#*13{&v6dv10o3d%9&v6d}
+#*14{v11o4d%9&v9dv11}
+#*15{v11D0o3e%1&v9e17}
+#*16{v11D19g9&v7g.}
+#*17{v11D-5f9&v7f.}
+#*18{v12g%9&v8gv12}
+#*19{v10D-5f%8&v6f.}
+#*20{&v6a.&v3a}
+; ---
+
+#*21{E255,255,48,192,0,255}
+#*22{E255,255,32,152,0,255}
+#*23{a+%9&v8a+}
+#*24{E255,255,20,0,0,255}
+#*25{c%9&v8c}
+#*26{E255,255,24,40,0,255}
+#*27{f%9&v8f}
+#*28{d15e15f15g15f15}
+A C176l59t198
+
+D C176l59
+D r%15E255,255,28,24,0,255v10P1[o4d15r15*0 r15/o4d15*0 ]2
+D *21 *14 o5d%9&v9d*14 g%9&v9gv11D-19a%9&v9
+D av11D19o5g%9&v9gv11D-5f%9&v9fv11D-19a%30&D-10b%5&
+D D-14o6c+%5&D0d%135&D-22o5f+8.&D-11e8.&D-22f+%110v12D0o3f%1
+D L*22 v11P1D0o3f%8&v8f[v12*27 *12 *5
+D ]3*18 D12g+%9&v8g+[*2 v12D0*3 ]2[v12d%9&v8d*2 v12D0*3
+D ]2*9 d%9&v8dv12*25 [v12f%9*5 *2 D0[v12*27 ]3
+D *12 &v8f]2[v12*3 *2 v12D0d%9&v8d]2*9 *25 v12*3 v12
+D e%9&v8ev12e%9&v8ev12*27 [*4 v12*23 ]2v12
+D *23 *4 v12o3*25 *9 g%9&v8g[v12*25 ]3
+D *11 [v12f%9*5 *2 v12D0*27 ]2*18 D13o2g%20&v8gv12g%9&
+D v8g*2 v12a%9&v8av12D0*23 v12o3*25 [v12
+D o2*23 v12*23 *4 ]2[v12o3*25 ]6*11 [v11
+D o3*27 v11o4*27 ]8[v11o3d%9&v8dv11o4d%9&v8
+D d]4[v11o2*23 v11o3*23 ]4[v11o3*25
+D v11o4*25 ]8*21 v11D-15o2a13*20 v10a%5
+D *24 *15 *21 v11D-15a%15*20
+D *24 v11o2a%1&v9a17*15 v11D-15a%1&v9a17
+D *21 v11D0o2a+13&v6a+.&v3a+v10a+%5
+D *24 v11o3d%1&v9d17v11f%1&v9f17v11c%1&v9c17
+D v11c%1&v9c17v11d%1&v9d17v11e%1&v9e17*22
+D v11d9&v6d.*1 *13 v11D-15o2a9&v6a.v11D0o3c9&v6c.
+D v11d9&v6d.*1 *13 v10c%9&v6cv10c%9&v6cv10d%9&v6d
+D v10e%9&v6ev12f%1
+
+E C176l59
+E r12*26 v11P1[o3d15]30f15c15*22
+E v10[d8r15d15d8r15d15r4D-15o2a8D0o3c8]2r%1Lr%21
+E *21 P1[v10D-19o5a9&v6a.*19 ]2v10D-2a+9&
+E v6a+.v10D-19a9&v6a.v10D19g9&v6g.*19 v10D19g%5D-19
+E a%69&v6a.v10D0c%8&v6c.v10d%8&v6d.r15E255,255,16,0,0,255v8
+E o4d15d15*28 r8*21 v11D-19o5a%8&v7
+E a.v11a%8&v7a.v11a9&v7a.v11a9&v7a.v11D-2a+9&v7
+E a+.*7 *16 *17 r15[v11f%8&v7f.]3v11D19g%8&v7g.*7 v11D-11
+E e9&v7e.v11e%8&v7e.*17 *16 *7 r8*22 v11D0*10
+E f8D-11e15D-5f8.r8D-19a8D19g8D-5f8D-11e8D0d8c+15d8.r8*10
+E f15D-19a8a15D19g15D-5f15r8D-19a%18v10a%5v11a%20v8o4a%18a%5
+E a%20v10o5a8a8a8r8v11a%18v10a%5v11a15D19g15D-5f8r8D-2a+8
+E a+8.v10D0o6c%6v11d5c14c2D-19o5a15D0o6c15c15c%24c8d15r15
+E o4f15D-19a15D0o5c15*21 v9o6f11&v6fv9D-11
+E e12&v6ev9D0d%8&v6dv9c%20&v6cv8c%5v9d11&v6d
+E *26 v10o4d15r15*0 r15o4d15*0 o4d15r15*0 r15o4d15
+E o5d15o4*28 r%1
+
+F C176l59
+F r12E255,255,28,88,0,255v10P1[o5d15r15*6 r15o5d15*6 ]2[o3d15
+F r15*8 r15o3d15*8 ]2r%1Lr%127r%127r%127r%127r%127r%127r%127r%127
+F r%127r%127r%127r%127r%127r%127r%127r%127r%127r%129
+

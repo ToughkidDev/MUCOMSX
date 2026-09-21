@@ -1,0 +1,35 @@
+
+#title Opening Demo
+#composer 
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{D-15[E255,255,28,104,0,255o2aE255,255,16,0,0,255v12a%1&v10a%6&v11a%9]2r8E255,255,28,104,0,255D13gE255,255,16,0,0,255v12g%1&v10g%6&v11g%9E255,255,28,104,0,255gE255,255,16,0,0,255v12D-15}
+#*1{E255,255,28,104,0,255D0o3ddrddgD-14f+D0e[o3dro4dd]2[D13o2grD0o3gg]2drddE255,255,8,0,0,255D-15}
+#*2{o2a%2&v9a%7&v12a12&v6a%5E255,255,28,104,0,255v11D0o3drD-15o2araD0o3d}
+#*3{&v10d%6&v11d%9E255,255,28,104,0,255dE255,255,16,0,0,255v12d%1&v10d%6&v11d%9}
+#*4{a%1&v10a%6&v11a%9}
+; ---
+
+#*5{E255,255,32,144,0,255v12P1}
+#*6{E255,255,16,0,0,255v12}
+#*7{C128l15}
+A *7 t198
+
+D *7
+D r%50*5 [D-22o5f+rf+f+r4D-11e
+D reer4D19grgD-22f+8D-11e8D-22f+D0drD-19
+D o4ar4D-14f+8D-19aD0o5drD-19o4arD-14f+D0g8
+D D-10bD0o5d8D19g8.D-22f+8.f+D-11eD-19o4arD0o5d/
+D r%72]2r%78
+
+E *7
+E r%50*5 o5dr[ddr4D-19o4ara
+E ar4D0ered8c+8dD-19arD0dr4drD-14f+
+E D-19arD-14f+rD0dergD-10brD0dgD-10
+E bD0o5d8.dc+o4e8D-19a/r%72D0o5dr]2r%78
+
+F *7
+F r%50*6 P1o3d%1*3 r8*0 *4 v12*4 *1 *2 r4
+F *6 d%1*3 r8*0 *4 v12*4 *1 *2 r%38
+

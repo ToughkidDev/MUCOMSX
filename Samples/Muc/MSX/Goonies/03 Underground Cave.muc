@@ -1,0 +1,24 @@
+
+#title Underground Cave
+#composer 
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{&D-7d+&v10D0d&D-7d+%1&v12d+%4&D0d&D-7d+&D0d}
+#*1{&D0g+&v10D19g&D0g+%1&v12g+%4&D19g&D0g+&D19g}
+; ---
+
+#*2{E255,255,28,120,0,255v11}
+#*3{E255,255,6,80,0,255}
+A C128l22t198
+
+D C128l22
+D r7L*2 P1D0o3d.[d.o4d.o3d.g.D-15
+D a.D0o4c./o3f.r%28*3 v12o5d*0 [r%30d*0]2 *2 o3d.]2o4f.r%28
+D *3 v12[o5d*0 /r%30]3*2
+D o3g.[g.o4g.o3g.o4c.d.f./o3a+.r%28*3
+D v12D19o5g*1 [r%30g*1]2 *2 D0o3g.
+D ]2o4a+.r%28*3 v12D19[o5g*1 /r%30]2
+D E255,255,40,184,0,255D0o4a+.o3a+9D-19o4a.D-15o3a9D0o4g+.
+D D12o3g+9D0o4g.o3g9D-14f+.D0f.e.d+.d+%1
+

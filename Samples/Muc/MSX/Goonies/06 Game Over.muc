@@ -1,0 +1,35 @@
+
+#title Game Over
+#composer 
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{v11c.&v7c%4E255,255,24,0,0,255v11}
+#*1{dE255,255,48,192,0,255d.&v7d%4}
+; ---
+
+#*2{E255,255,48,192,0,255}
+#*3{E255,255,24,0,0,255v11}
+#*4{f.&v7f%4}
+#*5{C128l15}
+A *5 t198
+
+D *5
+D r7E255,255,28,0,0,255v10P1D-19o5aD-5fD0o6cD-19o5aD-2
+D a+D-19aD19gD-19araE255,255,32,112,0,255v11a8v10D19
+D gD-5fD-11eD-5frfv11f8v10D0dco4a+
+D *2 v11D-19a%44&v7a%4r%50
+
+E *5
+E r7*2 v11P1o3*4 v11o4*4 v11
+E o3e.&v7e%4*3 o4eo3dr*1 *0 co2a+
+E ra+*2 a+.&v7a+%4*3 o3c
+E *2 c.&v7c%4v11*4 *0 D-15o2a
+E *2 D0*4 r3
+
+F *5
+F r7*3 P1o4fdD-19aD0egfef
+F rf*2 *4 *3 ed
+F cdr*1 *3 a+D-19aD0g
+F *2 f%44&v7f%4r%50
+
