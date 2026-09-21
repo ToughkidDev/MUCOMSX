@@ -1,0 +1,46 @@
+
+#title Gem Taken
+#composer Konami Kukeiha Club
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{D-22f+D-3aD-22f+}
+#*1{&v8b%3E255,255,20,120,0,255v12bD-19a}
+#*2{&v8f+%3E255,255,20,120,0,255v12D0d}
+#*3{D-22f+%15&v8f+%3v12}
+; ---
+
+#*4{E255,255,40,184,0,255}
+#*5{E255,255,20,120,0,255}
+#*6{D-22f+}
+#*7{C144l15}
+#*8{D-19o5}
+A *7 t198
+
+D *7
+D *4 v12P1*8 a%33&v8a%3[*5
+D v12*6 /D19g*4 D-19a%60&v8a%3
+D *5 v12aaaD-10bD0o6c
+D *4 D-10o5b6*1 D19g*4 D-19a%33&
+D v8a%3]2D-19a*4 *3 D-11e%15&v8e%3v12*3 D0d6&
+D v8d%3*5 v12D-10o4bD0o5c+dD-11e[D-22
+D f+D-11e/D19g]2*4 D0d%105&v8d%3r%5
+
+E *7
+E *4 v12P1D-22o5f+%33*2 D-11e*4
+E D-22f+%60&v8f+%3*5 v12f+f+f+D19gD-19
+E a*4 D19g6&v8g%3*5 v12gD-22
+E f+D-11e*4 D-22f+%33*2 *6
+E *4 D0c+%51&v8c+%3D-10[v12o4b6&v8b%3]3v12D0
+E o5c+6&v8c+%3v12D-10o4b6*1 D0g*4 D-19a%15&
+E v8a%3*5 v12D0g*4 D-14f+6&v8
+E f+%3r%5
+
+F *7
+F E255,255,28,64,0,255v10P1[o6d*6 D-3aa*6 D0d/
+F D-14c+D0d*0 D0dcd*0 D0dD-10o5bD0o6dgD-26
+F bD0gd]2*8 aD-14o6c+*0 D-14c+D-10o5b[D0
+F o6d*6 /*8 a]2D0g+D-11o6eD0g+*8 aD0
+F o6gD-3aD19o5gD0o6dgg*6 D-11e*6 D-19
+F o5aD-11o6eE255,255,32,152,0,255v11D0d%23&v6d%4r%5
+

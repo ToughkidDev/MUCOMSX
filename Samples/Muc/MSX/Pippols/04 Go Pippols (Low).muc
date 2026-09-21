@@ -1,0 +1,44 @@
+
+#title Go Pippols (Low)
+#composer Konami Kukeiha Club
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{v12b9&v9bv12}
+#*1{v12D-14f+9&v9f+v12}
+#*2{&v9av12o3a9&v9av12c+9&v9c+v12a9&v9av12e9&v9e}
+#*3{v12o3b9&v9bv12}
+#*4{v12o5c+9&v9c+v12o4b9&v9b}
+#*5{d+%6e%6f%6D-14f+%6D0g%6g+%6a%6a+%6}
+#*6{D-11e%6r%6D0c+%6v12o4a9&v9a}
+#*7{e9&v9ev12D12g+9&v9g+}
+#*8{v12e9&v9ev12g+9&v9g+}
+#*9{v12D-14o3f+9&v9f+v12D0}
+#*10{b9&v9bv11b%6}
+; ---
+
+#*11{E255,255,32,160,0,255}
+#*12{b9&v9b}
+A C96l33t198
+
+D C96l33
+D *11 v12P1o3e9&v9e*0 o2b%7L
+D *11 v9P1D0o2b%5*3 e9&v9e*0 o2*12 *3
+D d+9&v9d+[*0 o2*12 *3 e9&v9e]3*0 f9&v9f
+D v12o4d9&v9d*9 o4d+9&v9d+*9 o4e9&v9ev11d+%6D-14
+D f+%6D0d+%6D-14o3f+%6v12D0o2b%22&v9bv12a9*2 *0 *7 D0[v12
+D o2*12 v12o3a9&v9a]2[v12D0o2*12 v12D12
+D o3g+9&v9g+]2v12D0o2a9*2 *0 *7 *1 D0*12 *1 D0
+D o4c+9&v9c+v12d+9&v9d+v12o3*12 *1 D0o2b9&
+D v9br%1v12o3e9&v9e*0 o2b%7
+
+E C96l33
+E *11 v12P1o4*12 v12D-11o5e5L
+E *11 v9P1D-11o5e%5[v12D0o4g+9&v9g+v12b%22
+E &v9b/*8 *1 f+9&v9f+v11f+%6D0g+%6a%6D-14f+%6v12D0g+9
+E &v9g+v12g+9&v9g+v11g+%6a%6b%6g+%6*0 D-11o5e%22&v9e
+E ]2[*4 /*1 D0*10 a+%6g+%6a+%6[*0 *12]2 v11
+E o5c+%6*6 ]2[*8 v12e9&v9e/v11o3b%6o4c%6c+%6d%6*5 b%6a+%6
+E b%6o5c%6c+%6*6 *4 ]2v11*5 v12*10 a%6b%6a%6b%6a%6r%1*0 D-11
+E o5e5
+

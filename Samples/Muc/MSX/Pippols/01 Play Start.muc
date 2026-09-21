@@ -1,0 +1,42 @@
+
+#title Play Start
+#composer Konami Kukeiha Club
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{v11D-14b.&v6b%3v11}
+#*1{v11D0o4c.&v6c%3v11}
+#*2{v12D0g.&v7g%3v12}
+#*3{v11D-14f+.&v6f+%3}
+#*4{v11D-19a.&v6a%3}
+#*5{v11D0g.&v6g%3}
+; ---
+
+#*6{d.&v6d%3}
+#*7{E255,255,32,152,0,255P1}
+#*8{C192l28}
+#*9{d.&v7d%3}
+A *8 t198
+
+D *8
+D E255,255,32,160,0,255v12P1o5*9 [v12D19g.&v7g%3/v12
+D g.&v7g%3v12D0*9 v12c.&v7c%3v11D-19aD0g+
+D D-19aD19gD-22f+D-11eD0dD-11eD0dcv12D-10
+D o4b.&v7b%3*2 D-19[a.&v7a%3v12]2a9&v7a%3*2
+D D-10b.&v7b%3v11D-19aD-10bD0o5cD-19o4aD-10bD0
+D o5cv12*9 v11cdD-11eD0cdD-11eD-22f+
+D D19gD-19aD19gv12D-22f+.&v7f+%3]2v12D-10b.&v7b%3
+D v12D19g9&v7g%3r%7
+
+E *8
+E r15*7 [v11o4*6 r15]9v11e.&v6e%3
+E r15*3 r15*5 r15*4 r15v11D0o5c.&v6c%3v11*6 v11d.&
+E v6d%3v11D-10o4b9&v6b%3r%7
+
+F *8
+F *7 [v11o3g.&v6g%3*0 D0*6 *0 f+.
+F &v6f+%3*1 o3*6 v11o4c.&v6c%3]2v11o3g.&v6g%3*0
+F D-15a.&v6a%3*1 D-14o3b.&v6b%3v11D0o4*6 v11c.
+F &v6c%3v11e.&v6e%3v11*6 *3 v11D0*6 *4 *5
+F v11g.&v6g%3v11g9&v6g%3r%7
+

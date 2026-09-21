@@ -1,0 +1,31 @@
+
+#title Game Over
+#composer Konami Kukeiha Club
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{v12D-15a18&v9a}
+; ---
+
+#*1{E255,255,32,160,0,255v12P1o3}
+#*2{c18&v9c}
+#*3{a+18&v9a+}
+#*4{C192l65}
+#*5{&v10av13}
+A *4 t198
+
+D *4
+D E255,255,28,168,0,255P1D-2[v13o5a+18&v10a+]3v12D0o6c%6D-2
+D o5a+%6v13D-19[a18*5]2 a%22*5 D19
+D g18&v10gv13g18&v10gv12D-5f%6D-11e%6D0d%6D-11e%6v13
+D D-5[f18&v10fv13]2f%22&v10fr%33
+
+E *4
+E r15*1 g18&v9gr15[v12o4*2
+E r15]3v12d18&v9dr15[v12*2 ]3v12c%22&v9cr%33
+
+F *4
+F *1 *2 v12[e18&v9ev12]2g18&v9g[v12D0f18&v9f*0 ]2v12D0o2*3
+F v12o3*3 v12*2 v12*3 *0 v12a18&v9
+F av12a%22&v9ar%33
+

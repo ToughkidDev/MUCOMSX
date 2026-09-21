@@ -1,0 +1,37 @@
+
+#title Stage Clear
+#composer Konami Kukeiha Club
+; muc by ToughkidCST
+
+#*0{E255,255,32,144,0,255v12P1}
+#*1{E255,255,32,160,0,255}
+#*2{D-10o4brD0}
+#*3{d18&v10d%2}
+#*4{C192l28}
+#*5{D-11er%18D19g}
+#*6{D-14}
+A *4 t198
+
+D *4
+D *0 *2 o5dr14Lr%5
+D *0 D0o5drcr*5 r
+D D-22f+rD0drdD-11eD-22f+rD19grD0dr
+D *1 o4g%22&v9g%2[v11*2 o5d/r%18
+D *2 o5cr*5 rD-10brD19g
+D rD-19arD-11eD-22f+v12D19g%34&v9g%2r14]2r14
+
+E *4
+E *1 v12P1o3g18&v9g%2v11*6 brbr%1Lr%5
+E *0 *6 o3brD0o4c15erere
+E rd15*6 f+rf+rf+rD0grdr*6 o3brD0
+E gr*6 b15D0o4drdrdre15grgrgr
+E d15e15*6 f+15D0gD-19aD0g15d15*6 o3b15D0g15r%1g15*6
+E brbr%1
+
+F *4
+F r9.Lr%161E255,255,28,168,0,255v13P1D0o3*3 v12gr
+F grgrv13c18&v10c%2v12erererv13*6 f+18
+F &v10f+%2v13D-15a18&v10a%2v13D0*3 v12e*6 f+
+F v13b18&v10b%2v13D0g18&v10g%2v13*3 v13D-12o2b18
+F &v10b%2r6
+

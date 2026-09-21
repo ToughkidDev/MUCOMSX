@@ -1,0 +1,26 @@
+
+#title Skulls in the Woods
+#composer Konami Kukeiha Club
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{o2b&D0o3f&D22}
+#*1{D22o2b&D0o3fv7D22o2b&D0o3fv8D22o2b&D0o3fv9D22o2b&D0o3f%3}
+#*2{v12c+9&v10c+%2v12}
+; ---
+
+#*3{E255,255,40,200,0,255}
+#*4{o2b&D0o3}
+#*5{E255,255,2,0,0,255}
+A C128l26t198
+
+D C128l26
+D *5 v6P1*1 L*5 v9P1D0o3f%1v10D22
+D *4 fv11D22*4 fv12D22*4 fD22
+D [*0]8 *4 fr%1v6*1
+
+E C128l26
+E *3 v12P1o3c+9&v10c+%2v12c%15L
+E *3 v8P1D0o3c%1[v12d+9&v10d+%2v12d9&v10
+E d%2/*2 c9&v10c%2]2r%1*2 c%15
+

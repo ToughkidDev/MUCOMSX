@@ -1,0 +1,25 @@
+
+#title Item Taken
+#composer Konami Kukeiha Club
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{o5cdD-11eD-5fD19g}
+#*1{o4cdefgD-19a}
+; ---
+
+#*2{E255,255,20,224,0,255v11P1}
+#*3{C128l43}
+A *3 t198
+
+D *3
+D *2 o3cdefgD-15aD-14bD0*1
+D v12D-10b8r
+
+E *3
+E r*2 *1 D-10bD0*0 v12D-19a8r
+
+F *3
+F *2 *0 D-19aD-10bD0o6cdD-11eD0
+F fv12g%20r
+
