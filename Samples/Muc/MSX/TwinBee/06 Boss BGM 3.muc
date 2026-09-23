@@ -1,0 +1,35 @@
+
+#title Boss BGM 3
+#composer Shigeru Fukutake, Yoshinori Sasaki
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{[D0o3c+D12o2g+]2D-12bD12g+D0a+D12g+D-12bD12g+D0o3c+D12o2g+D-12bD12g+D0a+D12}
+#*1{o2a+o3d+o2a+o3c+o2a+o3co2a+}
+#*2{c%1&d%1&c%1&d%1&c%2}
+#*3{g%1&D-3a%1&D0}
+; ---
+
+#*4{E255,255,0,255,0,255}
+#*5{E255,255,2,168,0,255}
+#*6{E255,255,8,0,0,255}
+A C144l15t198
+
+D C144l15
+D *4 v13P1[o3g7.r5.]7g7.r%127r%202Lr%1
+D *4 v7P1D0o4f6v8f6v9f6v10f6v11f6
+D *5 v14f%1&v12f7&v14f9&v15f%7&v14f%1&v15
+D f%1&v14f%1&v15f%96&v12f%25&g3*4 v8g6v9g6v10
+D g6v11g6*5 v14g%1&v12g7&v14g9&v15g%7&v14
+D g%1&v15g%1&v14g%1&v15g2&v12g%25&D-19a8v9a8
+D *4 v10a8*5 v12a7.&v14a%60&D-10
+D b8v9b8*4 v10b8E255,255,2,184,0,255v12b7.&v14b%41
+D &v11b%19v12D0[o6f%1&g%1&f%1&g%1&f%2r%2*2 r%2*3 *3 g%2r%2
+D d+%1&f%1&d+%1&f%1&d+%2r%2*2 /r%15]2r10
+
+E C144l15
+E r%127r%161*6 v13P1[*0 g+]3*0 g+%8L
+E *6 v10P1D12o2g+%1v13[*0 g+]2D0[o3d+*1
+E o3c+*1 ]2o3f[cfcd+cdc/d+]2g[dg
+E dfded/f]2r%105
+

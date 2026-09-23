@@ -1,0 +1,27 @@
+
+#title Game Over
+#composer Shigeru Fukutake, Yoshinori Sasaki
+; muc by ToughkidCST
+
+#*0{E255,255,20,224,0,255}
+#*1{C128l15}
+A *1 t198
+
+D *1
+D r%2*0 v12P1[D-14o4f+D0d+/o3a+o4a+]2
+D o5c+o4a+D-14f+[D-10o4bD0g+/eD-7o5d+]2g+D-7
+D d+D-10o4bD-19aD-14f+D0o5dD-19o4aD-11o5eD0d
+D D-22f+D-11ev11D-19a&D-10b%56&v7b%4r%23
+
+E *1
+E *0 v13P1[D-38o5f+D-23d+/D-10o4a+D-18
+E o5a+]2D-46o6c+D-18o5a+D-38f+[D-26o5bD-12g+/D-27
+E eD-55o6d+]2D-28g+D-55d+D-26o5bD-35aD-38f+D-24
+E o6dD-35o5aD-43o6eD-24dD-54f+D-43e
+E E255,255,8,168,0,255D-67a&D-58b%56&v9b%4r5
+
+F *1
+F E255,255,40,208,0,255v13P1o4a+%44&v8a+%4v13a+%20&v8a+%4D-10[
+F v13b7&v8b%4r%2]3v13D0o5c+%125&v11c+.&v8c+.&v6c+%7
+F r%1
+

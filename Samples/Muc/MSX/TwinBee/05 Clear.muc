@@ -1,0 +1,22 @@
+
+#title Clear
+#composer Shigeru Fukutake, Yoshinori Sasaki
+; muc by ToughkidCST
+
+#*0{E255,255,40,184,0,255}
+#*1{C128l43}
+A *1 t198
+
+D *1
+D *0 v13P1D-24o5c%6r12D0o4g%6rD-24o5c%22r
+D D-8d%22rD-13g%22rD0o4g%6r12f%6rg%52r%1
+
+E *1
+E *0 v13P1[o5c%4r10c%8c%8c%8c%8]2v12c%6r12
+E D-19o4a%6rE255,255,0,255,0,255v11D-10b%52r%1
+
+F *1
+F rE255,255,28,168,0,255v11P1o5c%6r12o4g%6r*0
+F v12o5c%19&v8c.rv12d%19&v8d.rv12D19g%19&v8g.v13D-11
+F e%6r12D0c%6r%1v12d%52r
+

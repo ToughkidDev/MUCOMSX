@@ -1,0 +1,47 @@
+
+#title Fantastic Power (Power-Up BGM)
+#composer Shigeru Fukutake, Yoshinori Sasaki
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{D-19o4aD0o5dE255,255,6,0,0,255v11c9&v6c%3v12D-19o4a}
+#*1{[v13o3dv12o4d]8}
+#*2{[v13o3cv12o4c]8}
+; ---
+
+#*3{E255,255,40,208,0,255}
+#*4{E255,255,28,168,0,255}
+#*5{E255,255,6,0,0,255}
+#*6{v13o3dv12}
+#*7{C160l15}
+A *7 t198
+
+D *7
+D r%1*5 v12P1[o4e%5D-14f+%5D0e%5/g+%5]2g+%2&v9
+D g+%3*4 v12o3e%6&v9e%2r%8v12e%6&v9e%2
+D *3 v12e4r%5D-15a%8D12g+%8D-14f+%8v11b%54r5.L
+D *5 v13P1[D-14o4f+%2&v11f+10&v8f+%2
+D *4 v12f+*5 D0g%18&v8g%2
+D *4 v12gD-19a*3 v13D0o5d8*0
+D D0o5d*3 v13c8*0 D-11o5e*3
+D v13D0d8D-19o4aD-11o5e*5 v11D0d9&v6d%3v13
+D D-19o4aD19o5gD-22f+]2E255,255,0,255,0,255v12D-11e%28&v10
+D e%2[*4 v13D0d8*3 dv14D-11e4.
+D *4 v13D0d8D-11e8*3 e%28&v11e%2
+D v13D-22f+%43&v11f+%2r%5v7f+%4v8f+%4v9f+%4v12f+%8v13f+v14
+D f+/v15f+4v14D-11e%28&v12e%2]2v15f+4&D-14o4f+%1
+
+E *7
+E E255,255,40,192,0,255v13P1[D-27o5e%5D-38f+%5D-27e%5D-12g+%5]2
+E r%1D-11o4e%5&v9e%3r%8v13e%5&v9e%3v14D-18b%44v15D0o5c+%8
+E D-18o4b%8D-27a%8o5e%54r%49LE255,255,12,0,0,255P1D0[*1 [v13
+E o3cv12o4c]4[*6 o4d]4]2*2 *1 *2 [*6
+E o4d]7*6 o4d14
+
+F *7
+F E255,255,20,0,0,255v12P1[D-11o5e%5D-22f+%5D-11e%5D0g+%5]2v13
+F D-14o3b%8r%8b%8E255,255,20,224,0,255D0o4e%41&v10e%4
+F E255,255,16,0,0,255v13D-19a%8v12D0g+%4&v13g+%4v12D-14f+%4&v13
+F f+%4E255,255,40,184,0,255D-10b%54r%49Lr%127r%127r%127r%127r%127
+F r%127r%127r%127r%127r%138
+
