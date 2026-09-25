@@ -1,0 +1,26 @@
+
+#title Game Start
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+#*0{E255,255,32,112,0,255v12P1}
+#*1{C128l65}
+A *1 t198
+
+D *1
+D *0 D-3o5av13a%6v8av9av10a%2v11a
+D v12a%5&v0av11D0o7c+v12c+%6v7c+v8c+v9c+%2v10c+v11
+D c+%7v6c+v7c+%2v8c+v9c+c+%7[v4c+v5c+v6c+v7c+/
+D v8c+c+%8]2c+%5r%7
+
+E *1
+E r%6*0 D-11o6ev13e%6v8ev9ev10e%2
+E v11ev12e%5&v0ev11D0o7ev12e%6v7ev8ev9e%2v10e
+E v11e%7v6ev7e%2v8ev9ee%7[v4ev5ev6ev7e/v8
+E ee%8]2e%5r
+
+F *1
+F r10E255,255,32,128,0,255v12P1o6gv13g%6v8gv9gv10g%2v11
+F gv12g%7v7gv8g%2v9gv10gg%7[v5gv6gv7gv8g/
+F v9gg%5&v5g%2v4g]2g%5r%13
+

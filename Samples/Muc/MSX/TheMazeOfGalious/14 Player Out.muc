@@ -1,0 +1,24 @@
+
+#title Player Out
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{ec+ad+cgc+}
+#*1{&e%1&v9e%3v10e%4e%4v9e%4e%4e%4}
+; ---
+
+#*2{E255,255,20,224,0,255v12P1}
+#*3{C128l19}
+A *3 t198
+
+D *3
+D *2 o4bfda+*0 o3a+*1 r%1
+
+E *3
+E *2 o3bfda+*0 o2a+*1 r%1
+
+F *3
+F rE255,255,24,216,0,255v10P1o4bfdD-10a+D0*0 v9o3a+&
+F e%4v7e%4e%8r%3
+

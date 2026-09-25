@@ -1,0 +1,56 @@
+
+#title Magic Square
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{o4g+o5dD-5fD0b}
+#*1{D0o4fg+bD-8o5dE255,255,12,56,0,255D-21f%8}
+#*2{g+8d8b8d8o5c8o4d+8a8d+8o5c8o4d+8eg}
+#*3{D0o4dg+bdg+b}
+#*4{D0b&o4g+o5dD-5}
+#*5{f%1&v11f%4&v13}
+; ---
+
+#*6{E255,255,20,224,0,255}
+#*7{E255,255,24,216,0,255}
+#*8{E255,255,28,208,0,255}
+#*9{E255,255,12,96,0,255v13}
+#*10{E255,255,12,56,0,255}
+A C192l15t198
+
+D C192l15
+D *6 v13P1*0 v12*0 v11*0 v10*0 v12o4b8d.L
+D *6 v11P1D0o4d%6v12*2 a+o5c+
+D *9 e%1&v11e%4&v13e%5&v9e%1&v8e%6&v12e%7
+D *7 v11o4ega+o5c+*9
+D e%1&v10e%5&v13e%5&v9e%6&v13e%7*6 v12o4f
+D g+bo5d*9 D-5*5 f%5&v9f%1&v8f%6&v12
+D f%7*7 v11D0o4fg+bo5dE255,255,12,64,0,255
+D D-5f%7&v14f%4&v6f%7&v11f%6*6 v12*3 o5dD-5
+D fD0g+D-5fD0do4bg+fdg+b8d10
+
+E C192l15
+E E255,255,12,144,0,255v14P1o2g+%1&v12g+%4&v14g+%7o3d%1&v12d%4&
+E v14d%7f%1&v12f%4&v14f%7b%1&v12b%4&v14b%7v13o2g+%1&v11
+E g+%4&v13g+%7o3d%1&v11d%4&v13d%7*5 f%7b%1&v11b%4&v13b%7v11
+E o2g+%7&v12g+%5v11o3d%7&v12d%5v11f%7&v12f%5v11b%7&v12b%5
+E v11o2g+%1&v9g+%6&v10g+%5v11o3d%1&v9d%6&v10d%5v11f%1&v9
+E f%6&v10f%5v11b%1&v9b%6&v10b%5*6 v12d7.&v10
+E d%2LE255,255,12,0,0,255v8P1D0o3d%6*6 [v12
+E o2g+7.&v9g+%8v12b7.&v9b%8/v12o3d+7.&v9d+%8v12o2a7.&
+E v9a%8v12o3c7.&v9c%8v12o2g7.&v9g%8v12a+7.&v9a+%8v12
+E o3e7.&v9e%8v12f7.&v9f%8]2[v12o2d18&v10d%2v12g+18&v10
+E g+%2v12b18&v10b%2]2v12o3d18&v10d%2v12f18&v10f%2v12
+E o2b%94&v10b%2v12o3d7.&v10d%3
+
+F C192l15
+F *7 v11P1D-5o5f%6D0b*0 v10o4g+o5dD-5f
+F v9*4 fv8*4 f%6v9D0o4bd8b%6L*8 v9P1D0
+F o4b.d8*2 D-10a+D0o5c+*10 D-11e%8&v12e%3&
+F v4e14*8 v8D0o4egD-10a+D0o5c+
+F *10 v9D-11e%1&v7e%7&v10e%3&v4e14
+F *8 v9*1 &v12f%3&v4f14*8 v8*1 &
+F v10f%3&v2f14*7 v10*3 D-8o5dD-21fD-12g+
+F D-21fD-8dD0o4bv9g+&bd8b%7
+

@@ -1,0 +1,58 @@
+
+#title Magnifying Glass
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{D-8o5d11&D0c11&D-8d11&D0o4a11&o5c11&c+11&D-8d11}
+#*1{v13d+%6v8d+v9d+v10d+%2v11d+v12d+%7v7d+v8d+%2v9}
+#*2{v13d%6v8dv9dv10d%2v11dv12}
+#*3{v12D19g%9&v10g%2v12}
+#*4{v12o4a%9&v10a%2v12}
+#*5{v12D-3o5a%9&v10a%2}
+#*6{v12g%9&v10g%2v12}
+#*7{v5fv6fv7f}
+; ---
+
+#*8{E255,255,32,128,0,255}
+#*9{c%9&v10c%2}
+#*10{E255,255,20,224,0,255v12P1}
+#*11{d%9&v10d%2}
+#*12{E255,255,0,255,0,255}
+A C128l65t198
+
+D C128l65
+D *10 o5cE255,255,32,112,0,255v13c%6v8cv9
+D cv10c%2v11cv12c%5&v0cv12o6d+*1 d+%2v12d*2 d%5&v0
+D dv11D-21o7fv12f%6v7fv8fv9f%2v10fv11f%7v6fv7
+D f%2v8fv9ff%7[v4f*7 /v8ff%8]2f%5r%30v12D0o5dL
+D *10 D0o5d%8&v10d%2[v12*9 v12d%9
+D &v10d%2*4 o5*9 v12c+%9&v10c+%2v12*11 /*3 D0
+D f+%9&v10f+%2v12*11 v12*9 *4 g+%9&v10g+%2*6
+D f+%9&v10f+%2*6 o5*11 ]2[*5 /v12D40o6*9 ]2v12
+D D0*11 v12D40*9 *5 v12D0g+%9&v10g+%2*3 D-5f%9&
+D v10f%2v12D0d
+
+E C128l65
+E r%6*8 v12P1o5f+v13f+%6v8f+v9f+v10f+%2
+E v11f+v12f+%7v7f+v8f+%2v9f+v10f+f+%7v5f+v6f+v7
+E f+v8f+v9f+f+%6v12o6g+v13g+%6v8g+v9g+v10g+%2v11
+E g+v12g+%7v7g+v8g+%2v9g+v10g+g+%7[v5g+v6g+v7g+
+E v8g+/v9g+g+%5&v5g+%2v4g+]2g+%5r%43L*8
+E P1D0[v12o6d*2 d%7v7dv8d%2v9dv10dd%7v5dv6dv7
+E dv8dv9dd%5&v5d%3v12fv13f%6v8fv9fv10f%2v11f
+E v12f%7v7fv8f%2v9fv10ff%7*7 v8fv9ff%5&v5f%3v12
+E D-11ev13e%6v8ev9ev10e%2v11ev12e%7v7ev8e%2v9e
+E v10ee%7v5ev6ev7ev8ev9ee%5&v5e%3v12D0d+*1
+E d+v10d+d+%7v5d+v6d+v7d+v8d+v9d+d+%5&v5d+%3]2
+
+F C128l65
+F r10*12 v12P1D-3o5a*8 v13a%6v8
+F av9av10a%2v11av12a%7v7av8a%2v9av10aa%7v5av6
+F av7av8ar%7v12D-26o6bv13b%6v8bv9bv10b%2v11b
+F v12b%7v7bv8b%2v9bv10bb%7[v5bv6bv7bv8b/v9
+F bb%5&v5b%2v4b]2b%5r5.Lr12*12 v10P1*0 &
+F D-13g11&D-22f+11&D-8d11&D0c11&o4a11&g+11&g11&f+11
+F &g11&*0 &D-19a11&D0o6c11&D-19o5a11&D-24o6d11&D0c11
+F &D-19o5a11&D-12g+11&D-13g11&D-21f
+

@@ -1,0 +1,50 @@
+
+#title Prologue
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{v13e18&v10ee%9&v9e%5v13}
+#*1{v12g+18&v10g+v12}
+#*2{&v10cc%9&v9c%5}
+#*3{v12D-5f18&v10f}
+#*4{v13g+18&v10g+g+%9&v9g+%5}
+#*5{o2a18&v10aa%9&v9a%5}
+#*6{v12o5e18&v10ev12D-3}
+#*7{&v10av13b18&v10b}
+#*8{v12D0e18&v10e/v12}
+#*9{v12d18&v10dv12}
+; ---
+
+#*10{a18&v10a}
+#*11{E255,255,20,224,0,255v12P1}
+#*12{E255,255,6,0,0,255v13P1}
+#*13{d18&v10d}
+#*14{a15D-11o5e15D-19}
+A C224l75t198
+
+D C224l75
+D *11 o4e%26&v10eL*11
+D D0o4*10 *1 a%26&v10a[*1 *10 /v12b18&v10
+D bv12e18&v10ev12f+18&v10f+]2*6 a%54&v10D-19av12D0
+D o4*10 *6 *10 [v12D19g18&v10g*3 *8 D-5f%26&
+D v10D-21f*3 v12D0*13 v12o4*10 v12o5d18&v10
+D dv12D19g%26&v10D35g]2*9 e%26&v10D-11e[*8 c18&v10c
+D *3 ]2*9 c18&v10cv12o4b18&v10bv12*10 *1 e18&
+D v10ev12e%26&v10ev12a%1
+
+E C224l75
+E *12 o2a18*7 L*12 D0o3c18
+E *2 [v13*5 /*0 f+18&v10f+f+%9&v9f+%5*4 ]2[v13b18&v10b
+E b%9&v9b%5/v13o3c18*2 v13c+18&v10c+v13*13 *0 *5
+E v13o3*13 v13e18&v10ev13f18&v10ff%9&v9f%5v13
+E *13 d%9&v9d%5v13o2g18&v10gv13*10 ]2v13
+E g18&v10gg%9&v9g%5v13o3c18&v10cv13*13 *0 c18
+E *2 v13o2b18&v10bv13*10 *4 *0 a18*7 v13o3c%1
+
+F C224l75
+F r8LE255,255,24,216,0,255v10P1D0o4e8a15g+15a8g+15a15b15e15f+15
+F g+15*14 a4D0o4*14 a15D-13[g15D-21
+F f15D-11e15/D-21f8f15D-8d15D0o4a15D-8o5d15D-13g8]2D-8d15
+F D-11e8e15D0c15D-21f15D-11e15D-8d15D0c15o4b15a15g+15e%15
+

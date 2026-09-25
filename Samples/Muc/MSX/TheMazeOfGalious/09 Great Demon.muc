@@ -1,0 +1,60 @@
+
+#title Great Demon
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{dD0c+c+D-8dd}
+#*1{D-5ffD0ddc+}
+#*2{D-5ffD0ee}
+#*3{f%84E255,255,16,0,0,255v14ffE255,255,0,255,0,255v13}
+#*4{[D-21ffD-11eeD-21ffD-12g+g+]2}
+#*5{D19ggD0ddc+}
+#*6{D-11eeD0c+c+}
+#*7{D-5ffD0g+g+}
+#*8{D-3aaD19gg}
+#*9{&D-11e&D-13g}
+; ---
+
+#*10{E255,255,0,255,0,255v13}
+#*11{E255,255,16,0,0,255}
+#*12{E255,255,40,208,0,255}
+#*13{E255,255,28,160,0,255v14}
+#*14{E255,255,24,216,0,255}
+A C96l14t198
+
+D C96l14
+D E255,255,20,224,0,255v13P1D19o5g9&v11g%2v12D0c+eD19g
+D D-2a+v13D0e9&v11e%2v12o4a+o5c+eD19gv13D0
+D o4a+9&v11a+%2v12ga+o5c+eo4c+egega+v13
+D o5c+%70&v11D50c+%2v12D0ddc+L*11 v13P1D0[
+D o5c+dd*1 ]2[c+dd*5 ]2[c+dd*1 ]2c+dd
+D *8 *2 [c+c+dd]2[*1 c+dd]2[*5 c+dd]2[*1
+D c+dd]2*8 *2 c+c+[*2 *7 ]2[D0eed+d+eeD-3
+D aa]2[*2 *7 ]2D-2a+a+D19ggD0eec+c+ee
+D D19ggD-2a+a+D0o6c+c+o5ddc+
+
+E C96l14
+E *12 v14P1o2g.&v11g%3*13 e
+E a+o3c+g*12 e.&v11e%3v14c+.&v11c+%3
+E v14o2g.&v11g%3v14a+.&v11a+%3v14g.&v11g%3v14e.&v11
+E e%3*13 c+egc+ea+
+E *12 e%69&v11D35e%3*10 D0d8.L
+E *10 P1D0o2d%66[*11 v14dd+
+E *10 e%84*11 v14ee
+E *10 *3 g4.*11 v14gg+/
+E *10 a2&d%84]2*10 a2&*3 f+%84
+E *11 v14f+f+*10 f2&g+2&a4
+E *11 v14eegg+*10 a2&d8.
+
+F C96l14
+F r.E255,255,0,255,0,255v10P1D-13o5g8&D0c+*9 &D-18a+&D-11
+F e8&D-10o4a+&D0o5c+*9 &D-10o4a+8&D0g&D-10a+%3&D0
+F o5c+E255,255,20,0,0,255v11o3a+o4c+ec+eg
+F *14 D-10a+%70&v9D30a+%2r8.L*14
+F v11P1[[D-8o5d*0 D-21ff]2[D-8d*0 D-13gg]2[D-8
+F d*0 D-21ff]2D-8d*0 D-19aaD-13ggD-21ff*6
+F ]2*4 [D-11eeD-7d+d+D-11eeD-19aa]2*4 D-18a+
+F a+D-13gg*6 D-11eeD-13ggD-18a+a+D-14o6c+
+F c+
+

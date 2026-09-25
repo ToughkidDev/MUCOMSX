@@ -1,0 +1,24 @@
+
+#title After Boss Battle
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{o4bf+cv8bf+co3b}
+; ---
+
+#*1{E255,255,12,0,0,255v11P1}
+#*2{D-22o5f+D0}
+A C64l8t198
+
+D C64l8
+D *1 D40o6cD0o5f+o4bf+v10o5f+*0
+
+E C64l8
+E *1 o6c*2 o4bf+v10*2
+E *0
+
+F C64l8
+F E255,255,28,208,0,255v9P1o6c5c[*2 o4bf+]2
+F E255,255,12,160,0,255c&bv7f+v6c%4
+

@@ -1,0 +1,29 @@
+
+#title Game Over
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+#*0{E255,255,40,208,0,255}
+#*1{E255,255,28,128,0,255v13}
+#*2{E255,255,40,184,0,255}
+#*3{C112l15}
+A *3 t198
+
+D *3
+D *2 v13P1o4b8.d8.o5co4bab8.d8.o5dc
+D o4bo5c8.o4g8.a8.o5c8.o4b7.a7.g%72r%1
+
+E *3
+E *1 P1o3go2go3g*0 g%17
+E &v9g%4*1 go2go3gfo2fo3f
+E *0 f%17&v9f%4*1 fo2f
+E o3feo2eo3e*0 e%17&v9e%4
+E *1 eo2eo3ed+o2d+o3d+
+E *0 d+%20&v9d+%4E255,255,20,0,0,255v13f%8c%8f%8
+E *0 g%68&v9g%4r%1
+
+F *3
+F *2 v12P1o4g8.gao5do4ggdf8.ga
+F bbgde8.eceeced+8.g%8d+%8f%8f%8c%8f%8
+F d%72r%1
+

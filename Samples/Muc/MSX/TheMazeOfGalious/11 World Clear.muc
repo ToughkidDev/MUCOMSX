@@ -1,0 +1,41 @@
+
+#title World Clear
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{ev6ev7ev8e}
+#*1{gv6gv7gv8g}
+; ---
+
+#*2{E255,255,0,255,0,255}
+#*3{E255,255,40,72,0,255}
+#*4{E255,255,40,184,0,255v13P1}
+#*5{C128l65}
+#*6{a+%8a+%8a+%8}
+A *5 t198
+
+D *5
+D *4 o5c8.D19g8.D-5f8.D0d%8e%8D-5f%8D0
+D e8.c8.d+%8d%8c%9d%9D-5f%9D-2a+%9D40o6c2v12D-11ev13e%4
+D &v9e%2v8ev9ev10e%2v11ee%5&v8e%2v7ev8e%2v9ev10
+D ee%4&v5e%3*0 v9e*3 e%7v4ev5*0 e%5r%54
+
+E *5
+E E255,255,6,0,0,255v13P1o3c10E255,255,28,0,0,255v12g%5
+E E255,255,16,0,0,255v13o4c%7E255,255,12,0,0,255o3c%8c%8c%8o2a+%8
+E o3f%8a+%8o2*6 a%8o3e%8a%8o2a%8a%8a%8g+%8o3d+%8
+E E255,255,8,0,0,255v12g+%9o2a+%9o3f%9a+%9E255,255,20,224,0,255v13
+E c%59&v10c%4r%9*2 v12D-24o7cE255,255,32,128,0,255
+E v13c%6*2 v8cv9cv10c%2v11c
+E E255,255,28,120,0,255c%7*2 v7cv8c%2v9cv10c
+E E255,255,48,88,0,255v11c%7*2 [v5cv6cv7cv8
+E c/v9c*3 c%7*2 v4c]2
+E E255,255,64,104,0,255v9c%5r%46
+
+F *5
+F *4 o4g8.o5c8.o4a+8.*6 a8.
+F a8.o5c%8o4a+%8g+%9a+%9o5d%9D-5f%9D0e3.r%5v12o6gv13g%4&
+F v9g%2v8gv9gv10g%2v11gg%5&v8g%2v7gv8g%2v9gv10
+F gg%4&v5g%3*1 v9g*3 g%7v4gv5*1 g%5r%50
+

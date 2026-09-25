@@ -1,0 +1,43 @@
+
+#title Temple
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{v11ev12ev13e%21&v10e%3v11}
+#*1{v11D0e%22&v9D53e%2v11D19g%22&v9D-29g%2v11D0b%22&v9D38b%2v11D-3a%22&v9D-35a%2v11D0}
+#*2{v11D0c%22&v9D56c%2v11D0d%22&v9D-24d%2}
+#*3{E255,255,6,0,0,255v11P1o7bD-28g+D0eD72d}
+#*4{d%94&v9D40d%2v11D0e%46&v9D-27e%2}
+#*5{D-8d4D-11e4D-13g4D-10b4D-19a}
+#*6{dv12dv13d%69&v10d%3}
+#*7{av12av13a%69&v10a%3}
+#*8{D0d%22&v9D-24d%2}
+; ---
+
+#*9{E255,255,0,255,0,255}
+#*10{E255,255,6,0,0,255v11P1}
+A C96l8t198
+
+D C96l8
+D *3 D-26o6bD0g+D-11e%11*9 D0do5bg+e
+D E255,255,4,184,0,255v12d&bv9g+ed*9 v11c.L
+D *10 D-24o5c%6*9 *8 [*1 *4 /*2 *1
+D f+%94&v9D42f+%2v11D-3a%46&v9D-35a%2*2 ]2[v11D0e%22&v9D53
+D e%2/v11*8 *2 ]2v11D19g%22&v9D-29g%2v11D0*4 v11D0c.
+
+E C96l8
+E r%6*3 D0bD-28g+D0e%5*9 v10o4do3bg+ed
+E o2bg+edv11av12a%6L*9 v12P1D0o2a%6[v13
+E a%69&v10a%3*0 *6 /*0 *7 *0 dv12dv13d%21&v10d%3*0 f+v12f+
+E v13f+%21&v10f+%3v11av12a]2v13e7&v10e%3v13g7&v10g%3
+E v13b7&v10b%3v11*7 *0 *6 v13f+%9&v10f+%3v13a%9&v10a%3v13
+E g%9&v10g%3v13b%9&v10b%3v11av12a%6
+
+F C96l8
+F *10 o7b.bD-28g+D0eD72dD-26o6bD0g+
+F E255,255,6,176,0,255D-11e%11&D0dv9o5bg+edv7bg+e%6r.L
+F E255,255,24,216,0,255v10P1[D0o5c4*5 D-8d1D-11e%60/D0c4*5 D-22
+F f+1D-19a%60]2e4D-8d4D0c4D-8d4D-11e4D-13g%6v13D0o4f+%46&
+F v10f+%2v13e%46&v10D-27e%2v13D0d%46&v10d%2r.
+

@@ -1,0 +1,30 @@
+
+#title Fairy
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{E255,255,6,0,0,255v11P1o6c8D-24o7c8D-11o6e8D0o7e8D-26o6b8D0}
+#*1{v13e%6v8ev9ev10e%2v11ev12e%7v7ev8e%2v9ev10e}
+#*2{v13b%6v8bv9bv10b%2v11bv12b%7v7bv8b%2v9bv10b}
+; ---
+
+#*3{E255,255,32,128,0,255}
+#*4{C128l65}
+A *4 t198
+
+D *4
+D *0 o7b8v12D-11o6e*3 *1 e%7[v5ev6ev7
+D ev8e/v9ee%5&v5e%2v4e]2e%5r%9
+
+E *4
+E r%8*0 o7b10v12D-26o6b*3 *2 b%7[v5bv6b
+E v7bv8b/v9bb%5&v5b%2v4b]2b%5r%5
+
+F *4
+F r%8*3 v12P1o6cv13c%6v8cv9cv10c%2v11c
+F v12c%7v7cv8c%2v9cv10cc%8v12D-11e*1 e%8v12D-26b*2
+F b%8v12D72o7dv13d%6v8dv9dv10d%2v11dv12d%7v7dv8
+F d%2v9dv10dd%7[v5dv6dv7dv8d/v9dd%5&v5d%2v4
+F d]2d%5r
+

@@ -1,0 +1,77 @@
+
+#title Ending
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{&v9c%3v10c.&v6c%3v12}
+#*1{v12g.&v9g%3v10g.&v6g%3}
+#*2{&v9e%3v10e.&v6e%3}
+#*3{E255,255,6,0,0,255v11P1[o6g8d8D-11e8D0c8]6o7a+8D-28g+8D-13g8D-21f8D0d+8D72d8D-2o6a+8D0}
+#*4{v13c%6v8c%1v9c%1v10c%2v11c%1v12c%7v7c%1v8c%2v9c%1v10c%1c%7v5c%1v6c%1v7c%1v8c%1v9c%1c%5}
+#*5{a%1v13a%6v8a%1v9a%1v10a%2v11a%1v12a%7v7a%1v8a%2v9a%1v10a%1a%7v5a%1v6a%1v7a%1v8a%1v9a%1}
+#*6{&v9a%3v10a.&v6a%3v12}
+#*7{o4b4a4a8b8o5c4o4b8a8g4e8g8o5c4o4g4f+4f+8a8o5c8}
+#*8{&v9a+%3v10a+.&v6a+%3}
+#*9{&v9d%3v10d.&v6d%3}
+#*10{g4D0o4b4o5c4o4a8b8o5c4o4b8a8b4b4}
+#*11{f+.&v9f+%3v10f+.&v6f+%3}
+#*12{&v9f%3v10f.&v6f%3v12}
+#*13{v12g.&v9g%3v12}
+#*14{a%5&v5a%2v4a%1v5a%1v6a%1v7a%1v8a%1a%5}
+#*15{&v9b%3v10b.&v6b%3}
+#*16{&v5c%2v4c%1v5c%1v6c%1v7c%1v8c%1c%5}
+#*17{v12d+.&v9d+%3v10d+.&v6d+%3v12}
+#*18{v12d.&v9d%3v12}
+#*19{v10g.&v6g%3v12}
+#*20{v5a+%1v6a+%1v7a+%1v8a+%1}
+#*21{&v9a+%3v12g+.&v9g+%3}
+#*22{a.&v9a%3v12b.}
+; ---
+
+#*23{E255,255,20,224,0,255}
+#*24{E255,255,28,208,0,255v9}
+#*25{E255,255,40,184,0,255}
+#*26{a+.&v9a+%3}
+A C128l13t198
+
+D C128l13
+D *3 g%15*25 v13o5e4c8d8L*25
+D v13P1D0[o5e4d8c8d4d4D19*10 o5e4*7 d8e8f+8
+D D19g4g8D-3a8D19g8D-5f8D0e8d8/e4c8d8]2D19
+D g4D0d+8D-5f8D19g4D-5f8D0d+8D-5f4f4D-2a+4D0
+D d4d+4c8d8d+4d8c8d4d4D19g4D0o4a+4o5c4
+D c8d8d+4d8c8o4a+4a+8o5d8d+4o4a+8g8a4
+D a8o5c8d4e8f+8D19g1D0e4c8d8
+
+E C128l13
+E *23 v12P1o6c%1E255,255,32,128,0,255*4 *16 r11v12c%1
+E *4 *16 r11D-2[v12o5a+%1v13a+%6v8a+%1v9a+%1v10a+%2v11a+%1v12
+E a+%7v7a+%1v8a+%2v9a+%1v10a+%1a+%7*20 v9a+%1a+%5&v5a+%2v4a+%1
+E *20 a+%5r11]2v12D-3*5 *14 r11v12*5 *14 r12*23
+E v12D0o3a+.*21 *13 f.&v9f%3v12d+.&v9d+%3*18 o2a+.&v9
+E a+%3*13 o3c.*0 e.*2 L*23 v12P1D0o3g.&v9
+E g%3[*19 c.*0 o2b.*15 v12b.&v9b%3v12*22 *15 *1 v12a.*6
+E o3c.*0 e.*2 v12o2a.*6 o3e.*2 v12e.&v9e%3*18 e.*2
+E v12o2g.&v9g%3*19 o3f.*12 c.*0 o2a.*6 o3f.*12 e.*2
+E v12c.*0 o2g.&v9g%3*19 o3e.*2 v12d.*9 v12o2a.*6 *11
+E v12o3[d.*9 *1 v12]2b.*15 /v12c.*0 e.*2 v12g.
+E &v9g%3]2[*17 *26 /v12g+.&v9g+%3v12a+.*8 *1 v12
+E a+.*8 v12f.*12 *26 v12o4c.&v9c%3*18 o3a+.&v9
+E a+%3v12c.*0 g.&v9g%3v12f.&v9f%3*1 v12c.*0 o2[a+.*8
+E v12]2o3d.&v9d%3v12*26 *13 a+.*21 v10g+.
+E &v6g+%3*17 o4c.*0 o3g+.&v9g+%3v10g+.&v6g+%3*1 ]2v10
+E a+.&v6a+%3[*1 /v12*11 v12d.*9 v12a.*6 *11 ]2[*13 *22 &v9
+E b%3]2v12c.*0 e.*2
+
+F C128l13
+F r%8*3 g%7r8*24 D-11o5e4D0c8L
+F *24 P1[D-8o5d8D-11e4D-8d8D0c8D-8d4
+F d4D-13*10 D-11o5e4D0*7 D-8d8D-11e8D-22f+8D-13g4g8
+F D-19a8D-13g8D-21f8D-11e8D-8d8/D-11e4D0c8]2D-13
+F g4D-7d+8D-21f8D-13g4D-21f8D-7d+8D-21f4f4D-18
+F a+4D-8d4D-7d+4D0[c8D-8d8D-7d+4D-8d8D0c8/D-8
+F d4d4D-13g4D-10o4a+4D0o5c4]2D-10o4a+4a+8D-8
+F o5d8D-7d+4D-10o4a+8D0g8a4a8o5c8D-8d4D-11e8
+F D-22f+8D-13g1D-11e4D0c8
+

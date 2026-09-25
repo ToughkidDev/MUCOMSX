@@ -1,0 +1,85 @@
+
+#title Greek Castle
+#composer Kazuhiko Uehara, Kinuyo Yamashita
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{&v11c%3v13c%4&v11c%2v13c%4&v11c%2v14o2a+.&v11a+%3[v13a+%4&v11a+%2]2}
+#*1{&D24g+%2&v14D-68g+%1&D27g%3&D34f+%3&D51f%4&v10D29e%3&D-75o2d+%1&D21o3d+%1&v7D-27d+%2}
+#*2{v14a.&v11a%3[v13a%4&v11a%2]2}
+#*3{o3d.&v11d%3[v13d%4&v11d%2]2v14c.}
+#*4{o5c8o4g8D-8o5d8D0o4g8D-11o5e8D-8dv9D0c%7v13P2o4c%1r%5c%1r%4v10P1g8D-7o5d+8D-10o4a+8D-21o5f8D-10o4a+8D-13o5g8}
+#*5{o4c%1r%5c%1r%4v10P1D-10a+8D-8o5dD-11eD-21fD-13gv8D-8dD-11eD-21fD-13gv7D-8dD-11eD-21f}
+#*6{[v14o3d+.&v11d+%3[v13d+%4&v11d+%2]2v14o2a+.&v11a+%3[v13a+%4&v11a+%2]2]2}
+#*7{[v14o3c.&v11c%3[v13c%4&v11c%2]2v14o2g.&v11g%3[v13g%4&v11g%2]2]2}
+#*8{v10P1D-8o5d8D0o4a8D-11o5e8D0o4a8D-21o5f8D-11ev9D-8d%7v13P2D0o4c%1r%5c%1r%4v10P1a8}
+#*9{v13P2[w0c%1r%5]3c%1r%4v12P1}
+#*10{c%1r%5c%4&v15c+%2v13[w0c%1r%5]3c%4&v15c+%2v13c%1}
+#*11{v13P2o4c%1r%5c%1r%5c%4&v15c+%2v13c%1r%4v12P1}
+#*12{&v11g%3[v13g%4&v11g%2]2}
+#*13{E255,255,28,168,0,255v10P1o3a4.v11o4dev12f4a4g4e4v13d4c4v12g4.v11fd+v12g4.v11fd+v12f4v10o3a%25v13P2}
+#*14{d+v13d+8v12d+d+v13d8v12ddv13c8v12ccv13o2a+8v12a+a+v13a8v12aag+g+g+g+%7D-15o3a%2}
+#*15{o2[g+8v12g+g+v13]2o3c8v12ccv13d8v12ddv13d+8v12d+d+v13f8v12ffd+d+d+}
+#*16{f4[v12P1e%25v13P2[w0c%1r%5]3c%1r%4]2P1e4c+4o3a%25P2o4c%4&v15c+%2v13c%1r%5c%1r%5c%1r6E255,255,24,216,0,255}
+#*17{o3a4.v11o4dev12f4g4a4f8v11edc+defv12g8o5c8o4g4.v11fev12g4.v11fev12f4a%25v13}
+#*18{c%4&v11c%2[v14d.&v11d%3[v13d%4&v11d%2]2]4[v12d+%4&v9d+%2]3E255,255,28,168,0,255v12d+%7D-15}
+#*19{v14a+.&v11a+%3[v13a+%4&v11a+%2]2v14o3c.&v11c%3v13c%4&v11c%2v13}
+#*20{v12D0o2ao3ao2aav13a8v12aav13a8v12[a]6E255,255,40,208,0,255v14}
+#*21{D-13g%7v13P2D0o4c%1r%5c%1}
+#*22{D-21fv9D-7d+%7v13P2D0}
+#*23{v13D0d+8v12d+d+v13d+8v12d+d+dddd%7D-15a%2}
+#*24{v13D0d8v12ddv13d8v12ddo2gggg%7D-15o3a%2}
+#*25{v14o3d+.&v11d+%3[v13d+%4&v11d+%2]2}
+#*26{v13d%4&v11d%2v13}
+#*27{D0deD-5fD19g}
+#*28{o2a%4&v11a%2v13o3c%4&v11c%2v13}
+#*29{v12D0o2g+g+g+g+%7D-15o3a%2}
+#*30{a+4.aga+4.aga4}
+#*31{a+agfg4a+4a4}
+; ---
+
+#*32{E255,255,28,168,0,255}
+#*33{o4c%1r%5c%1}
+#*34{f%4&v11f%2v13}
+#*35{E255,255,12,0,0,255v13}
+#*36{E255,255,12,128,0,255}
+A C96l14t198
+
+D C96l14
+D *32 P1[v13D0o4d4.fga4o5d4c4o4g2.*30 d2.
+D d4.fga4o5d4e4o4a2.*30 o5d2.o4a+4*31 d2d+fg8g+4g+
+D gfd+f4g+4g4c2.a+4*31 agfef4a4g4gfed
+D g+4g+gfea2.e%3&v14e%3v13f%3&v14f%3v13g%3&v14g%3
+D v13a%3&v14a%3[v13D0o5d8o4a8o5e8o4a8D-5o5f8D0ede8
+D o4a8o5c8o4g8o5d8o4g8o5e8dcd8o4g8o5d+8o4a+8D-5o5f8
+D D0o4a+8D19o5g8D-5fD0d+D-5f8D0o4a+8o5deD-5fD19
+D gv11*27 v10*27 v9*27 ]2]2D0[[*35 o4d%1&v11
+D d%4&v13d%7*32 v12dd]2do3ao4cfe
+D o3ao4cd[*35 o3g%1&v11g%4&v13g%7
+D *32 v12gg]2o4gdfa+adfg]2
+
+E C96l14
+E E255,255,40,208,0,255v14P1*3 *0 *2 *7 *6 [v14*3 *0 *2 ]2v14o3c.*0
+E *2 [v14g.*12 ]2*2 *19 *18 a%2*1 r%1v13D0d+8v12d+*14 *1 r%1v13
+E D0*15 d+%7D-15a%2*1 r%1*23 *1 r%1*24 *1 r%1*29 *1 r%1*20 *3 *0 *2 *7
+E *6 [v14*3 *0 *2 ]2v14o3c.*0 *2 v14g.*12 *25 [v14*3 *0 ]2*2 v14
+E *3 *0 *2 *7 *6 [v14*3 *0 *2 ]2v14o3c.*0 *2 [v14g.*12 ]2*2 *19
+E *18 a%2*1 r%1v13D0d+8v12d+*14 *1 r%1v13D0*15 d+%7D-15a%2*1 r%1
+E *23 *1 r%1*24 *1 r%1*29 *1 r%1*20 *3 *0 *2 *7 *6 [v14*3 *0 *2 ]2v14
+E o3c.*0 *2 v14g.*12 *25 [v14*3 *0 ]2*2 [[v14o3d.&v11d%3
+E *26 d%4&v11d%2]2*26 *28 *34 e%4&v11e%2v13*28 d%4&
+E v11d%2[v14o2g.*12 ]2v13o3g%4&v11g%2*26 *34 a+%4
+E &v11a+%2v13a%4&v11a%2*26 *34 g%4&v11g%2]2
+
+F C96l14
+F *13 w0o4c%1r%5*10 r%4v10P1*17 P2c%1r%5*10 r%4v12P1g%25*9 d+4g4
+F f4v10o3a%49*11 d+%25*9 d4d+4c4v10o3g%49*11 g%25*9 d+4g4f%25*9
+F d4*16 *8 *4 *22 *5 *21 r6*8 *4 *22 *5 *21 r%4*13 o4c%1r%5*10 r%4v10P1
+F *17 P2c%1r%5*10 r%4v12P1g%25*9 d+4g4f4v10o3a%49*11 d+%25*9 d4
+F d+4c4v10o3g%49*11 g%25*9 d+4g4f%25*9 d4*16 *8 *4 *22 *5 *21 r6*8
+F *4 *22 *5 *21 r%4[*36 [P1o2d%1&v11d%4&v13d%8P2
+F w0*33 r%4]2*32 v12P1o2do1ao2c
+F feo1a%7v13P2*33 r%4*36 [P1o1g%1&
+F v11g%4&v13g%8P2w0*33 r%4]2*32 v12P1
+F o2gdfa+ad%7v13P2*33 r%4]2
+
