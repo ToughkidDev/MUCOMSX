@@ -1,0 +1,55 @@
+
+#title Blow Up Tricycle
+#composer Konami Kukeiha Club
+#voice SNATCHEA.DAT
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{[D12o3bD7ee]3D12bD17o4f+D7o3eD4o4cD16gD8}
+#*1{eeD8o4do3aD7e[D8o4do3aD9d]3D8o4do3aD7ee[D4o4cD17o3gD7e]2}
+#*2{D9ddD8aD18f+D9dD12bD17gD9dD4o4cD17o3gD9dD12bD17gD9dD8aD18f+}
+#*3{cD17gD7eD5cD8aD18f+D5cD12bD17gD5cD8aD18f+D5cD17gD7e}
+#*4{D18o3f+D12bD7o2eD17o3gD4o4cD8}
+#*5{o4dD7[o3eo2ee]3D4o4cD12o3bD8aD12bD8aD17gD18f+D7}
+#*6{D7a[D12o3bD7ee]3D16o4gD17f+D7eD17f+D7eD8dD4c}
+#*7{D18f+D7eD9dD5c}
+#*8{e[D7eD12bD18f+]5D7e[D7eD4o4cD17o3g]5D7}
+#*9{D12o3bD8aD17g}
+#*10{o4eD17o3gD7eD12bD17gD7e}
+#*11{D5[c]32D9[d]32}
+#*12{D12o2bD9aD17g}
+#*13{D83o2g%1&D-28d%1&D23o1b%1&D-16a%1}
+#*14{v7P2D0w0a%2r%4S9}
+#*15{v7P2D0a%2r%4S9P1}
+#*16{D83o2g%1&D-28d%1&D23o1b%1}
+#*17{v7P2D0a%2r%4a%2r%4S9P1}
+; ---
+
+#*18{E255,255,0,255,0,255}
+#*19{m464P1}
+A C96l14t199
+A r%1@3y76,2D7q1[o3eo2ee]3*4 q0o3a%3L@3y76,5D8q1
+A o3a%3y76,2*5 [o3eo2ee]3*4 o3a*5 *8 *1 y76,5o2eD18
+A f+D12bD7eD17gD5o3cD9o2ao3dy76,2D7*8 *1 o2e
+A D17o3gD18f+D7e*7 [D5c*3 ]2[*2 ]2[D7[*10 ]2D4o4c
+A *9 D7*10 o4eD17o3gD7eD17gD18f+D8aD17gD12bD8
+A aD4o4c]2[D5o3c*3 ]2[*2 ]2D12o2bD16o4gD17f+D7
+A eD8dD4c*9 *7 *12 D7[o3eo2ee]3D17o3f+D10bD7
+A o2eD16o3gD4o4cD7q0o3a%3
+
+B C96l14
+B r%1@3y77,2q1*0 q0d%3L@3y77,5D8q1o4d%3y77,2*6 *0 d*6 D7[
+B o2e]57*4 o3ao4dD7[o2e]57D5o3cD12o2bD9aD12
+B bD9aD17gD18f+*11 [D7[o3eo2ee]4D9ddd
+B d]4*11 D7eD4o4c*9 *7 *12 *7 *0 q0d%3
+
+D C96l14
+D r%1S9*19 [*13 r%2*18 *14 P1*13 r%2]2*13 r%2*17 [
+D *13 r%2]2*15 *13 r%2*15 *16 LS9*19 D-16o1a%1r%2
+D *18 [[*14 *19 *13 r%2]2*13 r%2v7P2D0[w0a%2r%4
+D S9*19 [*13 r%2]2v7P2D0a%2r%4]2S9P1*13 r%2*15 *13 r%2]2[
+D *14 *19 *13 r%2]2[*13 r%2*18 *14 P1*13 r%2]2[*16]2 [S9P1[*13 r%2]2*18 v7P2D0w0a%2r%4]2[S9P1
+D [*13 r%2*18 *14 P1*13 r%2]2*13 r%2*17 [*13 r%2]2[
+D *14 *19 *13 r%2]2v7P2D0a%2r%4]20S9P1[*13 r%2]9*15 [*13 r%2
+D ]7[*14 *19 [*13 r%2]2]2*17 [*13 r%2]2*15 *13 r%2*15 *16
+

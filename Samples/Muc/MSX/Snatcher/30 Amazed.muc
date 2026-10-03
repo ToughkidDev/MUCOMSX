@@ -1,0 +1,60 @@
+
+#title Amazed
+#composer Konami Kukeiha Club
+#voice SNATCHEA.DAT
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{o5f+.f+.f+.D5a%1&D0a%1&D5a.&D13a&D5a&D13a%2D5[d+%1&D0d+%1&D5d+]3}
+#*1{&D22f+&D16f+}
+#*2{[o5a%1&D0a%1&D5a]3D0o6c%8&D8c&D0c&D8c%2D16}
+#*3{&D9d+&D5d+}
+#*4{&D13a&D5a}
+#*5{a%1&D0a%1&D5}
+#*6{&D9a&D0a}
+#*7{d+%1&D0d+%1&D5}
+#*8{D0q1o6c.c.c.d+%8}
+; ---
+
+#*9{E255,255,40,104,0,255v9}
+#*10{E255,255,12,64,0,255}
+#*11{f+.f+.f+.}
+#*12{C96l20}
+A *12 t200
+A r%2@144y76,2*8 &D11d+&D0d+&D11d+%2D5*2 o5*11
+A y108,142y140,70D5q0*5 a.*4 *4 *4 *4 &D13a%2&D5*5 a&y76,8*5
+A a&y76,16*5 a.&D13ay76,127r%1
+
+B *12
+B r%2@144y77,5D5q1*2 *0 @159y77,5D16q0f+%8*1 *1 *1 *1 &D22f+%2&
+B D16f+8&y77,16f+%8&D22f+y77,127r%1
+
+C *12
+C r%2@144y78,5D16q1*0 D16f+%8*1 &D22f+%2D4[c%1&D0c%1&D4c]3
+C @159y78,5D5q0*7 d+.*3 *3 *3 *3 &D9d+%2&D5*7 d+%5&D0d+%1&D5
+C d+&y78,16*7 d+.&D9d+y78,127r%1
+
+H *12
+H r%2@244y72,5y68,13y76,35D4q1o4c.c.c.D6d+8.D8o3a.a.a.
+H D4o4c8.D18o3*11 y104,142y136,70y100,142y132,70y108,142
+H y140,70D8q0a%54&y72,16y68,24y76,46a8y68,127y72,127y76,127r%1
+
+I *12
+I r%8@42y77,13*8 &D7d+&D0d+&D7d+%2D0o5a.a.a.o6c%8&D5
+I c&D0c&D5c%2D13o5*11 y109,136y141,68D0q0a%8*6 *6
+I *6 *6 &D9a%2&D0a8&y77,18a.y77,127r%1
+
+D *12
+D r%2*9 P1D19o2a.a.a.*10 v8
+D D32o3c%2&v6c6*9 D56o2*11
+D *10 v8D19a%2&v6a6*9 D31d+.
+D d+.d+.d+&v12d+%34&v4d+*10 v3d+4r%1
+
+E *12
+E r%14E255,255,40,152,0,255v6P1o5c.c.c.D25d+8.D21o4a.a.a.
+E D0o5c8.D58o4*11 v5D21a%47&v1a%7r%1
+
+F *12
+F r%20E255,255,64,160,0,255v4P1o5c.c.c.d+8.o4a.a.a.o5c8.
+F D50o4*11 D0a2r%1
+

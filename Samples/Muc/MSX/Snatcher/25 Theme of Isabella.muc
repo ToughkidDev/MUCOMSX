@@ -1,0 +1,111 @@
+
+#title Theme of Isabella
+#composer Konami Kukeiha Club
+#voice SNATCHEA.DAT
+; muc by ToughkidCST
+
+; --- pass2 macros (source-text only; compiles identically to inline) ---
+#*0{Ly48,39y64,46y80,31y96,128y112,0y128,15y56,4y72,56y88,31y104,128y120,0y136,15y52,65y68,37y84,31y100,128y116,0y132,15y60,1y92,31}
+#*1{y76,127r%1y76,2D8a%17y76,127r%1y76,2D12b%17y76,127r%1y76,2D4}
+#*2{y77,127r%1y77,2D7a%17y77,127r%1y77,2D10b%17y77,127}
+#*3{y76,2D17o3g%17y76,127r%1y76,2D16o4g%17y76,127}
+#*4{y76,2D8o3a%17y76,127r%1y76,2D7o4a%17y76,127}
+#*5{y76,2D8o4d%17y76,127r%1y76,2D7o5d%17y76,127}
+#*6{y76,2o5c%17y76,127r%1y76,2o4c%17y76,127}
+#*7{y77,2D7e%17y77,127r5y77,2e%17y77,127}
+#*8{&e8&d+&e8}
+#*9{y76,127r%1y76,2D4o5c+%17y76,127}
+#*10{&o6c8&o5a&o6c8}
+#*11{b8&D9a+&D0}
+#*12{v11D37o2g%1&v9g%8&v12g.v11D27o3g%1&v9g%8&v12g.}
+#*13{v9D-19o4av10D-40o5c8}
+#*14{v9D-24dv10D-40c8}
+#*15{v10D-10b8v9D0a+}
+#*16{v10e8v9d+v10e8}
+#*17{&v9f+%8&v12f+.}
+#*18{&v9f%8&v12f.}
+#*19{&v9a%8&v12a.}
+#*20{&v9d%8&v12d.}
+#*21{&v9g%8&v12g%3}
+; ---
+
+#*22{y77,127}
+#*23{y76,127}
+#*24{y78,127r8y78,2}
+#*25{E255,255,16,128,0,255v10}
+#*26{y77,2}
+#*27{y76,2}
+#*28{E255,255,32,48,0,255}
+#*29{v10D-43e8}
+#*30{y78,127}
+#*31{o3c+8.D-30o4c+8.}
+A C96l14t199
+A r5@76*27 D17o3g%17*1 o4c.*0 y108,141y124,0y140,54y176,3
+A y76,29D4q0o4c%3&y76,26c%5*23 r%1@76[*6 r%1]3*27 o5c%17
+A *23 r%1[*4 r%1]3*27 D10b%17*9 r%1[*5 r%1]2[*27 D5o4c+%17
+A *9 r%1]2*27 o4c%17*23 r%1*6 r%1*27 o5c%17*23 r7*27
+A D17o3g%23*23 r%1*27 D18f+.*23 r.*27 D11f.*23
+A r.[*27 D11o3f%17*23 r%1*27 D10o4f%17*23 r%1]2[*27
+A D18o3f+%17*23 r%1*27 D17o4f+%17*23 r%1]2[*3 r%1]2[*4
+A r%1]2[*5 r%1]4*3 r%1*27 D17o3g%11*23 r%7*27 g%11*23
+A r%1y108,141y140,54*27 g*23 r8.@76*27 g%17*1 o4c9
+
+B C96l14
+B r5@76*26 D16o4g%17*2 r9Lr.@76D16q0[*26 o4g%17*22
+B r5]4*7 r5*26 e%17*22 r%1*26 D16g%17*22 r%1D7[*26
+B a%17*22 r5]3*26 D18[g+%17*22 r5*26]2 D16g%17*22 r5*26 g%17*22 r7*26 D7o5d%23*22
+B r%1*26 D4c+.*22 r.*26 D7d.*22 r%27D4[*26 o4c%17
+B *22 r5]4*26 D8d%17*22 r5*26 d%17*22 r5*7 r5[
+B *26 a%17*22 r5]4*26 D8d%17*22 r%1*26 d%11*22 r%7
+B *26 d%11*22 r%1y109,141y141,54*26 d*22 r8.@76*26 D16
+B g%17*2 r%11
+
+C C96l14
+C r%73@92y78,2D5o5e.L@175y78,13D5q1o5e%3y78,2D4cD7d8D5
+C eD7d8D5d+e8D4cD5e8d+e8D0o6c8.D14o5a+D5a8D14g
+C D5a8.D14g8.g8D5a8.q0e*30 r8.y78,2q1e8.D9f8.D14g8.D9q0
+C f8*30 r@92y78,2f%26&y78,8f%3*30 r%1y78,2D7q1dD9f8
+C D5q0a*24 D4q1c+D9f8D16g+D14g8D9fD5e8D7
+C dD5e8d+e8d+e8D9fD14g8D7q0d*24 D14q1g4
+C D16q0f+*24 D9f*24 D0q1o6c8D9o5fD5
+C a8D0o6c8.[D5o5aD0o6c8]3c%3c%3d+8D5dD0c8[D5dD0e8
+C d+e8]2D6f%3D13f+%3D0a%30aD12g+8D11gD0e8q0c+*30
+C r8.y78,2D5d3&y78,8d%3*30 r%1y78,2q1o5a8.[D0o6c8D5o5a
+C /D0o6c8D6fD0e8D5d]2[D8o5b8/D14a+]3D0o6cD5d8
+C D14q0o5g*30 r2.y78,2D5e9
+
+H C96l14
+H r%82*0 y108,128y124,0y140,15y176,3y76,21D0q0o5e8&c&D5d8&D0
+H e&D5d8&D0d+&e8&c*8 &o6c8.&D9o5a+&D0a8&D11g&
+H D0a8.&D11g%30&D0a8.&er8.e8.&D6f8.&D11g8.&D6f8rf%30
+H &D5d&D6f8&D0ar8c+&D6f8&D12g+&D11g8&D6f&D0
+H e8&D5d&D0e8&d+*8 &D6f&D11g8&D5dr8D11g4&D13f+
+H r8D6fr8D0o6c8&D6o5f&D0a8&o6c8.&o5a*10 &o5a&
+H o6c8.&d+8&d&c8&d*8 &d*8 &f%3&D7f+%3&D-7a4.&D5g+8
+H &D4g&D0e8&c+r8.d4.&o5a8.*10 &f&e8&d&c8&o5a&
+H *11 *11 b8&o6c&d.r%82
+
+D C96l14
+D r%73*28 v10P1o4e.L*28 v2P1D0
+D o4e%3v9cv10d8v9ev10d8v9d+v10e8v9c*16 D-40o5c8.v9
+D D0o4a+v10D-19a8v9D0gv10D-19a8.D0g8.g8D-19a8.v9D0e
+D r8.v10e8.f8.g8.f8rf%30v9dv10f8v9D-19ar8D0c+v10f8
+D v9g+v10g8v9fv10e8v9d*16 v9d+v10e8v9fv10g8v9d
+D r8v10g4v9D18f+r8D0fr8v10D-40o5c8v9D0o4fv10D-19a8
+D D-40o5c8.[*13 ]3v9c%3c%3v10D-39d+8*14 [v9D-24d*29 v9
+D D-39d+*29 ]2v7D-37f%3D-22f+%3v10D-51a%30v9av10D-28
+D g+8v9D-29g*29 v9D-46c+r8.v10D-24d4.D-19o4a8.D-40
+D o5c8*13 v9D-37f*29 *14 v9D-19o4a[*15]2 v10D-10b8v9
+D D-40o5cv10D-24d8v9D0o4gr2.v10e9
+
+E C96l14
+E r5*25 P1D33o2g8.D0a8.b8.o3c.L
+E E255,255,48,176,0,255v7P1D0o3c.*25 [D-32
+E o4c8.D0o3c8.]3D-32o4c8.[D0o2a8.D-11o3a8.]3D-10b8.D-30
+E o4c+8.D0[o3d8.D-16o4d8.D0]2*31
+E D0*31 [D0o3c8.D-32o4c8.]2r8D33
+E o2g4D40f+.r.D23f.r.[v11D27o2f%1*18 v11D0o3f%1*18 ]2
+E [v11D44o2f+%1*17 v11D34o3f+%1*17 ]2[*12 ]2D0[v11o2a%1*19 v11
+E o3a%1*19 ]2[v11D20o3d%1*20 v11D0o4d%1*20 ]4*12 v11D37o2g%1
+E *21 rv11g%1*21 v10gr8.D33g8.D0a8.b8.o3c9
+
