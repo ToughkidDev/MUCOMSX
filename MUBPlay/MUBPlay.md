@@ -1,5 +1,7 @@
 # MUBPLAY 사용설명서
 
+> 2026-10-03 갱신: 확장 빌드의 MUC 입력은 65,536바이트, MUCEDIT 편집은 60,000바이트, 음악 DATA 전체는 122,880바이트(120 KiB), 한 페이지 스트림은 59,546바이트입니다. 최소 매퍼 512 KiB를 유지합니다. [mucomDotNET 확장 명령 상세 안내](../shared/docs/MUCOMDOTNET_EXTENSIONS.md)와 [적용 빌드·CPU 가속·검증 제약](../shared/docs/RELEASE_NOTES.md)을 함께 보세요. 기존 MucoMSX_261003.zip과 별도 CPU 가속 빌드는 다릅니다. 본문의 예전 빌드 해시와 시험 일자는 당시 기록입니다.
+
 MUCOM88 MUB Player for MSX  
 Written by ToughkidCST
 

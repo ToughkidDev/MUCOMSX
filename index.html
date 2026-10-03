@@ -152,6 +152,16 @@ footer p{margin:5px 0}
 <section id="about">
   <div class="wrap">
     <h2>About <span class="ko">프로젝트 소개 · 概要</span></h2>
+    <aside class="lead">
+      <strong>Documentation updated 2026-10-03 / 최신 문서 / 最新ドキュメント</strong>
+      <p>60,000-byte editing · 64 KiB MUC input · 120 KiB music DATA · single-YM2608 mucomDotNET extensions.</p>
+      <p><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/MUCOMDOTNET_EXTENSIONS.md">한국어 확장 명령</a> ·
+         <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/MUCOMDOTNET_EXTENSIONS.en.md">English extension guide</a> ·
+         <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/MUCOMDOTNET_EXTENSIONS.ja.md">日本語拡張ガイド</a></p>
+      <p>CPU auto-acceleration and /N are in a separate validated build, not the existing MucoMSX_261003.zip.
+         CPU 자동 가속은 별도 검증 빌드용입니다. CPU自動高速化は別途検証ビルド用です。
+         <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_NOTES.md">Builds, performance and known limits / 빌드·성능·제약 / ビルド・性能・制約</a></p>
+    </aside>
     <p class="lead">
       MUCOMSX brings <strong>MUCOM88</strong> — the FM music toolchain Yuzo Koshiro (古代祐三) developed for
       the YM2203 and YM2608 (Sound Board II) of the NEC PC-8801mkⅡSR and later — to the MSX.
@@ -278,7 +288,7 @@ footer p{margin:5px 0}
           <tr><td>Hear a <code>.MUC</code> once, right now</td><td><strong>MUCPLAY</strong></td><td><code>MUCPLAY SONG.MUC</code> compiles and plays in one step</td></tr>
           <tr><td>Iterate from the DOS prompt and export</td><td><strong>MUCPLAY</strong> session</td><td><code>/LOAD</code> → <code>/COMPILE</code> → <code>/PLAY</code> → <code>/MUB</code> <code>/VGM</code></td></tr>
           <tr><td>Convert a whole album unattended</td><td><strong>MUC2MUB</strong></td><td>One song per run, driven by a <code>.BAT</code>; exit codes to check</td></tr>
-          <tr><td>Compile a source too large for the editor</td><td><strong>MUC2MUB</strong></td><td>Accepts up to 64 KiB; the editor's buffer is 24 KiB</td></tr>
+          <tr><td>Compile a source too large for the editor</td><td><strong>MUC2MUB</strong></td><td>Accepts up to 65,536 bytes; the editor holds 60,000 normalized bytes</td></tr>
           <tr><td>Compile on a machine with no Makoto</td><td><strong>MUC2MUB</strong></td><td>Compiling needs no sound device — only playback does</td></tr>
           <tr><td>Just listen to a finished <code>.MUB</code></td><td><strong>MUBPLAY</strong></td><td>No compiler involved</td></tr>
         </tbody>
@@ -349,7 +359,7 @@ footer p{margin:5px 0}
         <tbody>
           <tr><td><strong>Machine</strong></td><td>MSX2 or later with an 80-column text screen. MSX2+ class recommended; turbo R is taken into account.</td></tr>
           <tr><td><strong>OS</strong></td><td>MSX-DOS 2, or Nextor providing the same functionality</td></tr>
-          <tr><td><strong>Memory</strong></td><td>Memory mapper RAM — <strong>512 KB recommended</strong></td></tr>
+          <tr><td><strong>Memory</strong></td><td>At least <strong>512 KiB mapper RAM</strong>, with enough allocatable free segments</td></tr>
           <tr><td><strong>Sound</strong></td><td><strong>MAKOTO cartridge (YM2608)</strong> — for playback. Compiling with MUC2MUB needs no sound device</td></tr>
           <tr><td><strong>Storage</strong></td><td>A writable disk or storage device — compiling uses temporary files</td></tr>
         </tbody>
@@ -445,21 +455,23 @@ F C128 o2 l2 v7 c g c g</code></pre>
       </table>
     </div>
 
-    <p class="lead"><strong>Sizes are three separate limits, not one.</strong> They are easy to conflate,
-       and adding RAM raises none of them.</p>
+    <p class="lead"><strong>Source, editor, page and total DATA limits are separate.</strong>
+       These are the current extended-build limits; adding RAM does not automatically raise them.</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th>Limit</th><th>Value</th><th>Applies to</th></tr></thead>
         <tbody>
-          <tr><td>Editing buffer</td><td><strong>24 KiB</strong></td><td>What MUCEDIT can hold open, after line endings are normalized</td></tr>
-          <tr><td>Source file</td><td><strong>64 KiB</strong></td><td>What MUC2MUB accepts as input — the whole file, comments included</td></tr>
-          <tr><td>Compiled song data</td><td><strong>32 KiB</strong></td><td>Notes, channel structure and the voice table together</td></tr>
-          <tr><td>Final <code>.MUB</code></td><td>no fixed limit</td><td>Header + data + tags + PCM; routinely larger than the three above</td></tr>
+          <tr><td>Editing buffer</td><td><strong>60,000 bytes</strong></td><td>MUCEDIT after newline normalization, four 16 KiB banks</td></tr>
+          <tr><td>Source file</td><td><strong>65,536 bytes (64 KiB)</strong></td><td>MUC2MUB / MUCPLAY input, including tags, comments and line endings</td></tr>
+          <tr><td>One page stream</td><td><strong>59,546 bytes</strong></td><td>Separate from total DATA</td></tr>
+          <tr><td>Compiled music DATA</td><td><strong>122,880 bytes (120 KiB)</strong></td><td>Notes, structures and FM voices together</td></tr>
+          <tr><td>Final <code>.MUB</code></td><td>May exceed 120 KiB</td><td>Header + DATA + tags + PCM; format, loader and free-memory limits still apply</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="lead">So a 40 KiB <code>.MUC</code> compiles fine with MUC2MUB but will not open in MUCEDIT, and a
-       small source packed with notes can overflow the 32 KiB data area while a comment-heavy large one does not.</p>
+    <p class="lead">A 40 KiB source is within the editor's size limit. Macro expansion can still exceed a page or total DATA limit.
+       Ordinary songs retain MUB8; extended or large songs use muPb 0100. A–K each support pages 0–9 sharing one physical YM2608.
+       A 512 KiB mapper does not guarantee that every large song fits with other sessions resident.</p>
   </div>
 </section>
 

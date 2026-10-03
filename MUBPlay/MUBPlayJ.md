@@ -1,5 +1,7 @@
 # MUBPLAY 取扱説明書
 
+> 2026-10-03更新：拡張ビルドのMUC入力65,536バイト、編集文書60,000バイト、音楽DATA合計122,880バイト(120 KiB)、1ページ列59,546バイト。最低マッパー512 KiBを維持します。[mucomDotNETコマンドガイド](../shared/docs/MUCOMDOTNET_EXTENSIONS.ja.md)と[ビルド区分・CPU高速化・検証制約](../shared/docs/RELEASE_NOTES.md)を参照してください。既存MucoMSX_261003.zipと別途CPUビルドは異なります。本文の旧ハッシュ・試験日は当時の記録です。
+
 MUCOM88 MUB Player for MSX  
 Written by ToughkidCST
 

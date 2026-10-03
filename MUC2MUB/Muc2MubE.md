@@ -1,5 +1,7 @@
 # MUC2MUB User Guide
 
+> Updated 2026-10-03: extended builds support 65,536-byte MUC input, 60,000-byte editor documents, 122,880-byte (120 KiB) total music DATA and 59,546-byte page streams, with a 512 KiB minimum mapper. Read the [mucomDotNET command guide](../shared/docs/MUCOMDOTNET_EXTENSIONS.en.md) and [build availability, CPU acceleration and verification limits](../shared/docs/RELEASE_NOTES.md). The existing MucoMSX_261003.zip differs from the separate CPU build. Older hashes and test dates below are historical records.
+
 MUC to MUB on the MSX, one song at a time.
 
 This guide is written against **MUC2MUB v3.15**. The reference date is September 15, 2026, and it covers `bin/muc2mub.com`, the project's current standard executable.
@@ -45,7 +47,7 @@ That produces `SONG.MUB`. Once you start working with real songs, though, voice 
 
 A MUC is a source file with notes and commands written out as text. A MUB is a binary file holding that content converted into a form the playback driver can use.
 
-MUC2MUB's job is the conversion between the two. The reference syntax is the **MUCOM88 v1.7 family**, and the output is the **MUB8 format**.
+MUC2MUB's job is the conversion between the two. The reference syntax is the **MUCOM88 v1.7 family**, and output is **MUB8 for ordinary songs or muPb 0100 for extended/large songs**.
 
 - It is not a program for editing MUC.
 - It is not a program that plays or records songs directly.
@@ -65,7 +67,7 @@ A song whose source targets another compiler, or which contains commands specifi
 |---|---|
 | CPU | Runs on Z80. Not an R800-only program |
 | Operating system | MSX-DOS 2 and an environment providing mapper services. Verified on a Nextor configuration |
-| Memory | Recommended with an SD cartridge carrying a 512 KiB or larger mapper configuration, such as MegaFlashRom SCC SD or Carnivore2. Actually allocatable free segments are required |
+| Memory | At least 512 KiB mapper RAM, with allocatable free segments. Internal mapper or a configuration such as MegaFlashROM SCC+ SD / Carnivore2 |
 | Storage | Media DOS can read and write. Must allow reading the input and assets and writing to the output folder |
 | Executable | `MUC2MUB.COM` |
 | Source | A `.MUC` of the MUCOM88 v1.7 family |
@@ -266,7 +268,7 @@ A o4 c      a valid channel line
  A o4 c     invalid channel line: leading space
 a o4 c      invalid channel line: lowercase channel
 A,o4 c      a comma after the channel is not supported as a separator
-A,B c       listing channels on one line is not supported
+A,B c       commas are not supported; extended builds use AB c instead
 ```
 
 An invalid channel line may be warned about and dropped. When part of a song sounds as though it has vanished, do not rule this out on the grounds that "there were no compile errors."
@@ -315,7 +317,7 @@ A repeat's `[` and `]` must be balanced. `/` is the escape marker used inside a 
 A *1 gab>c
 ```
 
-In the example above, `# *1{...}` is the macro definition and `*1` is the call. At first, define short macros on one line and use them as in the example. A macro body is up to 511 bytes and nested calls go to at most 4 levels. A macro that calls itself endlessly cannot be used.
+In the example above, `# *1{...}` is the macro definition and `*1` is the call. At first, define short macros on one line and use them as in the example. A macro body is up to 1023 bytes and nested calls go to at most 8 levels. A macro that calls itself endlessly cannot be used.
 
 A macro is a means of organizing the source, not a compression feature that always shrinks the resulting DATA. If you want to reduce the size of repeated events, use repeat syntax while checking that the musical result stays the same.
 
@@ -353,8 +355,8 @@ The current warning checks also treat `#mucom88`, `#driver`, `#version`, `#uuid`
 When writing tags, organize them like this.
 
 - Put `#` at the very start of the line.
-- Gather metadata tags contiguously at the start of the file.
-- Do not slip ordinary comments or whitespace-only lines between tags.
+- Gather metadata tags at the start of the file.
+- Semicolon comments, empty lines and whitespace-only lines are allowed before and between tags. Comments may be preceded by spaces or tabs.
 - Do not add `#voice`, `#pcm` or `#title` late, after the music data has begun.
 - Do not scatter headers through the source or stretch them to tens of thousands of bytes.
 
@@ -490,7 +492,7 @@ The output file's broad structure is as follows.
 
 | Order | Content |
 |---|---|
-| 1 | 80-byte MUB8 header |
+| 1 | Container header; the 80-byte layout applies only to legacy MUB8, not muPb |
 | 2 | Music DATA: channel table, events, FM voices used, and so on |
 | 3 | Tags: song information and additional metadata |
 | 4 | The PCM bank, when required |
@@ -509,14 +511,16 @@ For this part you need to keep several different sizes distinct.
 |---|---|
 | Input MUC | Actual size on disk, at most 65,536 bytes, that is 64 KiB |
 | Mapper for loading the source | Five 16 KiB segments, to preserve line boundaries |
-| Music and FM output DATA | Two 16 KiB segments; must fit within a 32 KiB area |
+| Music and FM output DATA | Extended path: eight output segments; 122,880-byte total and 59,546-byte per-page limits |
 | Voice and working mapper | One 16 KiB segment |
-| Total working mapper allocation | 8 segments = 128 KiB. DOS, the program and other memory are separate |
-| MML body of an ordinary channel line | Up to 1,023 bytes after the leading two bytes such as `A ` |
-| Macro body | Up to 511 bytes |
+| Total working mapper allocation | Base 10 segments (160 KiB); wide output 14 (224 KiB). DOS, the program and other memory are separate |
+| Entire source line | Up to 1023 bytes excluding CR/LF; includes channel prefix, whitespace, comments, tags and macro definitions |
+| Macro body | Up to 1023 bytes |
 | Repeat nesting | Up to 16 levels |
-| Macro call nesting | Up to 4 levels |
+| Macro call nesting | Up to 8 levels |
 | FM voices used in one song | Up to 32 |
+
+A line of 1024 bytes or more stops compilation with error 17. This counts bytes, not displayed columns.
 
 ### What counts toward the 64 KiB
 
@@ -528,19 +532,19 @@ In particular, avoid stretching a single comment line to tens of thousands of ch
 
 ### Input size and output size are not proportional
 
-A comment-heavy 64 KiB MUC can have small music DATA, while a smaller MUC packed with notes and macro calls can fill the output area first. Output DATA holds not only notes but the channel structure and the voice table. Do not calculate as though all 32 KiB were available for notes alone.
+A comment-heavy 64 KiB MUC can have small music DATA, while a smaller MUC packed with notes and macro calls can fill the output area first. Output DATA holds not only notes but the channel structure and the voice table. Do not calculate as though all 122,880 bytes were available for notes alone.
 
 When the output space runs short, reorganize with repeat syntax that preserves the same musical result, or split the song. Cutting comments only helps the input size; it cannot shrink music DATA that has already grown.
 
-The final `.MUB` file includes the header, tags and PCM, so it can be larger than 32 KiB or 64 KiB. Do not conclude from file size alone that the DATA limit was exceeded.
+The final `.MUB` file includes the header, tags and PCM, so it can be larger than 122,880 bytes or 64 KiB. Do not conclude from file size alone that the DATA limit was exceeded.
 
 ### Does fitting 4 MiB of RAM raise the limits?
 
 No. Verification with a 4 MiB mapper confirmed correct operation in that configuration; it was not a test that reserves or uses the full 4 MiB.
 
-The current compiler allocates the eight user segments it needs in the DOS default mapper context. It does not survey the RAM in every slot to total up capacity, or actively gather free space from other mappers. Even with a large amount of physical RAM, a memory error can occur depending on what DOS can allocate.
+The current compiler allocates ten base user segments, or fourteen for wide output, in the DOS default mapper context. It does not survey the RAM in every slot to total up capacity, or actively gather free space from other mappers. Even with a large amount of physical RAM, a memory error can occur depending on what DOS can allocate.
 
-Adding RAM does not automatically raise the 64 KiB input, the 32 KiB music DATA area, or the line and macro length limits.
+Adding RAM does not automatically raise the 64 KiB input, the 122,880-byte music DATA limit, or the line and macro length limits.
 
 <a id="12"></a>
 
@@ -656,7 +660,7 @@ Below is the complete classification of the current diagnostic messages. The exa
 | 12–14 | `Unspecified compiler error` | Reserved, or a classification with no meaning defined for general users. Preserve the number and report it |
 | 15 | `Macro not found` | No macro definition exists for the number called |
 | 16 | `Invalid macro definition` | A problem with the macro definition's form or braces, or the recursion/call-nesting limit |
-| 17 | `MML line or macro too long` | A music line or macro body exceeded the working buffer limit |
+| 17 | `Line/macro exceeds 1023 bytes` | A complete source line or macro body exceeded 1023 bytes |
 | 18 | `Output buffer overflow` | Not enough room in the output area holding music events, voices and so on |
 
 Other undefined numbers may also show as `Unspecified compiler error`. Do not attach a new meaning of your own from the code number alone — keep the original text together with the conditions that produced it.
@@ -780,7 +784,7 @@ The program does not clear a read-only attribute on its own. Find out first why 
 
 ### If RAM looks sufficient but it will not start
 
-Check whether DOS is providing the mapper, and whether eight segments can be secured from the default allocation target. If another program is using memory, exit it and try again. Total physical RAM and the memory DOS can allocate right now are not the same figure.
+Check whether DOS is providing the mapper, and whether ten segments can be secured from the default allocation target. If another program is using memory, exit it and try again. Total physical RAM and the memory DOS can allocate right now are not the same figure.
 
 ### If a MUB remains after an error
 
@@ -922,7 +926,7 @@ Programs sharing the compiler are best used as a matching set of current builds.
 
 What muc2mub reads is **the MUC saved on disk**. If unsaved changes remain in an editor, a separately launched muc2mub has no way to know about them. Save the source before doing a standalone conversion.
 
-Do not read standalone muc2mub's 64 KiB input support as mucEdit's editing buffer limit. The current companion editor has its own 24 KiB limit on normalized source. Being able to compile a large file standalone and being able to edit the same size in the editor are different things.
+Do not read standalone muc2mub's 64 KiB input support as mucEdit's editing buffer limit. The current companion editor has its own 60,000-byte limit on normalized source. Being able to compile a large file standalone and being able to edit the same size in the editor are different things.
 
 In editor integration and mucplay's persistent session, unsaved edits are not represented by the MD5 of the older source file. So even with identical music DATA, `#mmlhash` can differ from standalone muc2mub. Compare the hash difference and the music data difference separately in that case.
 

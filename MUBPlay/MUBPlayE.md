@@ -1,5 +1,7 @@
 # MUBPLAY User Guide
 
+> Updated 2026-10-03: extended builds support 65,536-byte MUC input, 60,000-byte editor documents, 122,880-byte (120 KiB) total music DATA and 59,546-byte page streams, with a 512 KiB minimum mapper. Read the [mucomDotNET command guide](../shared/docs/MUCOMDOTNET_EXTENSIONS.en.md) and [build availability, CPU acceleration and verification limits](../shared/docs/RELEASE_NOTES.md). The existing MucoMSX_261003.zip differs from the separate CPU build. Older hashes and test dates below are historical records.
+
 MUCOM88 MUB Player for MSX  
 Written by ToughkidCST
 

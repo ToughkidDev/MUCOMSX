@@ -1,8 +1,12 @@
 # MUCPLAY 사용자 설명서
 
+> 2026-10-03 갱신: 확장 빌드의 MUC 입력은 65,536바이트, MUCEDIT 편집은 60,000바이트, 음악 DATA 전체는 122,880바이트(120 KiB), 한 페이지 스트림은 59,546바이트입니다. 최소 매퍼 512 KiB를 유지합니다. [mucomDotNET 확장 명령 상세 안내](../shared/docs/MUCOMDOTNET_EXTENSIONS.md)와 [적용 빌드·CPU 가속·검증 제약](../shared/docs/RELEASE_NOTES.md)을 함께 보세요. 기존 MucoMSX_261003.zip과 별도 CPU 가속 빌드는 다릅니다. 본문의 예전 빌드 해시와 시험 일자는 당시 기록입니다.
+
 MUC 파일을 MSX에서 컴파일하고, Makoto로 연주하고, 완성된 음악을 파일로 저장하기
 
 작성 기준: 2026년 9월 14일 · YM2608(Makoto)용 MUCPLAY
+
+
 
 ---
 
@@ -648,5 +652,3 @@ MUCPLAY /RELEASE
 ```
 
 자주 쓰는 흐름은 **불러오기 → 컴파일 → 들어보기 → 저장 → 해제**입니다. 여기에 익숙해지면 반복 횟수를 바꾸거나 MUCEDIT와 연결해서 훨씬 편하게 작업할 수 있습니다.
-
-

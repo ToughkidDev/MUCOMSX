@@ -1,5 +1,7 @@
 # MUCEdit User Guide
 
+> Updated 2026-10-03: extended builds support 65,536-byte MUC input, 60,000-byte editor documents, 122,880-byte (120 KiB) total music DATA and 59,546-byte page streams, with a 512 KiB minimum mapper. Read the [mucomDotNET command guide](../shared/docs/MUCOMDOTNET_EXTENSIONS.en.md) and [build availability, CPU acceleration and verification limits](../shared/docs/RELEASE_NOTES.md). The existing MucoMSX_261003.zip differs from the separate CPU build. Older hashes and test dates below are historical records.
+
 ## Edit, compile, and listen to MUC music on your MSX
 
 **MUCEdit v0.8 by ToughkidCST**  
@@ -76,7 +78,7 @@ MUCEdit is not a port of Windows VS Code to the MSX. It is an MSX editor arrange
 ### 2.1 Basic environment
 
 - An MSX2 or later environment capable of an 80-column text screen
-- An MSX-DOS2-class runtime and memory mapper support, 512KB recommended (MegaFlashROM SCC SD+, Carnivore2, and similar)
+- An MSX-DOS2-class runtime and at least 512 KiB mapper RAM, with enough allocatable free segments (MegaFlashROM SCC+ SD, Carnivore2, and similar).
 - A readable and writable disk or storage device
 - For playback, a sound device supported by MUCPLAY (Makoto YM2608)
 
@@ -130,7 +132,7 @@ If you bring in a different voice or PCM file that merely has a similar name, th
 
 Even a compile that does not save the original MUC uses a temporary file, so integration work is limited on a read-only disk.
 
-About 33 KiB is needed for the state file, space equal to the current document size for the temporary MUC, and exporting requires additional space for the MUB or VGM. Songs with large PCM produce large result files. Do not assume that "the original MUC is a few KB, so a few KB free is enough" — leave yourself plenty of room.
+About 73 KiB is needed for the state file, space equal to the current document size for the temporary MUC, and exporting requires additional space for the MUB or VGM. Songs with large PCM produce large result files. Do not assume that "the original MUC is a few KB, so a few KB free is enough" — leave yourself plenty of room.
 
 <a id="03"></a>
 ## 3. First run: hearing a song
@@ -746,7 +748,7 @@ D v10 *1 *2
 
 `# *1{...}` is the definition, and `*1` inside a channel is the call. Calling an undefined number, or failing to close the brace, is an error.
 
-The current safe limits are 511 bytes for a macro body and 4 levels of call nesting. A macro that keeps calling itself is also not a valid way to write a song. Keep in mind that when an error occurs inside a macro, **the calling channel line may be shown rather than the definition line**.
+The current safe limits are 1023 bytes for a macro body and 8 levels of call nesting. A macro that keeps calling itself is also not a valid way to write a song. Keep in mind that when an error occurs inside a macro, **the calling channel line may be shown rather than the definition line**.
 
 ### 17.5 Portamento
 
@@ -894,8 +896,8 @@ The following describes the current diagnostic codes. The same code can have sev
 | 12–14 | Unspecified compiler error | Reserved and general error range. Do not infer the cause from the number alone |
 | 15 | Macro not found | A call to an undefined `*number` |
 | 16 | Invalid macro definition | Macro structure problems such as an unclosed definition or excessive nesting or recursion |
-| 17 | MML line or macro too long | Exceeded the 1,023-byte limit for one MML body line or the 511-byte limit for a macro body |
-| 18 | Output buffer overflow | The compiled song data exceeded the 32 KiB output buffer limit |
+| 17 | MML line or macro too long | Exceeded the 1,023-byte limit for one MML body line or the 1023-byte limit for a macro body |
+| 18 | Output buffer overflow | The compiled song data exceeded the 122,880 bytes output buffer limit |
 
 This table is not a guarantee that every invalid number and every MML combination is fully checked. Syntax checking, file checking, and what something means on the actual sound chip are three different things. Even when it compiles without errors, you still have to listen to confirm it sounds as intended.
 
@@ -920,7 +922,7 @@ A *99 c         → code 15: macro 99 was never defined
 - Split a long macro into several shorter definitions.
 - Exceeding the output capacity is not the same as the source file size. Look for places where repeated notes are written out at unnecessary length.
 - Use `[ ]` repeats where you can. Macros reduce text, but they are expanded, so using a macro does not necessarily reduce the output size.
-- PCM size has a large effect on the overall MUB size, but that is a different limit from the **32 KiB of song data** in code 18.
+- PCM size has a large effect on the overall MUB size, but that is a different limit from the **122,880 bytes of song data** in code 18.
 
 <a id="21"></a>
 ## 21. Warning messages and invalid input
@@ -941,7 +943,7 @@ You need a space after the channel, as in `A c4`. Also check the following.
 - Did you put a space or tab before the channel letter?
 - Did you write the channel letter in lowercase?
 - Did you use a letter outside A–K as a channel?
-- Did you write an unsupported multi-channel prefix such as `AB c` or `A,B c`?
+- Did you use a comma-separated prefix such as `A,B c`? Current extended builds support `AB c` and `C0123 c` as multi-part/page syntax.
 - Did you write prose or a test string without a comment marker?
 
 For example, prefixing `J cdef` with letters to make `TESTJ cdef` does not cause that line to play as a normal J channel. **It may warn and then ignore the line, as the older interpretation did.** A successful compile message does not mean that string was interpreted as music.
@@ -1003,10 +1005,11 @@ Warnings do not check every implication of invalid input. For example, whether a
 |---|---|
 | `mucEdit new requires MSX-DOS2.` | Check that you are on an MSX-DOS2-class environment |
 | `Open failed. Press a key.` | Check the name, path, disk, and whether the file is accessible |
-| `Text exceeds 24 KiB; not loaded.` | The normalized document exceeds the editing capacity. Split or shrink it with an external tool and reopen |
-| `Need 32 KiB free mapper RAM to load.` | Loading a new document needs two temporary mapper segments. Save your current work and check resident programs, sessions, and RAM configuration |
+| `Text exceeds 60000 bytes; not loaded.` | The normalized document exceeds 60,000 bytes. Split or shrink it with an external tool and reopen |
+| `Need 64 KiB free mapper RAM to load.` | Loading a new document needs four temporary mapper segments. Check resident programs, sessions, and RAM configuration |
+| `MUCEDIT needs four free mapper banks (64 KiB).` | Startup could not allocate the four document banks. Check RAM and resident programs |
 | `Save failed. Press a key.` | Check disk space, write protection, the name, and device errors. First secure a way to save the in-memory document under another name or to another device |
-| `Document memory full. Press a key.` | Check whether the document exceeded 24 KiB after an insert or paste |
+| `Document memory full. Press a key.` | Check whether the document exceeded 60,000 bytes after an insert or paste |
 | `Selection exceeds 4 KiB clipboard.` | Break the copy or cut range into smaller pieces |
 | `Text not found. Press a key.` | Check the search spelling and letter case |
 | `Save the document first. Press a key.` | Check whether the current command lacks a document name, and save or name it |
@@ -1048,37 +1051,37 @@ A normal launch does not auto-recover an old RET just because one exists. `/R` i
 | Item | Current figure |
 |---|---|
 | Screen | 80 columns; 22 of the 24 rows form the normal editing area |
-| Editing document | Up to 24 KiB = 24,576 bytes |
+| Editing document | Up to 60,000 bytes in four dedicated 16 KiB mapper banks |
 | Internal clipboard | Up to 4 KiB |
 | Undo/Redo history | 4 KiB total, including before-and-after content and bookkeeping |
 | Auxiliary work mapper | One 16 KiB segment |
-| Temporary mapper for opening a file | Two additional 16 KiB segments required |
+| Temporary mapper for opening a file | Four additional 16 KiB segments required |
 | List window | 16 entries per page; the full list is found via additional pages |
 | MML channel line body | Up to 1,023 bytes |
-| Macro body | Up to 511 bytes |
-| Macro call nesting | Up to 4 levels |
+| Macro body | Up to 1023 bytes |
+| Macro call nesting | Up to 8 levels |
 | Repeat nesting | Up to 16 levels |
 | Distinct FM voices used | Up to 32 |
-| Compiled song data | Up to 32 KiB. Not the same as the total MUB file size including PCM |
+| Compiled song data | Up to 122,880 bytes. Not the same as the total MUB file size including PCM |
 
-### 23.1 Extra mapper memory does not make the document 40 KiB
+### 23.1 Four document banks and auxiliary workspace
 
-The 16 KiB auxiliary work mapper is workspace for line moves and duplication, the file list, and similar tasks. It is not a setting that raises the 24 KiB document, 4 KiB clipboard, or 4 KiB undo limits.
+The document uses four dedicated 16 KiB mapper banks, with an exact editing limit of 60,000 bytes. A separate 16 KiB work mapper handles line moves, duplication and the file list. Clipboard and Undo/Redo history retain their separate 4 KiB limits.
 
-When opening a file, the current document is not discarded immediately; the new document is read into a temporary area and validated. That is why, beyond the work mapper, another 32 KiB of free mapper memory is briefly needed. The structure exists to protect the current document if reading, closing, or allocation fails.
+Four temporary banks receive a new document. Only after reading and closing succeed are bank ownerships swapped and the old document freed. Loading can use nine user segments (144 KiB): four live, four temporary and one work segment, in addition to DOS and player-session memory. Allocation/read/close failures preserve the current document and history.
 
 ### 23.2 On-disk file size versus editing size
 
-The 24 KiB limit is based on **the internal document size** after line endings and so on are normalized.
+The 60,000-byte limit is based on **the internal document size** after normalization, not a character count.
 
 - CRLF, CR, and LF line endings are read and normalized internally to LF.
 - A UTF-8 BOM at the start of the file is removed.
 - The DOS Ctrl+Z byte is treated as the end of text.
 - On saving, internal LF is written out as CRLF.
 
-So a MUC slightly over 24 KiB on disk may still open if the normalized content fits within the limit. An extreme CRLF file with a very high proportion of line breaks could fit about 48 KiB into the internal 24 KiB. But **that does not mean a typical 48 KiB MUC can be edited.**
+An on-disk file larger than 60,000 bytes may open if its normalized content fits. At the extreme, 120,000 bytes consisting entirely of CRLF pairs normalize to 60,000 bytes. Ordinary text must still fit the internal limit.
 
-Even if the current compiler separately supports a larger source window, MUCEdit's own editing limit is 24 KiB.
+The compiler's temporary `MEDCOMP.MUC` uses internal LF endings and remains at most 60,000 bytes. Normal saves remain CRLF. This prevents temporary newline expansion from exceeding MUCPLAY's 65,536-byte input limit. For byte-exact MUB comparisons use the same LF input: raw TAG line endings can differ from a standalone compilation of the CRLF save.
 
 ### 23.3 Korean, Japanese, and UTF-8
 
@@ -1232,6 +1235,8 @@ Rather than deleting files that need recovering and then reporting, please prese
 5. **A success message after a Warning does not make the warning go away.**
 
 <a id="27"></a>
+
+2026-09-27 update: capacity, memory, recovery-file, LF compiler-draft descriptions and the build hashes below now reflect the 60,000-byte/four-bank editor. The MML example and diagnostic checks described below remain the September 14 verification record.
 ## 27. Scope of this document
 
 This guide was written against the current implementation of MUCEdit v0.8 and the MUCPLAY and shared MUC compiler in the September 14, 2026 working tree. It covers the recently added channel and tag warnings and the compile error diagnostics. It does not claim that older MUCPLAY builds, other MUCOM88-derived drivers, or MML programs for the PC all behave the same way.
@@ -1243,22 +1248,24 @@ The 19 MUC examples included here were confirmed to compile with the current com
 When you need to compare reference executables precisely, the SHA-256 values are:
 
 ```text
-MUCEDIT.COM  13,212 bytes
-f4dd3d8fe3ae65d11d26d0471c6034e72812d393a9580b3eb2b7f593646aa08f
+MUCEDIT.COM  13,737 bytes
+f2bd9f38d24377e09e6956a6a6a0267b469005865e53b411a506df5ed33fd275
 
 MUCPLAY.COM  32,512 bytes
-6c728c58571d23987179ef030d284dcf533600d118d499be549c6ab5e308183c
+9bd7c831c7151d7f91486f3026f7acd9733b265518e2ca26224f51b8ba8b6d30
 ```
 
 To look through the development material distributed alongside this, see the documents below. For ordinary use, the earlier sections of this guide plus the error and warning chapters are enough to get started.
 
-- [Editing keymap](docs/KEYMAP.md)
-- [File list window behavior](docs/FILE_PICKER_20260911.md)
-- [Editor work mapper](docs/WORK_MAPPER_20260911.md)
-- [MUCPLAY's E2 integration protocol](../mucplay/EDITOR_ABI_E2.md)
-- [Compile error handling](../mucplay/docs/COMPILER_ERROR_FIXES_20260911.md)
-- [Channel and tag warnings](../mucplay/docs/SOURCE_WARNINGS_20260911.md)
-- [Compiler technical reference](../muc2mub/Muc2mub.md)
+The following are historical references inside the development project, not files included in the public repository or documentation pack.
+
+- Editing keymap — `docs/KEYMAP.md`
+- File list window behavior — `docs/FILE_PICKER_20260911.md`
+- Editor work mapper — `docs/WORK_MAPPER_20260911.md`
+- MUCPLAY's E2 integration protocol — `../mucplay/EDITOR_ABI_E2.md`
+- Compile error handling — `../mucplay/docs/COMPILER_ERROR_FIXES_20260911.md`
+- Channel and tag warnings — `../mucplay/docs/SOURCE_WARNINGS_20260911.md`
+- Compiler technical reference — `../muc2mub/Muc2mub.md`
 
 Go ahead and change one phrase to start with. Once you are comfortable with the flow of compiling what you changed, listening, and saving the state you like, you can polish long songs a little at a time.
 

@@ -23,6 +23,16 @@ Compose in MML · Compile on the MSX itself · Play on real hardware · Export M
 
 ## 🌐 About / 프로젝트 소개 / 概要
 
+### Documentation update — 2026-10-03 / 최신 문서 / 最新ドキュメント
+
+The current extended toolchain supports a **60,000-byte editor**, **64 KiB MUC input**, **120 KiB compiled DATA**, and single-YM2608 mucomDotNET extensions, including general pages, FM3 independent slots and ADPCM pitch effects.
+
+- **한국어:** [추가 명령 상세 안내](shared/docs/MUCOMDOTNET_EXTENSIONS.md). CPU 자동 가속·`/N`은 **별도 검증 빌드**의 기능입니다. 기존 `MucoMSX_261003.zip`을 포함한 모든 다운로드에 적용된다는 뜻은 아닙니다.
+- **English:** [Extension command reference](shared/docs/MUCOMDOTNET_EXTENSIONS.en.md). Automatic CPU acceleration and `/N` are in the **separate validated CPU build**, not the existing `MucoMSX_261003.zip`.
+- **日本語:** [拡張コマンドガイド](shared/docs/MUCOMDOTNET_EXTENSIONS.ja.md)。CPU自動高速化と`/N`は**別途検証ビルド**の機能で、既存`MucoMSX_261003.zip`には含まれません。
+
+Read [build identification, CPU performance and known limits](shared/docs/RELEASE_NOTES.md) before choosing a binary. This documentation update does not publish or replace runtime release assets.
+
 **MUCOMSX** brings **MUCOM88** — the FM music production toolchain Yuzo Koshiro (古代祐三) developed for the YM2203 and YM2608 (Sound Board II) of the NEC PC-8801mkIISR and later — to the MSX. It targets the **MAKOTO Cartridge**, the YM2608 cartridge released for MSX.
 
 What makes MUCOMSX different from a port of the editor alone: **the whole cycle runs on the MSX.** You write MML, compile it, hear it, and export the result without ever leaving the machine. No cross-assembler on a PC, no shuttling files back and forth.
@@ -107,7 +117,7 @@ MUCPLAY and MUC2MUB share the same compiler, so they accept the same MML and rep
 | Hear a `.MUC` once, right now | **MUCPLAY** | `MUCPLAY SONG.MUC` compiles and plays in one step |
 | Iterate from the DOS prompt and export | **MUCPLAY** session | `/LOAD` → `/COMPILE` → `/PLAY` → `/MUB` `/VGM` |
 | Convert a whole album unattended | **MUC2MUB** | One song per run, driven by a `.BAT`; exit codes to check |
-| Compile a source too large for the editor | **MUC2MUB** | Accepts up to 64 KiB; the editor's buffer is 24 KiB |
+| Compile a source too large for the editor | **MUC2MUB** | Accepts up to 65,536 bytes; the editor holds 60,000 normalized bytes |
 | Compile on a machine with no Makoto | **MUC2MUB** | Compiling needs no sound device — only playback does |
 | Just listen to a finished `.MUB` | **MUBPLAY** | No compiler involved |
 
@@ -162,7 +172,7 @@ The batch route has no such state. MUC2MUB always reads the `.MUC` **as saved on
 |---|---|
 | **Machine** | MSX2 or later with an 80-column text screen (MSX2+ class recommended; turbo R considered) |
 | **OS** | MSX-DOS 2, or Nextor providing the same functionality |
-| **Memory** | Memory mapper RAM — **512 KB recommended** |
+| **Memory** | At least **512 KiB mapper RAM**, with enough free segments; not a guarantee that every large retained session fits |
 | **Sound** | **MAKOTO cartridge (YM2608)** — for playback. Compiling with MUC2MUB needs no sound device |
 | **Storage** | A writable disk or storage device — compiling uses temporary files |
 
@@ -268,22 +278,25 @@ Case matters: `c` is a note but `C` sets the base clock; `t225` is a raw Timer-B
 | `MUBPLAY SONG.MUB /L5` | play 5 times |
 | `MUBPLAY SONG.MUB /V /L5` | export **5 seconds** |
 
-**Sizes are three separate limits, not one.** They are easy to conflate, and adding RAM raises none of them.
+**Source, editor, page and total DATA limits are separate.** These are the current extended-build limits; adding RAM does not automatically raise them.
 
 | Limit | Value | Applies to |
 |---|---|---|
-| Editing buffer | **24 KiB** | What MUCEDIT can hold open, after line endings are normalized |
-| Source file | **64 KiB** | What MUC2MUB accepts as input — the whole file, comments included |
-| Compiled song data | **32 KiB** | Notes, channel structure and the voice table together |
-| Final `.MUB` | no fixed limit | Header + data + tags + PCM; routinely larger than the three above |
+| Editing buffer | **60,000 bytes** | MUCEDIT document after newline normalization; four 16 KiB banks |
+| Source file | **65,536 bytes (64 KiB)** | MUC2MUB / MUCPLAY input, including comments, tags and line endings |
+| One page stream | **59,546 bytes** | Per-page limit, separate from the total DATA limit |
+| Compiled music DATA | **122,880 bytes (120 KiB)** | Notes, structural data and FM voices together |
+| Final `.MUB` | May exceed 120 KiB | Header + DATA + tags + PCM; format, loader and available-memory limits still apply |
 
-So a 40 KiB `.MUC` compiles fine with MUC2MUB but will not open in MUCEDIT, and a small source packed with notes can overflow the 32 KiB data area while a comment-heavy large one does not.
+A 40 KiB source is within the editor's size limit. A source within 64 KiB can still exceed a page or total DATA limit after macro expansion. MUB8 is retained for ordinary songs; extended or large songs use muPb 0100. A–K each support pages 0–9, sharing one physical YM2608. A 512 KiB mapper is the minimum configuration, not a promise that every large song fits while other sessions remain resident.
 
 ---
 
 ## 📚 Documentation / 문서 / ドキュメント
 
 Every manual is available in all three languages.
+
+The new [extension guides (KO)](shared/docs/MUCOMDOTNET_EXTENSIONS.md), [EN](shared/docs/MUCOMDOTNET_EXTENSIONS.en.md), [JA](shared/docs/MUCOMDOTNET_EXTENSIONS.ja.md) cover FM3, pages, macros, volume, SSG envelopes, rhythm, MIDI-style portamento and ADPCM effects. [Build and verification notes](shared/docs/RELEASE_NOTES.md) identify the binaries and remaining memory/real-time limits.
 
 | Tool | 한국어 | 日本語 | English |
 |---|---|---|---|
@@ -311,9 +324,10 @@ no asset-creation tooling of its own, so that half of the workflow lives there.
 | **Workflow** — Windows → MSX, end to end | [Workflow-ko](https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow-ko) | [Workflow-ja](https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow-ja) | [Workflow](https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow) |
 | **Tools & Links** — where to get everything | [Tools-and-Links-ko](https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ko) | [Tools-and-Links-ja](https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ja) | [Tools and Links](https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links) |
 
-More pages are on the way: MML basics and a full command reference, FM voice
-creation with the voice editor, PCM/ADPCM preparation, rhythm patterns, the size
-limits that bite in practice, and troubleshooting.
+New: [mucomDotNET extensions](https://github.com/ToughkidDev/MUCOMSX/wiki/MucomDotNET-Extensions),
+[limits and specs](https://github.com/ToughkidDev/MUCOMSX/wiki/Limits-and-Specs), and
+[builds, CPU performance and verification](https://github.com/ToughkidDev/MUCOMSX/wiki/Build-and-Verification).
+Additional MML basics, FM voice creation, PCM preparation and troubleshooting guides remain planned.
 
 ---
 
