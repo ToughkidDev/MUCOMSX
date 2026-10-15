@@ -1,6 +1,11 @@
 # MUBPLAY 사용설명서
 
-> 2026-10-03 갱신: 확장 빌드의 MUC 입력은 65,536바이트, MUCEDIT 편집은 60,000바이트, 음악 DATA 전체는 122,880바이트(120 KiB), 한 페이지 스트림은 59,546바이트입니다. 최소 매퍼 512 KiB를 유지합니다. [mucomDotNET 확장 명령 상세 안내](../shared/docs/MUCOMDOTNET_EXTENSIONS.md)와 [적용 빌드·CPU 가속·검증 제약](../shared/docs/RELEASE_NOTES.md)을 함께 보세요. 기존 MucoMSX_261003.zip과 별도 CPU 가속 빌드는 다릅니다. 본문의 예전 빌드 해시와 시험 일자는 당시 기록입니다.
+## 2026-10-13 업데이트 안내
+
+현재 버전은 기존 MUB8·muPb·msPb0100에 더해 SCC/SCC+ SSG 확장의 msPb0101을 지원합니다. [최신 릴리즈 안내](../shared/docs/RELEASE_UPDATE_261013.md)에서 칩 탐색·모노 근사·용량·사용 제한를 확인하세요. 컴파일러 결함으로 음악 DATA가 빠진 예전 MUB는 플레이어만 바꿔 복구할 수 없으며 다시 컴파일해야 합니다.
+
+> 입력 MUC는 65,536바이트(MUC2MUB·MUCPLAY), 편집 문서는 정규화 후 60,000바이트(MUCEDIT), 음악 DATA는 122,880바이트입니다. 페이지 스트림 상한은 OPNA 59,546·네이티브 MSX 59,106바이트이며 최소 매퍼는 512KiB입니다. 헤더·태그·PCM은 음악 DATA와 별도입니다.
+
 
 MUCOM88 MUB Player for MSX  
 Written by ToughkidCST
@@ -374,3 +379,11 @@ MUBPLAY GH002.MUB /V /L5
 즐겁게 사용해 주세요.
 
 ToughkidCST
+
+## MSX-MUSIC·내부 PSG 확장
+
+최신 통합 빌드는 MSX 접두어 파트와 전용 msPb 출력, 연주 CPU 자동 가속을 지원합니다. 기존 파트는 OPNA로 유지됩니다. 사용 조건·용량·근사 변환의 제한은 새 안내를 우선 확인해 주세요.
+
+[MSX target guide](../shared/docs/MSX_TARGETS.md)
+
+`#SSGExtend`, `@I`, `@W`, `pe`, `#PCMInvert`는 [SCC+ SSG 확장 안내](../shared/docs/SSG_EXTEND.md)를 참조하세요. 기존 msPb 계열을 확장한 근사 연주 기능이며 PC 가상 SSG와 완전 일치는 아닙니다.

@@ -1,6 +1,11 @@
 # MUC2MUB User Guide
 
-> Updated 2026-10-03: extended builds support 65,536-byte MUC input, 60,000-byte editor documents, 122,880-byte (120 KiB) total music DATA and 59,546-byte page streams, with a 512 KiB minimum mapper. Read the [mucomDotNET command guide](../shared/docs/MUCOMDOTNET_EXTENSIONS.en.md) and [build availability, CPU acceleration and verification limits](../shared/docs/RELEASE_NOTES.md). The existing MucoMSX_261003.zip differs from the separate CPU build. Older hashes and test dates below are historical records.
+## Update — 2026-10-13
+
+See [release changes](../shared/docs/RELEASE_UPDATE_261013.en.md) for SCC/SCC+ SSG, PCMInvert, compiler optimization and rhythm-mute fixes since public v0.81. Recompile old MUBs with missing DATA caused by `#OPNA1RhythmMute`. `.MD5` is not required; no MD5 calculation/verification was added. Existing metadata copying is not an integrity check.
+
+> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 122,880 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
+
 
 MUC to MUB on the MSX, one song at a time.
 
@@ -35,11 +40,10 @@ That produces `SONG.MUB`. Once you start working with real songs, though, voice 
 15. [Warning message reference](#15)
 16. [File, disk and memory errors](#16)
 17. [Safe saving and recovery after an interruption](#17)
-18. [Comparing against an original MUB, and using MD5](#18)
+18. [Comparing original MUBs and metadata](#18)
 19. [Using it with mucplay, mucEdit and mubplay](#19)
 20. [Frequently asked questions](#20)
 21. [Pre-release checklist and reporting problems](#21)
-22. [Version check and scope of verification](#22)
 
 <a id="01"></a>
 
@@ -73,7 +77,7 @@ A song whose source targets another compiler, or which contains commands specifi
 | Source | A `.MUC` of the MUCOM88 v1.7 family |
 | Additional files | The FM voice data and PCM data the song requires |
 
-Verification was done on configurations of 512 KiB or more. The program does not, however, blanket-allow or blanket-refuse based on exactly how many KiB of RAM are installed. What matters is being able to allocate the required work segments through the DOS mapper. See [memory limits](#11) for details.
+Use a mapper configuration of at least 512KiB. The program does not, however, blanket-allow or blanket-refuse based on exactly how many KiB of RAM are installed. What matters is being able to allocate the required work segments through the DOS mapper. See [memory limits](#11) for details.
 
 Running directly from DOS 1 or BASIC is not offered as a supported usage. Please boot into a DOS 2-class environment first.
 
@@ -88,7 +92,6 @@ MUC2MUB.COM
 SONG.MUC
 VOICE.DAT       when the song uses external FM voices
 MUCOMPCM.BIN    when the song uses PCM data under the default name
-SONG.MD5       only if you want to embed the source hash
 ```
 
 `VOICE.DAT` and `MUCOMPCM.BIN` are not unconditionally required for every song. Some songs define FM voices inside the MUC, or use no PCM channel at all. Conversely, for a song that really does use those files, do not bring in a different file that merely shares the name.
@@ -350,7 +353,7 @@ The external files in this example must actually be present.
 | `#voice` | External FM voice filename |
 | `#pcm` | External PCM filename |
 
-The current warning checks also treat `#mucom88`, `#driver`, `#version`, `#uuid` and `#mucmd5` as known tag names. That does not mean writing those tags switches the compile engine to a new driver or extended syntax. Writing `#mucmd5` and preparing a [per-input `.MD5` file](#18) are also separate matters.
+`#driver mucomDotNET` selects the supported single-OPNA extended syntax, not an arbitrary driver or additional sound chip. Recognizing metadata names such as `#mucom88`, `#version`, `#uuid` and `#mucmd5` is different from implementing every possible setting. No MD5 calculation/verification is performed; see [legacy metadata](#18).
 
 When writing tags, organize them like this.
 
@@ -540,7 +543,7 @@ The final `.MUB` file includes the header, tags and PCM, so it can be larger tha
 
 ### Does fitting 4 MiB of RAM raise the limits?
 
-No. Verification with a 4 MiB mapper confirmed correct operation in that configuration; it was not a test that reserves or uses the full 4 MiB.
+No. It allocates the work segments it needs, not the entire installed RAM.
 
 The current compiler allocates ten base user segments, or fourteen for wide output, in the DOS default mapper context. It does not survey the RAM in every slot to total up capacity, or actively gather free space from other mappers. Even with a large amount of physical RAM, a memory error can occur depending on what DOS can allocate.
 
@@ -835,7 +838,7 @@ Even this saving scheme does not guarantee atomicity against a power cut or FAT 
 
 <a id="18"></a>
 
-## 18. Comparing against an original MUB, and using MD5
+## 18. Comparing original MUBs and metadata
 
 ### What has to match for two MUBs to be "the same"
 
@@ -850,49 +853,15 @@ Separating the levels of comparison makes it easier to find the cause.
 
 Even with the same number of FM voices and the same channel table, the actual 25-byte voice parameters can differ. An identical DATA size likewise does not mean identical DATA content.
 
-### The per-input `.MD5` file
+### Legacy metadata and comparison
 
-To embed the MUC source hash, the current version reads a `.MD5` file with the same name as the input.
-
-```text
-SONG.MUC  →  SONG.MD5
-BOS010.MUC  →  BOS010.MD5
-```
-
-Even if you specify `TEST.MUB` as the output, the hash file is `SONG.MD5` when the input is `SONG.MUC`. The former shared `MUBHASH.TXT` is no longer used.
-
-The conditions on the file's content are as follows.
-
-- It is the MD5 of **the entire source bytes** of that MUC.
-- Put in only 32 ASCII hexadecimal characters.
-- Do not include line breaks, a BOM, whitespace or a filename.
-- The file size must be exactly 32 bytes.
-- Uppercase hexadecimal is accepted but normalized to lowercase in the output.
-
-If the `.MD5` is absent, has a wrong size or characters, or fails to read, 32 ASCII `0` characters are written into `#mmlhash`. This does not mean the whole MUB or the music DATA is zeroed.
-
-Above all, **this is not a feature that computes MD5 on the MSX and collates it against the source.** It is a feature that accepts a correctly formatted external value and embeds it. A stale `.MD5` can go straight in as long as the format is right, so if you modify the MUC you must regenerate the hash too.
-
-### Making a `.MD5` on a PC
-
-The following is not an MSX-DOS command but **an example run under Python 3 on a PC**. It reads `SONG.MUC` in the working folder and creates or updates `SONG.MD5`.
-
-```python
-from pathlib import Path
-import hashlib
-
-source = Path("SONG.MUC")
-digest = hashlib.md5(source.read_bytes()).hexdigest()
-source.with_suffix(".MD5").write_bytes(digest.encode("ascii"))
-```
-
-Because it reads and writes in binary, it does not translate line endings, and it appends no newline to the `.MD5`. Move the resulting file to the MSX side along with the MUC. If the MUC's character encoding or line endings change during transfer, it has to be recalculated.
+`.MD5` is not required for compilation or playback. The MSX does not calculate MD5 or verify it against the source. Existing compatibility code can copy a same-basename file containing 32 ASCII hex characters into `#mmlhash`, but accepts stale values: this is not an integrity proof. Missing/invalid files produce 32 ASCII zeros without changing music DATA. New work does not require a sidecar. Check release files with SHA-256 and complete byte comparisons.
 
 ### To match the original exactly
 
 1. Confirm the MUC is the same source bytes.
 2. Use the identical FM voice library and PCM bank.
-3. Prepare the `.MD5` that matches the input.
+3. Check optional metadata differences; `.MD5` is not required.
 4. Compare compile results from the same syntax and compatibility basis.
 5. Look for differences separately in the header, DATA, tags and PCM.
 
@@ -936,7 +905,7 @@ In editor integration and mucplay's persistent session, unsaved edits are not re
 
 ### Does it work in Z80 mode?
 
-Yes. It is a DOS program targeting the Z80 and was verified on Z80 configurations. R800 is not required.
+Yes. It targets Z80; R800 is not required.
 
 ### What is the average compile time?
 
@@ -978,7 +947,7 @@ The existing result was protected. That does not mean this run succeeded. Check 
 
 ### I have 4 MiB of RAM but still get an output buffer overflow.
 
-Installed RAM and the music DATA limit are different. The current limit of the two output segments does not grow automatically with added memory.
+Installed RAM and the music DATA limit are different. Extended output uses up to eight segments with a total DATA limit of 122,880 bytes; more RAM does not expand it automatically.
 
 ### Can I compile without a `.MD5`?
 
@@ -1012,7 +981,6 @@ Check the warnings, the external assets and the resulting playback first. If rep
 - [ ] Did not mix same-named assets from different albums.
 - [ ] Did not count an older MUB left after an error as a new successful result.
 - [ ] Checked the content of leftover temporary and backup files and kept what was needed.
-- [ ] Regenerated the `.MD5` for any modified MUC.
 
 ### When reporting a problem
 
@@ -1039,3 +1007,11 @@ State of any leftover final, temporary and backup files:
 If possible, keep a text log together with a small reproducible source. If you do not have the right to publish the music or assets, it is best to first reduce it to a minimal reproduction containing nothing sensitive.
 
 Finally, please remember just one thing. **Preparing the source and assets correctly, reading the warnings, and checking the song you built** is the most dependable way to use this. It may feel a little tedious at first, but keeping to that order makes the results far easier to trust and manage — whether you are revising a single song or batch-converting dozens.
+
+## Native MSX targets
+
+The integrated build adds MSX-prefixed parts, native msPb output and automatic playback CPU acceleration. Existing parts remain OPNA. Consult the new guide for requirements, limits and approximate sound conversion.
+
+[MSX target guide](../shared/docs/MSX_TARGETS.en.md)
+
+For `#SSGExtend`, `@I`, `@W`, `pe` and `#PCMInvert`, see the [SCC+ SSG guide](../shared/docs/SSG_EXTEND.en.md). This extends msPb with approximate SCC+ playback, not bit-exact PC virtual SSG.

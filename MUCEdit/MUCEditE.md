@@ -1,6 +1,11 @@
 # MUCEdit User Guide
 
-> Updated 2026-10-03: extended builds support 65,536-byte MUC input, 60,000-byte editor documents, 122,880-byte (120 KiB) total music DATA and 59,546-byte page streams, with a 512 KiB minimum mapper. Read the [mucomDotNET command guide](../shared/docs/MUCOMDOTNET_EXTENSIONS.en.md) and [build availability, CPU acceleration and verification limits](../shared/docs/RELEASE_NOTES.md). The existing MucoMSX_261003.zip differs from the separate CPU build. Older hashes and test dates below are historical records.
+## Update — 2026-10-13
+
+The normalized document limit remains 60,000 bytes. Current MUCPLAY integration supplies SCC/SCC+ SSG, PCMInvert, compiler optimization and rhythm-mask restoration. Read [release changes and safe replacement](../shared/docs/RELEASE_UPDATE_261013.en.md), exit normally, then replace all four COMs together. The same toolchain ZIP also includes the MUCVOICE v0.5beta voice editor.
+
+> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 122,880 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
+
 
 ## Edit, compile, and listen to MUC music on your MSX
 
@@ -43,7 +48,6 @@ Once that distinction is clear, MUCEdit becomes much easier to use.
 19. [How to read a compile error](#19)
 20. [Compile error codes and what triggers them](#20)
 21. [Warning messages and invalid input](#21)
-22. [Editor messages and how to recover](#22)
 23. [Memory, file size, and character handling limits](#23)
 24. [Frequently asked questions](#24)
 25. [Working safely and updating](#25)
@@ -82,18 +86,7 @@ MUCEdit is not a port of Windows VS Code to the MSX. It is an MSX editor arrange
 - A readable and writable disk or storage device
 - For playback, a sound device supported by MUCPLAY (Makoto YM2608)
 
-The representative environment used for integration testing was:
-
-```tex
-Panasonic_FS-A1WX
-MegaFlashROM_SCC+_SD
-MAKOTO
-MSX-DOS2 / Nextor
-```
-
-For practical use, plan around **a machine with a 512 KiB-class main mapper**. That is the configuration used for integration testing, not a strict minimum-RAM guarantee for every model and DOS configuration. DOS, resident programs, and the song session currently being held also consume memory, so installed RAM alone does not determine whether things will run.
-
-Also, having a built-in PSG in your MSX is a separate matter from having the playback device MUCPLAY requires. The baseline playback environment in this guide is the YM2608 in MAKOTO. For other sound configurations, check what your particular MUCPLAY build supports.
+Use at least 512KiB mapper RAM with sufficient allocatable free segments. DOS, resident programs and retained music sessions also consume memory.
 
 ### 2.2 Keep the files in one directory to start with
 
@@ -1236,37 +1229,16 @@ Rather than deleting files that need recovering and then reporting, please prese
 
 <a id="27"></a>
 
-2026-09-27 update: capacity, memory, recovery-file, LF compiler-draft descriptions and the build hashes below now reflect the 60,000-byte/four-bank editor. The MML example and diagnostic checks described below remain the September 14 verification record.
-## 27. Scope of this document
+## 27. Supported scope
 
-This guide was written against the current implementation of MUCEdit v0.8 and the MUCPLAY and shared MUC compiler in the September 14, 2026 working tree. It covers the recently added channel and tag warnings and the compile error diagnostics. It does not claim that older MUCPLAY builds, other MUCOM88-derived drivers, or MML programs for the PC all behave the same way.
+The normalized editing limit is 60,000 bytes. Use current MUCPLAY for compilation, playback and export; see the [extension reference](../shared/docs/MUCOMDOTNET_EXTENSIONS.en.md) for supported commands/formats.
 
-In particular, the advanced MML tables here are a guide for reading the supported commands. This is neither a document guaranteeing the full extended syntax of other drivers nor a complete reference on FM, SSG, and PCM sound synthesis theory. For important work, keep the originals and confirm by actually playing the result.
+Check for stale COMs in other folders/PATH. Use the included SHA256SUMS.txt to identify files. Keep original work and check warnings, voice/PCM assets and actual playback.
 
-The 19 MUC examples included here were confirmed to compile with the current compiler without errors or source warnings. The 15 error inputs and 4 warning inputs were also checked to produce the expected diagnostics. That testing confirmed syntax and compile results; it does not mean the voices, volumes, and playback quality were verified by listening on every real hardware environment.
+## Native MSX targets
 
-When you need to compare reference executables precisely, the SHA-256 values are:
+The integrated build adds MSX-prefixed parts, native msPb output and automatic playback CPU acceleration. Existing parts remain OPNA. Consult the new guide for requirements, limits and approximate sound conversion.
 
-```text
-MUCEDIT.COM  13,737 bytes
-f2bd9f38d24377e09e6956a6a6a0267b469005865e53b411a506df5ed33fd275
+[MSX target guide](../shared/docs/MSX_TARGETS.en.md)
 
-MUCPLAY.COM  32,512 bytes
-9bd7c831c7151d7f91486f3026f7acd9733b265518e2ca26224f51b8ba8b6d30
-```
-
-To look through the development material distributed alongside this, see the documents below. For ordinary use, the earlier sections of this guide plus the error and warning chapters are enough to get started.
-
-The following are historical references inside the development project, not files included in the public repository or documentation pack.
-
-- Editing keymap — `docs/KEYMAP.md`
-- File list window behavior — `docs/FILE_PICKER_20260911.md`
-- Editor work mapper — `docs/WORK_MAPPER_20260911.md`
-- MUCPLAY's E2 integration protocol — `../mucplay/EDITOR_ABI_E2.md`
-- Compile error handling — `../mucplay/docs/COMPILER_ERROR_FIXES_20260911.md`
-- Channel and tag warnings — `../mucplay/docs/SOURCE_WARNINGS_20260911.md`
-- Compiler technical reference — `../muc2mub/Muc2mub.md`
-
-Go ahead and change one phrase to start with. Once you are comfortable with the flow of compiling what you changed, listening, and saving the state you like, you can polish long songs a little at a time.
-
-— ToughkidCST
+For `#SSGExtend`, `@I`, `@W`, `pe` and `#PCMInvert`, see the [SCC+ SSG guide](../shared/docs/SSG_EXTEND.en.md). This extends msPb with approximate SCC+ playback, not bit-exact PC virtual SSG.

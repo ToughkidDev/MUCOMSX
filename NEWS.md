@@ -4,6 +4,8 @@ Newest first. The latest few are also shown on the [MUCOMSX](https://toughkiddev
 
 | Date | Type | News |
 |---|---|---|
+| 2026-10-15 | DOCS | Five-tool documentation updated in Korean, English and Japanese, including [MUCVOICE v0.5beta](MUCVoice/mucvoice.en.md), SCC/SCC+ SSG, PCMInvert and [current package contents](README.md#-downloads--다운로드--ダウンロード). |
+| 2026-10-13 | UPDATE | SCC/SCC+ SSG, PCMInvert, compiler optimization, rhythm/session fixes and MUCVOICE. [KO](shared/docs/RELEASE_UPDATE_261013.md) · [EN](shared/docs/RELEASE_UPDATE_261013.en.md) · [JA](shared/docs/RELEASE_UPDATE_261013.ja.md). |
 | 2026-10-04 | SAMPLES | [Snatcher](Samples/Muc/MSX/Snatcher) — 44 MUC songs added to the samples. |
 | 2026-10-03 | RELEASE | [MucoMSX v0.81-beta](https://github.com/ToughkidDev/MUCOMSX/releases/tag/v0.81-beta) released. |
 | 2026-10-03 | DOCS | [mucomDotNET extension command guide](MucomDotNetExtension) published in Korean, Japanese and English. |

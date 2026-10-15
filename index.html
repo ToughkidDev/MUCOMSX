@@ -182,6 +182,12 @@ footer p{margin:5px 0}
       <a class="news-all" href="https://github.com/ToughkidDev/MUCOMSX/blob/main/NEWS.md">All news</a>
     </div>
     <ul class="news-list">
+      <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCVoice/mucvoice.en.md">
+        <time datetime="2026-10-15">2026-10-15</time><span class="tag">DOCS</span>
+        <span class="text">Five-tool multilingual manuals and MUCVOICE v0.5beta</span></a></li>
+      <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_UPDATE_261013.en.md">
+        <time datetime="2026-10-13">2026-10-13</time><span class="tag">UPDATE</span>
+        <span class="text">SCC/SSG, PCMInvert, performance fixes and MUCVOICE</span></a></li>
       <li><a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/Samples/Muc/MSX/Snatcher">
         <time datetime="2026-10-04">2026-10-04</time><span class="tag">SAMPLES</span>
         <span class="text">Snatcher — 44 MUC songs added to the samples<span class="new">NEW</span></span></a></li>
@@ -202,14 +208,14 @@ footer p{margin:5px 0}
   <div class="wrap">
     <h2>About <span class="ko">프로젝트 소개 · 概要</span></h2>
     <aside class="lead">
-      <strong>Documentation updated 2026-10-03 / 최신 문서 / 最新ドキュメント</strong>
+      <strong>Latest features / 최신 기능 / 最新機能</strong>
       <p>60,000-byte editing · 64 KiB MUC input · 120 KiB music DATA · single-YM2608 mucomDotNET extensions.</p>
       <p><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MucomDotNetExtension/MUCOMDOTNET_EXTENSIONS.md">한국어 확장 명령</a> ·
          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MucomDotNetExtension/MUCOMDOTNET_EXTENSIONS.en.md">English extension guide</a> ·
          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MucomDotNetExtension/MUCOMDOTNET_EXTENSIONS.ja.md">日本語拡張ガイド</a></p>
-      <p>CPU auto-acceleration and /N are in a separate validated build, not the existing MucoMSX_261003.zip.
-         CPU 자동 가속은 별도 검증 빌드용입니다. CPU自動高速化は別途検証ビルド用です。
-         <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_NOTES.md">Builds, performance and known limits / 빌드·성능·제약 / ビルド・性能・制約</a></p>
+      <p>Public v0.81 already includes MSX-MUSIC/PSG and playback acceleration with /N.
+         This version adds SCC/SCC+ SSG, PCMInvert, compiler and rhythm/session fixes, plus MUCVOICE.
+         <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_NOTES.md">Usage limits / 사용 제한 / 使用制限</a></p>
     </aside>
     <p class="lead">
       MUCOMSX brings <strong>MUCOM88</strong> — the FM music toolchain Yuzo Koshiro (古代祐三) developed for
@@ -278,7 +284,7 @@ footer p{margin:5px 0}
 <section id="tools">
   <div class="wrap">
     <h2>The toolchain <span class="ko">구성 도구 · ツール構成</span></h2>
-    <p class="lead">Four programs cover the whole workflow. Every manual is available in Korean, Japanese and English.</p>
+    <p class="lead">Five programs cover the whole workflow. Every manual is available in Korean, Japanese and English.</p>
 
     <div class="tools">
       <div class="tool">
@@ -319,6 +325,16 @@ footer p{margin:5px 0}
           <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlay.md">한국어</a>
           <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayJ.md">日本語</a>
           <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayE.md">English</a>
+        </div>
+      </div>
+      <div class="tool">
+        <p class="name">MUCVOICE.COM v0.5beta</p>
+        <p class="role">FM / SCC voice editor</p>
+        <p>Screen 2 editing for YM2608 FM and SCC/SCC+ voices, original factory presets, file-browser previews and keyboard audition. Import and export DAT, TFI, MUC and VGM voice data. Included in the toolchain ZIP; not a PCM-bank builder.</p>
+        <div class="docs">
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCVoice/mucvoice.md">한국어</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCVoice/mucvoice.ja.md">日本語</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCVoice/mucvoice.en.md">English</a>
         </div>
       </div>
     </div>
@@ -414,11 +430,6 @@ footer p{margin:5px 0}
         </tbody>
       </table>
     </div>
-    <h3>Reference configuration used for integration testing</h3>
-<pre><code>Panasonic FS-A1WX
-MegaFlashROM SCC+ SD
-MAKOTO
-MSX-DOS2 / Nextor</code></pre>
     <div class="note">
       Installed RAM and <em>usable free</em> RAM are not the same thing — DOS, resident programs and any song
       session you are holding all consume memory. A build for <strong>Neotron-B (YM2610B)</strong> is in preparation
@@ -512,14 +523,14 @@ F C128 o2 l2 v7 c g c g</code></pre>
         <tbody>
           <tr><td>Editing buffer</td><td><strong>60,000 bytes</strong></td><td>MUCEDIT after newline normalization, four 16 KiB banks</td></tr>
           <tr><td>Source file</td><td><strong>65,536 bytes (64 KiB)</strong></td><td>MUC2MUB / MUCPLAY input, including tags, comments and line endings</td></tr>
-          <tr><td>One page stream</td><td><strong>59,546 bytes</strong></td><td>Separate from total DATA</td></tr>
+          <tr><td>One page stream</td><td><strong>59,546 bytes OPNA / 59,106 bytes native MSX</strong></td><td>Separate from total DATA</td></tr>
           <tr><td>Compiled music DATA</td><td><strong>122,880 bytes (120 KiB)</strong></td><td>Notes, structures and FM voices together</td></tr>
           <tr><td>Final <code>.MUB</code></td><td>May exceed 120 KiB</td><td>Header + DATA + tags + PCM; format, loader and free-memory limits still apply</td></tr>
         </tbody>
       </table>
     </div>
     <p class="lead">A 40 KiB source is within the editor's size limit. Macro expansion can still exceed a page or total DATA limit.
-       Ordinary songs retain MUB8; extended or large songs use muPb 0100. A–K each support pages 0–9 sharing one physical YM2608.
+       Ordinary songs retain MUB8; OPNA extensions use muPb 0100, native MSX targets use msPb0100, and SCC/SCC+ SSG extension uses msPb0101. A–K each support pages 0–9 sharing one physical YM2608.
        A 512 KiB mapper does not guarantee that every large song fits with other sessions resident.</p>
   </div>
 </section>
@@ -530,8 +541,8 @@ F C128 o2 l2 v7 c g c g</code></pre>
     <p class="lead">Every manual is available in all three languages. The <strong>MUCEdit</strong> manual is
        the broadest introduction — the editor, the MML syntax, every compile error code, the source warnings,
        and troubleshooting. The <strong>MUC2MUB</strong> manual goes deepest on the compiler itself: the full
-       error and warning reference, filename and memory rules, the safe-save and recovery procedure, and how to
-       compare a build byte-for-byte against an original <code>.MUB</code> using a <code>.MD5</code> companion file.</p>
+       error and warning reference, filename and memory rules, and safe saving and recovery.
+       No MD5 calculation or verification is required or provided.</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th>Tool</th><th>한국어</th><th>日本語</th><th>English</th></tr></thead>
@@ -560,6 +571,12 @@ F C128 o2 l2 v7 c g c g</code></pre>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayJ.md">MUBPlayJ.md</a></td>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUBPlay/MUBPlayE.md">MUBPlayE.md</a></td>
           </tr>
+          <tr>
+            <td><strong>MUCVoice v0.5beta</strong> — voice editor</td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCVoice/mucvoice.md">한국어</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCVoice/mucvoice.ja.md">日本語</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCVoice/mucvoice.en.md">English</a></td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -571,8 +588,8 @@ F C128 o2 l2 v7 c g c g</code></pre>
     <h2>Wiki — writing the music <span class="ko">음악 만들기 · 音楽づくり</span></h2>
     <p class="lead">The manuals describe <strong>the tools</strong>. The wiki describes <strong>the music</strong> —
        how MUCOM88 MML is actually written, and how the voices, rhythm patterns and PCM banks a song depends on
-       are produced on Windows and carried over to the MSX. MUCOMSX has no asset-creation tooling of its own,
-       so that half of the workflow lives there.</p>
+       are prepared. MUCVOICE edits FM and SCC/SCC+ voices on the MSX;
+       WAV conversion and PCM-bank construction remain PC tasks.</p>
     <a class="cta" href="https://github.com/ToughkidDev/MUCOMSX/wiki">Open the wiki →</a>
     <div class="tablewrap">
       <table>
@@ -590,26 +607,27 @@ F C128 o2 l2 v7 c g c g</code></pre>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow-ja">Workflow-ja</a></td>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow">Workflow</a></td>
           </tr>
-          <tr>
-            <td><strong>Tools &amp; Links</strong> — where to get everything</td>
-            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ko">Tools-and-Links-ko</a></td>
-            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ja">Tools-and-Links-ja</a></td>
-            <td><a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links">Tools and Links</a></td>
-          </tr>
+
         </tbody>
       </table>
     </div>
-    <p class="lead">More pages are on the way: MML basics and a full command reference, FM voice creation with
-       the voice editor, PCM/ADPCM preparation, rhythm patterns, the size limits that bite in practice, and
-       troubleshooting.</p>
+    <p class="lead">Read the
+       <a href="https://github.com/ToughkidDev/MUCOMSX/wiki/MucomDotNET-Extensions">mucomDotNET command guide</a>,
+       <a href="https://github.com/ToughkidDev/MUCOMSX/wiki/MSX-Targets">native MSX targets</a>,
+       <a href="https://github.com/ToughkidDev/MUCOMSX/wiki/SSG-Extend">SSG extension</a>,
+       <a href="https://github.com/ToughkidDev/MUCOMSX/wiki/MUCVOICE">MUCVOICE guide</a> and
+       <a href="https://github.com/ToughkidDev/MUCOMSX/wiki/Limits-and-Specs">memory and file limits</a>.</p>
   </div>
 </section>
 
 <section id="download">
   <div class="wrap">
     <h2>Downloads <span class="ko">다운로드 · ダウンロード</span></h2>
-    <p class="lead">Builds of <code>MUCEDIT.COM</code>, <code>MUCPLAY.COM</code>, <code>MUC2MUB.COM</code>
-       and <code>MUBPLAY.COM</code> are published on the repository's releases page.</p>
+    <p class="lead">Find downloads on the releases page. The current package layout is
+       <code>MucoMSX_YYMMDD.zip</code> for all five tools, factory voices and quick help, plus
+       <code>MucoMSX_Docs_YYMMDD.zip</code> for complete Korean, English and Japanese manuals.
+       Optional <code>.sha256</code> files check download integrity.
+       Earlier releases may contain only the original four tools; check each release's contents.</p>
     <a class="cta" href="https://github.com/ToughkidDev/MUCOMSX/releases">Download from Releases →</a>
     <h3>Related, from the original PC-8801 project</h3>
     <div class="tablewrap">

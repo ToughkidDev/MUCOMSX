@@ -23,15 +23,14 @@ Compose in MML · Compile on the MSX itself · Play on real hardware · Export M
 
 ## 🌐 About / 프로젝트 소개 / 概要
 
-### Documentation update — 2026-10-03 / 최신 문서 / 最新ドキュメント
+### Latest features / 최신 기능 / 最新機能
 
-The current extended toolchain supports a **60,000-byte editor**, **64 KiB MUC input**, **120 KiB compiled DATA**, and single-YM2608 mucomDotNET extensions, including general pages, FM3 independent slots and ADPCM pitch effects.
+MUCOMSX supports **60,000-byte editing**, **64KiB MUC input**, **120KiB music DATA** and the **512KiB mapper minimum**. It adds SCC/SCC+ SSG/msPb0101, PCMInvert, compiler optimizations, rhythm-mute/session fixes and the MUCVOICE voice editor. Public **v0.81 / MucoMSX_261004.zip already includes native MSX targets and playback CPU acceleration with `/N`**.
 
-- **한국어:** [추가 명령 상세 안내](shared/docs/MUCOMDOTNET_EXTENSIONS.md). CPU 자동 가속·`/N`은 **별도 검증 빌드**의 기능입니다. 기존 `MucoMSX_261003.zip`을 포함한 모든 다운로드에 적용된다는 뜻은 아닙니다.
-- **English:** [Extension command reference](shared/docs/MUCOMDOTNET_EXTENSIONS.en.md). Automatic CPU acceleration and `/N` are in the **separate validated CPU build**, not the existing `MucoMSX_261003.zip`.
-- **日本語:** [拡張コマンドガイド](shared/docs/MUCOMDOTNET_EXTENSIONS.ja.md)。CPU自動高速化と`/N`は**別途検証ビルド**の機能で、既存`MucoMSX_261003.zip`には含まれません。
-
-Read [build identification, CPU performance and known limits](shared/docs/RELEASE_NOTES.md) before choosing a binary. This documentation update does not publish or replace runtime release assets.
+- 한국어: [변경 사항과 안전한 교체](shared/docs/RELEASE_UPDATE_261013.md)
+- English: [Changes and compatibility](shared/docs/RELEASE_UPDATE_261013.en.md)
+- 日本語: [変更点・互換性](shared/docs/RELEASE_UPDATE_261013.ja.md)
+- [MUCVOICE v0.5beta](MUCVoice/mucvoice.en.md): Screen 2 FM/SCC voice editing, presets and audition, included in the toolchain ZIP.
 
 **MUCOMSX** brings **MUCOM88** — the FM music production toolchain Yuzo Koshiro (古代祐三) developed for the YM2203 and YM2608 (Sound Board II) of the NEC PC-8801mkIISR and later — to the MSX. It targets the **MAKOTO Cartridge**, the YM2608 cartridge released for MSX.
 
@@ -100,7 +99,7 @@ MUBPlay 시연 · MUBPlay デモ
 
 ## 🧰 The toolchain / 구성 도구 / ツール構成
 
-Four programs cover the whole workflow. Each has its own manual in Korean, Japanese and English.
+Five programs cover the whole workflow. Each has its own manual in Korean, Japanese and English.
 
 | Program | Role | Manual |
 |---|---|---|
@@ -108,6 +107,7 @@ Four programs cover the whole workflow. Each has its own manual in Korean, Japan
 | **`MUCPLAY.COM`** | **Compiler and player.** Compiles `.MUC` and plays it, or keeps a song resident in memory so you can recompile and replay without reloading. Exports `.MUB` and `.VGM`. | [KO](MUCPlay/MUCPlay.md) · [JA](MUCPlay/MUCPlayJ.md) · [EN](MUCPlay/MUCPlayE.md) |
 | **`MUC2MUB.COM`** | **Batch compiler.** One command, one `.MUC` in, one `.MUB` out — no session, no playback, no sound hardware needed. Takes sources up to 64 KiB, returns a DOS exit code, and saves through a temporary file so a failure never destroys the previous `.MUB`. | [KO](MUC2MUB/Muc2Mub.md) · [JA](MUC2MUB/Muc2MubJ.md) · [EN](MUC2MUB/Muc2MubE.md) |
 | **`MUBPLAY.COM`** | Standalone **player** for finished `.MUB` files. Repeat control, load testing, VGM export. | [KO](MUBPlay/MUBPlay.md) · [JA](MUBPlay/MUBPlayJ.md) · [EN](MUBPlay/MUBPlayE.md) |
+| **`MUCVOICE.COM` v0.5beta** (included) | Screen 2 **FM/SCC/SCC+ voice editor**. Presets, DAT/TFI/MUC/VGM import/export and keyboard audition; not PCM-bank construction. | [KO](MUCVoice/mucvoice.md) · [JA](MUCVoice/mucvoice.ja.md) · [EN](MUCVoice/mucvoice.en.md) |
 
 MUCPLAY and MUC2MUB share the same compiler, so they accept the same MML and report the same error codes. Which one you reach for depends on what you want back.
 
@@ -120,6 +120,7 @@ MUCPLAY and MUC2MUB share the same compiler, so they accept the same MML and rep
 | Compile a source too large for the editor | **MUC2MUB** | Accepts up to 65,536 bytes; the editor holds 60,000 normalized bytes |
 | Compile on a machine with no Makoto | **MUC2MUB** | Compiling needs no sound device — only playback does |
 | Just listen to a finished `.MUB` | **MUBPLAY** | No compiler involved |
+| Edit FM or SCC/SCC+ voices and audition presets | **MUCVOICE** | Screen 2 voice editing, DAT/TFI/MUC/VGM import/export and keyboard audition |
 
 ### File formats
 
@@ -175,15 +176,6 @@ The batch route has no such state. MUC2MUB always reads the `.MUC` **as saved on
 | **Memory** | At least **512 KiB mapper RAM**, with enough free segments; not a guarantee that every large retained session fits |
 | **Sound** | **MAKOTO cartridge (YM2608)** — for playback. Compiling with MUC2MUB needs no sound device |
 | **Storage** | A writable disk or storage device — compiling uses temporary files |
-
-Reference configuration used for integration testing:
-
-```text
-Panasonic FS-A1WX
-MegaFlashROM SCC+ SD
-MAKOTO
-MSX-DOS2 / Nextor
-```
 
 > Installed RAM and *usable free* RAM are not the same thing — DOS, resident programs and any song session you are holding all consume memory. A build for **Neotron-B (YM2610B)** is in preparation and is a separate executable; do not mix it with the MAKOTO build.
 
@@ -284,7 +276,7 @@ Case matters: `c` is a note but `C` sets the base clock; `t225` is a raw Timer-B
 |---|---|---|
 | Editing buffer | **60,000 bytes** | MUCEDIT document after newline normalization; four 16 KiB banks |
 | Source file | **65,536 bytes (64 KiB)** | MUC2MUB / MUCPLAY input, including comments, tags and line endings |
-| One page stream | **59,546 bytes** | Per-page limit, separate from the total DATA limit |
+| One page stream | **59,546 bytes OPNA / 59,106 bytes native MSX** | Per-page limit, separate from the total DATA limit |
 | Compiled music DATA | **122,880 bytes (120 KiB)** | Notes, structural data and FM voices together |
 | Final `.MUB` | May exceed 120 KiB | Header + DATA + tags + PCM; format, loader and available-memory limits still apply |
 
@@ -296,7 +288,7 @@ A 40 KiB source is within the editor's size limit. A source within 64 KiB can st
 
 Every manual is available in all three languages.
 
-The new [extension guides (KO)](shared/docs/MUCOMDOTNET_EXTENSIONS.md), [EN](shared/docs/MUCOMDOTNET_EXTENSIONS.en.md), [JA](shared/docs/MUCOMDOTNET_EXTENSIONS.ja.md) cover FM3, pages, macros, volume, SSG envelopes, rhythm, MIDI-style portamento and ADPCM effects. [Build and verification notes](shared/docs/RELEASE_NOTES.md) identify the binaries and remaining memory/real-time limits.
+The new [extension guides (KO)](shared/docs/MUCOMDOTNET_EXTENSIONS.md), [EN](shared/docs/MUCOMDOTNET_EXTENSIONS.en.md), [JA](shared/docs/MUCOMDOTNET_EXTENSIONS.ja.md) cover FM3, pages, macros, volume, SSG envelopes, rhythm, MIDI-style portamento and ADPCM effects. [Usage limits](shared/docs/RELEASE_NOTES.md) identify the binaries and remaining memory/real-time limits.
 
 | Tool | 한국어 | 日本語 | English |
 |---|---|---|---|
@@ -304,8 +296,9 @@ The new [extension guides (KO)](shared/docs/MUCOMDOTNET_EXTENSIONS.md), [EN](sha
 | MUCPlay — compiler & player | [MUCPlay.md](MUCPlay/MUCPlay.md) | [MUCPlayJ.md](MUCPlay/MUCPlayJ.md) | [MUCPlayE.md](MUCPlay/MUCPlayE.md) |
 | MUC2MUB — batch compiler | [Muc2Mub.md](MUC2MUB/Muc2Mub.md) | [Muc2MubJ.md](MUC2MUB/Muc2MubJ.md) | [Muc2MubE.md](MUC2MUB/Muc2MubE.md) |
 | MUBPlay — MUB player | [MUBPlay.md](MUBPlay/MUBPlay.md) | [MUBPlayJ.md](MUBPlay/MUBPlayJ.md) | [MUBPlayE.md](MUBPlay/MUBPlayE.md) |
+| MUCVoice v0.5beta — voice editor | [mucvoice.md](MUCVoice/mucvoice.md) | [mucvoice.ja.md](MUCVoice/mucvoice.ja.md) | [mucvoice.en.md](MUCVoice/mucvoice.en.md) |
 
-**Where to start.** The MUCEdit manual is the broadest introduction — the editor, the MML syntax, every compile error code, the source warnings, and troubleshooting. The MUC2MUB manual goes deepest on the compiler itself: the full error and warning reference, filename and memory rules, the safe-save and recovery procedure, and how to compare a build byte-for-byte against an original `.MUB` using a `.MD5` companion file.
+**Where to start.** The MUCEdit manual is the broadest introduction — the editor, MML syntax, compile errors, source warnings and troubleshooting. The MUC2MUB manual covers batch conversion, filename and memory rules, and safe saving and recovery. No MD5 calculation or verification is required or provided.
 
 ---
 
@@ -313,8 +306,8 @@ The new [extension guides (KO)](shared/docs/MUCOMDOTNET_EXTENSIONS.md), [EN](sha
 
 The manuals above describe **the tools**. The wiki describes **the music** — how
 MUCOM88 MML is actually written, and how the voices, rhythm patterns and PCM banks
-a song depends on are produced on Windows and carried over to the MSX. MUCOMSX has
-no asset-creation tooling of its own, so that half of the workflow lives there.
+a song depends on are prepared. MUCVOICE edits FM and SCC/SCC+ voices on the MSX;
+WAV conversion and PCM-bank construction remain PC tasks.
 
 ### ➡️ [**github.com/ToughkidDev/MUCOMSX/wiki**](https://github.com/ToughkidDev/MUCOMSX/wiki)
 
@@ -322,18 +315,18 @@ no asset-creation tooling of its own, so that half of the workflow lives there.
 |---|---|---|---|
 | **Home** — what the wiki covers, and where to begin | [Home-ko](https://github.com/ToughkidDev/MUCOMSX/wiki/Home-ko) | [Home-ja](https://github.com/ToughkidDev/MUCOMSX/wiki/Home-ja) | [Home](https://github.com/ToughkidDev/MUCOMSX/wiki/Home) |
 | **Workflow** — Windows → MSX, end to end | [Workflow-ko](https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow-ko) | [Workflow-ja](https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow-ja) | [Workflow](https://github.com/ToughkidDev/MUCOMSX/wiki/Workflow) |
-| **Tools & Links** — where to get everything | [Tools-and-Links-ko](https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ko) | [Tools-and-Links-ja](https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links-ja) | [Tools and Links](https://github.com/ToughkidDev/MUCOMSX/wiki/Tools-and-Links) |
 
-New: [mucomDotNET extensions](https://github.com/ToughkidDev/MUCOMSX/wiki/MucomDotNET-Extensions),
-[limits and specs](https://github.com/ToughkidDev/MUCOMSX/wiki/Limits-and-Specs), and
-[builds, CPU performance and verification](https://github.com/ToughkidDev/MUCOMSX/wiki/Build-and-Verification).
-Additional MML basics, FM voice creation, PCM preparation and troubleshooting guides remain planned.
+See [mucomDotNET extensions](https://github.com/ToughkidDev/MUCOMSX/wiki/MucomDotNET-Extensions),
+[limits and specs](https://github.com/ToughkidDev/MUCOMSX/wiki/Limits-and-Specs),
+[native MSX targets](https://github.com/ToughkidDev/MUCOMSX/wiki/MSX-Targets),
+[SSG extension](https://github.com/ToughkidDev/MUCOMSX/wiki/SSG-Extend) and
+[MUCVOICE](https://github.com/ToughkidDev/MUCOMSX/wiki/MUCVOICE).
 
 ---
 
 ## 💿 Downloads / 다운로드 / ダウンロード
 
-Builds of `MUCEDIT.COM`, `MUCPLAY.COM`, `MUC2MUB.COM` and `MUBPLAY.COM` are published on the repository's releases page.
+Find downloads on the repository's releases page. The current package layout is `MucoMSX_YYMMDD.zip` for the five tools, factory voices and quick help, and `MucoMSX_Docs_YYMMDD.zip` for complete Korean, English and Japanese documentation. Optional `.sha256` files let you check the downloads. Earlier releases may contain only the original four tools; check each release's contents.
 
 ### ➡️ [**Download from Releases**](https://github.com/ToughkidDev/MUCOMSX/releases)
 
@@ -358,7 +351,7 @@ When reporting a playback or compile problem, these details narrow it down faste
 
 | | |
 |---|---|
-| **Which tool and build** | `MUCEDIT.COM` / `MUCPLAY.COM` / `MUC2MUB.COM` / `MUBPLAY.COM`, and its size or the date you obtained it |
+| **Which tool and build** | `MUCEDIT.COM` / `MUCPLAY.COM` / `MUC2MUB.COM` / `MUBPLAY.COM` / `MUCVOICE.COM`, and its version or the date you obtained it |
 | **Machine** | Real MSX model, or emulator + machine settings; CPU mode |
 | **System** | MSX-DOS2 or Nextor version, memory mapper, cartridges, storage |
 | **The exact command** | The full command line you typed |

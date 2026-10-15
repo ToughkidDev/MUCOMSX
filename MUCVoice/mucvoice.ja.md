@@ -2,7 +2,7 @@
 
 [한국어](mucvoice.md) · [English](mucvoice.en.md)
 
-MUCVOICEのZIPは4ツールZIPとは別です。[変更点](../shared/docs/RELEASE_UPDATE_261013.ja.md)も参照してください。
+MUCVOICE v0.5betaはMUCEDIT・MUCPLAY・MUC2MUB・MUBPLAYと同じツールチェーンZIPに含まれます。実行ファイルZIPの`MUCVOICE/START.MD`にクイックガイド、別の多言語ドキュメントZIPに全説明書があります。[変更点](../shared/docs/RELEASE_UPDATE_261013.ja.md)も参照してください。
 
 MSX-DOS2/NextorのScreen 2でYM2608 FM・SCC/SCC+音色を編集します。512KiBマッパー環境を推奨します。FM試聴はMAKOTO、SCC試聴はSCC/SCC+が必要です。`MUCVOICE /TEXT`で数値型画面を使えます。
 

@@ -1,6 +1,11 @@
 # MUBPLAY User Guide
 
-> Updated 2026-10-03: extended builds support 65,536-byte MUC input, 60,000-byte editor documents, 122,880-byte (120 KiB) total music DATA and 59,546-byte page streams, with a 512 KiB minimum mapper. Read the [mucomDotNET command guide](../shared/docs/MUCOMDOTNET_EXTENSIONS.en.md) and [build availability, CPU acceleration and verification limits](../shared/docs/RELEASE_NOTES.md). The existing MucoMSX_261003.zip differs from the separate CPU build. Older hashes and test dates below are historical records.
+## Update — 2026-10-13
+
+This version supports SCC/SCC+ SSG msPb0101 in addition to MUB8, muPb and msPb0100. See [release changes](../shared/docs/RELEASE_UPDATE_261013.en.md) for detection, mono approximation, capacity and usage limits. A player replacement cannot restore music DATA missing from an old faulty compilation; recompile it.
+
+> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 122,880 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
+
 
 MUCOM88 MUB Player for MSX  
 Written by ToughkidCST
@@ -374,3 +379,11 @@ Start with a single song and no options. Once you are used to it, try `/L0` to l
 Enjoy.
 
 ToughkidCST
+
+## Native MSX targets
+
+The integrated build adds MSX-prefixed parts, native msPb output and automatic playback CPU acceleration. Existing parts remain OPNA. Consult the new guide for requirements, limits and approximate sound conversion.
+
+[MSX target guide](../shared/docs/MSX_TARGETS.en.md)
+
+For `#SSGExtend`, `@I`, `@W`, `pe` and `#PCMInvert`, see the [SCC+ SSG guide](../shared/docs/SSG_EXTEND.en.md). This extends msPb with approximate SCC+ playback, not bit-exact PC virtual SSG.

@@ -1,6 +1,11 @@
 # MUBPLAY 取扱説明書
 
-> 2026-10-03更新：拡張ビルドのMUC入力65,536バイト、編集文書60,000バイト、音楽DATA合計122,880バイト(120 KiB)、1ページ列59,546バイト。最低マッパー512 KiBを維持します。[mucomDotNETコマンドガイド](../shared/docs/MUCOMDOTNET_EXTENSIONS.ja.md)と[ビルド区分・CPU高速化・検証制約](../shared/docs/RELEASE_NOTES.md)を参照してください。既存MucoMSX_261003.zipと別途CPUビルドは異なります。本文の旧ハッシュ・試験日は当時の記録です。
+## 2026-10-13 更新案内
+
+MUB8・muPb・msPb0100に加えSCC/SCC+ SSGのmsPb0101に対応します。[最新案内](../shared/docs/RELEASE_UPDATE_261013.ja.md)で探査・モノ近似・容量・使用制限を確認してください。コンパイル不具合で欠落した音楽DATAはプレイヤー交換では復元できず再コンパイルが必要です。
+
+> 上限：MUC入力65,536バイト、MUCEDIT編集は正規化後60,000バイト、音楽DATA122,880バイト。ページはOPNA59,546・ネイティブMSX59,106バイト。最低マッパー512KiB。ヘッダー・タグ・PCMは別です。
+
 
 MUCOM88 MUB Player for MSX  
 Written by ToughkidCST
@@ -374,3 +379,11 @@ MUBPLAY GH002.MUB /V /L5
 楽しんでお使いください。
 
 ToughkidCST
+
+## MSXネイティブ出力
+
+統合ビルドはMSX接頭辞パート、専用msPb出力、演奏CPU自動高速化を含みます。従来パートはOPNAのままです。条件・容量・近似変換の制限は新ガイドを優先してください。
+
+[MSX target guide](../shared/docs/MSX_TARGETS.ja.md)
+
+`#SSGExtend`・`@I`・`@W`・`pe`・`#PCMInvert`は[SCC+ SSGガイド](../shared/docs/SSG_EXTEND.ja.md)を参照。既存msPbを拡張した近似演奏で、PC仮想SSGとの完全一致ではありません。

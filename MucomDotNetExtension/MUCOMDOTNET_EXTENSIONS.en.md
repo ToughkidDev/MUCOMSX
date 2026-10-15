@@ -1,8 +1,10 @@
 # MUCOMSX mucomDotNET extension reference
 
-Updated 2026-10-03. This guide covers the implemented extensions for one MAKOTO YM2608, not every mucomDotNET chip or file layout. See [build availability and verification limits](RELEASE_NOTES.md). The detailed Korean guide contains additional explanations: [한국어](MUCOMDOTNET_EXTENSIONS.md).
+> A–K’s 110-page descriptions concern OPNA parts. See [MSX targets](MSX_TARGETS.en.md) for native parts, msPb formats and native page limits.
 
-MucoMSX_261003.zip includes the music extensions, general pages and 120 KiB DATA support. Automatic CPU acceleration and /N belong to the separate October 3 CPU build; that existing runtime ZIP has not been replaced.
+Updated 2026-10-13. This guide covers the implemented extensions for one MAKOTO YM2608, not every mucomDotNET chip or file layout. See [updates and compatibility](RELEASE_NOTES.md). The detailed Korean guide contains additional explanations: [한국어](MUCOMDOTNET_EXTENSIONS.md).
+
+See the [update and compatibility guide](RELEASE_UPDATE_261013.en.md). This version supports MSX-MUSIC/PSG, playback acceleration with /N, SCC/SCC+ SSG and PCMInvert. Older MUB players may not support msPb0101.
 
 ## Capacity and format
 
@@ -71,7 +73,7 @@ S0–S15 selects a hardware envelope shape; m0–m65535 sets its period (smaller
 
 MT1 applies software LFO to volume; MT0 returns it to pitch. Software envelopes can be combined with tremolo. @n=al,ar,dr,sl,sr,rr redefines preset n (0–15); all six values are 0–255. Only its E parameters change, not P/M; presets reset for a new song.
 
-Fast hardware envelopes can produce triangle/saw-shaped amplitude changes on real YM2608. This is different from unsupported emulator-only @I8/@I9 waveforms.
+Fast hardware envelopes can produce triangle/saw-shaped amplitude changes on real YM2608. Current @I8/@I9 support uses the [SCC/SCC+ SSG extension](SSG_EXTEND.en.md) as a 32-sample approximation, not PC virtual-waveform reproduction on YM2608 alone.
 
 ## Rhythm and pan
 
@@ -107,13 +109,15 @@ K @1 v160 o4 l4 {c4g} {g4c}
 K @1 v160 E255,255,8,128,4,16 o4 l4 cdef
 ```
 
-K examples require PCM sample 1. They show separate examples of MIDI portamento, pitch LFO (delay,counter,delta,peak), brace portamento and six-parameter software envelope (each 0–255). Pitch effects change Delta-N. Legacy unextended PCM note tuning is retained. Non-owning K pages cannot overwrite the active sample pitch; one reference comparison intentionally differs for this reason.
+K examples require PCM sample 1. They show separate examples of MIDI portamento, pitch LFO (delay,counter,delta,peak), brace portamento and six-parameter software envelope (each 0–255). Pitch effects change Delta-N. Legacy unextended PCM note tuning is retained. Non-owning K pages cannot overwrite the active sample pitch.
 
 ## Register writes and compatibility limits
 
 y0,port,address,value writes to the first OPNA, port 0/1, address/value 0–255. Other chip IDs are rejected. Raw timer/key/PCM writes may conflict with driver state.
 
-Not implemented: #PCMInvert; #@pcm WAV-to-ADPCM bank creation; PCn and quoted IDE part memos; additional OPNA/OPNB/OPM hardware and @M voices; emulator-only #SSGExtend On, pe, @I and @W. Prebuilt PCM banks and real hardware S/m envelopes are supported. External muPb support is limited to the supported first-OPNA layout, not arbitrary multi-chip containers.
+The current version adds compile-time #PCMInvert and an SCC/SCC+ mono/32-sample approximation of #SSGExtend, pe, @I and @W via msPb0101. Automatic detection prefers SCC+ and falls back to SCC; VGM uses common SCC port 0. See [SSG extension requirements and limitations](SSG_EXTEND.en.md). Full virtual SSG stereo/64-sample resolution and arbitrary waves combined with hardware envelopes are not reproduced.
+
+Not implemented: #@pcm WAV-to-ADPCM bank creation; PCn and quoted IDE part memos; additional OPNA/OPNB/OPM hardware and @M voices. Prebuilt PCM banks and real hardware S/m envelopes are supported. External muPb support is limited to the supported first-OPNA layout, not arbitrary multi-chip containers.
 
 ## Editor and playback checks
 

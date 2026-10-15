@@ -2,7 +2,7 @@
 
 [English](mucvoice.en.md) · [日本語](mucvoice.ja.md)
 
-MUCVOICE ZIP은 네 도구 툴체인과 별도입니다. 추가 기능과 업데이트 방법은 [릴리즈 안내](../shared/docs/RELEASE_UPDATE_261013.md)를 함께 읽어 주세요.
+MUCVOICE v0.5beta는 MUCEDIT·MUCPLAY·MUC2MUB·MUBPLAY와 같은 툴체인 ZIP에 들어 있습니다. 음색 에디터의 빠른 안내는 실행파일 ZIP의 `MUCVOICE/START.MD`, 전체 다국어 설명서는 문서 ZIP에서 읽을 수 있습니다. 추가 기능과 업데이트 방법은 [릴리즈 안내](../shared/docs/RELEASE_UPDATE_261013.md)를 함께 읽어 주세요.
 
 MUCVOICE는 MSX-DOS2/Nextor의 Screen 2에서 YM2608 FM과 SCC/SCC+ 음색을 편집하는 Z80 프로그램입니다. 512KiB 매퍼 RAM 환경을 권장합니다. FM 미리 듣기는 MAKOTO, SCC 미리 듣기는 SCC/SCC+ 카트리지가 필요합니다. `MUCVOICE /TEXT`로 숫자형 콘솔 화면을 사용할 수 있습니다.
 

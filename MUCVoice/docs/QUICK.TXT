@@ -26,7 +26,6 @@ This is NOT the host OS clipboard; oversized paste is refused, not truncated.
 Numeric drafts spin Up/Down with gentle 1/2/3/4 steps, Shift always one.
 Drafts do not change banks, Dirty, Undo or plots until successfully applied.
 Typing inserts at the cursor. Esc cancels without changing the voice.
-See STYLE.TXT for the original SCREEN 2 font reference.
 Exit restores the previous screen mode and BIOS colors, not old screen pixels.
 One 16KiB USER mapper segment is used for overlay code and DAT preview.
 It is part of the existing 512KiB RAM, not an additional RAM requirement.

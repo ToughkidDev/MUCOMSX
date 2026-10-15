@@ -1,6 +1,11 @@
 # MUCPLAY User Guide
 
-> Updated 2026-10-03: extended builds support 65,536-byte MUC input, 60,000-byte editor documents, 122,880-byte (120 KiB) total music DATA and 59,546-byte page streams, with a 512 KiB minimum mapper. Read the [mucomDotNET command guide](../shared/docs/MUCOMDOTNET_EXTENSIONS.en.md) and [build availability, CPU acceleration and verification limits](../shared/docs/RELEASE_NOTES.md). The existing MucoMSX_261003.zip differs from the separate CPU build. Older hashes and test dates below are historical records.
+## Update — 2026-10-13
+
+[Release changes](../shared/docs/RELEASE_UPDATE_261013.en.md) cover SCC/SCC+ SSG, PCMInvert, compiler optimization and session rhythm-mask restoration. Release the old session with `/RELEASE` before replacing all five COMs. Do not overwrite edited voice DAT banks with factory presets. Recompile MUBs with missing music DATA. MSX-MUSIC/PSG and playback acceleration already shipped in public v0.81.
+
+> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 122,880 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
+
 
 Compiling MUC files on an MSX, playing them through Makoto, and saving the finished music to a file
 
@@ -44,7 +49,6 @@ MUCPLAY includes the compiler it needs. For ordinary use you do not have to run 
 - [Clearing memory and moving between albums](#10-clearing-memory-and-moving-between-albums)
 - [Managing voice and PCM files](#11-managing-voice-and-pcm-files)
 - [Using it with MUCEDIT](#12-using-it-with-mucedit)
-- [Using it on openMSX](#13-using-it-on-openmsx)
 - [Worked examples by situation](#14-worked-examples-by-situation)
 - [Frequently asked questions](#15-frequently-asked-questions)
 - [Commands to remember](#16-commands-to-remember)
@@ -102,8 +106,6 @@ Prepare the following.
 - Disk space to write the session file and the output files
 
 If you are setting up an environment for the first time, it is best to plan around a configuration with 512KB or more of mapper RAM. Installed RAM capacity and actually usable free memory are different things. Other programs and any session you are holding also consume memory.
-
-One of the configurations used for verification was a MegaFlashROM SCC+ SD together with Makoto. In that test setup the MegaFlashROM provides Nextor and the storage and mapper environment, while the device that outputs music is Makoto.
 
 The program for YM2610B/Neotron-B is a separate target. Even if the filenames are similar, do not confuse it with the Makoto executable this guide describes.
 
@@ -652,3 +654,11 @@ MUCPLAY /RELEASE
 ```
 
 The flow you will use most is **load → compile → listen → save → release**. Once you are comfortable with it, you can change repeat counts or connect it with MUCEDIT and work far more comfortably.
+
+## Native MSX targets
+
+The integrated build adds MSX-prefixed parts, native msPb output and automatic playback CPU acceleration. Existing parts remain OPNA. Consult the new guide for requirements, limits and approximate sound conversion.
+
+[MSX target guide](../shared/docs/MSX_TARGETS.en.md)
+
+For `#SSGExtend`, `@I`, `@W`, `pe` and `#PCMInvert`, see the [SCC+ SSG guide](../shared/docs/SSG_EXTEND.en.md). This extends msPb with approximate SCC+ playback, not bit-exact PC virtual SSG.

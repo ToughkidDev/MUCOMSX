@@ -2,7 +2,7 @@
 
 [한국어](mucvoice.md) · [日本語](mucvoice.ja.md)
 
-The MUCVOICE ZIP is separate from the four-tool archive. Read [release changes](../shared/docs/RELEASE_UPDATE_261013.en.md).
+MUCVOICE v0.5beta is included in the same toolchain ZIP as MUCEDIT, MUCPLAY, MUC2MUB and MUBPLAY. Open `MUCVOICE/START.MD` in the runtime ZIP for quick help, or use the companion multilingual documentation ZIP. Read [release changes](../shared/docs/RELEASE_UPDATE_261013.en.md).
 
 MUCVOICE edits YM2608 FM and SCC/SCC+ voices in MSX-DOS2/Nextor Screen 2. A 512KiB mapper environment is recommended. FM audition requires MAKOTO; SCC audition needs an SCC/SCC+ cartridge. `MUCVOICE /TEXT` selects the numeric console interface.
 

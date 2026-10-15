@@ -1,4 +1,4 @@
-MUCVOICE SCC/SCC+ detection reference (2026-10-11)
+MUCVOICE - attribution and factory presets
 
 The keyboard acquisition strategy references MSX VGMPlay's SCC/SCCPlus
 drivers by Laurens Holst (Grauw): RAM exclusion, reversible waveform
@@ -10,12 +10,8 @@ VGMPlay MSX: Copyright (c) 2015, Laurens Holst. All rights reserved.
 Project: https://www.grauw.nl/projects/vgmplay-msx/
 License: Simplified BSD License (BSD-2-Clause).
 The complete copyright, conditions and disclaimer are included as
-LICENSES/VGMPLAY-MSX-LICENSE.txt in the standalone package.
-In the project tree, see ../mucplay/vgmplay-msx/LICENSE.
+LICENSES/VGMPLAY-MSX-LICENSE.txt.
 
-MUCVOICE 0.12 factory preset tables are independent original synthesis
+MUCVOICE factory preset tables are independent original synthesis
 definitions (the four existing elementary SCC shapes retain their bytes).
 They are not ripped Konami game waves or Yuzo Koshiro sample patches.
-The separately licensed YK2MML original DAT reference copies are local
-reference assets only, excluded from the COM and standalone package.py.
-See PRESETS.TXT and reference/YK2MML/LICENSE.TXT before using those assets.
