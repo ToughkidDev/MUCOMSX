@@ -1,0 +1,203 @@
+MUCVOICE v0.5beta - native MSX-DOS2 SCREEN 2 voice editor
+=========================================
+Run MUCVOICE.COM from DOS2 or Nextor. Command keys act immediately.
+Same-voice previews reuse the patch/wave and detected SCC device. Key-up mutes;
+the next note restores volume/pitch. Selection/mode changes, errors and exit
+refresh the relevant settings. Bank contents and file formats are unchanged.
+Queued vertical file moves are combined; only the final focus is read and
+validated before subsequent Space/Enter or other commands are handled.
+Press Enter in input dialogs; Esc cancels. MUCVOICE /TEXT uses the old console.
+Type digits on the selected field: no Enter-to-open dialog needed.
+F2/E/Enter starts editing the existing value, selected in full.
+Enter applies; Tab applies and advances; Esc cancels, never quits the main UI.
+FM: arrows select a field, +/- changes by one. SCC: arrows or + change values.
+SCC '-' starts a negative number; use Down/Shift+Down to decrement.
+Tab/Shift+Tab moves fields; Ctrl+Tab switches banks. [ and ] change ID.
+Q/Ctrl+Q quits, with unsaved confirmation. Invalid values stay red/editable.
+SCREEN 2 uses MUBVISPLAY SCREEN 2's exact 3x5 font, four-pixel advance,
+64 text columns, compact panels and a blue keyboard-action toolbar.
+FM: parameter table, selected value/range, four envelope sketches.
+SCC: waveform and all 32 signed values (00..15 above, 16..31 below).
+Grey toolbar icons / -- labels mean unavailable actions, not mouse buttons.
+Dialogs accept up to 63 characters; each operation validates its own limit.
+Editing: left/right, Home, Ctrl-E (end), Ctrl-A (select all), BS, Del, Ctrl-U.
+Ctrl-C/X/V copies/cuts/pastes the whole field using an internal MSX clipboard.
+This is NOT the host OS clipboard; oversized paste is refused, not truncated.
+Numeric drafts spin Up/Down with gentle 1/2/3/4 steps, Shift always one.
+Drafts do not change banks, Dirty, Undo or plots until successfully applied.
+Typing inserts at the cursor. Esc cancels without changing the voice.
+See STYLE.TXT for the original SCREEN 2 font reference.
+Exit restores the previous screen mode and BIOS colors, not old screen pixels.
+One 16KiB USER mapper segment is used for overlay code and DAT preview.
+It is part of the existing 512KiB RAM, not an additional RAM requirement.
+The segment is freed on exit. Initial SP must be D7E0h or higher.
+Working end D5E0h; static UI starts CB00h; preserve 512-byte stack margin.
+Losslessly packed font/waves keep the same TPA requirement as version 0.12.
+If allocation fails: ordinary editing/L still work; FM/SCC P uses numeric input.
+The graphical DAT browser is unavailable without this segment.
+
+F = YM2608 FM bank      W = SCC+ waveform bank
+I = select ID 0..255    E = edit parameter/sample
+N = FM name (6 ASCII)   C = copy to another ID
+U = undo last edit     P = FM envelope tiles / SCC waveform tiles
+T = import one TFI into the current FM slot (asks before replacing)
+R = import FM or SCC definitions from MUC into the selected bank, same IDs
+G = import YM2608 FM / SCC / SCC+ from VGM into empty selected-bank slots
+B = export all defined slots in the selected bank, without music notes
+D = free FM/delete SCC L = type a local 8.3 name to load DAT
+O/Ctrl-O = browse DAT files with preview (in /TEXT, O is the same as L)
+S = save DAT           X = current FM audition MUC / SCC wave definition
+V = audition VGM       A = direct MAKOTO FM1 audition
+K = keyboard audition, current FM or SCC+ voice (see KEYBOARD.TXT)
+Q = quit (confirm if unsaved)
+
+FM fields: AR, DR, SR, RR, SL, TL, KS, ML, DT, AM; top row ALG and FB.
+In /TEXT: fields use numbers 0..9; operator 0 selects 0 ALG or 1 FB.
+Envelope plots are schematics, not accurate chip timing/amplitude simulations.
+SCC: 32 signed samples, -128..127. IDs 0..255.
+P in SCC: 32 wave tiles, 8 columns x 4 rows. Arrows move the blue selection.
+Enter applies to CURRENT SLOT; Esc cancels without touching the bank or Undo.
+Edges stop (no row wrap). Selection is remembered until the program exits.
+Tiles show preset numbers; the footer shows the full selected name.
+After applying, K auditions the wave, U/Ctrl-Z undoes, S saves your DAT.
+FM P: 12 named tiles, 4 columns x 3 rows, each with four envelope sketches.
+Arrows select; Enter applies to the current slot; Esc cancels without changes.
+These are schematic envelopes, NOT sampled output waves. No automatic audition.
+C D E F G A B audition C4..B4 BEFORE applying, in galleries and DAT browser.
+Hold physical Shift for octave 5; Shift+C is the upper C. Case/Caps is ignored.
+Letters sound while held and stop on release; a new letter replaces the note.
+Navigation/apply/cancel and 180 ticks also stop. The main editor and K piano
+shortcuts are unchanged; no bank, Undo or saved file is modified by preview.
+On Enter/Esc, release held note letters to continue; repeats cannot leak into
+editor commands or a load confirmation. Other queued keys are preserved.
+This also covers folders and invalid DATs where the note could not sound.
+PLAY is cleared immediately while waiting for note release.
+Space auditions BEFORE applying, in both FM/SCC galleries and DAT browser.
+One A4 note: Space again or any other key stops before moving/applying/canceling.
+Automatic stop at 180 BIOS ticks (3s at 60Hz, 3.6s at 50Hz). Holding Space
+does not retrigger from autorepeat. A4 PLAY shows ownership; NO CHIP indicates
+missing/unresponsive hardware. FM uses MAKOTO; SCC/SCC+ is found automatically.
+No bank, Dirty, Undo, current slot or file is changed. Enter still applies/loads.
+Use K/A after applying for longer audition; U/Ctrl-Z undoes the application.
+Do not play another song simultaneously: preview uses FM1 or SCC CH1.
+/TEXT P: type FM 0..11 or SCC 0..31, then Enter.
+FM: SINE, EPIANO, PIANO, ORGAN, BASS, BRASS, PLUCK, GUITAR, BELL, FLUTE, LEAD, PAD.
+SCC: SILENT, SAW, TRI, SQUARE, SINE, PULSE25, PULSE12, ORGAN, REED, BASS, HOLLOW, METAL.
+Also: SAWDOWN, PULSE03/06/19/38, STEP4/8, SOFTSAW/SQR/TRI, OCTAVE, FIFTH,
+CHIME, NASAL, GLASS, BUZZ, DOUBLE, TRIPLE, QUAD, RIPPLE. See PRESETS.TXT.
+Factory presets are original designs, not ripped game/composer patches.
+Use U/Ctrl-Z to undo; edit afterwards, save DAT or export MUC/VGM as usual.
+See PRESETS.TXT for full list and separately licensed YK2MML reference banks.
+
+DAT browser: select F or W first, then O/Ctrl-O. Folders and .DAT only.
+Up/Down focuses a file and previews it automatically; list edges change pages.
+Enter opens a folder; Backspace goes to its parent; Esc cancels.
+SCC: validated SCWD data, showing the actual 32 signed waveform samples.
+Left/Right selects a record within the file; sparse IDs retain their IDs.
+FM: exactly 8192-byte DAT, with a six-character name, ALG/FB and four sketches.
+Initially shows the first nonblank record. Left/Right skips blanks in NONBLANK.
+Tab toggles NONBLANK/ALL; ALL includes every record, even zero/silent ones.
+An all-empty bank starts at ID 0. The filter is a convenience heuristic:
+any nonzero byte at offsets 1..25 OR printable ASCII 33..126 in name 26..31.
+Reserved byte 0 is ignored. This is NOT a sound or used-slot detector.
+It never changes the editor's defined flags, FREE count or saved bank contents.
+FM sketches are NOT sampled waveforms or accurate sound synthesis.
+Focus never edits banks, changes dirty state or removes Undo. Space plays only
+the displayed valid record; folders and invalid DAT files cannot be auditioned.
+Bad files/directories clear the preceding preview instead of leaving stale waves.
+Enter on a valid DAT loads the WHOLE BANK, not just the previewed record.
+Unsaved changes require confirmation; the file is revalidated before applying.
+Successful load clears same-bank Undo. Cancel/errors preserve current data.
+Browsing never changes DOS's current directory. File names are DOS 8.3 names.
+After browser load, the active bank's remembered save name is cleared:
+S/Ctrl-S asks for a name in the original DOS directory, not the browsed folder.
+The other bank's remembered name is kept. This avoids saving to the wrong path.
+TFI/MUC/VGM import/export still use filename dialogs, not this DAT browser.
+No MD5 feature is used. SCC validation uses its existing SCWD CRC32.
+
+F / L / FMVOICE.DAT loads the example FM bank (8192 bytes).
+W / L / SCCVOICE.DAT loads the example SCWD bank (different file format!).
+F / I / 1 / A / Y previews factory INIT on MAKOTO. Any key stops.
+F / I / 10 / T / INIT.TFI / Y imports the included example into slot 10.
+Use S to save a new DAT afterwards; U can undo the import.
+TFI filenames must be DOS 8.3 names. Copy/rename long filenames first.
+Enabled SSG-EG cannot fit in VOICE.DAT: import asks before dropping it.
+TFI must be exactly 42 bytes with valid values (DT 0..6). No silent masking.
+Stop other music before audition. Chip state is not restored afterward.
+
+K keyboard: Z S X D C V G B H N J M , = C C# D D# E F F# G G# A A# B C.
+Up/down changes octave 2..6 (initial 4). Space mutes. Esc/STOP returns.
+One note at a time; lowest held note wins. Release all keys to return.
+Graphical piano: eight white and five black keys, with computer-key labels.
+Sounding white keys turn cyan; black keys turn red. Note/octave is shown.
+FM parameters or the actual SCC waveform remain visible above the piano.
+The audition panel is read-only; return with Esc to edit again.
+FM: K / Y. SCC or SCC+: K / 255 (AUTO) or known BIOS slot ID / Y.
+AUTO checks BIOS-enumerated slots, preferring SCC+ and falling back to SCC.
+MFR in primary slot 1 uses 133. Both chips play the same 32-sample CH1 wave.
+Single-voice VGM export now uses common SCC port 0, not SCC+-only port 4.
+
+MUC import: R / SONG.MUC / Y. Supports @N multiline, @N:{...}, @%N raw.
+Whole-file validation precedes merge; duplicate IDs/bad data leave the bank.
+Successful bulk merge clears that bank's Undo. N/Esc cancellation preserves it.
+SCC MUC import: W / R / WAVES.MUC / Y. Syntax: @W7 = { 32 signed values }
+SCC samples: exactly 32 decimal values, -128..127; no hexadecimal samples.
+Mixed files are fully validated; only the selected bank is merged.
+FM @7 and SCC @W7 may coexist. Duplicate IDs within one kind are errors.
+MUC bank export: B / VOICES.MUC. FM X adds a melody; SCC X exports one wave.
+Initial defined FM slot: 1 (INIT). Edits/imports/copies define further slots.
+Loading FM DAT defines all 256 slots: FM DAT has no unused-slot metadata.
+SCC starts with slot 0 (silence); SCWD DAT retains its sparse defined IDs.
+MUC export keeps FM's raw 25 bytes / SCC's 32 samples. See MUCIO.TXT.
+
+VGM import: F or W / G / SONG.VGM / Y. See VGMIO.TXT for full details.
+Only new complete voices are added; exact duplicates are skipped.
+Allocation starts at the current ID, wraps, and never overwrites defined slots.
+After FM DAT load, select a disposable slot, D / Y to free it, then G.
+D keeps the old raw bytes until replacement; U restores the defined flag.
+DAT has no free-slot metadata: use B (MUC) to preserve sparse definitions.
+Extra settings or incomplete voices require an additional loss confirmation.
+Import success clears same-bank Undo. Cancel/errors/overflow preserve data.
+VGZ/gzip must be decompressed on PC. DAC stream control is not supported.
+FM TL reflects recorded playback volume, not necessarily the composer's patch.
+
+Filename dialogs require current-directory 8.3 names, no paths/drive letters.
+O/Ctrl-O can browse subdirectories for DAT loading; other file actions cannot.
+L/S remembers each bank's last successful local DAT name. Enter reuses it.
+Ctrl-S saves to the remembered name without repeated name/overwrite prompts.
+No remembered name: asks for one. Ctrl-Shift-S starts Save As with a blank name.
+Ctrl-O browses DAT; Ctrl-Z undoes. Saving retains Undo; undo may mark dirty again.
+In /TEXT enter an empty filename to reuse it. Existing DAT asks Y/N.
+S writes a temporary file, reads it back, compares every byte, then replaces.
+Old DAT is renamed to a backup first; failed installation attempts rollback.
+DOS disk buffers are flushed before backup cleanup and clean-state reporting.
+MV$TEMP.$$$ or MV$BACK.$$$ leftovers block saves: inspect in DOS first.
+B, X and V still refuse existing filenames. File-not-found is a separate error.
+Malformed/short/oversized DAT loads leave the current bank unchanged.
+An asterisk marks unsaved DAT changes. MUC/VGM export does not clear it.
+Header F*/W* shows both banks; FREE shows the active bank's available slots.
+
+Limitations:
+- Keyboard graphical editor, no mouse. /TEXT is optional numeric console mode.
+- SCC+ audition takes over all chip channels; previous chip state is not restored.
+- SCC MUC channels are not integrated into the four MUCOMSX tools yet.
+- No JSON/WAV import in this DOS program; use the existing desktop tools.
+- One-level undo; loads/bulk imports clear same-bank Undo, saves retain it.
+- Power loss/disk failure can leave recovery files. See USABILITY.TXT.
+- Tested on openMSXTK WX + 512KiB MFR SCC+ SD + MAKOTO, Z80.
+- Physical MSX hardware has not been tested.
+
+README.TXT contains the detailed Korean manual in UTF-8 for desktop reading.
+
+SCC/SCC+ waveform acceleration (2026-10-13):
+Hold Up/Down: step 1 -> 2 at 45 ticks -> 3 at 90 ticks -> 4 at 150 ticks.
+At 60Hz: about 0.75s / 1.5s / 2.5s; at 50Hz: 0.9s / 1.8s / 3s.
+Maximum step four replaces the old abrupt 1/4/16 curve. Repeat rate unchanged.
+Release, change direction or use another command to reset acceleration.
+Samples clamp at -128..127. Plus changes by one; '-' starts negative typing.
+FM navigation is not value acceleration. U undoes the last step only.
+Shift+Up/Down: fine adjustment by one even during a long or accelerated hold.
+Release Shift while holding the arrow: restart at one, then accelerate again.
+Keyboard octave Up/Down uses the same 1/2/3/4 and Shift=fine numeric rule.
+Octaves clamp at 2..6; hold repeat starts after 24 ticks, then every 6 ticks.
+Octave changes repitch a held note without changing voice banks or Undo.
