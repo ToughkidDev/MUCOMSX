@@ -110,6 +110,9 @@ td strong{white-space:nowrap}
 .docs{display:flex;gap:8px;flex-wrap:wrap}
 .docs a{font-size:.8rem;border:1px solid var(--line);border-radius:6px;padding:3px 10px;color:var(--ink)}
 .docs a:hover{border-color:var(--accent2);color:var(--accent2);text-decoration:none}
+.scope-tools{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.scope-tools .tool{min-width:0}
+.scope-tools h3.name{font-size:1.25rem;margin-bottom:4px}
 
 /* ---------- demo videos ---------- */
 .videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;margin-top:8px}
@@ -164,6 +167,7 @@ footer p{margin:5px 0}
       <a class="primary" href="https://github.com/ToughkidDev/MUCOMSX/releases">Download</a>
       <a href="#demos">Demos</a>
       <a href="#tools">Tools</a>
+      <a href="#scope-players">Scope players</a>
       <a href="#workflow">Workflow</a>
       <a href="#requirements">Requirements</a>
       <a href="#quickstart">Quick start</a>
@@ -377,6 +381,75 @@ footer p{margin:5px 0}
   </div>
 </section>
 
+<section id="scope-players" aria-labelledby="scope-title">
+  <div class="wrap">
+    <h2 id="scope-title">MUCScope &amp; MUBScope <span class="ko">눈으로 보는 음악 · 音楽を目で楽しむ</span></h2>
+    <p class="lead">Two graphical music players for MSX1 and later. Follow the notes, levels and SCC waveforms on a SCREEN 2 display while listening on real sound hardware.</p>
+
+    <div class="tools scope-tools">
+      <article class="tool">
+        <h3 class="name">MUCScope</h3>
+        <p class="role">MUC source → compile → visual playback</p>
+        <p lang="en">Select a <code>.MUC</code> source and let the built-in compiler turn it into music on the MSX. Browse for another song while compiling; replay the current compiled song without compiling again. For listening to your MML collection, not editing it.</p>
+        <p lang="ko"><code>.MUC</code> 소스를 선택하면 MSX에서 직접 컴파일한 뒤 시각화 화면과 함께 연주합니다. 컴파일 중에도 다음 곡을 탐색할 수 있고, 같은 곡을 다시 들을 때는 컴파일 결과를 재사용합니다. MML 편집은 MUCEDIT를 사용하세요.</p>
+        <p lang="ja"><code>.MUC</code> ソースを選ぶと、MSX上でコンパイルして視覚表示とともに演奏します。コンパイル中も次の曲を探せます。同じ曲の再生にはコンパイル済みデータを再利用します。MMLの編集にはMUCEDITをお使いください。</p>
+        <pre><code>MUCSCOPE SONG.MUC</code></pre>
+      </article>
+      <article class="tool">
+        <h3 class="name">MUBScope</h3>
+        <p class="role">Compiled MUB → visual playback</p>
+        <p lang="en">Play finished <code>.MUB</code> files without compiling. Supports MUB8 and supported muPb/msPb songs, reading voices and embedded PCM from the MUB itself. A graphical way to browse and enjoy a compiled music collection.</p>
+        <p lang="ko">완성된 <code>.MUB</code> 파일을 컴파일 없이 바로 연주합니다. MUB8과 지원 범위의 muPb/msPb 곡을 재생하며, 음색과 내장 PCM은 MUB에서 읽습니다. 컴파일된 음악 모음을 탐색하고 감상하기 위한 그래픽 플레이어입니다.</p>
+        <p lang="ja">完成した <code>.MUB</code> をコンパイルなしで演奏します。MUB8と対応範囲内のmuPb/msPb楽曲を再生し、音色と内蔵PCMはMUBから読み込みます。コンパイル済みの音楽コレクションを探して楽しむためのグラフィカルプレーヤーです。</p>
+        <pre><code>MUBSCOPE SONG.MUB</code></pre>
+        <figure class="video">
+          <button class="vthumb" type="button" data-vid="Xk4awiKuZGc"
+                  aria-label="Play the MUBScope demo video">
+            <img src="https://img.youtube.com/vi/Xk4awiKuZGc/hqdefault.jpg"
+                 alt="MUBScope demo video" loading="lazy" width="480" height="360">
+            <span class="vplay" aria-hidden="true"></span>
+          </button>
+          <figcaption>
+            <strong>MUBScope</strong> — visual music player demo<br>
+            <span class="ko">MUBScope 시연 · MUBScope デモ</span> ·
+            <a href="https://www.youtube.com/watch?v=Xk4awiKuZGc">Watch on YouTube</a>
+          </figcaption>
+        </figure>
+      </article>
+    </div>
+
+    <div class="tri">
+      <article lang="en">
+        <h4>English</h4>
+        <p>See channel keyboards, note names, levels, chip pages and SCC waveforms. <kbd>Tab</kbd> switches between channel and spectrum views; <kbd>C</kbd> switches sound-chip pages. The spectrum is estimated from playback data, not an audio FFT.</p>
+        <p>Browse drives and folders with <kbd>F</kbd>, select with the arrows and <kbd>Return</kbd>, and adjust master or sound-group volume with <kbd>V</kbd>. ONCE, LOOP and RANDOM modes, pause, fade-out and playback-speed controls make album listening easy.</p>
+        <p>Choose from 40 channel-view skins, 40 spectrum skins and six toolbar styles. Open the skin picker with <kbd>Shift</kbd>+<kbd>F5</kbd> or <kbd>Ctrl</kbd>+<kbd>L</kbd>.</p>
+      </article>
+      <article lang="ko">
+        <h4>한국어</h4>
+        <p>채널별 건반·음이름·레벨과 칩별 화면, SCC 파형을 보여줍니다. <kbd>Tab</kbd>으로 채널/스펙트럼 화면을, <kbd>C</kbd>로 사운드 칩 화면을 전환합니다. 스펙트럼은 연주 데이터로 추정하며 실제 오디오 FFT 분석은 아닙니다.</p>
+        <p><kbd>F</kbd>로 드라이브와 폴더를 탐색하고 방향키와 <kbd>Return</kbd>으로 곡을 선택합니다. <kbd>V</kbd>로 전체·음원 그룹별 음량을 조절합니다. ONCE·LOOP·RANDOM, 일시정지, 페이드아웃과 재생 속도 조절을 지원합니다.</p>
+        <p>채널 화면 40종, 스펙트럼 화면 40종의 스킨과 툴바 6종을 제공합니다. <kbd>Shift</kbd>+<kbd>F5</kbd> 또는 <kbd>Ctrl</kbd>+<kbd>L</kbd>로 스킨을 고르세요.</p>
+      </article>
+      <article lang="ja">
+        <h4>日本語</h4>
+        <p>チャンネル別の鍵盤・音名・レベル、音源別ページ、SCC波形を表示します。<kbd>Tab</kbd>でチャンネル／スペクトラム表示、<kbd>C</kbd>で音源ページを切り替えます。スペクトラムは演奏データからの推定で、音声のFFT解析ではありません。</p>
+        <p><kbd>F</kbd>でドライブやフォルダーを開き、方向キーと<kbd>Return</kbd>で選曲。<kbd>V</kbd>で全体・音源グループ別の音量を調整できます。ONCE・LOOP・RANDOM、一時停止、フェードアウト、再生速度の変更に対応します。</p>
+        <p>チャンネル表示40種、スペクトラム表示40種のスキンと、6種類のツールバーを用意。<kbd>Shift</kbd>+<kbd>F5</kbd>または<kbd>Ctrl</kbd>+<kbd>L</kbd>でスキンを選べます。</p>
+      </article>
+    </div>
+
+    <div class="note">
+      <p lang="en"><strong>Scope player setup:</strong> MSX1 or later, 16KB VRAM, MSX-DOS2/Nextor and a RAM mapper; 512KB or more is recommended. Install the separate Scope package with its matching COM/BIN modules and complete <code>SKINS</code> folder. These players are separate from the five-tool toolchain ZIP.</p>
+      <p lang="ko"><strong>설치 환경:</strong> MSX1 이상, VRAM 16KB, MSX-DOS2/Nextor와 RAM 매퍼가 필요하며 512KB 이상을 권장합니다. 기존 5종 툴체인 ZIP과는 별도 패키지입니다. 같은 버전의 COM/BIN 모듈과 <code>SKINS</code> 폴더를 함께 설치하세요.</p>
+      <p lang="ja"><strong>動作環境：</strong>MSX1以降、VRAM 16KB、MSX-DOS2/NextorとRAMマッパーが必要です。512KB以上を推奨します。既存の5ツール入りZIPとは別パッケージです。同じ版のCOM/BINモジュールと<code>SKINS</code>フォルダーをまとめて配置してください。</p>
+      <p lang="en">Provide every chip the song uses: PSG, MSX-MUSIC/OPLL, OPNA such as MAKOTO, or SCC/SCC+. Heavy songs may slow down on a normal Z80. Supported Panasonic fast modes and Turbo R acceleration are automatic; <code>/N</code> disables them.</p>
+      <p lang="ko">곡에서 사용하는 PSG·MSX-MUSIC/OPLL·MAKOTO 등의 OPNA·SCC/SCC+ 하드웨어가 필요합니다. 고부하 곡은 일반 Z80에서 느려질 수 있습니다. 지원 Panasonic 고속 모드와 Turbo R 가속은 자동 적용되며 <code>/N</code>으로 해제합니다.</p>
+      <p lang="ja">曲が使用するPSG・MSX-MUSIC/OPLL・MAKOTOなどのOPNA・SCC/SCC+を用意してください。高負荷の曲は通常のZ80では遅くなる場合があります。対応Panasonic機の高速モードとTurbo Rの加速は自動で有効になり、<code>/N</code>で無効にできます。</p>
+    </div>
+  </div>
+</section>
+
 <section id="workflow">
   <div class="wrap">
     <h2>How a song moves through the tools <span class="ko">작업 흐름 · 作業の流れ</span></h2>
@@ -416,6 +489,7 @@ footer p{margin:5px 0}
 <section id="requirements">
   <div class="wrap">
     <h2>Requirements <span class="ko">동작 환경 · 動作環境</span></h2>
+    <p class="lead">The table below describes the core toolchain environment. For the MSX1-compatible graphical players, see <a href="#scope-players">MUCScope &amp; MUBScope</a> above.</p>
     <div class="tablewrap">
       <table>
         <tbody>
