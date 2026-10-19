@@ -11,6 +11,7 @@
   --bg:#f4f1ea; --panel:#fffdf8; --ink:#1d1b16; --muted:#5d584c;
   --line:#ddd6c6; --accent:#b4451f; --accent2:#1f5f7a;
   --code-bg:#fffdf8; --gutter:#efeadf; --err-bg:rgba(180,69,31,.13); --warn-bg:rgba(196,140,20,.14);
+  --err-line:#e0281b; --warn-line:#f2b800;
   --scope:#1f5f7a;
   --t-note:#1d1b16; --t-cmd:#1f5f7a; --t-num:#9a5b00; --t-str:#8a3b8f; --t-com:#8a8270;
   --t-tag:#b4451f; --t-val:#2e7d4f; --t-mac:#6d4fc2; --sel:rgba(31,95,122,.25);
@@ -22,6 +23,7 @@
     --bg:#15140f; --panel:#1e1c16; --ink:#eae5d8; --muted:#a29b89;
     --line:#332f25; --accent:#e8794c; --accent2:#7fbcd8;
     --code-bg:#1a1813; --gutter:#211f19; --err-bg:rgba(232,121,76,.18); --warn-bg:rgba(220,170,60,.16);
+    --err-line:#ff4d3d; --warn-line:#ffd23f;
     --scope:#7fbcd8;
     --t-note:#eae5d8; --t-cmd:#7fbcd8; --t-num:#e3a95a; --t-str:#d58fd0; --t-com:#8b8574;
     --t-tag:#e8794c; --t-val:#8fcf9f; --t-mac:#b59cf2; --sel:rgba(127,188,216,.28);
@@ -110,6 +112,10 @@ select{border:1px solid var(--line);background:var(--bg);border-radius:8px;paddi
 .marks div{position:absolute;left:0;right:0;height:var(--lh)}
 .marks .err{background:var(--err-bg)}
 .marks .warn{background:var(--warn-bg)}
+/* The row of the message you clicked: a red (error) or yellow (warning) line. */
+.marks .picked{--c:var(--err-line);background:color-mix(in srgb,var(--c) 22%,transparent);
+               box-shadow:inset 0 2px 0 var(--c),inset 0 -2px 0 var(--c),inset 4px 0 0 var(--c)}
+.marks .picked.warn{--c:var(--warn-line)}
 .trace{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .trace div{position:absolute;height:var(--lh);border-radius:3px;
            background:color-mix(in srgb,var(--c) 30%,transparent);box-shadow:inset 0 -2px 0 var(--c)}
@@ -175,6 +181,8 @@ textarea::selection{background:var(--sel);color:transparent}
 .msgs li.err{background:var(--err-bg)}
 .msgs li.warn{background:var(--warn-bg)}
 .msgs li[data-row]{cursor:pointer}
+.msgs li.picked{outline:2px solid var(--err-line);outline-offset:-2px}
+.msgs li.warn.picked{outline-color:var(--warn-line)}
 .msgs .pos{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-right:6px}
 .msgs .ok{color:var(--muted)}
 .files{list-style:none;margin:0 0 8px;padding:0;font-size:.85rem}

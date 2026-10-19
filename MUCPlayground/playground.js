@@ -217,6 +217,7 @@ let splitMode = 'off';
 
 let markRows = new Map();   // row -> 'err' | 'warn'
 let markSpots = [];         // { row, col, kind } for the wavy underline
+let pickedMark = null;      // { row, kind }: the message last clicked, drawn as a red / yellow line
 
 function lineCount() { let n = 1; for (let i = 0; i < code.value.length; i++) if (code.value.charCodeAt(i) === 10) n++; return n; }
 
@@ -239,6 +240,9 @@ function renderMarks() {
     let html = '';
     for (const [row, kind] of markRows) {
       html += `<div class="${kind}" style="top:${pad + (row - 1) * lh - p.code.scrollTop}px"></div>`;
+    }
+    if (pickedMark) {
+      html += `<div class="picked ${pickedMark.kind}" style="top:${pad + (pickedMark.row - 1) * lh - p.code.scrollTop}px"></div>`;
     }
     // A wavy underline under the word the compiler points at (its column counts Shift-JIS bytes).
     for (const m of markSpots) {
@@ -278,8 +282,12 @@ function updateCursor() {
 
 function updateBytes() { $('bytes').textContent = t('bytes', new Blob([code.value]).size); }
 
-function goToRow(row, col = 1) {
+// `kind` ('err' / 'warn') also marks the row with a red or yellow line, as when a
+// compiler message is clicked; the line stays until the text is edited.
+function goToRow(row, col = 1, kind = null) {
   if (viewMode === 'channels') setView('editor');
+  pickedMark = kind ? { row, kind } : null;
+  document.querySelectorAll('#messages li.picked').forEach((li) => li.classList.remove('picked'));
   const code = pane.visible ? pane.code : panes[0].code;
   const lines = code.value.split('\n');
   let pos = 0;
@@ -290,6 +298,7 @@ function goToRow(row, col = 1) {
   const lh = parseFloat(getComputedStyle(code).lineHeight) || 20;
   code.scrollTop = Math.max(0, (row - 1) * lh - code.clientHeight / 3);
   updateCursor();
+  renderMarks();
 }
 
 let saveTimer = 0, scanTimer = 0;
@@ -312,6 +321,7 @@ function onInput(p, e) {
   }
   traceStale = true;
   clearTrace();
+  if (pickedMark) { pickedMark = null; document.querySelectorAll('#messages li.picked').forEach((li) => li.classList.remove('picked')); }
   holdFollow(p);
   renderGutter();
   updateBytes();
@@ -397,6 +407,11 @@ function renderMessages(result) {
       const row = lines.findIndex((l) => /^#voice\b/i.test(l)) + 1;
       if (row > 0) pos = { row, col: 0 };
     }
+    if (!pos) {
+      // Voice messages (W0408 …) name the voice number but no line: point at the voice.
+      const voice = /instrument number:\s*(\d+)|FM音色番号\s*(\d+)/i.exec(m.text);
+      if (voice) { pos = voiceRow(Number(voice[1] ?? voice[2])); located = !!pos; }
+    }
     const text = m.text.replace(/^\[(?:row|行):\s*-?\d+\s*(?:column|桁):\s*-?\d+\]\s*/i, '');
     const info = explain({ ...m, text }, lang);
     const head = document.createElement('div');
@@ -409,7 +424,8 @@ function renderMessages(result) {
       const part = /^((?:MSX)?[A-K][A-K0-9]*)[ \t]/.exec(line);
       head.querySelector('.where').textContent = t('where', pos.row, pos.col, part ? part[1] : '', located);
       li.dataset.row = pos.row;
-      li.addEventListener('click', () => goToRow(pos.row, pos.col || 1));
+      li.addEventListener('click', () => { goToRow(pos.row, pos.col || 1, kind); li.classList.add('picked'); });
+      if (pickedMark && pickedMark.row === pos.row && pickedMark.kind === kind) li.classList.add('picked');
       if (kind === 'err' || !markRows.has(pos.row)) markRows.set(pos.row, kind);
       if (pos.col > 0) markSpots.push({ row: pos.row, col: pos.col, kind });
     }
@@ -452,6 +468,20 @@ function renderMessages(result) {
   }
   renderGutter();
 }
+// Where voice `n` is defined in the song (a line starting with spaces and @n), else the
+// first part line that selects it.
+function voiceRow(n) {
+  const code = (line) => line.replace(/;.*$/, '');
+  const at = new RegExp(`@%?${n}(?!\\d)`);
+  let i = lines.findIndex((l) => new RegExp(`^\\s+@%?${n}(?!\\d)`).test(code(l)));
+  if (i < 0) i = lines.findIndex((l) => /^(?:MSX)?[A-K][A-K0-9]*[ \t]/.test(l) && at.test(code(l)));
+  if (i < 0) return null;
+  const col = code(lines[i]).search(at);
+  return { row: i + 1, col: sjisBytes(lines[i].slice(0, col)) + 1 };
+}
+
+const sjisBytes = (text) => { let b = 0; for (const ch of text) { const c = ch.charCodeAt(0); b += c < 0x80 || (c >= 0xff61 && c <= 0xff9f) ? 1 : 2; } return b; };
+
 // ---------- attached files ----------
 const files = new Map();   // lower-case name -> { name, data:ArrayBuffer }
 
@@ -724,7 +754,7 @@ function onEngineMessage(m, source) {
         $('nowMeta').textContent = '';
         const first = m.result.errors.map(messagePosition).find(Boolean)
           || (m.result.locatedRow > 0 ? { row: m.result.locatedRow, col: 1 } : null);
-        if (first) goToRow(first.row, first.col);
+        if (first) goToRow(first.row, first.col, 'err');
       } else {
         setStatus(t('compiled', m.result.ms, m.result.size));
       }
