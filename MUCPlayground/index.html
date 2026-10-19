@@ -58,9 +58,10 @@ h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
 .btn.primary:hover{opacity:.9}
 .btn.primary kbd{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
 .btn[disabled]{opacity:.5;cursor:default}
-.clock{font-family:var(--mono);font-size:.95rem;min-width:7.5em;color:var(--muted)}
+.clock{font-family:var(--mono);font-size:.95rem;min-width:6em;color:var(--muted)}
 .vol{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem}
-.vol input{width:90px;accent-color:var(--accent)}
+.vol input{width:78px;accent-color:var(--accent)}
+.vol output{font-family:var(--mono);font-size:.8rem;min-width:2.6em;color:var(--muted)}
 .spacer{flex:1}
 .save-group{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg);font-size:.9rem}
 .save-group span{padding:6px 10px;color:var(--muted);border-right:1px solid var(--line);white-space:nowrap}
@@ -68,7 +69,7 @@ h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
 .save-group button:last-child{border-right:0}
 .save-group button:hover{color:var(--accent2);background:var(--panel)}
 .save-group button:focus-visible{outline:2px solid var(--accent2);outline-offset:-2px}
-select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;font-size:.9rem;max-width:260px}
+select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;font-size:.9rem;max-width:210px}
 .status{width:100%;font-size:.85rem;color:var(--muted);min-height:1.3em}
 .status.err{color:var(--accent)}
 
@@ -162,6 +163,7 @@ canvas{display:block;width:100%;height:72px;border-radius:8px;background:var(--b
 .files .missing .name{color:var(--accent)}
 .files button{border:0;background:transparent;cursor:pointer;color:var(--muted);padding:0 4px;font-size:1rem}
 .hint{font-size:.8rem;color:var(--muted);margin:6px 0 0}
+.btn.small{padding:4px 10px;font-size:.82rem}
 .ref{width:100%;border-collapse:collapse;font-size:.82rem}
 .ref td{padding:3px 0;border-bottom:1px solid var(--line);vertical-align:top}
 .ref td:first-child{font-family:var(--mono);white-space:nowrap;padding-right:10px;color:var(--accent)}
@@ -222,12 +224,12 @@ footer p{margin:2px 0}
   <button class="btn" id="stop" type="button"><span data-i18n="stop">■ Stop</span> <kbd>Esc</kbd></button>
   <span class="clock" id="clock" aria-live="off">0:00.0</span>
   <label class="vol"><span data-i18n="volume">Volume</span> <input id="volume" type="range" min="0" max="100" value="70"></label>
+  <label class="vol"><span data-i18n="fontSize" title="Editor text size">Text</span> <input id="fontSize" title="Editor text size" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
   <span class="spacer"></span>
   <label class="sr-only" for="examples" data-i18n="examples">Examples</label>
   <select id="examples"></select>
   <button class="btn" id="browse" type="button" data-i18n="browse">Samples…</button>
   <button class="btn" id="open" type="button" data-i18n="open" title=".muc / .mub / .vgm / .vgz">Open…</button>
-  <button class="btn" id="addFiles" type="button" data-i18n="addFiles">Add voice / PCM</button>
   <div class="save-group" role="group" aria-labelledby="saveLabel">
     <span id="saveLabel" data-i18n="save">Save</span>
     <button type="button" id="save" title="MML source (Shift-JIS)">.muc</button>
@@ -271,7 +273,8 @@ footer p{margin:2px 0}
     <div class="card">
       <h2 data-i18n="files">Voice / PCM files</h2>
       <ul class="files" id="files"></ul>
-      <p class="hint" data-i18n="filesHint">Files named by #voice or #pcm. Add them with the button above, or drop them on the page.</p>
+      <button class="btn small" id="addFiles" type="button" data-i18n="addFiles">Add voice / PCM</button>
+      <p class="hint" data-i18n="filesHint">Files named by #voice or #pcm. Add them with the button, or drop them on the page.</p>
     </div>
     <div class="card">
       <h2 data-i18n="reference">Quick reference</h2>

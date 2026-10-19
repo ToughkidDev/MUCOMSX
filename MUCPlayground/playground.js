@@ -8,13 +8,14 @@ const SAMPLE_RATE = 44100;
 const STORE_SOURCE = 'mucplayground.source';
 const STORE_LANG = 'mucplayground.lang';
 const STORE_VOLUME = 'mucplayground.volume';
+const STORE_FONT = 'mucplayground.fontSize';
 
 const T = {
   en: {
     back: '← MUCOMSX', tagline: 'Write MUCOM88 MML, hear it right away',
     play: '▶ Play', stop: '■ Stop', volume: 'Volume', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', nowPlaying: 'Now playing', messages: 'Compiler messages',
-    files: 'Voice / PCM files', filesHint: 'Files named by #voice or #pcm. Add them with the button above, or drop them on the page.',
+    files: 'Voice / PCM files', filesHint: 'Files named by #voice or #pcm. Add them with the button, or drop them on the page.',
     reference: 'Quick reference', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'Rhythm (v needs 7 values)',
     refPcm: 'ADPCM (needs #pcm)', refTempo: 'Tempo in BPM / raw Timer-B', refOctave: 'Octave, up, down',
     refLength: 'Default length, length, clocks', refVoice: 'Volume, voice', refLoop: 'Repeat, song loop point',
@@ -34,7 +35,7 @@ const T = {
     audioFailed: 'Audio could not start: ', bytes: (n) => `${n.toLocaleString()} bytes`,
     saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
-    followPart: (p) => `Follow part ${p}`, hintSuggest: 'suggestions',
+    followPart: (p) => `Follow part ${p}`, hintSuggest: 'suggestions', fontSize: 'Text',
     browse: 'Samples…', samplesTitle: 'Samples on GitHub', refresh: 'Refresh', search: 'Search songs…',
     liveSource: (time) => `Live from github.com/ToughkidDev/MUCOMSX (Samples, main branch) · read at ${time}. New files appear as soon as they are committed.`,
     bundledSource: 'GitHub could not be reached, so this is the list built into the page; it may be missing the newest files.',
@@ -51,7 +52,7 @@ const T = {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
     play: '▶ 재생', stop: '■ 정지', volume: '음량', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', nowPlaying: '재생 중', messages: '컴파일 메시지',
-    files: '음색 / PCM 파일', filesHint: '#voice, #pcm으로 지정한 파일입니다. 위 버튼으로 추가하거나 페이지에 끌어다 놓으세요.',
+    files: '음색 / PCM 파일', filesHint: '#voice, #pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요.',
     reference: '빠른 참조', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: '리듬 (v는 값 7개)',
     refPcm: 'ADPCM (#pcm 필요)', refTempo: '템포 BPM / Timer-B 값', refOctave: '옥타브, 올림, 내림',
     refLength: '기본 길이, 길이, 클록', refVoice: '음량, 음색', refLoop: '반복, 곡 루프 지점',
@@ -71,7 +72,7 @@ const T = {
     audioFailed: '오디오를 시작하지 못했습니다: ', bytes: (n) => `${n.toLocaleString()} 바이트`,
     saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
-    followPart: (p) => `${p} 파트 따라가기`, hintSuggest: '명령 제안',
+    followPart: (p) => `${p} 파트 따라가기`, hintSuggest: '명령 제안', fontSize: '글자',
     browse: '샘플…', samplesTitle: 'GitHub의 샘플', refresh: '새로 고침', search: '곡 검색…',
     liveSource: (time) => `github.com/ToughkidDev/MUCOMSX의 Samples 폴더(main)를 ${time}에 직접 읽었습니다. 새 파일은 커밋하는 즉시 나타납니다.`,
     bundledSource: 'GitHub에 접속하지 못해 페이지에 들어 있는 목록을 보여 줍니다. 최신 파일이 빠져 있을 수 있습니다.',
@@ -88,7 +89,7 @@ const T = {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
     play: '▶ 再生', stop: '■ 停止', volume: '音量', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
-    files: '音色 / PCMファイル', filesHint: '#voice・#pcmで指定したファイルです。上のボタンで追加するか、ページにドロップしてください。',
+    files: '音色 / PCMファイル', filesHint: '#voice・#pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。',
     reference: 'クイックリファレンス', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'リズム（vは7つの値）',
     refPcm: 'ADPCM（#pcmが必要）', refTempo: 'テンポ BPM / Timer-B値', refOctave: 'オクターブ、上げ、下げ',
     refLength: '基本音長、音長、クロック', refVoice: '音量、音色', refLoop: '繰り返し、曲のループ位置',
@@ -108,7 +109,7 @@ const T = {
     audioFailed: 'オーディオを開始できませんでした: ', bytes: (n) => `${n.toLocaleString()}バイト`,
     saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
-    followPart: (p) => `${p}パートを追う`, hintSuggest: 'コマンド候補',
+    followPart: (p) => `${p}パートを追う`, hintSuggest: 'コマンド候補', fontSize: '文字',
     browse: 'サンプル…', samplesTitle: 'GitHubのサンプル', refresh: '再読み込み', search: '曲を検索…',
     liveSource: (time) => `github.com/ToughkidDev/MUCOMSXのSamplesフォルダー（main）を${time}に直接読み込みました。新しいファイルはコミットするとすぐ表示されます。`,
     bundledSource: 'GitHubに接続できないため、ページ内蔵の一覧を表示しています。最新のファイルがない場合があります。',
@@ -693,6 +694,22 @@ function setVolume() {
 }
 $('volume').addEventListener('input', setVolume);
 
+// Editor text size. Everything drawn over the text (line numbers, colouring, error marks,
+// playback highlights, suggestions) reads the editor's font, so it all follows.
+function setFontSize(value) {
+  const size = Math.min(24, Math.max(10, Number(value) || 13.5));
+  const editor = document.querySelector('.editor');
+  editor.style.fontSize = `${size}px`;
+  editor.style.setProperty('--lh', `${Math.round(size * 1.48)}px`);
+  $('fontSize').value = size;
+  $('fontSizeOut').textContent = size.toFixed(1);
+  closeSuggest();
+  renderMarks();
+  traceDirty = true;
+  store.set(STORE_FONT, String(size));
+}
+$('fontSize').addEventListener('input', (e) => setFontSize(e.target.value));
+
 async function play() {
   if (!engineReady) { pendingPlay = true; setStatus(t('loading')); return; }
   try {
@@ -1166,6 +1183,8 @@ async function loadRepoFile(path) {
 {
   const savedVolume = store.get(STORE_VOLUME);
   if (savedVolume !== null) $('volume').value = savedVolume;
+  const savedFont = store.get(STORE_FONT);
+  if (savedFont !== null) setFontSize(savedFont);
   // Restore your text synchronously so nothing loaded later can overwrite what you type.
   const saved = store.get(STORE_SOURCE);
   if (saved && saved.trim()) setSource(saved);
