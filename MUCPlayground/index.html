@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>MUCPlayground — MUCOMSX</title>
+<meta name="description" content="Write MUCOM88 MML in your browser and hear it right away. YM2608 (OPNA), MSX PSG, SCC/SCC+ and MSX-MUSIC, using the same compiler and chip emulation as MDPlayer4Mac.">
+<style>
+:root{
+  --bg:#f4f1ea; --panel:#fffdf8; --ink:#1d1b16; --muted:#5d584c;
+  --line:#ddd6c6; --accent:#b4451f; --accent2:#1f5f7a;
+  --code-bg:#fffdf8; --gutter:#efeadf; --err-bg:rgba(180,69,31,.13); --warn-bg:rgba(196,140,20,.14);
+  --scope:#1f5f7a;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans KR","Noto Sans JP",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#15140f; --panel:#1e1c16; --ink:#eae5d8; --muted:#a29b89;
+    --line:#332f25; --accent:#e8794c; --accent2:#7fbcd8;
+    --code-bg:#1a1813; --gutter:#211f19; --err-bg:rgba(232,121,76,.18); --warn-bg:rgba(220,170,60,.16);
+    --scope:#7fbcd8;
+  }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;
+     display:flex;flex-direction:column;min-height:100vh}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+button,select,input{font:inherit;color:inherit}
+kbd{font-family:var(--mono);font-size:.74em;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;
+    padding:0 .35em;background:var(--panel);color:var(--muted);white-space:nowrap}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- header ---------- */
+header.top{display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--line)}
+.back{font-size:.88rem;color:var(--muted)}
+h1{margin:0;font-size:1.25rem;letter-spacing:-.01em}
+h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
+.lang{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.lang button{border:0;background:transparent;padding:4px 12px;font-size:.82rem;cursor:pointer;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+
+/* ---------- toolbar ---------- */
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--bg);border-radius:8px;
+     padding:6px 12px;cursor:pointer;font-size:.9rem;white-space:nowrap}
+.btn:hover{border-color:var(--accent2)}
+.btn:focus-visible,.lang button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.btn.primary:hover{opacity:.9}
+.btn.primary kbd{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.btn[disabled]{opacity:.5;cursor:default}
+.clock{font-family:var(--mono);font-size:.95rem;min-width:7.5em;color:var(--muted)}
+.vol{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem}
+.vol input{width:90px;accent-color:var(--accent)}
+.spacer{flex:1}
+select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;font-size:.9rem;max-width:260px}
+.status{width:100%;font-size:.85rem;color:var(--muted);min-height:1.3em}
+.status.err{color:var(--accent)}
+
+/* ---------- layout ---------- */
+.layout{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 340px;grid-template-rows:minmax(0,1fr);min-height:0}
+.editor-wrap{display:flex;flex-direction:column;min-width:0;min-height:420px;border-right:1px solid var(--line)}
+.editor{position:relative;flex:1;display:flex;background:var(--code-bg);overflow:hidden;
+        --lh:20px;font-family:var(--mono);font-size:13.5px;line-height:var(--lh)}
+.gutter{margin:0;padding:12px 10px 12px 0;min-width:52px;text-align:right;color:var(--muted);background:var(--gutter);
+        border-right:1px solid var(--line);user-select:none;overflow:hidden;white-space:pre;font:inherit;line-height:inherit;opacity:.85}
+.gutter span{display:block;padding-left:8px}
+.gutter .err{color:var(--accent);font-weight:700}
+.gutter .warn{color:#b8860b;font-weight:700}
+.code-area{position:relative;flex:1;min-width:0}
+.marks{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.marks div{position:absolute;left:0;right:0;height:var(--lh)}
+.marks .err{background:var(--err-bg)}
+.marks .warn{background:var(--warn-bg)}
+textarea{position:absolute;inset:0;width:100%;height:100%;margin:0;border:0;resize:none;outline:none;
+         padding:12px 14px;background:transparent;color:var(--ink);font:inherit;line-height:inherit;
+         white-space:pre;overflow:auto;tab-size:4;caret-color:var(--accent)}
+.editor-foot{display:flex;gap:16px;padding:5px 14px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--line);background:var(--panel)}
+
+/* ---------- side panel ---------- */
+.side{overflow:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card h2{margin:0 0 8px;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.now-title{font-weight:700;font-size:1.02rem;margin:0}
+.now-meta{color:var(--muted);font-size:.85rem;margin:2px 0 10px;min-height:1.3em}
+canvas{display:block;width:100%;height:72px;border-radius:8px;background:var(--bg);border:1px solid var(--line)}
+.msgs{list-style:none;margin:0;padding:0;font-size:.85rem;max-height:220px;overflow:auto}
+.msgs li{padding:6px 8px;border-radius:6px;margin-bottom:4px;cursor:default}
+.msgs li.err{background:var(--err-bg)}
+.msgs li.warn{background:var(--warn-bg)}
+.msgs li[data-row]{cursor:pointer}
+.msgs .pos{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-right:6px}
+.msgs .ok{color:var(--muted)}
+.files{list-style:none;margin:0 0 8px;padding:0;font-size:.85rem}
+.files li{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)}
+.files li:last-child{border-bottom:0}
+.files .name{font-family:var(--mono);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.files .size{color:var(--muted);font-size:.78rem}
+.files .missing .name{color:var(--accent)}
+.files button{border:0;background:transparent;cursor:pointer;color:var(--muted);padding:0 4px;font-size:1rem}
+.hint{font-size:.8rem;color:var(--muted);margin:6px 0 0}
+.ref{width:100%;border-collapse:collapse;font-size:.82rem}
+.ref td{padding:3px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.ref td:first-child{font-family:var(--mono);white-space:nowrap;padding-right:10px;color:var(--accent)}
+.ref tr:last-child td{border-bottom:0}
+.links{font-size:.82rem;margin:10px 0 0}
+footer{padding:10px 20px;border-top:1px solid var(--line);font-size:.76rem;color:var(--muted)}
+footer p{margin:2px 0}
+.drop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(20,18,14,.55);
+      color:#fff;font-size:1.2rem;z-index:10;pointer-events:none}
+.drop.on{display:flex}
+
+@media (max-width:900px){
+  body{display:block}
+  .layout{display:block}
+  .editor-wrap{border-right:0;border-bottom:1px solid var(--line);height:65vh;min-height:360px}
+  .side{overflow:visible}
+  header.top,.toolbar{padding-left:16px;padding-right:16px}
+  .spacer{display:none}
+  select{max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="back" href="../" data-i18n="back">← MUCOMSX</a>
+  <h1>MUCPlayground <span class="sub" data-i18n="tagline">Write MUCOM88 MML, hear it right away</span></h1>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    <button type="button" data-lang="ko" aria-pressed="false">한국어</button>
+    <button type="button" data-lang="ja" aria-pressed="false">日本語</button>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="btn primary" id="play" type="button"><span data-i18n="play">▶ Play</span> <kbd>Ctrl+Enter</kbd></button>
+  <button class="btn" id="stop" type="button"><span data-i18n="stop">■ Stop</span> <kbd>Esc</kbd></button>
+  <span class="clock" id="clock" aria-live="off">0:00.0</span>
+  <label class="vol"><span data-i18n="volume">Volume</span> <input id="volume" type="range" min="0" max="100" value="70"></label>
+  <span class="spacer"></span>
+  <label class="sr-only" for="examples" data-i18n="examples">Examples</label>
+  <select id="examples"></select>
+  <button class="btn" id="open" type="button" data-i18n="open">Open .muc</button>
+  <button class="btn" id="addFiles" type="button" data-i18n="addFiles">Add voice / PCM</button>
+  <button class="btn" id="save" type="button"><span data-i18n="save">Save .muc</span></button>
+  <input id="openInput" type="file" accept=".muc,.MUC,.txt" hidden>
+  <input id="filesInput" type="file" multiple hidden>
+  <div class="status" id="status" role="status"></div>
+</div>
+
+<main class="layout">
+  <section class="editor-wrap" aria-label="Editor">
+    <div class="editor">
+      <pre class="gutter" id="gutter" aria-hidden="true"></pre>
+      <div class="code-area">
+        <div class="marks" id="marks" aria-hidden="true"></div>
+        <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="MUC source"></textarea>
+      </div>
+    </div>
+    <div class="editor-foot"><span id="cursor">Ln 1, Col 1</span><span id="bytes"></span></div>
+  </section>
+
+  <aside class="side">
+    <div class="card">
+      <h2 data-i18n="nowPlaying">Now playing</h2>
+      <p class="now-title" id="nowTitle">—</p>
+      <p class="now-meta" id="nowMeta"></p>
+      <canvas id="scope" width="600" height="144" aria-hidden="true"></canvas>
+    </div>
+    <div class="card">
+      <h2 data-i18n="messages">Compiler messages</h2>
+      <ul class="msgs" id="messages"></ul>
+    </div>
+    <div class="card">
+      <h2 data-i18n="files">Voice / PCM files</h2>
+      <ul class="files" id="files"></ul>
+      <p class="hint" data-i18n="filesHint">Files named by #voice or #pcm. Add them with the button above, or drop them on the page.</p>
+    </div>
+    <div class="card">
+      <h2 data-i18n="reference">Quick reference</h2>
+      <table class="ref">
+        <tr><td>A B C H I J</td><td data-i18n="refFm">FM 1–6</td></tr>
+        <tr><td>D E F</td><td data-i18n="refSsg">SSG 1–3</td></tr>
+        <tr><td>G</td><td data-i18n="refRhythm">Rhythm (v needs 7 values)</td></tr>
+        <tr><td>K</td><td data-i18n="refPcm">ADPCM (needs #pcm)</td></tr>
+        <tr><td>T120 / t225</td><td data-i18n="refTempo">Tempo in BPM / raw Timer-B</td></tr>
+        <tr><td>o4 &gt; &lt;</td><td data-i18n="refOctave">Octave, up, down</td></tr>
+        <tr><td>l8 c4 c%12</td><td data-i18n="refLength">Default length, length, clocks</td></tr>
+        <tr><td>v12 @1</td><td data-i18n="refVoice">Volume, voice</td></tr>
+        <tr><td>[ … ]2 L</td><td data-i18n="refLoop">Repeat, song loop point</td></tr>
+        <tr><td>; text</td><td data-i18n="refComment">Comment</td></tr>
+      </table>
+      <p class="links"><span data-i18n="manual">Full MML guide:</span>
+        <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEdit.md" target="_blank" rel="noopener">한국어</a> ·
+        <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditJ.md" target="_blank" rel="noopener">日本語</a> ·
+        <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditE.md" target="_blank" rel="noopener">English</a></p>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <p data-i18n="credit1">Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: mucomDotNET by kuma4649 and MDSound. GPL-3.0.</p>
+  <p><span data-i18n="credit2">MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.</span>
+     <a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/MUCPlayground" target="_blank" rel="noopener" data-i18n="source">Source and licenses</a></p>
+</footer>
+
+<div class="drop" id="drop" data-i18n="drop">Drop a .muc to open it, or voice / PCM files to attach them</div>
+
+<script src="playground.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+[
+ {
+  "name": "Goonies",
+  "dir": "../Samples/Muc/MSX/Goonies/",
+  "songs": [
+   "01 Opening Demo.muc",
+   "02 The Goonies 'R' Good Enough.muc",
+   "03 Underground Cave.muc",
+   "04 Game Clear.muc",
+   "05 Miss.muc",
+   "06 Game Over.muc"
+  ]
+ },
+ {
+  "name": "Gradius",
+  "dir": "../Samples/Muc/MSX/Gradius/",
+  "songs": [
+   "01 Beginning of History.muc",
+   "02 Challenger 1985.muc",
+   "03 Beat Back.muc",
+   "04 Blank Mask.muc",
+   "05 Free Flyer.muc",
+   "06 Space Graveyard.muc",
+   "07 Extra Stage.muc",
+   "08 Mazed Music.muc",
+   "09 Mechanical Globule.muc",
+   "10 Final Attack.muc",
+   "11 Aircraft Carrier.muc",
+   "12 Ending.muc",
+   "13 Game Over.muc",
+   "14 Historic Soldier.muc"
+  ]
+ },
+ {
+  "name": "Hinotori",
+  "dir": "../Samples/Muc/MSX/Hinotori/",
+  "songs": [
+   "01 Title.muc",
+   "02 Game Start.muc",
+   "03 Main BGM 1.muc",
+   "04 Boss.muc",
+   "05 Stage Select.muc",
+   "06 Main BGM 2.muc",
+   "07 Last Boss.muc",
+   "08 Ending.muc",
+   "09 Staff.muc",
+   "10 Death.muc",
+   "11 Game Over.muc"
+  ]
+ },
+ {
+  "name": "KnightMare",
+  "dir": "../Samples/Muc/MSX/KnightMare/",
+  "songs": [
+   "01 Game Start.muc",
+   "02 Main BGM 1.muc",
+   "03 Boss BGM 1.muc",
+   "04 Main BGM 2.muc",
+   "05 Boss BGM 2.muc",
+   "06 Ending.muc",
+   "07 Miss.muc",
+   "08 Game Over.muc"
+  ]
+ },
+ {
+  "name": "Pippols",
+  "dir": "../Samples/Muc/MSX/Pippols/",
+  "songs": [
+   "01 Play Start.muc",
+   "02 Go Pippols (High).muc",
+   "03 Item Taken.muc",
+   "04 Go Pippols (Low).muc",
+   "05 Skulls in the Woods.muc",
+   "06 Stage Clear.muc",
+   "07 Gem Taken.muc",
+   "08 Game Over.muc"
+  ]
+ },
+ {
+  "name": "Snatcher",
+  "dir": "../Samples/Muc/MSX/Snatcher/",
+  "songs": [
+   "01 Team Metal Slave (Logo).muc",
+   "02 Bio Hazard Snatcher (Part A).muc",
+   "03 Bio Hazard Snatcher (Part B).muc",
+   "04 Squeak!!.muc",
+   "05 Twilight of Neo Kobe City.muc",
+   "06 Evil Ripple.muc",
+   "07 Theme of Tara.muc",
+   "08 Pleasure of Tension.muc",
+   "09 Theme of Snatcher (Part 1).muc",
+   "10 Creeping Silence.muc",
+   "11 Evidence.muc",
+   "12 Criminal Omen.muc",
+   "13 Shocked.muc",
+   "14 Endless Pursuer.muc",
+   "15 Danger Dance... and Justice for All (Type 1).muc",
+   "16 Danger Dance... and Justice for All (Type 2).muc",
+   "17 Lament for the Death.muc",
+   "18 Innocent Girl.muc",
+   "19 Theme of Jaime.muc",
+   "20 Jingle Bell 2042.muc",
+   "21 Decadance Beat (Outside).muc",
+   "22 Decadance Beat.muc",
+   "23 The Entrance to Hell (Outside).muc",
+   "24 The Entrance to Hell.muc",
+   "25 Theme of Isabella.muc",
+   "26 Theme of Snatcher (Part 2).muc",
+   "27 Axia.muc",
+   "28 Midnight Science (Part 1).muc",
+   "29 Midnight Science (Part 2).muc",
+   "30 Amazed.muc",
+   "31 Faded Memories.muc",
+   "32 Theme of Snatcher (Part 3).muc",
+   "33 Theme of Katherine (Bathroom).muc",
+   "34 Theme of Katherine.muc",
+   "35 Theme of Junker.muc",
+   "36 Goodbye Harry.muc",
+   "37 Blow Up Tricycle.muc",
+   "38 Morg.muc",
+   "39 Spreading Diehard.muc",
+   "40 Restoration.muc",
+   "41 Theme of Randam.muc",
+   "42 Eternal Promise.muc",
+   "43 Beyond Sorrows.muc",
+   "44 Master of Puppets Among the Disease.muc"
+  ]
+ },
+ {
+  "name": "TheMazeOfGalious",
+  "dir": "../Samples/Muc/MSX/TheMazeOfGalious/",
+  "songs": [
+   "01 Prologue.muc",
+   "02 Game Start.muc",
+   "03 Greek Castle.muc",
+   "04 Fairy.muc",
+   "05 Temple.muc",
+   "06 World.muc",
+   "07 Magnifying Glass.muc",
+   "08 Magic Square.muc",
+   "09 Great Demon.muc",
+   "10 After Boss Battle.muc",
+   "11 World Clear.muc",
+   "12 Fanfare.muc",
+   "13 Ending.muc",
+   "14 Player Out.muc",
+   "15 Game Over.muc"
+  ]
+ },
+ {
+  "name": "TwinBee",
+  "dir": "../Samples/Muc/MSX/TwinBee/",
+  "songs": [
+   "01 Twinbee's Home Town Song (Main BGM).muc",
+   "02 Fantastic Power (Power-Up BGM).muc",
+   "03 Boss BGM 1.muc",
+   "04 Boss BGM 2.muc",
+   "05 Clear.muc",
+   "06 Boss BGM 3.muc",
+   "07 Extend.muc",
+   "08 Game Over.muc"
+  ]
+ }
+]

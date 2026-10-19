@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Desktop harness: renders a MUC with the playground engine so its output can be
+       compared sample-for-sample with MDPlayer4Mac's EngineSmokeTest. Not shipped. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Engine/MucEngine.csproj" />
+  </ItemGroup>
+</Project>

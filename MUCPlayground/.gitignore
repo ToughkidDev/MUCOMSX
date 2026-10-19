@@ -1,0 +1,4 @@
+# Build output and the MDPlayer4Mac checkout used by src/build.sh
+.mdplayer4mac/
+src/*/bin/
+src/*/obj/

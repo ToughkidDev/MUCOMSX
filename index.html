@@ -165,6 +165,7 @@ footer p{margin:5px 0}
     <p class="subtag">Compose in MML &middot; Compile on the MSX itself &middot; Play on real hardware &middot; Export MUB / VGM</p>
     <nav class="nav">
       <a class="primary" href="https://github.com/ToughkidDev/MUCOMSX/releases">Download</a>
+      <a href="MUCPlayground/">Playground</a>
       <a href="#demos">Demos</a>
       <a href="#tools">Tools</a>
       <a href="#scope-players">Scope players</a>
@@ -186,9 +187,12 @@ footer p{margin:5px 0}
       <a class="news-all" href="https://github.com/ToughkidDev/MUCOMSX/blob/main/NEWS.md">All news</a>
     </div>
     <ul class="news-list">
+      <li><a href="https://toughkiddev.github.io/MUCOMSX/MUCPlayground/">
+        <time datetime="2026-10-19">2026-10-19</time><span class="tag">WEB</span>
+        <span class="text">MUCPlayground — write MUC in the browser and hear it right away<span class="new">NEW</span></span></a></li>
       <li><a href="https://github.com/ToughkidDev/MUCOMSX/releases/tag/v1.0-stable">
         <time datetime="2026-10-15">2026-10-15</time><span class="tag">RELEASE</span>
-        <span class="text">MucoMSX v1.0-Stable released — SCC/SCC+ SSG extension, PCMInvert, rhythm/session fixes and MUCVOICE v0.5beta<span class="new">NEW</span></span></a></li>
+        <span class="text">MucoMSX v1.0-Stable released — SCC/SCC+ SSG extension, PCMInvert, rhythm/session fixes and MUCVOICE v0.5beta</span></a></li>
       <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCVoice/mucvoice.en.md">
         <time datetime="2026-10-15">2026-10-15</time><span class="tag">DOCS</span>
         <span class="text">Five-tool multilingual manuals and MUCVOICE v0.5beta</span></a></li>
@@ -198,9 +202,6 @@ footer p{margin:5px 0}
       <li><a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/Samples/Muc/MSX/Snatcher">
         <time datetime="2026-10-04">2026-10-04</time><span class="tag">SAMPLES</span>
         <span class="text">Snatcher — 44 MUC songs added to the samples</span></a></li>
-      <li><a href="https://github.com/ToughkidDev/MUCOMSX/releases/tag/v0.81-beta">
-        <time datetime="2026-10-03">2026-10-03</time><span class="tag">RELEASE</span>
-        <span class="text">MucoMSX v0.81-beta released</span></a></li>
     </ul>
   </div>
 </section>
@@ -279,6 +280,30 @@ footer p{margin:5px 0}
     <p class="lead" style="margin-top:22px;font-size:.88rem">
       Thumbnails load from YouTube; the player itself is only loaded once you press play.
     </p>
+  </div>
+</section>
+
+<section id="playground" aria-labelledby="playground-title">
+  <div class="wrap">
+    <h2 id="playground-title">Try it in your browser <span class="ko">브라우저에서 바로 · ブラウザですぐに</span></h2>
+    <p class="lead"><strong>MUCPlayground</strong> is an editor where you type MUC (MML) and hear it at once — nothing to install.
+       It runs MDPlayer4Mac's compiler and chip emulation in the browser: YM2608 FM, SSG, rhythm and ADPCM,
+       plus MSX-MUSIC, PSG and SCC/SCC+. Every song in the samples folder is one click away.</p>
+    <a class="cta" href="MUCPlayground/">Open MUCPlayground →</a>
+    <div class="tri">
+      <article>
+        <h4>한국어</h4>
+        <p>MUC(MML)를 입력하고 바로 들어볼 수 있는 웹 에디터입니다. 설치할 것이 없습니다. 오류는 줄 번호와 함께 표시되고, 저장소의 샘플 곡을 그대로 불러와 고쳐 볼 수 있습니다.</p>
+      </article>
+      <article>
+        <h4>日本語</h4>
+        <p>MUC（MML）を書いてすぐに試聴できるWebエディタです。インストールは不要です。エラーは行番号付きで表示され、リポジトリのサンプル曲をそのまま読み込んで編集できます。</p>
+      </article>
+      <article>
+        <h4>English</h4>
+        <p>Errors are listed with their line numbers, and the repository's sample songs load straight into the editor. Save your song as a Shift-JIS <code>.MUC</code> to take it to the MSX.</p>
+      </article>
+    </div>
   </div>
 </section>
 

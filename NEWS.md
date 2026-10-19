@@ -4,6 +4,7 @@ Newest first. The latest few are also shown on the [MUCOMSX](https://toughkiddev
 
 | Date | Type | News |
 |---|---|---|
+| 2026-10-19 | WEB | **[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)** — write MUC in the browser and hear it right away. Uses MDPlayer4Mac's compiler and chip emulation (YM2608, MSX-MUSIC, PSG, SCC/SCC+); the repository samples load from a menu. [Source](MUCPlayground) |
 | 2026-10-15 | RELEASE | **[MucoMSX v1.0-Stable](https://github.com/ToughkidDev/MUCOMSX/releases/tag/v1.0-stable) released** — first stable release. Adds SCC/SCC+ SSG extension (msPb0101), `#PCMInvert`, faster compiling, `#OPNA1RhythmMute` and session fixes, and bundles the MUCVOICE v0.5beta voice editor as the fifth tool. |
 | 2026-10-15 | DOCS | Five-tool documentation updated in Korean, English and Japanese, including [MUCVOICE v0.5beta](MUCVoice/mucvoice.en.md), SCC/SCC+ SSG, PCMInvert and [current package contents](README.md#-downloads--다운로드--ダウンロード). |
 | 2026-10-13 | UPDATE | SCC/SCC+ SSG, PCMInvert, compiler optimization, rhythm/session fixes and MUCVOICE. [KO](shared/docs/RELEASE_UPDATE_261013.md) · [EN](shared/docs/RELEASE_UPDATE_261013.en.md) · [JA](shared/docs/RELEASE_UPDATE_261013.ja.md). |

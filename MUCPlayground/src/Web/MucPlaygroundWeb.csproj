@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <!-- Browser build of the engine. Its only job is to expose MucEngine to JavaScript;
+       the page loads it in a Web Worker so compiling and rendering never block the editor. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>MucPlaygroundWeb</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- Shift-JIS lives in the code-pages tables, which invariant mode would otherwise trim away. -->
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <WasmEnableWebcil>true</WasmEnableWebcil>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Engine/MucEngine.csproj" />
+    <TrimmerRootAssembly Include="System.Text.Encoding.CodePages" />
+  </ItemGroup>
+</Project>

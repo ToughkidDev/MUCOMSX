@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    The MUC compiler, MUCOM88 driver and chip emulators used by MUCPlayground.
+    Nothing here is reimplemented: the sources are taken from MDPlayer4Mac
+    (https://github.com/ToughkidDev/MDPlayer4Mac), checked out by build.sh into
+    $(Mdp4MacDir). Only MucEngine.cs is MUCPlayground's own glue.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>MucEngine</AssemblyName>
+    <RootNamespace>MucPlayground</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <NoWarn>$(NoWarn);CS0168;CS0219;CS0162;CS0414;CS0649;CS8981</NoWarn>
+    <Mdp4MacDir Condition="'$(Mdp4MacDir)' == ''">$(MSBuildThisFileDirectory)../../.mdplayer4mac</Mdp4MacDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(Mdp4MacDir)/macos/MDSound/MDSound.csproj" />
+    <ProjectReference Include="$(Mdp4MacDir)/macos/ThirdParty/mucomDotNET/Common_NET5/Common_NET6.csproj" />
+    <ProjectReference Include="$(Mdp4MacDir)/macos/MucomCompiler/MucomCompiler.csproj" />
+    <ProjectReference Include="$(Mdp4MacDir)/macos/MucomDriver/MucomDriver.csproj" />
+    <Reference Include="musicDriverInterface">
+      <HintPath>$(Mdp4MacDir)/macos/ThirdParty/mucomDotNET/Common_NET5/musicDriverInterface.dll</HintPath>
+    </Reference>
+    <!-- MUCOMSX native MSX parts (MSX-MUSIC, PSG, SCC/SCC+): the same helpers MDPlayer4Mac uses. -->
+    <Compile Include="$(Mdp4MacDir)/macos/MDPlayerCore/Driver/MUCOM/Msx*.cs" Link="Msx/%(Filename)%(Extension)" />
+    <!-- Compiler messages and YM2608 rhythm samples travel inside the assembly; the browser has no disk. -->
+    <EmbeddedResource Include="$(Mdp4MacDir)/macos/ThirdParty/mucomDotNET/mucomDotNETCompiler/lang/*.txt" LogicalName="lang/%(Filename)%(Extension)" WithCulture="false" />
+    <EmbeddedResource Include="$(Mdp4MacDir)/macos/MDPlayerUI/Assets/Rhythm/*.WAV" LogicalName="rhythm/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>
