@@ -140,6 +140,12 @@ const T = {
 };
 
 const $ = (id) => document.getElementById(id);
+
+// iOS zooms the whole page into any text field under 16px when it is tapped (the editor
+// included). maximum-scale stops that automatic zoom; iOS still lets you pinch to zoom.
+if (/iP(hone|ad|od)/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1)) {
+  document.querySelector('meta[name="viewport"]')?.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
+}
 const statusEl = $('status'), clockEl = $('clock');
 
 // ---------- small helpers ----------
@@ -1371,14 +1377,20 @@ function renderSampleList() {
 
 async function openSamples(force) {
   const dlg = $('samplesDlg');
-  if (!dlg.open) dlg.showModal();
+  if (!dlg.open) {
+    dlg.showModal();
+    // A dialog focuses its first field, the search box; on a touch screen that brings up
+    // the keyboard over the list, so start on the close button there instead.
+    if (matchMedia('(pointer: coarse)').matches) $('sampleClose').focus();
+  }
   $('sampleSource').textContent = t('loadingList');
   if (force) sampleTree = null;
   await readSampleTree(force);
   $('sampleSource').textContent = sampleTree.live
     ? t('liveSource', new Date(sampleTree.at).toLocaleTimeString()) : t('bundledSource');
   renderSampleList();
-  $('sampleSearch').focus();
+  // Not on touch screens: the on-screen keyboard would cover most of the list.
+  if (!matchMedia('(pointer: coarse)').matches) $('sampleSearch').focus();
 }
 $('browse').addEventListener('click', () => openSamples(false));
 $('sampleRefresh').addEventListener('click', () => openSamples(true));

@@ -201,7 +201,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .links{font-size:.82rem;margin:10px 0 0}
 footer{padding:10px 20px;border-top:1px solid var(--line);font-size:.76rem;color:var(--muted)}
 footer p{margin:2px 0}
-.samples{width:min(760px,calc(100vw - 32px));max-height:min(80vh,720px);padding:0;border:1px solid var(--line);
+.samples{width:min(760px,calc(100vw - 32px));max-height:min(80vh,720px);max-height:min(80dvh,720px);padding:0;border:1px solid var(--line);
          border-radius:12px;background:var(--panel);color:var(--ink);display:none;flex-direction:column}
 .samples[open]{display:flex}
 .samples::backdrop{background:rgba(20,18,14,.45)}
@@ -212,6 +212,16 @@ footer p{margin:2px 0}
 .s-list{overflow:auto;padding:0 8px 12px;border-top:1px solid var(--line)}
 .s-list details{border-bottom:1px solid var(--line)}
 .s-list summary{cursor:pointer;padding:8px;font-weight:600;font-size:.9rem}
+/* Touch screens (iPhone, iPad): finger-sized rows, no double-tap zoom delay, and 16px text in
+   inputs so iOS does not zoom the page when one is focused. */
+@media (pointer:coarse){
+  button,summary,select,a{touch-action:manipulation}
+  input[type="search"],select{font-size:16px}
+  .s-list{-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .s-list summary{padding:12px 8px;min-height:44px;font-size:1rem}
+  .s-list li button{padding:12px 10px 12px 26px;min-height:44px;font-size:1rem;align-items:center}
+  .s-head .btn{min-height:40px}
+}
 .s-list summary small{color:var(--muted);font-weight:400;margin-left:6px}
 .s-list ul{list-style:none;margin:0 0 8px;padding:0}
 .s-list li button{display:flex;gap:10px;width:100%;text-align:left;border:0;background:transparent;padding:5px 8px 5px 24px;
