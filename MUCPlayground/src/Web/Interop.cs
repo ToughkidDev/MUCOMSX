@@ -8,8 +8,9 @@ namespace MucPlayground;
 public static partial class Interop
 {
     static readonly Dictionary<string, byte[]> files = new(StringComparer.OrdinalIgnoreCase);
-    static byte[] mub;
+    static CompileResult compiled;
     static MucPlayer player;
+    static string exportError = "";
     static short[] pcm = new short[0];
 
     public static void Main() { }
@@ -41,7 +42,7 @@ public static partial class Interop
         player?.Stop();
         player = null;
         CompileResult r = MucEngine.Compile(MucEngine.ShiftJis.GetBytes(text ?? ""), Open);
-        mub = r.Ok ? r.Mub : null;
+        compiled = r.Ok ? r : null;
         return Json(w =>
         {
             w.WriteBoolean("ok", r.Ok);
@@ -52,17 +53,14 @@ public static partial class Interop
     }
 
     [JSExport]
-    public static byte[] GetMub() => mub;
-
-    [JSExport]
     public static string Start()
     {
         player = new MucPlayer();
-        bool ok = mub != null && player.Start(mub, Open);
+        bool ok = compiled != null && player.Start(compiled, Open);
         return Json(w =>
         {
             w.WriteBoolean("ok", ok);
-            w.WriteString("error", mub == null ? "Nothing compiled." : player.Error);
+            w.WriteString("error", compiled == null ? "Nothing compiled." : player.Error);
             w.WriteString("chips", player.Chips);
             w.WriteString("title", player.Title);
             w.WriteString("composer", player.Composer);
@@ -80,6 +78,40 @@ public static partial class Interop
         Buffer.BlockCopy(pcm, 0, bytes, 0, bytes.Length);
         return bytes;
     }
+
+    // Source positions reached since the last call: groups of frame, channel key, row,
+    // column, length. Frames count from the start of the song, like the PCM.
+    [JSExport]
+    public static int[] TakeTrace()
+    {
+        if (player == null || player.Trace.Count == 0) return new int[0];
+        int[] events = player.Trace.ToArray();
+        player.Trace.Clear();
+        return events;
+    }
+
+    // Exports compile the given text on their own, leaving the song that is playing alone.
+    // Null means it failed; ExportError says why.
+    [JSExport]
+    public static byte[] ExportMub(string text)
+    {
+        CompileResult r = MucEngine.Compile(MucEngine.ShiftJis.GetBytes(text ?? ""), Open);
+        exportError = r.Ok ? "" : string.Join("\n", r.Errors.Select(e => e.Text));
+        return r.Ok ? r.Mub : null;
+    }
+
+    [JSExport]
+    public static byte[] ExportVgm(string text, int maxSeconds)
+    {
+        CompileResult r = MucEngine.Compile(MucEngine.ShiftJis.GetBytes(text ?? ""), Open);
+        if (!r.Ok) { exportError = string.Join("\n", r.Errors.Select(e => e.Text)); return null; }
+        byte[] vgm = MucPlayer.ExportVgm(r.Mub, Open, maxSeconds, out string error);
+        exportError = error ?? "";
+        return vgm;
+    }
+
+    [JSExport]
+    public static string ExportError() => exportError;
 
     [JSExport]
     public static string Status()

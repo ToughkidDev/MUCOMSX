@@ -67,7 +67,7 @@ class PcmPlayer extends AudioWorkletProcessor {
     if (this.started && this.played - this.reported >= 2048) {
       this.reported = this.played;
       if (this.engine) this.engine.postMessage({ type: 'played', frames: this.played, session: this.session });
-      this.port.postMessage({ type: 'progress', frames: this.played, underruns: this.underruns, playing: true });
+      this.port.postMessage({ type: 'progress', frames: this.played, at: currentTime + n / sampleRate, underruns: this.underruns, playing: true });
     }
     if (this.ending && this.started && this.buffered <= 0) {
       this.port.postMessage({ type: 'ended', frames: this.played });

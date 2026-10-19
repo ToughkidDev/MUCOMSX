@@ -18,6 +18,9 @@ public sealed record CompileMessage(int Row, int Col, string Text);
 public sealed class CompileResult
 {
     public byte[] Mub;
+    // The compiler's own output, which still carries each byte's source position.
+    // Null for MUCOMSX native MSX songs, whose container is rebuilt from bytes.
+    internal MmlDatum[] Data;
     public List<CompileMessage> Errors = new();
     public List<CompileMessage> Warnings = new();
     public bool Ok => Mub != null && Errors.Count == 0;
@@ -107,7 +110,10 @@ public static class MucEngine
             if (compiled == null && result.Errors.Count == 0)
                 result.Errors.Add(new(-1, -1, "MUCOM88 compilation failed."));
             if (result.Errors.Count == 0)
+            {
                 result.Mub = compiled.Select(d => d == null ? (byte)0 : (byte)d.dat).ToArray();
+                result.Data = compiled.Select(d => d ?? new MmlDatum(0)).ToArray();
+            }
         }
         catch (Exception ex)
         {
@@ -165,6 +171,13 @@ public sealed class MucPlayer
     mucomDotNET.Driver.Driver driver;
     MsxMubProfile msx;
     MsxSoundMapper mapper;
+    long frame;
+    VgmWriter vgm;          // only while exporting
+
+    // Where each channel is in the source, as the driver plays it: flat groups of
+    // frame, channel key, row, column, length. Only changes are recorded.
+    public readonly List<int> Trace = new();
+    readonly Dictionary<int, long> lastPosition = new();
 
     public bool Stopped { get; private set; }
     public string Error { get; private set; } = "";
@@ -173,11 +186,21 @@ public sealed class MucPlayer
     public string Composer { get; private set; } = "";
     public int LoopCount => driver == null ? 0 : Math.Max(0, driver.GetNowLoopCounter());
 
-    public bool Start(byte[] mub, Func<string, Stream> openFile)
+    // Plays a fresh compile. With trace on, the driver is given the compiler's own data
+    // (identical bytes) so it can report source positions in Trace.
+    public bool Start(CompileResult compiled, Func<string, Stream> openFile, bool trace = true)
+        => Start(compiled.Mub, openFile, trace ? compiled.Data : null);
+
+    public bool Start(byte[] mub, Func<string, Stream> openFile) => Start(mub, openFile, null);
+
+    bool Start(byte[] mub, Func<string, Stream> openFile, MmlDatum[] traced)
     {
         MucEngine.Initialize();
         Stopped = false;
         Error = "";
+        frame = 0;
+        Trace.Clear();
+        lastPosition.Clear();
         if (!MucEngine.IsMub(mub)) { Fail("Not a MUB."); return false; }
 
         try { msx = MsxMubProfile.HasMagic(mub) ? MsxMubProfile.Parse(mub) : null; }
@@ -239,17 +262,28 @@ public sealed class MucPlayer
         mds = new MDSound.MDSound(MucEngine.SampleRate, 2048, null);
         mds.Init(MucEngine.SampleRate, 2048, chips.ToArray());
         Chips = string.Join(" + ", names);
+        if (vgm != null)
+        {
+            foreach (MDSound.MDSound.Chip c in chips)
+            {
+                switch (c.type)
+                {
+                    case MDSound.MDSound.enmInstrumentType.YM2608: vgm.Ym2608 = MucEngine.OpnaClock; vgm.SecondYm2608 |= c.ID == 1; break;
+                    case MDSound.MDSound.enmInstrumentType.YM2610: vgm.Ym2610 = MucEngine.OpnbClock; vgm.SecondYm2610 |= c.ID == 1; break;
+                    case MDSound.MDSound.enmInstrumentType.YM2151: vgm.Ym2151 = c.Clock; break;
+                    case MDSound.MDSound.enmInstrumentType.YM2413emu: vgm.Ym2413 = VgmWriter.OplClock; break;
+                    case MDSound.MDSound.enmInstrumentType.AY8910: vgm.Ay8910 = VgmWriter.PsgClock; break;
+                    case MDSound.MDSound.enmInstrumentType.K051649: vgm.K051649 = VgmWriter.SccClock; vgm.SccPlus = msx?.UsesSccPlus == true; break;
+                }
+            }
+        }
 
         try
         {
             byte[] data = mub;
             if (msx != null)
             {
-                mapper = new MsxSoundMapper(
-                    (r, v) => mds.WriteYM2413emu(0, (byte)r, (byte)v),
-                    (r, v) => mds.WriteAY8910(0, (byte)r, (byte)v),
-                    (r, v) => mds.WriteYM2608(0, 0, (byte)r, (byte)v),
-                    WriteScc);
+                mapper = new MsxSoundMapper(Opll, Psg, (r, v) => Opna(0, 0, r, v), WriteScc);
                 data = msx.SequencerData;
             }
             ReadTags(data);
@@ -258,11 +292,13 @@ public sealed class MucPlayer
             {
                 new Action(WriteOpna1, null),
                 new Action(WriteOpna2, null),
-                new Action(v => { if (Ok(v)) mds.WriteYM2610(0, (byte)v.port, (byte)v.address, (byte)v.data); }, (d, t) => Adpcm(0, d, t)),
-                new Action(v => { if (Ok(v)) mds.WriteYM2610(1, (byte)v.port, (byte)v.address, (byte)v.data); }, (d, t) => Adpcm(1, d, t)),
-                new Action(v => { if (v != null && v.address >= 0 && v.data >= 0) mds.WriteYM2151(0, (byte)v.address, (byte)v.data); }, null),
+                new Action(v => { Track(v); if (Ok(v)) Opnb(0, v.port, v.address, v.data); }, (d, t) => Adpcm(0, d, t)),
+                new Action(v => { Track(v); if (Ok(v)) Opnb(1, v.port, v.address, v.data); }, (d, t) => Adpcm(1, d, t)),
+                new Action(v => { Track(v); if (v != null && v.address >= 0 && v.data >= 0) Opm(v.address, v.data); }, null),
             };
-            MmlDatum[] source = data.Select(b => new MmlDatum(b)).ToArray();
+            MmlDatum[] source = msx == null && traced != null && traced.Length == mub.Length
+                ? traced
+                : data.Select(b => new MmlDatum(b)).ToArray();
             driver.Init(actions, source, openFile, new object[] { false, true, false, "song.muc" });
             driver.StartRendering((int)MucEngine.SampleRate, new[]
             {
@@ -300,6 +336,7 @@ public sealed class MucPlayer
         try
         {
             driver.Rendering();
+            frame++;
             if (driver.GetStatus() < 1) { Silence(); Stopped = true; }
         }
         catch (Exception e)
@@ -340,15 +377,33 @@ public sealed class MucPlayer
 
     static bool Ok(ChipDatum v) => v != null && v.port >= 0 && v.address >= 0 && v.data >= 0;
 
+    void Track(ChipDatum v)
+    {
+        if (v?.addtionalData is not MmlDatum m || m.linePos == null) return;
+        LinePos lp = m.linePos;
+        if (lp.row <= 0) return;
+        int key = lp.chipNumber * 1000 + lp.ch;
+        long position = ((long)lp.row << 20) | ((long)lp.col << 8) | (uint)Math.Min(255, Math.Max(0, lp.length));
+        if (lastPosition.TryGetValue(key, out long last) && last == position) return;
+        lastPosition[key] = position;
+        Trace.Add((int)frame);
+        Trace.Add(key);
+        Trace.Add(lp.row);
+        Trace.Add(lp.col);
+        Trace.Add(lp.length);
+    }
+
     void WriteOpna1(ChipDatum v)
     {
+        Track(v);
         if (!Ok(v)) return;
         if (msx?.SccSsg == true && v.port == 0 && v.address < 14) mapper.WriteSsg(v.address, v.data);
-        else mds.WriteYM2608(0, (byte)v.port, (byte)v.address, (byte)v.data);
+        else Opna(0, v.port, v.address, v.data);
     }
 
     void WriteOpna2(ChipDatum v)
     {
+        Track(v);
         if (!Ok(v)) return;
         if (msx != null)
         {
@@ -360,13 +415,45 @@ public sealed class MucPlayer
                 mapper.WriteNative(v.port, v.address, v.data);
             }
         }
-        else mds.WriteYM2608(1, (byte)v.port, (byte)v.address, (byte)v.data);
+        else Opna(1, v.port, v.address, v.data);
+    }
+
+    // Every chip write passes through here: to the emulators, and to the VGM log when exporting.
+    void Opna(int chip, int port, int address, int value)
+    {
+        mds.WriteYM2608((byte)chip, (byte)port, (byte)address, (byte)value);
+        vgm?.Write(frame, chip == 0 ? 0x56 + port : 0xa6 + port, address, value);
+    }
+
+    void Opnb(int chip, int port, int address, int value)
+    {
+        mds.WriteYM2610((byte)chip, (byte)port, (byte)address, (byte)value);
+        vgm?.Write(frame, chip == 0 ? 0x58 + port : 0xa8 + port, address, value);
+    }
+
+    void Opm(int address, int value)
+    {
+        mds.WriteYM2151(0, (byte)address, (byte)value);
+        vgm?.Write(frame, 0x54, address, value);
+    }
+
+    void Opll(int address, int value)
+    {
+        mds.WriteYM2413emu(0, (byte)address, (byte)value);
+        vgm?.Write(frame, 0x51, address, value);
+    }
+
+    void Psg(int address, int value)
+    {
+        mds.WriteAY8910(0, (byte)address, (byte)value);
+        vgm?.Write(frame, 0xa0, address, value);
     }
 
     void WriteScc(int port, int address, int value)
     {
         mds.WriteK051649(0, port * 2, (byte)address);
         mds.WriteK051649(0, port * 2 + 1, (byte)value);
+        vgm?.WriteScc(frame, port, address, value);
     }
 
     void Adpcm(int chip, byte[] data, int type)
@@ -374,6 +461,27 @@ public sealed class MucPlayer
         if (data == null) return;
         if (type == 0) mds.WriteYM2610_SetAdpcmA((byte)chip, data);
         else mds.WriteYM2610_SetAdpcmB((byte)chip, data);
+        vgm?.WriteRom(frame, type == 0 ? (byte)0x82 : (byte)0x83, data, chip == 1);
+    }
+
+    // Runs the driver without synthesizing audio and logs every chip write as VGM.
+    // A looping song is written up to the end of its second pass, with the VGM loop
+    // point where the first loop back happens, so the loop section is exactly one pass.
+    public static byte[] ExportVgm(byte[] mub, Func<string, Stream> openFile, int maxSeconds, out string error)
+    {
+        MucPlayer p = new() { vgm = new VgmWriter() };
+        if (!p.Start(mub, openFile, null)) { error = p.Error; return null; }
+        long limit = (long)maxSeconds * MucEngine.SampleRate;
+        bool looped = false;
+        while (!p.Stopped && p.frame < limit)
+        {
+            p.OneFrame();
+            int loop = p.LoopCount;
+            if (loop >= 1 && !looped) { p.vgm.MarkLoop(p.frame); looped = true; }
+            if (loop >= 2) break;
+        }
+        error = p.Error;
+        return p.vgm.Finish(p.frame, p.Title, p.Composer);
     }
 
     void Silence()
@@ -381,11 +489,11 @@ public sealed class MucPlayer
         if (mds == null || msx == null || mapper == null) return;
         try
         {
-            for (int ch = 0; ch < 6; ch++) mds.WriteYM2608(0, 0, 0x28, (byte)(ch < 3 ? ch : ch + 1));
-            mds.WriteYM2608(0, 1, 0x00, 0x01);
-            mds.WriteYM2608(0, 0, 0x10, 0xbf);
-            mds.WriteYM2608(0, 0, 0x07, 0x3f);
-            for (int ch = 0; ch < 3; ch++) mds.WriteYM2608(0, 0, (byte)(0x08 + ch), 0);
+            for (int ch = 0; ch < 6; ch++) Opna(0, 0, 0x28, ch < 3 ? ch : ch + 1);
+            Opna(0, 1, 0x00, 0x01);
+            Opna(0, 0, 0x10, 0xbf);
+            Opna(0, 0, 0x07, 0x3f);
+            for (int ch = 0; ch < 3; ch++) Opna(0, 0, 0x08 + ch, 0);
             if (msx.NativeGroup) mapper.StopNative();
             if (msx.UsesScc) mapper.StopScc();
         }

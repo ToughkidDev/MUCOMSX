@@ -10,8 +10,12 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
 
 - Type MML in the editor and press **Play** (`Ctrl+Enter`). `Esc` stops.
 - Compiler errors and warnings are listed with their line and column; click one to jump there.
+- **While a song plays, the command each part is playing is highlighted in the editor**, one colour per part, in step with what you hear. The editor follows the playing part (pick which one under *Now playing*, or turn *Follow playback* off). MUCOMSX native `MSX…` parts are not highlighted: their data is repackaged on the way to the driver and loses its source positions.
 - **Examples:** a short demo with inline FM voices, plus every song in this repository's [`Samples`](../Samples) folder. Voice files the song names (for example `SNATCHEA.DAT`) are fetched automatically.
-- **Your own files:** open a `.muc`, attach `#voice` / `#pcm` files, or drop them on the page. **Save .muc** writes Shift-JIS with CR+LF, ready for the MSX.
+- **Your own files:** open a `.muc`, attach `#voice` / `#pcm` files, or drop them on the page.
+- **Save** as `.muc` (Shift-JIS with CR+LF, ready for the MSX), `.mub` or `.vgm`:
+  - `.mub` is the playground compiler's output, the same as MDPlayer4Mac produces from that MUC. It is not byte-for-byte what MUC2MUB on the MSX writes, so check it on the machine before relying on it there.
+  - `.vgm` (VGM 1.71) logs every chip write. A looping song is written as intro + one more pass, with the VGM loop point set so the loop is exactly one pass; songs are capped at 10 minutes. Played back in MDPlayer4Mac it matches the playground's own audio (correlation 1.0000 on the test songs).
 - What you type is kept in your browser between visits. Nothing is uploaded anywhere.
 - Plays YM2608 (FM, SSG, rhythm, ADPCM), the extended `muPb` layouts, and the MUCOMSX native MSX parts: MSX-MUSIC, PSG, SCC/SCC+.
 

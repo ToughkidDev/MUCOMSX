@@ -31,7 +31,7 @@ function stopPlayback() {
 async function play(id) {
   const start = JSON.parse(E.Start());
   if (!start.ok) { postMessage({ type: 'error', message: start.error }); return; }
-  postMessage({ type: 'started', info: start });
+  postMessage({ type: 'started', info: start, session: id });
   rendered = 0;
   played = 0;
   audio.postMessage({ type: 'reset', session: id });
@@ -55,6 +55,12 @@ async function play(id) {
     for (let i = 0; i < pcm.length; i++) data[i] = pcm[i] / 32768;
     audio.postMessage({ type: 'pcm', data }, [data.buffer]);
     rendered += frames;
+    // Where each part is in the source, for highlighting as the audio is heard.
+    const trace = E.TakeTrace();
+    if (trace.length) {
+      const events = Int32Array.from(trace);
+      postMessage({ type: 'trace', session: id, events }, [events.buffer]);
+    }
     const status = JSON.parse(E.Status());
     if (status.loop !== loop) {
       loop = status.loop;
@@ -112,6 +118,16 @@ onmessage = async (event) => {
         stopPlayback();
         postMessage({ type: 'stopped' });
         break;
+      case 'export': {
+        const bytes = m.kind === 'vgm' ? E.ExportVgm(m.text, 600) : E.ExportMub(m.text);
+        if (!bytes) {
+          postMessage({ type: 'exported', id: m.id, kind: m.kind, error: E.ExportError() });
+        } else {
+          const copy = bytes.slice();
+          postMessage({ type: 'exported', id: m.id, kind: m.kind, data: copy.buffer }, [copy.buffer]);
+        }
+        break;
+      }
       case 'encode': {
         const bytes = E.EncodeShiftJis(m.text);
         const copy = bytes.slice();

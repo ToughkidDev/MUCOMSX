@@ -10,7 +10,7 @@ const T = {
   en: {
     back: '← MUCOMSX', tagline: 'Write MUCOM88 MML, hear it right away',
     play: '▶ Play', stop: '■ Stop', volume: 'Volume', examples: 'Examples', open: 'Open .muc',
-    addFiles: 'Add voice / PCM', save: 'Save .muc', nowPlaying: 'Now playing', messages: 'Compiler messages',
+    addFiles: 'Add voice / PCM', save: 'Save', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice or #pcm. Add them with the button above, or drop them on the page.',
     reference: 'Quick reference', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'Rhythm (v needs 7 values)',
     refPcm: 'ADPCM (needs #pcm)', refTempo: 'Tempo in BPM / raw Timer-B', refOctave: 'Octave, up, down',
@@ -29,11 +29,14 @@ const T = {
     underrun: 'Playback is catching up; this device renders slowly.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'Replace the editor contents? Your current text is lost unless you saved it.',
     audioFailed: 'Audio could not start: ', bytes: (n) => `${n.toLocaleString()} bytes`,
+    saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
+    exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
+    followPart: (p) => `Follow part ${p}`,
   },
   ko: {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
     play: '▶ 재생', stop: '■ 정지', volume: '음량', examples: '예제', open: '.muc 열기',
-    addFiles: '음색 / PCM 추가', save: '.muc 저장', nowPlaying: '재생 중', messages: '컴파일 메시지',
+    addFiles: '음색 / PCM 추가', save: '저장', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #pcm으로 지정한 파일입니다. 위 버튼으로 추가하거나 페이지에 끌어다 놓으세요.',
     reference: '빠른 참조', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: '리듬 (v는 값 7개)',
     refPcm: 'ADPCM (#pcm 필요)', refTempo: '템포 BPM / Timer-B 값', refOctave: '옥타브, 올림, 내림',
@@ -52,11 +55,14 @@ const T = {
     underrun: '렌더링이 재생을 따라잡는 중입니다. 이 기기에서는 느릴 수 있습니다.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: '에디터 내용을 바꿀까요? 저장하지 않은 현재 내용은 사라집니다.',
     audioFailed: '오디오를 시작하지 못했습니다: ', bytes: (n) => `${n.toLocaleString()} 바이트`,
+    saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
+    exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
+    followPart: (p) => `${p} 파트 따라가기`,
   },
   ja: {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
     play: '▶ 再生', stop: '■ 停止', volume: '音量', examples: 'サンプル', open: '.mucを開く',
-    addFiles: '音色 / PCMを追加', save: '.mucを保存', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
+    addFiles: '音色 / PCMを追加', save: '保存', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#pcmで指定したファイルです。上のボタンで追加するか、ページにドロップしてください。',
     reference: 'クイックリファレンス', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'リズム（vは7つの値）',
     refPcm: 'ADPCM（#pcmが必要）', refTempo: 'テンポ BPM / Timer-B値', refOctave: 'オクターブ、上げ、下げ',
@@ -75,6 +81,9 @@ const T = {
     underrun: 'レンダリングが再生に追いつこうとしています。この端末では遅い場合があります。', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'エディタの内容を置き換えますか？保存していない現在の内容は失われます。',
     audioFailed: 'オーディオを開始できませんでした: ', bytes: (n) => `${n.toLocaleString()}バイト`,
+    saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
+    exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
+    followPart: (p) => `${p}パートを追う`,
   },
 };
 
@@ -178,6 +187,10 @@ function goToRow(row, col = 1) {
 let saveTimer = 0, scanTimer = 0;
 code.addEventListener('input', () => {
   if (markRows.size) { markRows = new Map(); }
+  lines = code.value.split('\n');
+  traceStale = true;
+  clearTrace();
+  holdFollow();
   renderGutter();
   updateBytes();
   clearTimeout(saveTimer);
@@ -186,7 +199,8 @@ code.addEventListener('input', () => {
   scanTimer = setTimeout(renderFiles, 400);
   if (current !== 'mine') { current = 'mine'; $('examples').value = 'mine'; }
 });
-code.addEventListener('scroll', renderMarks);
+code.addEventListener('scroll', () => { renderMarks(); traceDirty = true; });
+['wheel', 'keydown', 'pointerdown'].forEach((ev) => code.addEventListener(ev, holdFollow));
 // Don't lose the last keystrokes to the autosave delay when the tab closes.
 const flushSave = () => { clearTimeout(saveTimer); store.set(STORE_SOURCE, code.value); };
 window.addEventListener('pagehide', flushSave);
@@ -196,6 +210,7 @@ window.addEventListener('resize', renderMarks);
 
 function setSource(text) {
   code.value = text;
+  lines = text.split('\n');
   markRows = new Map();
   renderGutter();
   updateBytes();
@@ -399,6 +414,19 @@ function saveMuc() {
 }
 $('save').addEventListener('click', saveMuc);
 
+let exportId = 0;
+const pendingExports = new Map();
+function exportAs(kind) {
+  if (!engineReady) { setStatus(t('loading')); return; }
+  const id = ++exportId;
+  const name = sourceName.replace(/\.[^.]*$/, '') + (kind === 'vgm' ? '.VGM' : '.MUB');
+  pendingExports.set(id, name);
+  setStatus(t('exporting', kind));
+  worker.postMessage({ type: 'export', id, kind, text: code.value });
+}
+$('saveMub').addEventListener('click', () => exportAs('mub'));
+$('saveVgm').addEventListener('click', () => exportAs('vgm'));
+
 let dragDepth = 0;
 window.addEventListener('dragenter', (e) => { e.preventDefault(); dragDepth++; $('drop').classList.add('on'); });
 window.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; $('drop').classList.remove('on'); } });
@@ -445,9 +473,29 @@ worker.onmessage = (e) => {
       setStatus(`${t('playing')} · ${statusEl.textContent}`);
       playing = true;
       loopCount = 0;
+      traceSession = m.session;
+      traceEvents = [];
+      traceIndex = 0;
+      traceStale = false;
+      clockFrames = 0;
+      clockAt = ctx ? ctx.currentTime : 0;
+      clearTrace();
       break;
     case 'loop':
       loopCount = m.loop;
+      break;
+    case 'exported': {
+      const name = pendingExports.get(m.id);
+      pendingExports.delete(m.id);
+      if (m.error !== undefined) setStatus(t('exportFailed') + m.error, true);
+      else {
+        download(name, new Uint8Array(m.data), 'application/octet-stream');
+        setStatus(t('exported', name, m.data.byteLength));
+      }
+      break;
+    }
+    case 'trace':
+      if (m.session === traceSession) for (const v of m.events) traceEvents.push(v);
       break;
     case 'encoded':
       pendingEncodes.get(m.id)?.(new Uint8Array(m.data));
@@ -482,12 +530,15 @@ async function ensureAudio() {
   node.port.onmessage = (e) => {
     const m = e.data;
     if (m.type === 'progress') {
+      clockFrames = m.frames;
+      clockAt = m.at ?? ctx.currentTime;
       showClock(m.frames);
       if (m.underruns > underruns + 3 && m.playing) setStatus(t('underrun'));
       underruns = m.underruns;
     } else if (m.type === 'ended') {
       showClock(m.frames);
       playing = false;
+      clearTrace();
       setStatus(t('ended'));
     }
   };
@@ -529,6 +580,7 @@ function stop() {
   worker.postMessage({ type: 'stop' });
   if (playing) setStatus(t('stopped'));
   playing = false;
+  clearTrace();
 }
 
 $('play').addEventListener('click', play);
@@ -556,10 +608,140 @@ function drawScope() {
       if (i === 0) g.moveTo(i, y); else g.lineTo(i, y);
     }
     g.stroke();
+    updateTrace();
     requestAnimationFrame(frame);
   };
   frame();
 }
+
+// ---------- playback position highlighting ----------
+// The engine reports, per part, which command in the source it is playing and at which
+// audio frame. Those are applied when that frame is actually heard.
+const PART_LETTERS = 'ABCDEFGHIJK';
+const PART_COLORS = ['#e4572e', '#e09f1f', '#7fa83a', '#1f9e89', '#3d7cc9', '#8e5bd1', '#d6457f',
+  '#c46a2b', '#3fa34d', '#5b7f95', '#b0306a'];
+let lines = [];
+let traceSession = -1, traceEvents = [], traceIndex = 0, traceStale = false, traceDirty = false;
+let clockFrames = 0, clockAt = 0;
+const positions = new Map();     // channel key -> { row, col, len }
+let followKey = null, followHoldUntil = 0;
+const measure = document.createElement('canvas').getContext('2d');
+
+function partInfo(key) {
+  const chip = Math.floor(key / 1000), ch = key % 1000, part = Math.floor(ch / 10), page = ch % 10;
+  const letter = PART_LETTERS[part] || '?';
+  return {
+    label: (chip ? `${chip + 1}` : '') + letter + (page ? page : ''),
+    color: PART_COLORS[(part + chip * 4) % PART_COLORS.length],
+  };
+}
+
+function holdFollow() { followHoldUntil = performance.now() + 4000; }
+
+function clearTrace() {
+  positions.clear();
+  $('trace').innerHTML = '';
+  renderParts();
+}
+
+// Compiler columns count Shift-JIS bytes; convert to a character index in the line.
+function charIndex(line, bytes) {
+  let b = 0, i = 0;
+  while (i < line.length && b < bytes) {
+    const c = line.charCodeAt(i);
+    b += c < 0x80 || (c >= 0xff61 && c <= 0xff9f) ? 1 : 2;
+    i++;
+  }
+  return i;
+}
+
+function expandTabs(text) {
+  let out = '';
+  for (const ch of text) out += ch === '\t' ? ' '.repeat(4 - (out.length % 4)) : ch;
+  return out;
+}
+
+function tokenAt(p) {
+  const line = lines[p.row - 1] || '';
+  const start = charIndex(line, p.col - 1);
+  const end = Math.max(start + 1, charIndex(line, p.col - 1 + Math.max(1, p.len)));
+  return { line, start, end, text: line.slice(start, end) };
+}
+
+function playedFrame() {
+  if (!ctx) return 0;
+  const latency = ctx.outputLatency || ctx.baseLatency || 0;
+  const ahead = (ctx.currentTime - clockAt - latency) * SAMPLE_RATE;
+  return clockFrames + Math.min(ahead, SAMPLE_RATE * 0.25);
+}
+
+function updateTrace() {
+  if (!playing || traceStale) return;
+  const now = playedFrame();
+  const changed = [];
+  while (traceIndex + 4 < traceEvents.length && traceEvents[traceIndex] <= now) {
+    const key = traceEvents[traceIndex + 1];
+    positions.set(key, { row: traceEvents[traceIndex + 2], col: traceEvents[traceIndex + 3], len: traceEvents[traceIndex + 4] });
+    changed.push(key);
+    traceIndex += 5;
+  }
+  if (traceIndex > 50000) { traceEvents = traceEvents.slice(traceIndex); traceIndex = 0; }
+  if (changed.length) { follow(changed); renderParts(); traceDirty = true; }
+  if (traceDirty) { traceDirty = false; renderTrace(); }
+}
+
+function follow(changed) {
+  if (!$('follow').checked || performance.now() < followHoldUntil || !positions.size) return;
+  const key = followKey !== null && positions.has(followKey) ? followKey : Math.min(...positions.keys());
+  if (!changed.includes(key)) return;
+  const lh = parseFloat(getComputedStyle(code).lineHeight) || 20;
+  const y = (positions.get(key).row - 1) * lh;
+  if (y < code.scrollTop || y > code.scrollTop + code.clientHeight - lh * 2) {
+    code.scrollTop = Math.max(0, y - code.clientHeight / 3);
+  }
+}
+
+function renderTrace() {
+  const style = getComputedStyle(code);
+  measure.font = style.font;
+  const lh = parseFloat(style.lineHeight) || 20;
+  const padTop = parseFloat(style.paddingTop) || 12, padLeft = parseFloat(style.paddingLeft) || 14;
+  let html = '';
+  for (const [key, p] of positions) {
+    const tok = tokenAt(p);
+    const x = padLeft + measure.measureText(expandTabs(tok.line.slice(0, tok.start))).width - code.scrollLeft;
+    const w = Math.max(measure.measureText(tok.text).width, 6);
+    const y = padTop + (p.row - 1) * lh - code.scrollTop;
+    if (y < -lh || y > code.clientHeight) continue;
+    html += `<div style="--c:${partInfo(key).color};left:${x - 1}px;top:${y}px;width:${w + 2}px"></div>`;
+  }
+  $('trace').innerHTML = html;
+}
+
+function renderParts() {
+  const list = $('parts');
+  list.innerHTML = '';
+  for (const key of [...positions.keys()].sort((a, b) => a - b)) {
+    const info = partInfo(key);
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.style.setProperty('--c', info.color);
+    b.setAttribute('aria-pressed', String(key === followKey));
+    b.title = t('followPart', info.label);
+    b.innerHTML = '<b></b><code></code>';
+    b.querySelector('b').textContent = info.label;
+    b.querySelector('code').textContent = tokenAt(positions.get(key)).text.trim();
+    b.addEventListener('click', () => {
+      followKey = followKey === key ? null : key;
+      followHoldUntil = 0;
+      renderParts();
+    });
+    li.appendChild(b);
+    list.appendChild(li);
+  }
+}
+window.addEventListener('resize', () => { traceDirty = true; });
 
 // ---------- start ----------
 {
