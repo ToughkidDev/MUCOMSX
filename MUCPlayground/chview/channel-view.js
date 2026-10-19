@@ -134,9 +134,15 @@ const TICK = 33;
 export class ChannelView {
   constructor(root) {
     this.root = root;
+    // The panels sit in one block, centred in the view and aligned on their left edges.
+    this.stack = document.createElement('div');
+    this.stack.className = 'cv-stack';
+    root.appendChild(this.stack);
     this.panels = [];      // { type, id, chip, fb, el }
-    this.events = [];      // flat: frame, type index, id, port, addr, data
+    this.events = [];      // flat: frame, type, id, port, addr, data
     this.index = 0;
+    this.levels = [];      // live output levels (see pushLevels)
+    this.levelIndex = 0;
     this.vgm = null;
     this.tickAt = 0;
     this.session = 0;
@@ -144,11 +150,11 @@ export class ChannelView {
   }
 
   empty(message) {
-    this.root.innerHTML = '';
+    this.stack.innerHTML = '';
     const p = document.createElement('p');
     p.className = 'cv-empty';
     p.textContent = message || this.root.dataset.empty || '';
-    this.root.appendChild(p);
+    this.stack.appendChild(p);
     this.panels = [];
   }
 
@@ -171,7 +177,7 @@ export class ChannelView {
       try { loaded.push({ ...c, Cls: (await import(file))[name] }); } catch { others.push(c.type); }
     }
     if (session !== this.session) return;
-    this.root.innerHTML = '';
+    this.stack.innerHTML = '';
     this.panels = [];
     for (const p of loaded) {
       const chip = new p.Cls(p.clock);
@@ -179,14 +185,14 @@ export class ChannelView {
       chip.screenInit(fb);
       fb.canvas.className = 'cv-screen';
       fb.canvas.title = p.type + (p.id ? ` #${p.id + 1}` : '');
-      this.root.appendChild(fb.canvas);
+      this.stack.appendChild(fb.canvas);
       this.panels.push({ type: p.type, id: p.id, chip, fb });
     }
     if (others.length) {
       const note = document.createElement('p');
       note.className = 'cv-other';
       note.textContent = (this.root.dataset.other || '') + [...new Set(others)].join(', ');
-      this.root.appendChild(note);
+      this.stack.appendChild(note);
     }
     if (!this.panels.length && !others.length) this.empty();
     this.applyScale();
