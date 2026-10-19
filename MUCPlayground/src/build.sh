@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Rebuilds MUCPlayground/engine (the WebAssembly engine) and MUCPlayground/samples.json.
+# Rebuilds MUCPlayground/engine and engine-vgm (the WebAssembly engines) and samples.json.
 #
 # Needs the .NET 8 SDK with the wasm-tools workload:
 #   dotnet workload install wasm-tools
@@ -20,16 +20,23 @@ if [ ! -d "$mdp/.git" ]; then
 fi
 git -C "$mdp" fetch --quiet origin "$MDP4MAC_COMMIT" || true
 git -C "$mdp" checkout --quiet "$MDP4MAC_COMMIT"
-git -C "$mdp" submodule update --init --depth 1 macos/ThirdParty/mucomDotNET
+# MDPlayerCore (VGM playback) also references the other drivers' projects; trimming drops them.
+git -C "$mdp" submodule update --init --depth 1
 
 out="$(mktemp -d)"
 trap 'rm -rf "$out"' EXIT
-dotnet publish "$here/Web/MucPlaygroundWeb.csproj" -c Release -p:Mdp4MacDir="$mdp" -o "$out"
 
-# Only what the browser loads: no precompressed copies or debug symbols.
-rm -rf "$playground/engine"
-mkdir -p "$playground/engine"
-(cd "$out/wwwroot/_framework" && find . -type f ! -name '*.gz' ! -name '*.br' ! -name '*.pdb' -exec cp --parents {} "$playground/engine/" \;)
+# Publishes a browser project and copies only what the browser loads (no precompressed
+# copies or debug symbols) into MUCPlayground/<folder>.
+publish() {
+  dotnet publish "$here/$1" -c Release -p:Mdp4MacDir="$mdp" -o "$out/$2"
+  rm -rf "$playground/$2"
+  mkdir -p "$playground/$2"
+  (cd "$out/$2/wwwroot/_framework" && find . -type f ! -name '*.gz' ! -name '*.br' ! -name '*.pdb' -exec cp --parents {} "$playground/$2/" \;)
+}
+
+publish Web/MucPlaygroundWeb.csproj engine          # MUC editor, MUB playback, exports
+publish VgmWeb/VgmPlaygroundWeb.csproj engine-vgm   # VGM/VGZ playback, loaded on first use
 
 python3 "$here/make_samples.py" "$playground/../Samples/Muc" "$playground/samples.json"
-echo "engine: $(du -sh "$playground/engine" | cut -f1)"
+echo "engine: $(du -sh "$playground/engine" | cut -f1), engine-vgm: $(du -sh "$playground/engine-vgm" | cut -f1)"

@@ -52,6 +52,24 @@ public static partial class Interop
         });
     }
 
+    // Plays a compiled .mub file directly (no source, so no position trace).
+    [JSExport]
+    public static string StartFile(byte[] data)
+    {
+        player?.Stop();
+        compiled = null;
+        player = new MucPlayer();
+        bool ok = player.Start(data, Open);
+        return Json(w =>
+        {
+            w.WriteBoolean("ok", ok);
+            w.WriteString("error", ok ? "" : player.Error);
+            w.WriteString("chips", player.Chips);
+            w.WriteString("title", player.Title);
+            w.WriteString("composer", player.Composer);
+        });
+    }
+
     [JSExport]
     public static string Start()
     {

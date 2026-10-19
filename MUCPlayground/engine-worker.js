@@ -1,7 +1,9 @@
-// Runs the MUC engine (MDPlayer4Mac's compiler, driver and chip emulators, compiled to
+// Runs an engine (MDPlayer4Mac's compiler, driver and chip emulators, compiled to
 // WebAssembly) off the main thread. Audio goes straight to the AudioWorklet over a
 // MessagePort, so a busy editor never starves playback.
-import { dotnet } from './engine/dotnet.js';
+//   engine-worker.js             MUC editor engine: compile, MUB playback, exports
+//   engine-worker.js?engine=vgm  VGM/VGZ playback (separate, loaded on first use)
+const ENGINE_DIR = new URL(import.meta.url).searchParams.get('engine') === 'vgm' ? './engine-vgm/' : './engine/';
 
 const SAMPLE_RATE = 44100;
 const CHUNK = 2048;                 // frames per render call
@@ -15,6 +17,7 @@ let played = 0;        // frames the worklet reports as played
 let wake = null;       // resolves when the worklet reports progress
 
 async function boot(language) {
+  const { dotnet } = await import(ENGINE_DIR + 'dotnet.js');
   const { getAssemblyExports, getConfig } = await dotnet.create();
   E = (await getAssemblyExports(getConfig().mainAssemblyName)).MucPlayground.Interop;
   E.Init(language);
@@ -28,8 +31,9 @@ function stopPlayback() {
   if (wake) { wake(); wake = null; }
 }
 
-async function play(id) {
-  const start = JSON.parse(E.Start());
+// `start` begins the song in the engine and returns its JSON status.
+async function play(id, start) {
+  start = JSON.parse(start());
   if (!start.ok) { postMessage({ type: 'error', message: start.error }); return; }
   postMessage({ type: 'started', info: start, session: id });
   rendered = 0;
@@ -111,7 +115,13 @@ onmessage = async (event) => {
         const result = JSON.parse(E.Compile(m.text));
         result.ms = Math.round(performance.now() - t);
         postMessage({ type: 'compiled', result, play: m.play });
-        if (result.ok && m.play) play(session);
+        if (result.ok && m.play) play(session, () => E.Start());
+        break;
+      }
+      case 'playFile': {
+        stopPlayback();
+        const data = new Uint8Array(m.data);
+        play(session, () => E.StartFile(data));
         break;
       }
       case 'stop':

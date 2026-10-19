@@ -39,6 +39,7 @@ header.top{display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap;padding:
 .back{font-size:.88rem;color:var(--muted)}
 h1{margin:0;font-size:1.25rem;letter-spacing:-.01em}
 h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
+.byline{margin:1px 0 0;font-size:.78rem;color:var(--muted);letter-spacing:.02em}
 .lang{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
 .lang button{border:0;background:transparent;padding:4px 12px;font-size:.82rem;cursor:pointer;color:var(--muted)}
 .lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
@@ -146,7 +147,10 @@ footer p{margin:2px 0}
 
 <header class="top">
   <a class="back" href="../" data-i18n="back">← MUCOMSX</a>
-  <h1>MUCPlayground <span class="sub" data-i18n="tagline">Write MUCOM88 MML, hear it right away</span></h1>
+  <div class="title">
+    <h1>MUCPlayground <span class="sub" data-i18n="tagline">Write MUCOM88 MML, hear it right away</span></h1>
+    <p class="byline">Written by ToughkidCST</p>
+  </div>
   <div class="lang" role="group" aria-label="Language">
     <button type="button" data-lang="en" aria-pressed="false">EN</button>
     <button type="button" data-lang="ko" aria-pressed="false">한국어</button>
@@ -162,7 +166,7 @@ footer p{margin:2px 0}
   <span class="spacer"></span>
   <label class="sr-only" for="examples" data-i18n="examples">Examples</label>
   <select id="examples"></select>
-  <button class="btn" id="open" type="button" data-i18n="open">Open .muc</button>
+  <button class="btn" id="open" type="button" data-i18n="open" title=".muc / .mub / .vgm / .vgz">Open…</button>
   <button class="btn" id="addFiles" type="button" data-i18n="addFiles">Add voice / PCM</button>
   <div class="save-group" role="group" aria-labelledby="saveLabel">
     <span id="saveLabel" data-i18n="save">Save</span>
@@ -170,7 +174,7 @@ footer p{margin:2px 0}
     <button type="button" id="saveMub" title="Compiled song">.mub</button>
     <button type="button" id="saveVgm" title="Chip log">.vgm</button>
   </div>
-  <input id="openInput" type="file" accept=".muc,.MUC,.txt" hidden>
+  <input id="openInput" type="file" accept=".muc,.mub,.vgm,.vgz,.MUC,.MUB,.VGM,.VGZ,.txt" hidden>
   <input id="filesInput" type="file" multiple hidden>
   <div class="status" id="status" role="status"></div>
 </div>
@@ -229,12 +233,13 @@ footer p{margin:2px 0}
 </main>
 
 <footer>
+  <p><strong>MUCPlayground</strong> — Written by ToughkidCST</p>
   <p data-i18n="credit1">Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: mucomDotNET by kuma4649 and MDSound. GPL-3.0.</p>
   <p><span data-i18n="credit2">MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.</span>
      <a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/MUCPlayground" target="_blank" rel="noopener" data-i18n="source">Source and licenses</a></p>
 </footer>
 
-<div class="drop" id="drop" data-i18n="drop">Drop a .muc to open it, or voice / PCM files to attach them</div>
+<div class="drop" id="drop" data-i18n="drop">Drop .muc / .mub / .vgm / .vgz to play — voice and PCM files are attached</div>
 
 <script src="playground.js" type="module"></script>
 </body>

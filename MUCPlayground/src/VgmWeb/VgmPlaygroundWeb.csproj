@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <!-- VGM/VGZ playback, built separately into MUCPlayground/engine-vgm so the page only
+       downloads it the first time a VGM is played. It is MDPlayer4Mac's own VGM path
+       (MDPlayerCore VgmEngine + MDSound); trimming keeps only what that path reaches. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>VgmPlaygroundWeb</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <WasmEnableWebcil>true</WasmEnableWebcil>
+    <Mdp4MacDir Condition="'$(Mdp4MacDir)' == ''">$(MSBuildThisFileDirectory)../../.mdplayer4mac</Mdp4MacDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(Mdp4MacDir)/macos/MDPlayerCore/MDPlayerCore.csproj" />
+    <!-- GD3 tags are often Japanese; keep the code-page tables like the MUC engine does. -->
+    <TrimmerRootAssembly Include="System.Text.Encoding.CodePages" />
+    <!-- YM2608 rhythm samples, the same files the MUC engine and MDPlayer4Mac use. -->
+    <EmbeddedResource Include="$(Mdp4MacDir)/macos/MDPlayerUI/Assets/Rhythm/*.WAV" LogicalName="rhythm/%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>

@@ -9,7 +9,7 @@ const STORE_VOLUME = 'mucplayground.volume';
 const T = {
   en: {
     back: '← MUCOMSX', tagline: 'Write MUCOM88 MML, hear it right away',
-    play: '▶ Play', stop: '■ Stop', volume: 'Volume', examples: 'Examples', open: 'Open .muc',
+    play: '▶ Play', stop: '■ Stop', volume: 'Volume', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice or #pcm. Add them with the button above, or drop them on the page.',
     reference: 'Quick reference', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'Rhythm (v needs 7 values)',
@@ -18,7 +18,7 @@ const T = {
     refComment: 'Comment', manual: 'Full MML guide:',
     credit1: "Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: mucomDotNET by kuma4649 and MDSound. GPL-3.0.",
     credit2: 'MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.', source: 'Source and licenses',
-    drop: 'Drop a .muc to open it, or voice / PCM files to attach them',
+    drop: 'Drop .muc / .mub / .vgm / .vgz to play — voice and PCM files are attached',
     loading: 'Loading the engine (about 4.5 MB, first time only)…', ready: 'Ready. Press Play or Ctrl+Enter.',
     loadFailed: 'The engine could not be loaded: ', compiling: 'Compiling…', playing: 'Playing',
     compiled: (ms, size) => `Compiled in ${ms} ms, ${size.toLocaleString()} bytes.`,
@@ -32,10 +32,13 @@ const T = {
     saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
     followPart: (p) => `Follow part ${p}`,
+    loadingVgm: 'Loading the VGM player (about 6.7 MB, first time only)…', vgmFailed: 'The VGM player could not be loaded: ',
+    clickToStart: 'Click anywhere on the page to start the sound (the browser needs a click first).',
+    unsupported: (n) => `${n} is not a file this player opens.`, playingFile: (n) => `Playing ${n}`,
   },
   ko: {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
-    play: '▶ 재생', stop: '■ 정지', volume: '음량', examples: '예제', open: '.muc 열기',
+    play: '▶ 재생', stop: '■ 정지', volume: '음량', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #pcm으로 지정한 파일입니다. 위 버튼으로 추가하거나 페이지에 끌어다 놓으세요.',
     reference: '빠른 참조', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: '리듬 (v는 값 7개)',
@@ -44,7 +47,7 @@ const T = {
     refComment: '주석', manual: 'MML 전체 설명:',
     credit1: '컴파일러, 드라이버, 칩 에뮬레이션은 MDPlayer4Mac의 것을 브라우저용으로 빌드했습니다: kuma4649의 mucomDotNET, MDSound. GPL-3.0.',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0.', source: '소스와 라이선스',
-    drop: '.muc는 열고, 음색 / PCM 파일은 첨부합니다',
+    drop: '.muc / .mub / .vgm / .vgz를 놓으면 재생합니다 — 음색·PCM 파일은 첨부됩니다',
     loading: '엔진을 불러오는 중 (약 4.5 MB, 처음 한 번만)…', ready: '준비됐습니다. 재생 또는 Ctrl+Enter를 누르세요.',
     loadFailed: '엔진을 불러오지 못했습니다: ', compiling: '컴파일 중…', playing: '재생 중',
     compiled: (ms, size) => `${ms} ms에 컴파일, ${size.toLocaleString()} 바이트.`,
@@ -58,10 +61,13 @@ const T = {
     saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
     followPart: (p) => `${p} 파트 따라가기`,
+    loadingVgm: 'VGM 플레이어를 불러오는 중 (약 6.7 MB, 처음 한 번만)…', vgmFailed: 'VGM 플레이어를 불러오지 못했습니다: ',
+    clickToStart: '페이지 아무 곳이나 클릭하면 소리가 나옵니다 (브라우저가 먼저 클릭을 요구합니다).',
+    unsupported: (n) => `${n}은(는) 열 수 없는 파일입니다.`, playingFile: (n) => `${n} 재생 중`,
   },
   ja: {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
-    play: '▶ 再生', stop: '■ 停止', volume: '音量', examples: 'サンプル', open: '.mucを開く',
+    play: '▶ 再生', stop: '■ 停止', volume: '音量', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#pcmで指定したファイルです。上のボタンで追加するか、ページにドロップしてください。',
     reference: 'クイックリファレンス', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'リズム（vは7つの値）',
@@ -70,7 +76,7 @@ const T = {
     refComment: 'コメント', manual: 'MMLの詳しい説明:',
     credit1: 'コンパイラ・ドライバ・チップエミュレーションはMDPlayer4Macのものをブラウザ向けにビルドしています: kuma4649氏のmucomDotNET、MDSound。GPL-3.0。',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0。', source: 'ソースとライセンス',
-    drop: '.mucは開き、音色 / PCMファイルは添付します',
+    drop: '.muc / .mub / .vgm / .vgzをドロップすると再生します — 音色・PCMファイルは添付されます',
     loading: 'エンジンを読み込み中（約4.5 MB、初回のみ）…', ready: '準備完了。再生またはCtrl+Enterを押してください。',
     loadFailed: 'エンジンを読み込めませんでした: ', compiling: 'コンパイル中…', playing: '再生中',
     compiled: (ms, size) => `${ms} msでコンパイル、${size.toLocaleString()}バイト。`,
@@ -84,6 +90,9 @@ const T = {
     saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
     followPart: (p) => `${p}パートを追う`,
+    loadingVgm: 'VGMプレーヤーを読み込み中（約6.7 MB、初回のみ）…', vgmFailed: 'VGMプレーヤーを読み込めませんでした: ',
+    clickToStart: 'ページのどこかをクリックすると音が出ます（ブラウザが最初のクリックを必要とします）。',
+    unsupported: (n) => `${n}は開けないファイルです。`, playingFile: (n) => `${n}を再生中`,
   },
 };
 
@@ -390,9 +399,24 @@ $('examples').addEventListener('change', (e) => loadExample(e.target.value));
 $('open').addEventListener('click', () => $('openInput').click());
 $('openInput').addEventListener('change', async (e) => {
   const f = e.target.files[0];
-  if (f) openMuc(f.name, await f.arrayBuffer());
+  if (f) {
+    const data = await f.arrayBuffer();
+    if (kindOf(f.name, data) === 'muc') openMuc(f.name, data); else playFile(f.name, data);
+  }
   e.target.value = '';
 });
+
+// What a file is, by its first bytes where they are distinctive, else by its extension.
+function kindOf(name, data) {
+  const b = new Uint8Array(data, 0, Math.min(4, data.byteLength));
+  const magic = String.fromCharCode(...b);
+  if (magic === 'Vgm ' || (b[0] === 0x1f && b[1] === 0x8b)) return 'vgm';
+  if (/^(MUB8|MUC8|muPb|msPb)$/.test(magic)) return 'mub';
+  if (/\.muc$/i.test(name)) return 'muc';
+  if (/\.(vgm|vgz)$/i.test(name)) return 'vgm';
+  if (/\.mub$/i.test(name)) return 'mub';
+  return 'other';
+}
 
 let sourceName = 'SONG.MUC';
 function openMuc(name, buffer) {
@@ -435,10 +459,17 @@ window.addEventListener('drop', async (e) => {
   e.preventDefault();
   dragDepth = 0;
   $('drop').classList.remove('on');
+  // Attach voice / PCM files first, so a song dropped together with them finds them.
+  let playable = null;
   for (const f of e.dataTransfer.files) {
     const data = await f.arrayBuffer();
-    if (/\.muc$/i.test(f.name)) openMuc(f.name, data); else attach(f.name, data);
+    const kind = kindOf(f.name, data);
+    if (kind === 'other') attach(f.name, data);
+    else if (!playable) playable = { name: f.name, data, kind };
   }
+  if (!playable) return;
+  if (playable.kind === 'muc') { openMuc(playable.name, playable.data); play(); }
+  else playFile(playable.name, playable.data);
 });
 
 // ---------- engine ----------
@@ -446,13 +477,20 @@ const worker = new Worker('engine-worker.js', { type: 'module' });
 let engineReady = false;
 let pendingPlay = false;
 
-worker.onmessage = (e) => {
-  const m = e.data;
+worker.onmessage = (e) => onEngineMessage(e.data, 'muc');
+
+function onEngineMessage(m, source) {
   switch (m.type) {
     case 'ready':
+      if (source === 'vgm') {
+        vgmReady = true;
+        if (pendingVgm) { connectVgmAudio(); vgmWorker.postMessage({ type: 'playFile', data: pendingVgm }); pendingVgm = null; setStatus(t('playingFile', playingName)); }
+        break;
+      }
       engineReady = true;
       setStatus(t('ready'));
       if (pendingPlay) { pendingPlay = false; play(); }
+      if (pendingFile) { const f = pendingFile; pendingFile = null; playFile(f.name, f.data); }
       break;
     case 'compiled':
       lastResult = m.result;
@@ -468,9 +506,11 @@ worker.onmessage = (e) => {
       }
       break;
     case 'started':
-      $('nowTitle').textContent = m.info.title || sourceName;
-      $('nowMeta').textContent = [m.info.composer, m.info.chips].filter(Boolean).join(' · ');
-      setStatus(`${t('playing')} · ${statusEl.textContent}`);
+      if (source !== active) break;
+      $('nowTitle').textContent = m.info.title || playingName || sourceName;
+      $('nowMeta').textContent = [m.info.composer, (m.info.chips || '').replace(/=\d+Hz/g, ''), playingName].filter(Boolean).join(' · ');
+      if (!playingName) setStatus(`${t('playing')} · ${statusEl.textContent}`);
+      if (ctx && ctx.state !== 'running') waitForClick();
       playing = true;
       loopCount = 0;
       traceSession = m.session;
@@ -482,7 +522,7 @@ worker.onmessage = (e) => {
       clearTrace();
       break;
     case 'loop':
-      loopCount = m.loop;
+      if (source === active) loopCount = m.loop;
       break;
     case 'exported': {
       const name = pendingExports.get(m.id);
@@ -502,11 +542,12 @@ worker.onmessage = (e) => {
       pendingEncodes.delete(m.id);
       break;
     case 'error':
-      setStatus(m.message, true);
-      if (!engineReady) setStatus(t('loadFailed') + m.message, true);
+      if (source === 'vgm' && !vgmReady) setStatus(t('vgmFailed') + m.message, true);
+      else if (source === 'muc' && !engineReady) setStatus(t('loadFailed') + m.message, true);
+      else setStatus(m.message, true);
       break;
   }
-};
+}
 worker.onerror = (e) => setStatus(t('loadFailed') + (e.message || 'worker error'), true);
 worker.postMessage({ type: 'boot', language: lang === 'ja' ? 'ja' : 'en' });
 
@@ -527,8 +568,13 @@ async function ensureAudio() {
   const channel = new MessageChannel();
   node.port.postMessage({ type: 'enginePort', port: channel.port1 }, [channel.port1]);
   worker.postMessage({ type: 'audioPort', port: channel.port2 }, [channel.port2]);
-  node.port.onmessage = (e) => {
-    const m = e.data;
+  node.port.onmessage = (e) => onAudioMessage(e.data, 'muc');
+  drawScope();
+}
+
+function onAudioMessage(m, source) {
+  if (source !== active) return;
+  {
     if (m.type === 'progress') {
       clockFrames = m.frames;
       clockAt = m.at ?? ctx.currentTime;
@@ -541,8 +587,7 @@ async function ensureAudio() {
       clearTrace();
       setStatus(t('ended'));
     }
-  };
-  drawScope();
+  }
 }
 
 function showClock(frames) {
@@ -567,6 +612,9 @@ async function play() {
     return;
   }
   flushSave();
+  stop();
+  active = 'muc';
+  playingName = '';
   underruns = 0;
   loopCount = 0;
   showClock(0);
@@ -576,11 +624,78 @@ async function play() {
 
 function stop() {
   pendingPlay = false;
+  pendingFile = null;
+  pendingVgm = null;
+  if (vgmWorker && vgmReady) vgmWorker.postMessage({ type: 'stop' });
   if (!engineReady) return;
   worker.postMessage({ type: 'stop' });
   if (playing) setStatus(t('stopped'));
   playing = false;
   clearTrace();
+}
+
+// ---------- playing .mub / .vgm files ----------
+// A .mub plays on the editor's engine; a .vgm/.vgz on a second engine that is only
+// downloaded the first time it is needed. Only one plays at a time.
+let vgmWorker = null, vgmReady = false, vgmNode = null, pendingVgm = null;
+let active = 'muc';          // which engine's audio the clock and status follow
+let playingName = '';
+
+function bootVgm() {
+  if (vgmWorker) return;
+  setStatus(t('loadingVgm'));
+  vgmWorker = new Worker('engine-worker.js?engine=vgm', { type: 'module' });
+  vgmWorker.onmessage = (e) => onEngineMessage(e.data, 'vgm');
+  vgmWorker.onerror = (e) => setStatus(t('vgmFailed') + (e.message || 'worker error'), true);
+  vgmWorker.postMessage({ type: 'boot', language: 'en' });
+}
+
+function connectVgmAudio() {
+  if (vgmNode || !ctx) return;
+  vgmNode = new AudioWorkletNode(ctx, 'pcm-player', { numberOfInputs: 0, outputChannelCount: [2] });
+  vgmNode.connect(gain);
+  const channel = new MessageChannel();
+  vgmNode.port.postMessage({ type: 'enginePort', port: channel.port1 }, [channel.port1]);
+  vgmWorker.postMessage({ type: 'audioPort', port: channel.port2 }, [channel.port2]);
+  vgmNode.port.onmessage = (e) => onAudioMessage(e.data, 'vgm');
+}
+
+async function playFile(name, data) {
+  const kind = kindOf(name, data);
+  if (kind !== 'mub' && kind !== 'vgm') { setStatus(t('unsupported', name), true); return; }
+  try { await ensureAudio(); } catch (e) { setStatus(t('audioFailed') + e.message, true); return; }
+  stop();
+  playingName = name;
+  underruns = 0;
+  loopCount = 0;
+  showClock(0);
+  if (kind === 'mub') {
+    if (!engineReady) { pendingPlay = false; pendingFile = { name, data }; setStatus(t('loading')); return; }
+    active = 'muc';
+    worker.postMessage({ type: 'playFile', data: data.slice(0) });
+  } else {
+    bootVgm();
+    active = 'vgm';
+    if (!vgmReady) { pendingVgm = data.slice(0); return; }
+    connectVgmAudio();
+    vgmWorker.postMessage({ type: 'playFile', data: data.slice(0) });
+  }
+  setStatus(t('playingFile', name));
+  if (ctx.state !== 'running') waitForClick();
+}
+let pendingFile = null;
+
+// Autoplay rules: a page that has not been clicked yet cannot start sound, and a drop
+// does not count as a click. Start on the next click or key instead.
+function waitForClick() {
+  setStatus(t('clickToStart'));
+  const resume = () => {
+    ctx.resume().then(() => setStatus(t('playingFile', playingName || sourceName)));
+    window.removeEventListener('pointerdown', resume, true);
+    window.removeEventListener('keydown', resume, true);
+  };
+  window.addEventListener('pointerdown', resume, true);
+  window.addEventListener('keydown', resume, true);
 }
 
 $('play').addEventListener('click', play);
