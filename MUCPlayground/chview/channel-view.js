@@ -3,7 +3,7 @@
 // driven by the chip register writes of the song that is playing. The writes come from
 // the MUC engine (as it renders) or are read straight out of a VGM file; either way each
 // write carries the audio frame it belongs to, and is applied when that frame is heard.
-import { loadImages, images, FrameBuffer } from './draw.js';
+import { loadImages, images, FrameBuffer, drawFont8 } from './draw.js';
 
 const BASE = new URL('./', import.meta.url);
 
@@ -32,6 +32,14 @@ const VGM_CLOCKS = [
   [0x10, 'YM2413'], [0x30, 'YM2151'], [0x44, 'YM2203'], [0x48, 'YM2608'], [0x4c, 'YM2610'],
   [0x74, 'AY8910'], [0x9c, 'K051649'],
 ];
+// The exact part a VGM header names, for the chip list: bit 31 marks YM2610B and SCC+
+// (K052539); the AY type byte tells the PSG variants apart.
+const AY_TYPES = { 0x00: 'AY8910', 0x01: 'AY8912', 0x02: 'AY8913', 0x03: 'AY8930', 0x10: 'YM2149', 0x11: 'YM3439', 0x12: 'YMZ284', 0x13: 'YMZ294' };
+const VGM_LABELS = {
+  YM2610: (raw) => (raw & 0x80000000 ? 'YM2610B' : 'YM2610'),
+  K051649: (raw) => (raw & 0x80000000 ? 'K052539' : 'K051649'),
+  AY8910: (raw, u32) => AY_TYPES[u32(0x78) & 0xff] || 'AY8910',
+};
 const VGM_OTHER = [
   [0x0c, 'SN76489'], [0x2c, 'YM2612'], [0x38, 'SegaPCM'], [0x40, 'RF5C68'], [0x50, 'YM3812'],
   [0x54, 'YM3526'], [0x58, 'Y8950'], [0x5c, 'YMF262'], [0x60, 'YMF278B'], [0x64, 'YMF271'],
@@ -69,8 +77,9 @@ class VgmReader {
       const raw = u32(offset);
       const clock = raw & 0x3fffffff;
       if (!clock) continue;
-      this.chips.push({ type, id: 0, clock });
-      if (raw & 0x40000000) this.chips.push({ type, id: 1, clock });
+      const label = VGM_LABELS[type]?.(raw, u32) || type;
+      this.chips.push({ type, id: 0, clock, label });
+      if (raw & 0x40000000) this.chips.push({ type, id: 1, clock, label });
     }
     for (const [offset, name] of VGM_OTHER) {
       if (offset + 4 <= headerEnd && (u32(offset) & 0x3fffffff)) this.others.push(name);
@@ -140,6 +149,11 @@ export class ChannelView {
     // The panels sit in one block, centred in the view and aligned on their left edges.
     this.stack = document.createElement('div');
     this.stack.className = 'cv-stack';
+    // The chips of the song, top left, in the font MDPlayer draws note names with.
+    this.title = document.createElement('canvas');
+    this.title.className = 'cv-title';
+    this.title.hidden = true;
+    root.appendChild(this.title);
     root.appendChild(this.stack);
     this.panels = [];      // { type, id, chip, fb, el }
     this.events = [];      // flat: frame, type, id, port, addr, data
@@ -161,6 +175,7 @@ export class ChannelView {
     p.textContent = message || this.root.dataset.empty || '';
     this.stack.appendChild(p);
     this.panels = [];
+    this.title.hidden = true;
   }
 
   // chips: [{ type, id, clock }]; others: names of chips that have no panel.
@@ -199,10 +214,28 @@ export class ChannelView {
       note.textContent = (this.root.dataset.other || '') + [...new Set(others)].join(', ');
       this.stack.appendChild(note);
     }
+    this.drawTitle([...loaded.map((c) => c.label || c.type), ...others]);
     if (!this.panels.length && !others.length) this.empty();
     this.applyScale();
     this.tickAt = 0;
     this.draw();
+  }
+
+  // "YM2413  AY8910  K052539", the same chip twice as "YM2608 X2" (the font has no
+  // lower case).
+  drawTitle(names) {
+    const counts = new Map();
+    for (const n of names) counts.set(n.toUpperCase(), (counts.get(n.toUpperCase()) || 0) + 1);
+    const text = [...counts].map(([n, c]) => (c > 1 ? `${n} X${c}` : n)).join('  ');
+    const canvas = this.title;
+    canvas.width = Math.max(8, text.length * 8);
+    canvas.height = 8;
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawFont8({ draw: (x, y, src, w, sx, sy, iw, ih) => ctx.drawImage(src, sx, sy, iw, ih, x, y, iw, ih) }, 0, 0, 1, text);
+    canvas.hidden = !text;
   }
 
   // Display size in percent of MDPlayer's 2x panels (MDPlayer4Mac's channel view zoom),
@@ -221,6 +254,7 @@ export class ChannelView {
     for (const p of this.panels) {
       p.fb.canvas.style.width = `${Math.floor(p.fb.canvas.width * k)}px`;
     }
+    this.title.style.width = `${Math.floor(this.title.width * k)}px`;
   }
 
   fitScale() {
@@ -233,7 +267,12 @@ export class ChannelView {
     height -= gap * (stack.children.length - 1);
     for (const el of stack.children) if (el.tagName !== 'CANVAS') height -= el.offsetHeight;
     const w = Math.max(...this.panels.map((p) => p.fb.canvas.width));
-    const h = this.panels.reduce((sum, p) => sum + p.fb.canvas.height, 0);
+    let h = this.panels.reduce((sum, p) => sum + p.fb.canvas.height, 0);
+    // The chip list above the panels scales with them.
+    if (!this.title.hidden) {
+      h += this.title.height;
+      height -= parseFloat(getComputedStyle(this.title).marginBottom) || 0;
+    }
     return Math.max(0.1, Math.min(width / w, height / h));
   }
 

@@ -87,7 +87,8 @@ select{border:1px solid var(--line);background:var(--bg);border-radius:8px;paddi
 .splitter:hover,.splitter.drag{background:var(--accent2)}
 .editor.focused .gutter{color:var(--ink)}
 /* Channel view: MDPlayer4Mac's chip panels on black. */
-.chview{flex:1;overflow:auto;background:#000;padding:4px;display:flex;min-height:0}
+.chview{flex:1;overflow:auto;background:#000;padding:4px;display:flex;flex-direction:column;min-height:0}
+.cv-title{flex:none;align-self:flex-start;max-width:100%;height:auto;image-rendering:pixelated;margin:0 0 4px}
 /* Centred in the frame with auto margins, which (unlike align/justify) keep an oversized
    block scrollable; inside it the panels line up on the left like MDPlayer4Mac's stack. */
 .cv-stack{margin:auto;display:flex;flex-direction:column;align-items:flex-start;gap:4px;max-width:100%}

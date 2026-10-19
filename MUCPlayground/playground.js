@@ -1440,7 +1440,11 @@ function startChannelView(m, source) {
   cvSource = source;
   cvSession = m.session;
   if (source === 'vgm') channelView.start([], [], vgmForView);
-  else channelView.start(parseChipList(m.info.chipList));
+  else {
+    // The MUC engine names SCC+ in its description; the chip list says K051649 either way.
+    const plus = /SCC\+/.test(m.info.chips || '');
+    channelView.start(parseChipList(m.info.chipList).map((c) => (c.type === 'K051649' && plus ? { ...c, label: 'K052539' } : c)));
+  }
 }
 
 // ---------- start ----------
