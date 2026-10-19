@@ -51,7 +51,7 @@ const T = {
     clickToStart: 'Click anywhere on the page to start the sound (the browser needs a click first).',
     unsupported: (n) => `${n} is not a file this player opens.`, playingFile: (n) => `Playing ${n}`,
     channelView: '▦ Channels', channelViewTip: 'Channel view (MDPlayer4Mac style) / editor', split: 'Split', splitOff: 'One view', splitSide: 'Two views, side by side',
-    splitStack: 'Two views, one above the other', zoom: 'Size',
+    splitStack: 'Two views, one above the other', zoom: 'Size', zoomFit: 'Fit',
     cvEmpty: 'Play a song to see its chips here, as in MDPlayer.', cvOther: 'No channel view for: ',
   },
   ko: {
@@ -91,7 +91,7 @@ const T = {
     clickToStart: '페이지 아무 곳이나 클릭하면 소리가 나옵니다 (브라우저가 먼저 클릭을 요구합니다).',
     unsupported: (n) => `${n}은(는) 열 수 없는 파일입니다.`, playingFile: (n) => `${n} 재생 중`,
     channelView: '▦ 채널 뷰', channelViewTip: '채널 뷰(MDPlayer4Mac 방식) / 에디터 전환', split: '분할', splitOff: '하나로 보기', splitSide: '좌우로 나눠 보기',
-    splitStack: '위아래로 나눠 보기', zoom: '크기',
+    splitStack: '위아래로 나눠 보기', zoom: '크기', zoomFit: '화면 맞춤',
     cvEmpty: '곡을 재생하면 MDPlayer처럼 칩별 채널이 여기에 표시됩니다.', cvOther: '채널 뷰가 없는 칩: ',
   },
   ja: {
@@ -131,7 +131,7 @@ const T = {
     clickToStart: 'ページのどこかをクリックすると音が出ます（ブラウザが最初のクリックを必要とします）。',
     unsupported: (n) => `${n}は開けないファイルです。`, playingFile: (n) => `${n}を再生中`,
     channelView: '▦ チャンネル', channelViewTip: 'チャンネルビュー（MDPlayer4Mac風）/ エディタの切り替え', split: '分割', splitOff: '1画面', splitSide: '左右に分割',
-    splitStack: '上下に分割', zoom: 'サイズ',
+    splitStack: '上下に分割', zoom: 'サイズ', zoomFit: '画面に合わせる',
     cvEmpty: '曲を再生すると、MDPlayerのようにチップごとのチャンネルがここに表示されます。', cvOther: 'チャンネルビューのないチップ: ',
   },
 };
@@ -174,6 +174,7 @@ function applyLanguage() {
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
   $('chview').dataset.empty = t('cvEmpty');
+  if (SCALES[zoomIndex] === 'fit') $('cvZoom').textContent = t('zoomFit');
   $('chview').dataset.other = t('cvOther');
   if (!channelView.panels.length && !$('chview').querySelector('canvas')) channelView.empty();
   document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
@@ -1354,7 +1355,7 @@ let zoomIndex = 0;
 function setZoom(index) {
   zoomIndex = ((Number(index) || 0) % SCALES.length + SCALES.length) % SCALES.length;
   channelView.setScale(SCALES[zoomIndex]);
-  $('cvZoom').textContent = `${SCALES[zoomIndex]}%`;
+  $('cvZoom').textContent = SCALES[zoomIndex] === 'fit' ? t('zoomFit') : `${SCALES[zoomIndex]}%`;
   store.set(STORE_ZOOM, String(zoomIndex));
 }
 $('cvZoom').addEventListener('click', () => setZoom(zoomIndex + 1));

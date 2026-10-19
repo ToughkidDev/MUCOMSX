@@ -128,7 +128,8 @@ class VgmReader {
 // (a stable sort, so chips keep this order within a group).
 const ORDER = ['YM2151', 'AY8910', 'YM2413', 'YM2203', 'YM2608', 'YM2610', 'K051649'];
 const FAMILY = { YM2151: 0, YM2413: 0, YM2203: 0, YM2608: 0, YM2610: 0, AY8910: 1, K051649: 1 };
-export const SCALES = [75, 100, 75, 50, 25, 50];   // the Zoom button's cycle, from 75%
+// The Size button's cycle, from 75%: MDPlayer4Mac's sizes, plus 'fit' after 100%.
+export const SCALES = [75, 100, 'fit', 75, 50, 25, 50];
 const TICK = 33;
 
 export class ChannelView {
@@ -147,6 +148,8 @@ export class ChannelView {
     this.tickAt = 0;
     this.session = 0;
     this.empty();
+    // 'fit' follows the size of the view (window resizes, split, coming back from the editor).
+    new ResizeObserver(() => { if (this.scale === 'fit') this.applyScale(); }).observe(root);
   }
 
   empty(message) {
@@ -200,17 +203,36 @@ export class ChannelView {
     this.draw();
   }
 
-  // Display size in percent of MDPlayer's 2x panels (MDPlayer4Mac's channel view zoom).
-  setScale(percent) {
-    this.scale = percent;
+  // Display size in percent of MDPlayer's 2x panels (MDPlayer4Mac's channel view zoom),
+  // or 'fit': as large as the view allows with every panel showing, keeping their shape.
+  setScale(scale) {
+    this.scale = scale;
     this.applyScale();
   }
 
   applyScale() {
-    const k = (this.scale || 75) / 50;
-    for (const p of this.panels) {
-      p.fb.canvas.style.width = `${p.fb.canvas.width * k}px`;
+    let k = (Number(this.scale) || 75) / 50;
+    if (this.scale === 'fit') {
+      k = this.fitScale();
+      if (!k) return;   // hidden: measured again when it is shown
     }
+    for (const p of this.panels) {
+      p.fb.canvas.style.width = `${Math.floor(p.fb.canvas.width * k)}px`;
+    }
+  }
+
+  fitScale() {
+    const view = this.root, stack = this.stack;
+    if (!this.panels.length || !view.clientWidth || !view.clientHeight) return 0;
+    const css = getComputedStyle(view), gap = parseFloat(getComputedStyle(stack).rowGap) || 0;
+    const width = view.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight) - 1;
+    let height = view.clientHeight - parseFloat(css.paddingTop) - parseFloat(css.paddingBottom) - 1;
+    // Space that does not scale: the gaps between panels and the note under them.
+    height -= gap * (stack.children.length - 1);
+    for (const el of stack.children) if (el.tagName !== 'CANVAS') height -= el.offsetHeight;
+    const w = Math.max(...this.panels.map((p) => p.fb.canvas.width));
+    const h = this.panels.reduce((sum, p) => sum + p.fb.canvas.height, 0);
+    return Math.max(0.1, Math.min(width / w, height / h));
   }
 
   // Playback stopped: the panels stay, with the live meters cleared (MDPlayer4Mac's
