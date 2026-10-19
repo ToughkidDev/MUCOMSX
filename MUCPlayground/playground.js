@@ -820,9 +820,39 @@ worker.postMessage({ type: 'boot', language: lang === 'ja' ? 'ja' : 'en' });
 let ctx = null, node = null, gain = null, analyser = null;
 let playing = false, loopCount = 0, underruns = 0;
 
+// iPhone / iPad: Web Audio is silenced by the ringer switch (or iPad's silent mode) unless
+// the page declares it plays media, and sound may only start inside a tap. unlockAudio runs
+// synchronously at the start of every tap that plays something: it marks the page as a
+// media player (navigator.audioSession on Safari 17+, else a silent looping <audio>, which
+// moves older iOS to the playback session), then creates or resumes the audio context.
+let silentAudio = null;
+function silentWavUrl() {
+  const frames = 4410, bytes = new Uint8Array(44 + frames);
+  const v = new DataView(bytes.buffer);
+  const str = (o, t) => [...t].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  str(0, 'RIFF'); v.setUint32(4, 36 + frames, true); str(8, 'WAVEfmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, 44100, true); v.setUint32(28, 44100, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+  str(36, 'data'); v.setUint32(40, frames, true); bytes.fill(128, 44);
+  return URL.createObjectURL(new Blob([bytes], { type: 'audio/wav' }));
+}
+const isAppleTouch = /iP(hone|ad|od)/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+
+function unlockAudio() {
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* older Safari */ }
+  if (isAppleTouch && !navigator.audioSession) {
+    if (!silentAudio) { silentAudio = new Audio(silentWavUrl()); silentAudio.loop = true; silentAudio.setAttribute('playsinline', ''); }
+    silentAudio.play().catch(() => {});
+  }
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE, latencyHint: 'playback' });
+  // 'suspended' before the first tap; iOS also uses 'interrupted' (calls, other apps).
+  if (ctx.state !== 'running') ctx.resume().catch(() => {});
+}
+
 async function ensureAudio() {
-  if (ctx) { if (ctx.state === 'suspended') await ctx.resume(); return; }
-  ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE, latencyHint: 'playback' });
+  unlockAudio();
+  // Not awaiting resume(): outside a tap it waits for one, and 'started' asks for it instead.
+  if (node) return;
   await ctx.audioWorklet.addModule('pcm-worklet.js');
   node = new AudioWorkletNode(ctx, 'pcm-player', { numberOfInputs: 0, outputChannelCount: [2] });
   gain = ctx.createGain();
@@ -851,6 +881,7 @@ function onAudioMessage(m, source) {
       playing = false;
       clearTrace();
       channelView.stop();
+      silentAudio?.pause();
       setStatus(t('ended'));
     }
   }
@@ -886,6 +917,7 @@ function setFontSize(value) {
 $('fontSize').addEventListener('input', (e) => setFontSize(e.target.value));
 
 async function play() {
+  unlockAudio();   // in the tap itself, even while the engine is still loading
   if (!engineReady) { pendingPlay = true; setStatus(t('loading')); return; }
   await filesRestored;
   try {
@@ -947,6 +979,7 @@ function connectVgmAudio() {
 }
 
 async function playFile(name, data) {
+  unlockAudio();
   const kind = kindOf(name, data);
   if (kind !== 'mub' && kind !== 'vgm') { setStatus(t('unsupported', name), true); return; }
   try { await ensureAudio(); } catch (e) { setStatus(t('audioFailed') + e.message, true); return; }
@@ -975,19 +1008,25 @@ let pendingFile = null;
 
 // Autoplay rules: a page that has not been clicked yet cannot start sound, and a drop
 // does not count as a click. Start on the next click or key instead.
+// iOS Safari only counts touchend / click as a tap that may start sound, not pointerdown.
+const TAP_EVENTS = ['touchend', 'click', 'keydown'];
 function waitForClick() {
   setStatus(t('clickToStart'));
   const resume = () => {
-    ctx.resume().then(() => setStatus(t('playingFile', playingName || sourceName)));
-    window.removeEventListener('pointerdown', resume, true);
-    window.removeEventListener('keydown', resume, true);
+    unlockAudio();
+    ctx.resume().then(() => {
+      if (ctx.state !== 'running') return;
+      setStatus(t('playingFile', playingName || sourceName));
+      TAP_EVENTS.forEach((ev) => window.removeEventListener(ev, resume, true));
+    });
   };
-  window.addEventListener('pointerdown', resume, true);
-  window.addEventListener('keydown', resume, true);
+  TAP_EVENTS.forEach((ev) => window.addEventListener(ev, resume, true));
 }
 
 $('play').addEventListener('click', play);
-$('stop').addEventListener('click', stop);
+// Stopping by hand also releases the iOS media session (play() starts a new one).
+function stopByUser() { stop(); silentAudio?.pause(); }
+$('stop').addEventListener('click', stopByUser);
 
 // ---------- colouring, suggestions and checking while typing ----------
 let highlightQueued = false;
@@ -1102,7 +1141,7 @@ for (const p of panes) {
 document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); play(); }
   else if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveMuc(); }
-  else if (e.key === 'Escape' && !$('samplesDlg').open) { stop(); }
+  else if (e.key === 'Escape' && !$('samplesDlg').open) { stopByUser(); }
 });
 
 function drawScope() {

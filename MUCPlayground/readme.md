@@ -26,6 +26,8 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
 - What you type is kept in your browser between visits. Nothing is uploaded anywhere.
 - Plays YM2608 (FM, SSG, rhythm, ADPCM), the extended `muPb` layouts, and the MUCOMSX native MSX parts: MSX-MUSIC, PSG, SCC/SCC+, including the five dedicated SCC/SCC+ parts `SCCA`–`SCCE` of msPb0102 (MDPlayer4Mac v0.2.3) with inline `@Wn:{…}` waves and `#sccvoice` wave banks.
 
+**iPhone / iPad:** sound starts with a tap (Play, or a tap anywhere when the page asks). The page registers as a media player, so it plays even with the ringer switch or iPad silent mode on (Safari 17's `navigator.audioSession`, or a silent looping track on older iOS). The engine needs iOS / iPadOS 16.4 or later (WebAssembly SIMD and exception handling).
+
 ## How it works
 
 The sound engine is not a new implementation. It is **[MDPlayer4Mac](https://github.com/ToughkidDev/MDPlayer4Mac)'s** MUC path compiled to WebAssembly with .NET 8:
