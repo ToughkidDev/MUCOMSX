@@ -11,7 +11,6 @@ const STORE_LANG = 'mucplayground.lang';
 const STORE_VOLUME = 'mucplayground.volume';
 const STORE_FONT = 'mucplayground.fontSize';
 const STORE_SPLIT = 'mucplayground.split';
-const STORE_ZOOM = 'mucplayground.channelSize';
 
 const T = {
   en: {
@@ -1334,6 +1333,8 @@ let cvSource = null, cvSession = -1;
 let vgmForView = null;             // the (decompressed) VGM that is playing, read for the view
 
 function setView(mode, auto = false) {
+  // The channel view always opens fitted to the frame; Size changes it from there.
+  if (mode === 'channels' && viewMode !== 'channels') setZoom(DEFAULT_SCALE);
   viewMode = mode === 'channels' ? 'channels' : 'editor';
   autoChannels = viewMode === 'channels' && auto;
   const channels = viewMode === 'channels';
@@ -1353,10 +1354,9 @@ $('viewToggle').addEventListener('click', () => setView(viewMode === 'channels' 
 
 let zoomIndex = DEFAULT_SCALE;
 function setZoom(index) {
-  zoomIndex = Number.isInteger(+index) && +index >= 0 && +index < SCALES.length ? +index : DEFAULT_SCALE;
+  zoomIndex = index >= 0 && index < SCALES.length ? index : DEFAULT_SCALE;
   channelView.setScale(SCALES[zoomIndex]);
   $('cvZoom').textContent = SCALES[zoomIndex] === 'fit' ? t('zoomFit') : `${SCALES[zoomIndex]}%`;
-  store.set(STORE_ZOOM, String(zoomIndex));
 }
 $('cvZoom').addEventListener('click', () => setZoom((zoomIndex + 1) % SCALES.length));
 
@@ -1379,7 +1379,7 @@ function startChannelView(m, source) {
   if (savedVolume !== null) $('volume').value = savedVolume;
   const savedFont = store.get(STORE_FONT);
   if (savedFont !== null) setFontSize(savedFont);
-  setZoom(store.get(STORE_ZOOM) ?? DEFAULT_SCALE);
+  setZoom(DEFAULT_SCALE);
   // Restore your text synchronously so nothing loaded later can overwrite what you type.
   const saved = store.get(STORE_SOURCE);
   if (saved && saved.trim()) setSource(saved);
