@@ -3,7 +3,7 @@
 
 import { Highlighter, suggestionsAt, PART_LETTERS, PART_COLORS } from './editor-assist.js';
 import { explain, readableText } from './diagnostics.js';
-import { ChannelView, SCALES, gunzipIfNeeded } from './chview/channel-view.js';
+import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 
 const SAMPLE_RATE = 44100;
 const STORE_SOURCE = 'mucplayground.source';
@@ -11,7 +11,7 @@ const STORE_LANG = 'mucplayground.lang';
 const STORE_VOLUME = 'mucplayground.volume';
 const STORE_FONT = 'mucplayground.fontSize';
 const STORE_SPLIT = 'mucplayground.split';
-const STORE_ZOOM = 'mucplayground.channelZoom';
+const STORE_ZOOM = 'mucplayground.channelSize';
 
 const T = {
   en: {
@@ -1351,14 +1351,14 @@ function setView(mode, auto = false) {
 }
 $('viewToggle').addEventListener('click', () => setView(viewMode === 'channels' ? 'editor' : 'channels'));
 
-let zoomIndex = 0;
+let zoomIndex = DEFAULT_SCALE;
 function setZoom(index) {
-  zoomIndex = ((Number(index) || 0) % SCALES.length + SCALES.length) % SCALES.length;
+  zoomIndex = Number.isInteger(+index) && +index >= 0 && +index < SCALES.length ? +index : DEFAULT_SCALE;
   channelView.setScale(SCALES[zoomIndex]);
   $('cvZoom').textContent = SCALES[zoomIndex] === 'fit' ? t('zoomFit') : `${SCALES[zoomIndex]}%`;
   store.set(STORE_ZOOM, String(zoomIndex));
 }
-$('cvZoom').addEventListener('click', () => setZoom(zoomIndex + 1));
+$('cvZoom').addEventListener('click', () => setZoom((zoomIndex + 1) % SCALES.length));
 
 // "YM2608:0:7987200;AY8910:0:1789773" from the MUC engine.
 const parseChipList = (text) => (text || '').split(';').filter(Boolean).map((entry) => {
@@ -1379,7 +1379,7 @@ function startChannelView(m, source) {
   if (savedVolume !== null) $('volume').value = savedVolume;
   const savedFont = store.get(STORE_FONT);
   if (savedFont !== null) setFontSize(savedFont);
-  setZoom(store.get(STORE_ZOOM) || 0);
+  setZoom(store.get(STORE_ZOOM) ?? DEFAULT_SCALE);
   // Restore your text synchronously so nothing loaded later can overwrite what you type.
   const saved = store.get(STORE_SOURCE);
   if (saved && saved.trim()) setSource(saved);

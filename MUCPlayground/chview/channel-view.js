@@ -128,8 +128,10 @@ class VgmReader {
 // (a stable sort, so chips keep this order within a group).
 const ORDER = ['YM2151', 'AY8910', 'YM2413', 'YM2203', 'YM2608', 'YM2610', 'K051649'];
 const FAMILY = { YM2151: 0, YM2413: 0, YM2203: 0, YM2608: 0, YM2610: 0, AY8910: 1, K051649: 1 };
-// The Size button's cycle, from 75%: MDPlayer4Mac's sizes, plus 'fit' after 100%.
-export const SCALES = [75, 100, 'fit', 75, 50, 25, 50];
+// The Size button goes back and forth: 100 -> fit -> 100 -> 75 -> 50 -> 25 -> 50 -> 75 -> 100 ...
+// Starts at the last entry (75%, MDPlayer4Mac's default), so the first press gives 100%.
+export const SCALES = [100, 'fit', 100, 75, 50, 25, 50, 75];
+export const DEFAULT_SCALE = SCALES.length - 1;
 const TICK = 33;
 
 export class ChannelView {
