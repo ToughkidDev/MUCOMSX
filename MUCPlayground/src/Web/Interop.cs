@@ -43,13 +43,7 @@ public static partial class Interop
         player = null;
         CompileResult r = MucEngine.Compile(MucEngine.ShiftJis.GetBytes(text ?? ""), Open);
         compiled = r.Ok ? r : null;
-        return Json(w =>
-        {
-            w.WriteBoolean("ok", r.Ok);
-            w.WriteNumber("size", r.Mub?.Length ?? 0);
-            Messages(w, "errors", r.Errors);
-            Messages(w, "warnings", r.Warnings);
-        });
+        return Describe(r, text);
     }
 
     // Compiles for errors and warnings only, while typing. Leaves the playing song alone.
@@ -57,13 +51,31 @@ public static partial class Interop
     public static string Check(string text)
     {
         CompileResult r = MucEngine.Compile(MucEngine.ShiftJis.GetBytes(text ?? ""), Open);
+        return Describe(r, text);
+    }
+
+    // When no error says where it happened, find the line that causes the first one.
+    // (A missing voice file is about the #voice tag, not a line, so it is left alone.)
+    static string Describe(CompileResult r, string text)
+    {
+        int located = 0;
+        CompileMessage first = r.Errors.FirstOrDefault();
+        if (first != null && first.Code != "E0519" && r.Errors.All(e => e.Row <= 0 && !HasPosition(e.Text)))
+            located = MucEngine.LocateFailure(text, first.Text, Open);
         return Json(w =>
         {
             w.WriteBoolean("ok", r.Ok);
             w.WriteNumber("size", r.Mub?.Length ?? 0);
+            w.WriteNumber("locatedRow", located);
             Messages(w, "errors", r.Errors);
             Messages(w, "warnings", r.Warnings);
         });
+    }
+
+    static bool HasPosition(string text)
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(text ?? "", @"(?:row|行):\s*(-?\d+)");
+        return m.Success && int.Parse(m.Groups[1].Value) > 0;
     }
 
     // Plays a compiled .mub file directly (no source, so no position trace).
@@ -179,6 +191,7 @@ public static partial class Interop
             w.WriteNumber("row", m.Row);
             w.WriteNumber("col", m.Col);
             w.WriteString("text", m.Text);
+            w.WriteString("code", m.Code);
             w.WriteEndObject();
         }
         w.WriteEndArray();

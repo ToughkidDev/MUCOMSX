@@ -2,6 +2,7 @@
 // The engine itself runs in engine-worker.js; audio is played by pcm-worklet.js.
 
 import { Highlighter, suggestionsAt, PART_LETTERS, PART_COLORS } from './editor-assist.js';
+import { explain, readableText } from './diagnostics.js';
 
 const SAMPLE_RATE = 44100;
 const STORE_SOURCE = 'mucplayground.source';
@@ -34,6 +35,14 @@ const T = {
     saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
     followPart: (p) => `Follow part ${p}`, hintSuggest: 'suggestions',
+    browse: 'Samples…', samplesTitle: 'Samples on GitHub', refresh: 'Refresh', search: 'Search songs…',
+    liveSource: (time) => `Live from github.com/ToughkidDev/MUCOMSX (Samples, main branch) · read at ${time}. New files appear as soon as they are committed.`,
+    bundledSource: 'GitHub could not be reached, so this is the list built into the page; it may be missing the newest files.',
+    loadingList: 'Reading the Samples folder…', noMatch: 'No files match.',
+    error: 'Error', warning: 'Warning', counts: (e, w) => `${e} error${e === 1 ? '' : 's'} · ${w} warning${w === 1 ? '' : 's'}`,
+    where: (r, c, part, located) => `line ${r}${c > 0 ? `, column ${c}` : ''}${part ? ` · part ${part}` : ''}${located ? ' · found by the playground' : ''}`,
+    whatLabel: 'What it means:', fixLabel: 'How to fix:', formLabel: 'Correct form:',
+    compileFailedN: (n) => `Could not compile: ${n} error${n === 1 ? '' : 's'}. Details are on the right.`,
     loadingVgm: 'Loading the VGM player (about 6.7 MB, first time only)…', vgmFailed: 'The VGM player could not be loaded: ',
     clickToStart: 'Click anywhere on the page to start the sound (the browser needs a click first).',
     unsupported: (n) => `${n} is not a file this player opens.`, playingFile: (n) => `Playing ${n}`,
@@ -63,6 +72,14 @@ const T = {
     saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
     followPart: (p) => `${p} 파트 따라가기`, hintSuggest: '명령 제안',
+    browse: '샘플…', samplesTitle: 'GitHub의 샘플', refresh: '새로 고침', search: '곡 검색…',
+    liveSource: (time) => `github.com/ToughkidDev/MUCOMSX의 Samples 폴더(main)를 ${time}에 직접 읽었습니다. 새 파일은 커밋하는 즉시 나타납니다.`,
+    bundledSource: 'GitHub에 접속하지 못해 페이지에 들어 있는 목록을 보여 줍니다. 최신 파일이 빠져 있을 수 있습니다.',
+    loadingList: 'Samples 폴더를 읽는 중…', noMatch: '맞는 파일이 없습니다.',
+    error: '오류', warning: '경고', counts: (e, w) => `오류 ${e} · 경고 ${w}`,
+    where: (r, c, part, located) => `${r}줄${c > 0 ? ` ${c}칸` : ''}${part ? ` · ${part} 파트` : ''}${located ? ' · 플레이그라운드가 찾은 위치' : ''}`,
+    whatLabel: '무슨 뜻:', fixLabel: '고치는 법:', formLabel: '올바른 형태:',
+    compileFailedN: (n) => `컴파일하지 못했습니다: 오류 ${n}개. 자세한 내용은 오른쪽에 있습니다.`,
     loadingVgm: 'VGM 플레이어를 불러오는 중 (약 6.7 MB, 처음 한 번만)…', vgmFailed: 'VGM 플레이어를 불러오지 못했습니다: ',
     clickToStart: '페이지 아무 곳이나 클릭하면 소리가 나옵니다 (브라우저가 먼저 클릭을 요구합니다).',
     unsupported: (n) => `${n}은(는) 열 수 없는 파일입니다.`, playingFile: (n) => `${n} 재생 중`,
@@ -92,6 +109,14 @@ const T = {
     saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
     followPart: (p) => `${p}パートを追う`, hintSuggest: 'コマンド候補',
+    browse: 'サンプル…', samplesTitle: 'GitHubのサンプル', refresh: '再読み込み', search: '曲を検索…',
+    liveSource: (time) => `github.com/ToughkidDev/MUCOMSXのSamplesフォルダー（main）を${time}に直接読み込みました。新しいファイルはコミットするとすぐ表示されます。`,
+    bundledSource: 'GitHubに接続できないため、ページ内蔵の一覧を表示しています。最新のファイルがない場合があります。',
+    loadingList: 'Samplesフォルダーを読み込み中…', noMatch: '該当するファイルがありません。',
+    error: 'エラー', warning: '警告', counts: (e, w) => `エラー ${e} · 警告 ${w}`,
+    where: (r, c, part, located) => `${r}行${c > 0 ? ` ${c}桁` : ''}${part ? ` · ${part}パート` : ''}${located ? ' · プレイグラウンドが特定' : ''}`,
+    whatLabel: '意味:', fixLabel: '直し方:', formLabel: '正しい形:',
+    compileFailedN: (n) => `コンパイルできません: エラー${n}件。詳細は右側にあります。`,
     loadingVgm: 'VGMプレーヤーを読み込み中（約6.7 MB、初回のみ）…', vgmFailed: 'VGMプレーヤーを読み込めませんでした: ',
     clickToStart: 'ページのどこかをクリックすると音が出ます（ブラウザが最初のクリックを必要とします）。',
     unsupported: (n) => `${n}は開けないファイルです。`, playingFile: (n) => `${n}を再生中`,
@@ -280,26 +305,70 @@ function renderMessages(result) {
   list.innerHTML = '';
   markRows = new Map();
   markSpots = [];
-  const add = (m, kind) => {
+  const counts = $('msgCount');
+  counts.textContent = result.errors.length || result.warnings.length
+    ? t('counts', result.errors.length, result.warnings.length) : '';
+  counts.className = 'count' + (result.errors.length ? ' err' : result.warnings.length ? ' warn' : '');
+
+  // Each message: severity, code, where, the source line with a caret, the compiler's
+  // own words, then what it means and how to fix it.
+  const add = (m, kind, index) => {
     const li = document.createElement('li');
     li.className = kind;
-    const pos = messagePosition(m);
-    const text = m.text.replace(/^\[(?:row|行):\s*-?\d+\s*(?:column|桁):\s*-?\d+\]\s*/i, '');
-    if (pos) {
-      li.dataset.row = pos.row;
-      const span = document.createElement('span');
-      span.className = 'pos';
-      span.textContent = t('row', pos.row, pos.col);
-      li.appendChild(span);
-      li.addEventListener('click', () => goToRow(pos.row, pos.col));
-      if (kind === 'err' || !markRows.has(pos.row)) markRows.set(pos.row, kind);
-      markSpots.push({ row: pos.row, col: pos.col, kind });
+    let pos = messagePosition(m);
+    let located = false;
+    if (!pos && kind === 'err' && index === 0 && result.locatedRow > 0) { pos = { row: result.locatedRow, col: 0 }; located = true; }
+    if (!pos && m.code === 'E0519') {
+      const row = lines.findIndex((l) => /^#voice\b/i.test(l)) + 1;
+      if (row > 0) pos = { row, col: 0 };
     }
-    li.appendChild(document.createTextNode(text));
+    const text = m.text.replace(/^\[(?:row|行):\s*-?\d+\s*(?:column|桁):\s*-?\d+\]\s*/i, '');
+    const info = explain({ ...m, text }, lang);
+    const head = document.createElement('div');
+    head.className = 'm-head';
+    head.innerHTML = '<span class="badge"></span><code></code><span class="where"></span>';
+    head.querySelector('.badge').textContent = t(kind === 'err' ? 'error' : 'warning');
+    head.querySelector('code').textContent = m.code || '';
+    if (pos) {
+      const line = lines[pos.row - 1] ?? '';
+      const part = /^((?:MSX)?[A-K][A-K0-9]*)[ \t]/.exec(line);
+      head.querySelector('.where').textContent = t('where', pos.row, pos.col, part ? part[1] : '', located);
+      li.dataset.row = pos.row;
+      li.addEventListener('click', () => goToRow(pos.row, pos.col || 1));
+      if (kind === 'err' || !markRows.has(pos.row)) markRows.set(pos.row, kind);
+      if (pos.col > 0) markSpots.push({ row: pos.row, col: pos.col, kind });
+    }
+    li.appendChild(head);
+    const original = document.createElement('p');
+    original.className = 'm-text';
+    original.textContent = readableText(text);
+    li.appendChild(original);
+    if (pos) {
+      const line = lines[pos.row - 1] ?? '';
+      const src = document.createElement('pre');
+      src.className = 'm-src';
+      const shown = expandTabs(line);
+      const caret = pos.col > 0 ? expandTabs(line.slice(0, charIndex(line, pos.col - 1))).length : -1;
+      // Long lines: keep the part around the caret in view.
+      const from = caret > 48 ? caret - 40 : 0;
+      const gutterText = `${pos.row} │ `;
+      src.textContent = gutterText + (from ? '…' : '') + shown.slice(from, from + 72) +
+        (caret >= 0 ? '\n' + ' '.repeat(gutterText.length + (from ? 1 : 0) + caret - from) + '^' : '');
+      li.appendChild(src);
+    }
+    for (const [label, body] of [['what', info.what], ['fix', info.fix], ['form', info.form]]) {
+      if (!body) continue;
+      const p = document.createElement('p');
+      p.className = 'm-' + label;
+      p.innerHTML = '<b></b> <span></span>';
+      p.querySelector('b').textContent = t(label + 'Label');
+      p.querySelector('span').textContent = body;
+      li.appendChild(p);
+    }
     list.appendChild(li);
   };
-  result.errors.forEach((m) => add(m, 'err'));
-  result.warnings.forEach((m) => add(m, 'warn'));
+  result.errors.forEach((m, i) => add(m, 'err', i));
+  result.warnings.forEach((m, i) => add(m, 'warn', i));
   if (!result.errors.length && !result.warnings.length) {
     const li = document.createElement('li');
     li.className = 'ok';
@@ -308,7 +377,6 @@ function renderMessages(result) {
   }
   renderGutter();
 }
-
 // ---------- attached files ----------
 const files = new Map();   // lower-case name -> { name, data:ArrayBuffer }
 
@@ -382,21 +450,16 @@ let current = 'mine';   // what the editor holds: 'mine', 'demo' or 's:<group>:<
 function buildExamples() {
   const sel = $('examples');
   sel.innerHTML = '';
-  const opt = (value, label, parent = sel) => { const o = document.createElement('option'); o.value = value; o.textContent = label; parent.appendChild(o); };
+  const opt = (value, label) => { const o = document.createElement('option'); o.value = value; o.textContent = label; sel.appendChild(o); };
   opt('mine', t('yourSong'));
   opt('demo', t('demo'));
-  samples.forEach((g, gi) => {
-    const group = document.createElement('optgroup');
-    group.label = `${t('samples')}: ${g.name}`;
-    g.songs.forEach((s, si) => opt(`s:${gi}:${si}`, s.replace(/\.muc$/i, ''), group));
-    sel.appendChild(group);
-  });
+  if (current.startsWith('repo:')) opt(current, current.slice(current.lastIndexOf('/') + 1).replace(/\.muc$/i, ''));
   sel.value = [...sel.options].some((o) => o.value === current) ? current : 'mine';
+  $('sampleSearch').placeholder = t('search');
 }
-
 async function loadExample(value) {
   if (value === current) return;
-  if (value === 'mine') { $('examples').value = current; return; }
+  if (value === 'mine' || value.startsWith('repo:')) { $('examples').value = current; return; }
   // Only your own text needs protecting; an unedited example can be swapped freely.
   if (current === 'mine' && code.value.trim() && !confirm(t('confirmReplace'))) {
     $('examples').value = 'mine';
@@ -404,27 +467,12 @@ async function loadExample(value) {
   }
   stop();
   try {
-    if (value === 'demo') {
-      setStatus(t('loadingSample', 'demo.muc'));
-      clearFiles();
-      setSource(await (await fetch('demo.muc')).text());
-      sourceName = 'DEMO.MUC';
-    } else {
-      const [, gi, si] = value.split(':').map(Number);
-      const g = samples[gi], song = g.songs[si];
-      setStatus(t('loadingSample', song));
-      const res = await fetch(g.dir + encodeURIComponent(song));
-      if (!res.ok) throw new Error(`${res.status} ${song}`);
-      clearFiles();
-      setSource(decodeText(await res.arrayBuffer()));
-      sourceName = song;
-      for (const name of referencedFiles()) {
-        const r = await fetch(g.dir + encodeURIComponent(name));
-        if (r.ok) attach(name, await r.arrayBuffer());
-      }
-    }
+    setStatus(t('loadingSample', 'demo.muc'));
+    clearFiles();
+    setSource(await (await fetch('demo.muc')).text());
+    sourceName = 'DEMO.MUC';
     current = value;
-    $('examples').value = value;
+    buildExamples();
     setStatus(engineReady ? t('ready') : t('loading'));
   } catch (e) {
     setStatus(t('sampleFailed') + e.message, true);
@@ -533,10 +581,11 @@ function onEngineMessage(m, source) {
       lastResult = m.result;
       renderMessages(m.result);
       if (!m.result.ok) {
-        setStatus(t('compileFailed'), true);
+        setStatus(t('compileFailedN', m.result.errors.length), true);
         $('nowTitle').textContent = '—';
         $('nowMeta').textContent = '';
-        const first = m.result.errors.map(messagePosition).find(Boolean);
+        const first = m.result.errors.map(messagePosition).find(Boolean)
+          || (m.result.locatedRow > 0 ? { row: m.result.locatedRow, col: 1 } : null);
         if (first) goToRow(first.row, first.col);
       } else {
         setStatus(t('compiled', m.result.ms, m.result.size));
@@ -846,7 +895,7 @@ code.addEventListener('click', closeSuggest);
 document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); play(); }
   else if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveMuc(); }
-  else if (e.key === 'Escape') { stop(); }
+  else if (e.key === 'Escape' && !$('samplesDlg').open) { stop(); }
 });
 
 function drawScope() {
@@ -997,6 +1046,121 @@ function renderParts() {
   }
 }
 window.addEventListener('resize', () => { traceDirty = true; });
+
+// ---------- samples, read live from the repository ----------
+// The Samples folder is listed through the GitHub API and files come from
+// raw.githubusercontent.com, so songs appear as soon as they are committed, without
+// waiting for the Pages build. The list is cached for 10 minutes (the API allows about
+// 60 anonymous requests an hour); samples.json is the fallback when GitHub is unreachable.
+const REPO = 'ToughkidDev/MUCOMSX', BRANCH = 'main', SAMPLES_ROOT = 'Samples/';
+const TREE_URL = `https://api.github.com/repos/${REPO}/git/trees/${BRANCH}?recursive=1`;
+const rawUrl = (path) => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${path.split('/').map(encodeURIComponent).join('/')}`;
+const PLAYABLE = /\.(muc|mub|vgm|vgz)$/i;
+let sampleTree = null;   // { live, at, files: [path] }
+
+async function readSampleTree(force) {
+  if (!force && sampleTree) return sampleTree;
+  if (!force) {
+    try {
+      const cached = JSON.parse(sessionStorage.getItem('mucplayground.tree') || 'null');
+      if (cached && Date.now() - cached.at < 10 * 60 * 1000) return (sampleTree = cached);
+    } catch { /* storage unavailable */ }
+  }
+  try {
+    const res = await fetch(TREE_URL, { headers: { Accept: 'application/vnd.github+json' } });
+    if (!res.ok) throw new Error(res.status);
+    const tree = await res.json();
+    const files = tree.tree.filter((e) => e.type === 'blob' && e.path.startsWith(SAMPLES_ROOT)).map((e) => e.path);
+    sampleTree = { live: true, at: Date.now(), files };
+    try { sessionStorage.setItem('mucplayground.tree', JSON.stringify(sampleTree)); } catch { /* ignore */ }
+  } catch {
+    const files = [];
+    for (const g of samples) for (const song of g.songs) files.push(g.dir.replace(/^\.\.\//, '') + song);
+    sampleTree = { live: false, at: Date.now(), files };
+  }
+  return sampleTree;
+}
+
+function renderSampleList() {
+  const list = $('sampleList');
+  const query = $('sampleSearch').value.trim().toLowerCase();
+  list.innerHTML = '';
+  const groups = new Map();
+  for (const path of sampleTree.files) {
+    if (!PLAYABLE.test(path) || (query && !path.toLowerCase().includes(query))) continue;
+    const dir = path.slice(SAMPLES_ROOT.length, path.lastIndexOf('/'));
+    if (!groups.has(dir)) groups.set(dir, []);
+    groups.get(dir).push(path);
+  }
+  if (!groups.size) { list.innerHTML = `<p class="s-empty">${t('noMatch')}</p>`; return; }
+  for (const dir of [...groups.keys()].sort()) {
+    const d = document.createElement('details');
+    d.open = !!query || groups.size <= 3;
+    d.innerHTML = '<summary></summary><ul></ul>';
+    d.querySelector('summary').innerHTML = '<span></span><small></small>';
+    d.querySelector('summary span').textContent = dir || '/';
+    d.querySelector('summary small').textContent = groups.get(dir).length;
+    for (const path of groups.get(dir).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))) {
+      const name = path.slice(path.lastIndexOf('/') + 1);
+      const li = document.createElement('li');
+      li.innerHTML = '<button type="button"><span></span><span class="ext"></span></button>';
+      li.querySelector('span').textContent = name.replace(PLAYABLE, '');
+      li.querySelector('.ext').textContent = name.slice(name.lastIndexOf('.') + 1).toLowerCase();
+      li.querySelector('button').addEventListener('click', () => { $('samplesDlg').close(); loadRepoFile(path); });
+      d.querySelector('ul').appendChild(li);
+    }
+    list.appendChild(d);
+  }
+}
+
+async function openSamples(force) {
+  const dlg = $('samplesDlg');
+  if (!dlg.open) dlg.showModal();
+  $('sampleSource').textContent = t('loadingList');
+  if (force) sampleTree = null;
+  await readSampleTree(force);
+  $('sampleSource').textContent = sampleTree.live
+    ? t('liveSource', new Date(sampleTree.at).toLocaleTimeString()) : t('bundledSource');
+  renderSampleList();
+  $('sampleSearch').focus();
+}
+$('browse').addEventListener('click', () => openSamples(false));
+$('sampleRefresh').addEventListener('click', () => openSamples(true));
+$('sampleClose').addEventListener('click', () => $('samplesDlg').close());
+$('sampleSearch').addEventListener('input', renderSampleList);
+
+async function fetchRepoFile(path) {
+  // Latest commit first; the Pages copy is the fallback.
+  for (const url of [rawUrl(path), '../' + path.split('/').map(encodeURIComponent).join('/')]) {
+    try { const r = await fetch(url, { cache: 'no-cache' }); if (r.ok) return await r.arrayBuffer(); } catch { /* next */ }
+  }
+  throw new Error(path);
+}
+
+async function loadRepoFile(path) {
+  const name = path.slice(path.lastIndexOf('/') + 1);
+  try {
+    setStatus(t('loadingSample', name));
+    const data = await fetchRepoFile(path);
+    if (kindOf(name, data) !== 'muc') { playFile(name, data); return; }
+    if (current === 'mine' && code.value.trim() && !confirm(t('confirmReplace'))) { setStatus(engineReady ? t('ready') : t('loading')); return; }
+    stop();
+    clearFiles();
+    setSource(decodeText(data));
+    sourceName = name;
+    current = 'repo:' + path;
+    buildExamples();
+    // #voice / #pcm files from the same folder, matched without regard to case.
+    const dir = path.slice(0, path.lastIndexOf('/') + 1);
+    for (const ref of referencedFiles()) {
+      const match = (sampleTree?.files || []).find((f) => f.toLowerCase() === (dir + ref).toLowerCase()) || dir + ref;
+      try { attach(ref, await fetchRepoFile(match)); } catch { /* listed as missing */ }
+    }
+    setStatus(engineReady ? t('ready') : t('loading'));
+  } catch (e) {
+    setStatus(t('sampleFailed') + e.message, true);
+  }
+}
 
 // ---------- start ----------
 {

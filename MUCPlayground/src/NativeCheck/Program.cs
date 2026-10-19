@@ -14,8 +14,8 @@ Stream Open(string name)
 var sw = Stopwatch.StartNew();
 CompileResult r = MucEngine.Compile(File.ReadAllBytes(path), Open);
 Console.WriteLine($"compile {sw.ElapsedMilliseconds} ms, ok={r.Ok}, mub={r.Mub?.Length}");
-foreach (var e in r.Errors) Console.WriteLine($"  error {e.Row}:{e.Col} {e.Text}");
-foreach (var w in r.Warnings) Console.WriteLine($"  warn  {w.Row}:{w.Col} {w.Text}");
+foreach (var e in r.Errors) Console.WriteLine($"  error [{e.Code}] {e.Row}:{e.Col} {e.Text}");
+foreach (var w in r.Warnings) Console.WriteLine($"  warn  [{w.Code}] {w.Row}:{w.Col} {w.Text}");
 if (!r.Ok) return 1;
 if (Environment.GetEnvironmentVariable("SAVE_MUB") is string mubPath) File.WriteAllBytes(mubPath, r.Mub);
 if (Environment.GetEnvironmentVariable("VGM_OUT") is string vgmPath)

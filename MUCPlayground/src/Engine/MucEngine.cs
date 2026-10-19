@@ -13,7 +13,8 @@ using musicDriverInterface;
 
 namespace MucPlayground;
 
-public sealed record CompileMessage(int Row, int Col, string Text);
+// Code is the compiler's message id (E0498, W0408 ...) when it could be identified.
+public sealed record CompileMessage(int Row, int Col, string Text, string Code = "");
 
 public sealed class CompileResult
 {
@@ -58,6 +59,43 @@ public static class MucEngine
     }
 
     public static Encoding ShiftJis => Encoding.GetEncoding(932);
+
+    // The compiler reports message text only. Recover its id by matching the text against
+    // the message templates, so the page can explain each one in detail.
+    static List<(string Code, System.Text.RegularExpressions.Regex Pattern, int Length)> templates;
+    static readonly System.Text.RegularExpressions.Regex Position =
+        new(@"^\[(?:row|行):\s*-?\d+\s*(?:column|桁):\s*-?\d+\]\s*", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+    public static string IdentifyCode(string text)
+    {
+        if (string.IsNullOrEmpty(text)) return "";
+        if (templates == null)
+        {
+            templates = new();
+            foreach (string name in new[] { "lang/mucomDotNETmessage.txt", "lang/mucomDotNETmessage.ja-JP.txt" })
+            {
+                using Stream s = Resource(name);
+                if (s == null) continue;
+                using StreamReader r = new(s, Encoding.UTF8);
+                foreach (string raw in r.ReadToEnd().Split('\n'))
+                {
+                    string line = raw.TrimEnd('\r');
+                    int eq = line.IndexOf('=');
+                    if (eq < 5 || !(line[0] == 'E' || line[0] == 'W') || !char.IsDigit(line[1])) continue;
+                    string code = line[..eq], template = line[(eq + 1)..].Replace("\\r", "\r").Replace("\\n", "\n").Trim();
+                    if (code is "E0300" or "E0000" || template.Length == 0) continue;
+                    string pattern = "^" + System.Text.RegularExpressions.Regex.Escape(template).Replace("\\{", "{");
+                    pattern = System.Text.RegularExpressions.Regex.Replace(pattern, @"\{\d+\}", "(.*?)") + "$";
+                    templates.Add((code, new(pattern, System.Text.RegularExpressions.RegexOptions.Singleline), template.Length));
+                }
+            }
+            templates.Sort((a, b) => b.Length.CompareTo(a.Length));   // most specific first
+        }
+        string body = Position.Replace(text, "").Trim();
+        foreach (var t in templates)
+            if (t.Pattern.IsMatch(body)) return t.Code;
+        return "";
+    }
 
     static Stream Resource(string name)
         => typeof(MucEngine).Assembly.GetManifestResourceStream(name);
@@ -104,9 +142,9 @@ public static class MucEngine
             MmlDatum[] compiled = compiler.Compile(input, openFile);
             CompilerInfo info = compiler.GetCompilerInfo();
             if (info?.warningList != null)
-                foreach (var w in info.warningList) result.Warnings.Add(new(w.Item1, w.Item2, w.Item3));
+                foreach (var w in info.warningList) result.Warnings.Add(new(w.Item1, w.Item2, w.Item3, IdentifyCode(w.Item3)));
             if (info?.errorList != null)
-                foreach (var e in info.errorList) result.Errors.Add(new(e.Item1, e.Item2, e.Item3));
+                foreach (var e in info.errorList) result.Errors.Add(new(e.Item1, e.Item2, e.Item3, IdentifyCode(e.Item3)));
             if (compiled == null && result.Errors.Count == 0)
                 result.Errors.Add(new(-1, -1, "MUCOM88 compilation failed."));
             if (result.Errors.Count == 0)
@@ -121,6 +159,28 @@ public static class MucEngine
             result.Errors.Add(new(-1, -1, ex.Message));
         }
         return result;
+    }
+
+    // Some failures (a crash on l0, an unexpected character) come with no position at all.
+    // Find the first line that triggers the same message by compiling the song with every
+    // later line blanked, binary-searching on how many lines are kept. Returns the 1-based
+    // line, or 0 if the failure cannot be reproduced that way.
+    public static int LocateFailure(string text, string message, Func<string, Stream> openFile)
+    {
+        string[] lines = (text ?? "").Split('\n');
+        bool Fails(int kept)
+        {
+            string partial = string.Join("\n", lines.Select((l, i) => i < kept ? l : ""));
+            return Compile(ShiftJis.GetBytes(partial), openFile).Errors.Any(e => e.Text == message);
+        }
+        if (lines.Length == 0 || !Fails(lines.Length)) return 0;
+        int lo = 1, hi = lines.Length;
+        while (lo < hi)
+        {
+            int mid = (lo + hi) / 2;
+            if (Fails(mid)) hi = mid; else lo = mid + 1;
+        }
+        return lo;
     }
 
     // Copied from MDPlayer4Mac's MucomDotNET: the upstream compiler only recognizes track
