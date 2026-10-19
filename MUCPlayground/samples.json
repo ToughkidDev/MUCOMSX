@@ -160,5 +160,111 @@
    "07 Extend.muc",
    "08 Game Over.muc"
   ]
+ },
+ {
+  "name": "ACTRAISER_MML",
+  "dir": "../Samples/Muc/YuzoKoshiro/ACTRAISER_MML/",
+  "songs": [
+   "gh002.muc",
+   "gh011.muc",
+   "gh029.muc",
+   "stg001.muc"
+  ]
+ },
+ {
+  "name": "ALGARNA_MML",
+  "dir": "../Samples/Muc/YuzoKoshiro/ALGARNA_MML/",
+  "songs": [
+   "arg006.muc",
+   "arg007.muc",
+   "arg011.muc",
+   "arg014.muc"
+  ]
+ },
+ {
+  "name": "BARE1_MML",
+  "dir": "../Samples/Muc/YuzoKoshiro/BARE1_MML/",
+  "songs": [
+   "stk004.muc",
+   "stk013.muc",
+   "stk020.muc",
+   "stk023.muc",
+   "stk027.muc"
+  ]
+ },
+ {
+  "name": "BARE2_MML",
+  "dir": "../Samples/Muc/YuzoKoshiro/BARE2_MML/",
+  "songs": [
+   "bare03.muc",
+   "bare04.muc",
+   "bare09.muc",
+   "bare12.muc",
+   "bare16.muc",
+   "bare21.muc",
+   "bare75.muc"
+  ]
+ },
+ {
+  "name": "BOSCONIAN_YK2_MML",
+  "dir": "../Samples/Muc/YuzoKoshiro/BOSCONIAN_YK2_MML/",
+  "songs": [
+   "bos010.muc",
+   "bos011.muc"
+  ]
+ },
+ {
+  "name": "Etrian_Odyssey",
+  "dir": "../Samples/Muc/YuzoKoshiro/Etrian_Odyssey/",
+  "songs": [
+   "sq1_103.muc",
+   "sq1_104.muc",
+   "sq1_112.muc",
+   "sq1_115.muc",
+   "sq1_out06.muc"
+  ]
+ },
+ {
+  "name": "MISTY_BLUE_MML",
+  "dir": "../Samples/Muc/YuzoKoshiro/MISTY_BLUE_MML/",
+  "songs": [
+   "disco1.muc",
+   "disco3.muc",
+   "disco4.muc",
+   "hrock1.muc"
+  ]
+ },
+ {
+  "name": "SLAP_FIGHT_MD_MML",
+  "dir": "../Samples/Muc/YuzoKoshiro/SLAP_FIGHT_MD_MML/",
+  "songs": [
+   "slp005b.muc",
+   "slp010.muc",
+   "slp020.muc"
+  ]
+ },
+ {
+  "name": "THE_SCHEME_MML",
+  "dir": "../Samples/Muc/YuzoKoshiro/THE_SCHEME_MML/",
+  "songs": [
+   "pcmt12.muc",
+   "pcmt13.muc",
+   "pcmt16.muc",
+   "pcmt16d2.muc",
+   "pcmt17.muc",
+   "pcmt18.muc",
+   "pcmt20.muc",
+   "pcmt31.muc"
+  ]
+ },
+ {
+  "name": "THE_SUPER_SHINOBI_MML",
+  "dir": "../Samples/Muc/YuzoKoshiro/THE_SUPER_SHINOBI_MML/",
+  "songs": [
+   "sin002.muc",
+   "sin008.muc",
+   "sin013.muc",
+   "sin014.muc"
+  ]
  }
 ]

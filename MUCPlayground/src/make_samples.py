@@ -17,6 +17,8 @@ for system in sorted(os.listdir(root)):
         continue
     for game in sorted(os.listdir(system_dir)):
         game_dir = os.path.join(system_dir, game)
+        if not os.path.isdir(game_dir):   # notes such as a licence text next to the folders
+            continue
         songs = sorted(f for f in os.listdir(game_dir) if f.lower().endswith(".muc"))
         if songs:
             groups.append({
