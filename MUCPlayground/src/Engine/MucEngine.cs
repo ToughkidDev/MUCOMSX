@@ -239,9 +239,25 @@ public sealed class MucPlayer
     public readonly List<int> Trace = new();
     readonly Dictionary<int, long> lastPosition = new();
 
+    // Every chip write while playing, for the page's channel view: pairs of frame and
+    // VGM command << 24 | port << 16 | address << 8 | value (port is only used for SCC).
+    // Not kept while exporting.
+    public readonly List<int> ChipLog = new();
+
+    // The emulators' live output levels for MDPlayer4Mac's OPNA/OPNB meters, sampled while
+    // rendering: groups of frame, VGM command of the chip (0x56 YM2608, 0x58 YM2610), chip
+    // id, key mask (rhythm or ADPCM-A), then the left and right levels of sources 1-4
+    // (FM, SSG, rhythm / ADPCM-A, ADPCM / ADPCM-B).
+    public readonly List<int> VisLog = new();
+    MDSound.ym2608 opna;
+    MDSound.ym2610 opnb;
+    readonly List<(int Command, int Id)> visChips = new();
+
     public bool Stopped { get; private set; }
     public string Error { get; private set; } = "";
     public string Chips { get; private set; } = "";
+    // The chips in VGM terms for the channel view: "type:id:clock" joined by ';'.
+    public string ChipList { get; private set; } = "";
     public string Title { get; private set; } = "";
     public string Composer { get; private set; } = "";
     public int LoopCount => driver == null ? 0 : Math.Max(0, driver.GetNowLoopCounter());
@@ -261,6 +277,9 @@ public sealed class MucPlayer
         frame = 0;
         Trace.Clear();
         lastPosition.Clear();
+        ChipLog.Clear();
+        VisLog.Clear();
+        visChips.Clear();
         if (!MucEngine.IsMub(mub)) { Fail("Not a MUB."); return false; }
 
         try { msx = MsxMubProfile.HasMagic(mub) ? MsxMubProfile.Parse(mub) : null; }
@@ -268,8 +287,8 @@ public sealed class MucPlayer
 
         bool[] used = msx == null ? GetUsedChips(mub)
             : new[] { msx.UsesOpna || msx.SccSsg, false, false, false, false };
-        MDSound.ym2608 ym2608 = new();
-        MDSound.ym2610 ym2610 = new();
+        MDSound.ym2608 ym2608 = opna = new();
+        MDSound.ym2610 ym2610 = opnb = new();
         List<MDSound.MDSound.Chip> chips = new();
         List<string> names = new();
         if (used[0]) { chips.Add(Ym2608(ym2608, 0)); names.Add("YM2608"); }
@@ -322,6 +341,21 @@ public sealed class MucPlayer
         mds = new MDSound.MDSound(MucEngine.SampleRate, 2048, null);
         mds.Init(MucEngine.SampleRate, 2048, chips.ToArray());
         Chips = string.Join(" + ", names);
+        foreach (MDSound.MDSound.Chip c in chips)
+        {
+            if (c.type == MDSound.MDSound.enmInstrumentType.YM2608) visChips.Add((0x56, c.ID));
+            if (c.type == MDSound.MDSound.enmInstrumentType.YM2610) visChips.Add((0x58, c.ID));
+        }
+        ChipList = string.Join(";", chips.Select(c => c.type switch
+        {
+            MDSound.MDSound.enmInstrumentType.YM2608 => $"YM2608:{c.ID}:{MucEngine.OpnaClock}",
+            MDSound.MDSound.enmInstrumentType.YM2610 => $"YM2610:{c.ID}:{MucEngine.OpnbClock}",
+            MDSound.MDSound.enmInstrumentType.YM2151 => $"YM2151:{c.ID}:{c.Clock}",
+            MDSound.MDSound.enmInstrumentType.YM2413emu => $"YM2413:{c.ID}:{VgmWriter.OplClock}",
+            MDSound.MDSound.enmInstrumentType.AY8910 => $"AY8910:{c.ID}:{VgmWriter.PsgClock}",
+            MDSound.MDSound.enmInstrumentType.K051649 => $"K051649:{c.ID}:{VgmWriter.SccClock}",
+            _ => "",
+        }).Where(t => t != ""));
         if (vgm != null)
         {
             foreach (MDSound.MDSound.Chip c in chips)
@@ -387,7 +421,36 @@ public sealed class MucPlayer
     public int Render(short[] buffer, int offset, int count)
     {
         if (mds == null) return 0;
-        return mds.Update(buffer, offset, count, OneFrame);
+        if (vgm != null || visChips.Count == 0) return mds.Update(buffer, offset, count, OneFrame);
+        // In slices, so the level meters are sampled about every 12 ms.
+        int done = 0;
+        while (done < count)
+        {
+            int n = mds.Update(buffer, offset + done, Math.Min(1024, count - done), OneFrame);
+            if (n <= 0) break;
+            done += n;
+            LogLevels();
+        }
+        return done;
+    }
+
+    void LogLevels()
+    {
+        foreach ((int command, int id) in visChips)
+        {
+            int[][][] levels = command == 0x56 ? opna.visVolume : opnb.visVolume;
+            if (levels == null || id >= levels.Length || levels[id] == null || levels[id].Length < 5) continue;
+            int[][] l = levels[id];
+            VisLog.Add((int)frame);
+            VisLog.Add(command);
+            VisLog.Add(id);
+            VisLog.Add(command == 0x56 ? opna.GetRhythmKeyMask((byte)id) : opnb.GetAdpcmAKeyMask((byte)id));
+            for (int source = 1; source <= 4; source++)
+            {
+                VisLog.Add(l[source][0]);
+                VisLog.Add(l[source][1]);
+            }
+        }
     }
 
     void OneFrame()
@@ -483,30 +546,35 @@ public sealed class MucPlayer
     {
         mds.WriteYM2608((byte)chip, (byte)port, (byte)address, (byte)value);
         vgm?.Write(frame, chip == 0 ? 0x56 + port : 0xa6 + port, address, value);
+        if (port == 0 || address != 0x08) Log(chip == 0 ? 0x56 + port : 0xa6 + port, 0, address, value);
     }
 
     void Opnb(int chip, int port, int address, int value)
     {
         mds.WriteYM2610((byte)chip, (byte)port, (byte)address, (byte)value);
         vgm?.Write(frame, chip == 0 ? 0x58 + port : 0xa8 + port, address, value);
+        Log(chip == 0 ? 0x58 + port : 0xa8 + port, 0, address, value);
     }
 
     void Opm(int address, int value)
     {
         mds.WriteYM2151(0, (byte)address, (byte)value);
         vgm?.Write(frame, 0x54, address, value);
+        Log(0x54, 0, address, value);
     }
 
     void Opll(int address, int value)
     {
         mds.WriteYM2413emu(0, (byte)address, (byte)value);
         vgm?.Write(frame, 0x51, address, value);
+        Log(0x51, 0, address, value);
     }
 
     void Psg(int address, int value)
     {
         mds.WriteAY8910(0, (byte)address, (byte)value);
         vgm?.Write(frame, 0xa0, address, value);
+        Log(0xa0, 0, address, value);
     }
 
     void WriteScc(int port, int address, int value)
@@ -514,6 +582,14 @@ public sealed class MucPlayer
         mds.WriteK051649(0, port * 2, (byte)address);
         mds.WriteK051649(0, port * 2 + 1, (byte)value);
         vgm?.WriteScc(frame, port, address, value);
+        Log(0xd2, port, address, value);
+    }
+
+    void Log(int command, int port, int address, int value)
+    {
+        if (vgm != null) return;
+        ChipLog.Add((int)frame);
+        ChipLog.Add(command << 24 | (port & 0xff) << 16 | (address & 0xff) << 8 | (value & 0xff));
     }
 
     void Adpcm(int chip, byte[] data, int type)

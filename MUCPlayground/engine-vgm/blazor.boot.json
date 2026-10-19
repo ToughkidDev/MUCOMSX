@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "VgmPlaygroundWeb",
   "resources": {
-    "hash": "sha256-Va0oS8yrevDuaJI5pQrvzIVeHCGyc55g0XZCQMUZS+w=",
+    "hash": "sha256-70+croA26U3dH4tdF1Bq4fLkZY48I8lPPw7F3/27GTI=",
     "jsModuleNative": {
       "dotnet.native.8.0.32.f8n5st0m1j.js": "sha256-N8TMpPrNpWVuTlWm82pBrmGIip8eMzsK8FitjEPiQW4="
     },
@@ -13,7 +13,7 @@
     },
     "assembly": {
       "MDPlayerCore.wasm": "sha256-0jdJerKWuDBLMJvJ4wGxw7jpoM/uu9qKYO3huGIB0cE=",
-      "MDSound.wasm": "sha256-UaEfiXWR+oOg7gM1W0PRB6ywbpyMUSNxwSEJgwYO3+0=",
+      "MDSound.wasm": "sha256-ZvGJvwON4Y4lygPH+3645YTPzmDkHyTCiKTZzCvOE+k=",
       "System.Collections.NonGeneric.wasm": "sha256-trPe82X+uoqmhO8ENt4rRync8jnYIbtKxLviAGk3NHk=",
       "System.Collections.Specialized.wasm": "sha256-li8fZPEm4E6I51bJEFq6dbQXL7ThGjxrT9NL3T/X/RU=",
       "System.Collections.wasm": "sha256-dq9sjvIRmRKU94j/olRTtG+5hHFUAL6MVL7q7X37GcE=",
@@ -23,7 +23,7 @@
       "System.Diagnostics.TraceSource.wasm": "sha256-vC5FQlJUIGQHpFGv8UJCWO5dIr+tlYcQ4yczgcOvFaU=",
       "System.IO.Compression.wasm": "sha256-vBCtr5D/azESyiBTFh15stCiscl4KdryagcW1lJ9CZc=",
       "System.Linq.Expressions.wasm": "sha256-x6bTJMQ1m3etJ38AxiZ/2k9+ZbIyG+aUufxtVskqwLg=",
-      "System.Linq.wasm": "sha256-AxsIZN84+znW9bu6oxZr1ZVgYmTDIudcHOfuUwJFzTs=",
+      "System.Linq.wasm": "sha256-SwUG6Pvfy705gIthVugYu3uYOeQfDoCmSLkmmIdcGok=",
       "System.Memory.wasm": "sha256-xR9NzRt9RvkDqaspYJj3xV47G14LveVvL0YI8ye69eU=",
       "System.Net.Http.wasm": "sha256-U3RgUlodsE9dtesPbELaFoEF53BAY6GWnXt234lHHvE=",
       "System.Net.Primitives.wasm": "sha256-5tIWG0o4mB8pO2jUZYzpF+LMwLha9PCYiIJ7qyYP1wM=",
@@ -39,7 +39,7 @@
       "System.Text.Json.wasm": "sha256-VFKH0HYOevSCPH5GbOiK4YEX/4+2dSw5dq3AaUuLpWY=",
       "System.Text.RegularExpressions.wasm": "sha256-990tjvQxMqhpms2xzz/X/0uanshJ1BlKLJms6/pIUqg=",
       "System.Threading.wasm": "sha256-zkNtHgV+ouSv5IbzDBLSp2Snuo85VNnn5OrUHLceICw=",
-      "VgmPlaygroundWeb.wasm": "sha256-Q8loLz7Aoe46EiJVTIqwA/ij51q9I5B8PGVXBEXvVq4="
+      "VgmPlaygroundWeb.wasm": "sha256-ggjtxBlUF25Nxyirki/fL4MVT8eQ5k5nRy3eL9fkL5g="
     }
   },
   "cacheBootResources": true,

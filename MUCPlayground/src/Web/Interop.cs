@@ -91,6 +91,7 @@ public static partial class Interop
             w.WriteBoolean("ok", ok);
             w.WriteString("error", ok ? "" : player.Error);
             w.WriteString("chips", player.Chips);
+            w.WriteString("chipList", player.ChipList);
             w.WriteString("title", player.Title);
             w.WriteString("composer", player.Composer);
         });
@@ -106,6 +107,7 @@ public static partial class Interop
             w.WriteBoolean("ok", ok);
             w.WriteString("error", compiled == null ? "Nothing compiled." : player.Error);
             w.WriteString("chips", player.Chips);
+            w.WriteString("chipList", player.ChipList);
             w.WriteString("title", player.Title);
             w.WriteString("composer", player.Composer);
         });
@@ -131,6 +133,26 @@ public static partial class Interop
         if (player == null || player.Trace.Count == 0) return new int[0];
         int[] events = player.Trace.ToArray();
         player.Trace.Clear();
+        return events;
+    }
+
+    // Chip writes since the last call: pairs of frame and packed write (see MucPlayer.ChipLog).
+    [JSExport]
+    public static int[] TakeChipLog()
+    {
+        if (player == null || player.ChipLog.Count == 0) return new int[0];
+        int[] events = player.ChipLog.ToArray();
+        player.ChipLog.Clear();
+        return events;
+    }
+
+    // Live level samples since the last call (see MucPlayer.VisLog).
+    [JSExport]
+    public static int[] TakeLevels()
+    {
+        if (player == null || player.VisLog.Count == 0) return new int[0];
+        int[] events = player.VisLog.ToArray();
+        player.VisLog.Clear();
         return events;
     }
 

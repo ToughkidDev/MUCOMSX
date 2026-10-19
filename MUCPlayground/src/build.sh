@@ -29,6 +29,8 @@ trap 'rm -rf "$out"' EXIT
 # Publishes a browser project and copies only what the browser loads (no precompressed
 # copies or debug symbols) into MUCPlayground/<folder>.
 publish() {
+  # A stale incremental build can leave the trimmed assemblies inconsistent, so start clean.
+  rm -rf "$here"/*/obj "$here"/*/bin
   dotnet publish "$here/$1" -c Release -p:Mdp4MacDir="$mdp" -o "$out/$2"
   rm -rf "$playground/$2"
   mkdir -p "$playground/$2"

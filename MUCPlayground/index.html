@@ -36,6 +36,7 @@ a:hover{text-decoration:underline}
 button,select,input{font:inherit;color:inherit}
 kbd{font-family:var(--mono);font-size:.74em;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;
     padding:0 .35em;background:var(--panel);color:var(--muted);white-space:nowrap}
+[hidden]{display:none!important}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* ---------- header ---------- */
@@ -60,7 +61,7 @@ h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
 .btn[disabled]{opacity:.5;cursor:default}
 .clock{font-family:var(--mono);font-size:.95rem;min-width:6em;color:var(--muted)}
 .vol{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem}
-.vol input{width:78px;accent-color:var(--accent)}
+.vol input{width:64px;accent-color:var(--accent)}
 .vol output{font-family:var(--mono);font-size:.8rem;min-width:2.6em;color:var(--muted)}
 .spacer{flex:1}
 .save-group{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg);font-size:.9rem}
@@ -69,15 +70,32 @@ h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
 .save-group button:last-child{border-right:0}
 .save-group button:hover{color:var(--accent2);background:var(--panel)}
 .save-group button:focus-visible{outline:2px solid var(--accent2);outline-offset:-2px}
-select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;font-size:.9rem;max-width:210px}
+select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;font-size:.9rem;max-width:170px}
 .status{width:100%;font-size:.85rem;color:var(--muted);min-height:1.3em}
 .status.err{color:var(--accent)}
 
 /* ---------- layout ---------- */
 .layout{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 340px;grid-template-rows:minmax(0,1fr);min-height:0}
 .editor-wrap{display:flex;flex-direction:column;min-width:0;min-height:420px;border-right:1px solid var(--line)}
-.editor{position:relative;flex:1;display:flex;background:var(--code-bg);overflow:hidden;
-        --lh:20px;font-family:var(--mono);font-size:13.5px;line-height:var(--lh)}
+.panes{position:relative;flex:1;display:flex;min-height:0;--split:50%;
+       --lh:20px;font-family:var(--mono);font-size:13.5px;line-height:var(--lh)}
+.panes.split-stack{flex-direction:column}
+.editor{position:relative;flex:1 1 0;display:flex;background:var(--code-bg);overflow:hidden;min-width:0;min-height:0}
+.panes.split-side #paneA,.panes.split-stack #paneA{flex:0 0 var(--split)}
+.splitter{flex:0 0 6px;background:var(--line);cursor:col-resize;touch-action:none}
+.panes.split-stack .splitter{cursor:row-resize}
+.splitter:hover,.splitter.drag{background:var(--accent2)}
+.editor.focused .gutter{color:var(--ink)}
+/* Channel view: MDPlayer4Mac's chip panels on black. */
+.chview{flex:1;overflow:auto;background:#000;padding:4px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-height:0}
+.cv-screen{display:block;max-width:100%;height:auto;image-rendering:pixelated;border:0;border-radius:0;background:#000;flex:none}
+.cv-empty,.cv-other{margin:12px;color:#9fa8ff;font-family:var(--mono);font-size:.82rem}
+.tool-group{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.tool-group button{border:0;border-right:1px solid var(--line);background:transparent;padding:0 7px;cursor:pointer;font:inherit;color:var(--muted);line-height:1.6}
+.tool-group button:last-child{border-right:0}
+.tool-group button[aria-pressed="true"]{background:var(--accent2);color:#fff}
+.editor-foot .grp{display:inline-flex;align-items:center;gap:6px}
+.btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
 .gutter{margin:0;padding:12px 10px 12px 0;min-width:52px;text-align:right;color:var(--muted);background:var(--gutter);
         border-right:1px solid var(--line);user-select:none;overflow:hidden;white-space:pre;font:inherit;line-height:inherit;opacity:.85}
 .gutter span{display:block;padding-left:8px}
@@ -117,7 +135,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .ac kbd{font-size:.7rem}
 .editor-foot label{margin-left:auto;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
 .editor-foot input{accent-color:var(--accent);margin:0}
-.editor-foot{display:flex;gap:16px;padding:5px 14px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--line);background:var(--panel)}
+.editor-foot{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;padding:5px 14px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--line);background:var(--panel)}
 
 /* ---------- side panel ---------- */
 .side{overflow:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
@@ -131,7 +149,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .parts button[aria-pressed="true"]{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
 .parts b{color:var(--c);font-family:var(--mono)}
 .parts code{font-family:var(--mono);font-size:.78rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:7em}
-canvas{display:block;width:100%;height:72px;border-radius:8px;background:var(--bg);border:1px solid var(--line)}
+#scope{display:block;width:100%;height:72px;border-radius:8px;background:var(--bg);border:1px solid var(--line)}
 .msgs{list-style:none;margin:0;padding:0;font-size:.85rem;max-height:420px;overflow:auto}
 .msgs li{padding:8px 10px;border-radius:8px;margin-bottom:6px;cursor:default;border-left:3px solid transparent}
 .msgs li.err{border-left-color:var(--accent)}
@@ -223,6 +241,7 @@ footer p{margin:2px 0}
   <button class="btn primary" id="play" type="button"><span data-i18n="play">▶ Play</span> <kbd>Ctrl+Enter</kbd></button>
   <button class="btn" id="stop" type="button"><span data-i18n="stop">■ Stop</span> <kbd>Esc</kbd></button>
   <span class="clock" id="clock" aria-live="off">0:00.0</span>
+  <button class="btn" id="viewToggle" type="button" aria-pressed="false" data-i18n-title="channelViewTip"><span data-i18n="channelView">▦ Channels</span></button>
   <label class="vol"><span data-i18n="volume">Volume</span> <input id="volume" type="range" min="0" max="100" value="70"></label>
   <label class="vol"><span data-i18n="fontSize" title="Editor text size">Text</span> <input id="fontSize" title="Editor text size" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
   <span class="spacer"></span>
@@ -243,18 +262,39 @@ footer p{margin:2px 0}
 
 <main class="layout">
   <section class="editor-wrap" aria-label="Editor">
-    <div class="editor">
-      <pre class="gutter" id="gutter" aria-hidden="true"></pre>
-      <div class="code-area">
-        <div class="marks" id="marks" aria-hidden="true"></div>
-        <div class="trace" id="trace" aria-hidden="true"></div>
-        <pre class="hl" aria-hidden="true"><code id="hl"></code></pre>
-        <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="MUC source"></textarea>
-        <div class="ac" id="ac" hidden><ul role="listbox" aria-label="Suggestions"></ul><p></p></div>
+    <div class="panes" id="panes">
+      <div class="editor" id="paneA">
+        <pre class="gutter" aria-hidden="true"></pre>
+        <div class="code-area">
+          <div class="marks" aria-hidden="true"></div>
+          <div class="trace" aria-hidden="true"></div>
+          <pre class="hl" aria-hidden="true"><code></code></pre>
+          <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="MUC source"></textarea>
+          <div class="ac" id="ac" hidden><ul role="listbox" aria-label="Suggestions"></ul><p></p></div>
+        </div>
+      </div>
+      <div class="splitter" id="splitter" role="separator" hidden></div>
+      <div class="editor" id="paneB" hidden>
+        <pre class="gutter" aria-hidden="true"></pre>
+        <div class="code-area">
+          <div class="marks" aria-hidden="true"></div>
+          <div class="trace" aria-hidden="true"></div>
+          <pre class="hl" aria-hidden="true"><code></code></pre>
+          <textarea id="code2" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="MUC source (second view)"></textarea>
+        </div>
       </div>
     </div>
-    <div class="editor-foot"><span id="cursor">Ln 1, Col 1</span><span id="bytes"></span>
-      <span><kbd>Ctrl+Space</kbd> <span data-i18n="hintSuggest">suggestions</span></span>
+    <div class="chview" id="chview" hidden></div>
+    <div class="editor-foot">
+      <span class="grp ed"><span data-i18n="split">Split</span>
+        <span class="tool-group" role="group" id="splitModes">
+          <button type="button" data-split="off" aria-pressed="true" data-i18n-title="splitOff">▯</button>
+          <button type="button" data-split="side" aria-pressed="false" data-i18n-title="splitSide">◫</button>
+          <button type="button" data-split="stack" aria-pressed="false" data-i18n-title="splitStack">⊟</button>
+        </span></span>
+      <span class="ed" id="cursor">Ln 1, Col 1</span><span class="ed" id="bytes"></span>
+      <span class="ed"><kbd>Ctrl+Space</kbd> <span data-i18n="hintSuggest">suggestions</span></span>
+      <span class="grp cv" hidden><span data-i18n="zoom">Size</span> <button type="button" class="btn small" id="cvZoom">75%</button></span>
       <label><input type="checkbox" id="follow" checked> <span data-i18n="follow">Follow playback</span></label></div>
   </section>
 

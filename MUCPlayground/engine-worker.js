@@ -65,6 +65,15 @@ async function play(id, start) {
       const events = Int32Array.from(trace);
       postMessage({ type: 'trace', session: id, events }, [events.buffer]);
     }
+    // Chip register writes and live output levels, for the channel view.
+    for (const [type, take] of [['chips', E.TakeChipLog], ['levels', E.TakeLevels]]) {
+      if (!take) continue;
+      const log = take();
+      if (log.length) {
+        const events = Int32Array.from(log);
+        postMessage({ type, session: id, events }, [events.buffer]);
+      }
+    }
     const status = JSON.parse(E.Status());
     if (status.loop !== loop) {
       loop = status.loop;

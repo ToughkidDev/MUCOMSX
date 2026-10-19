@@ -3,12 +3,15 @@
 
 import { Highlighter, suggestionsAt, PART_LETTERS, PART_COLORS } from './editor-assist.js';
 import { explain, readableText } from './diagnostics.js';
+import { ChannelView, SCALES, gunzipIfNeeded } from './chview/channel-view.js';
 
 const SAMPLE_RATE = 44100;
 const STORE_SOURCE = 'mucplayground.source';
 const STORE_LANG = 'mucplayground.lang';
 const STORE_VOLUME = 'mucplayground.volume';
 const STORE_FONT = 'mucplayground.fontSize';
+const STORE_SPLIT = 'mucplayground.split';
+const STORE_ZOOM = 'mucplayground.channelZoom';
 
 const T = {
   en: {
@@ -47,6 +50,9 @@ const T = {
     loadingVgm: 'Loading the VGM player (about 6.7 MB, first time only)…', vgmFailed: 'The VGM player could not be loaded: ',
     clickToStart: 'Click anywhere on the page to start the sound (the browser needs a click first).',
     unsupported: (n) => `${n} is not a file this player opens.`, playingFile: (n) => `Playing ${n}`,
+    channelView: '▦ Channels', channelViewTip: 'Channel view (MDPlayer4Mac style) / editor', split: 'Split', splitOff: 'One view', splitSide: 'Two views, side by side',
+    splitStack: 'Two views, one above the other', zoom: 'Size',
+    cvEmpty: 'Play a song to see its chips here, as in MDPlayer.', cvOther: 'No channel view for: ',
   },
   ko: {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
@@ -84,6 +90,9 @@ const T = {
     loadingVgm: 'VGM 플레이어를 불러오는 중 (약 6.7 MB, 처음 한 번만)…', vgmFailed: 'VGM 플레이어를 불러오지 못했습니다: ',
     clickToStart: '페이지 아무 곳이나 클릭하면 소리가 나옵니다 (브라우저가 먼저 클릭을 요구합니다).',
     unsupported: (n) => `${n}은(는) 열 수 없는 파일입니다.`, playingFile: (n) => `${n} 재생 중`,
+    channelView: '▦ 채널 뷰', channelViewTip: '채널 뷰(MDPlayer4Mac 방식) / 에디터 전환', split: '분할', splitOff: '하나로 보기', splitSide: '좌우로 나눠 보기',
+    splitStack: '위아래로 나눠 보기', zoom: '크기',
+    cvEmpty: '곡을 재생하면 MDPlayer처럼 칩별 채널이 여기에 표시됩니다.', cvOther: '채널 뷰가 없는 칩: ',
   },
   ja: {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
@@ -121,11 +130,13 @@ const T = {
     loadingVgm: 'VGMプレーヤーを読み込み中（約6.7 MB、初回のみ）…', vgmFailed: 'VGMプレーヤーを読み込めませんでした: ',
     clickToStart: 'ページのどこかをクリックすると音が出ます（ブラウザが最初のクリックを必要とします）。',
     unsupported: (n) => `${n}は開けないファイルです。`, playingFile: (n) => `${n}を再生中`,
+    channelView: '▦ チャンネル', channelViewTip: 'チャンネルビュー（MDPlayer4Mac風）/ エディタの切り替え', split: '分割', splitOff: '1画面', splitSide: '左右に分割',
+    splitStack: '上下に分割', zoom: 'サイズ',
+    cvEmpty: '曲を再生すると、MDPlayerのようにチップごとのチャンネルがここに表示されます。', cvOther: 'チャンネルビューのないチップ: ',
   },
 };
 
 const $ = (id) => document.getElementById(id);
-const code = $('code'), gutter = $('gutter'), marks = $('marks');
 const statusEl = $('status'), clockEl = $('clock');
 
 // ---------- small helpers ----------
@@ -161,6 +172,10 @@ function download(name, bytes, type) {
 function applyLanguage() {
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
+  $('chview').dataset.empty = t('cvEmpty');
+  $('chview').dataset.other = t('cvOther');
+  if (!channelView.panels.length && !$('chview').querySelector('canvas')) channelView.empty();
   document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
   buildExamples();
   renderFiles();
@@ -174,6 +189,28 @@ document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('cli
 }));
 
 // ---------- editor ----------
+// The editor can show the text twice (side by side or one above the other) to work on two
+// places of a long song at once. Each pane draws its own line numbers, colouring, marks
+// and playback highlights; typing in either changes both. `pane` is the one last used.
+class Pane {
+  constructor(root) {
+    this.root = root;
+    this.code = root.querySelector('textarea');
+    this.gutter = root.querySelector('.gutter');
+    this.marks = root.querySelector('.marks');
+    this.trace = root.querySelector('.trace');
+    this.area = root.querySelector('.code-area');
+    this.highlighter = new Highlighter(root.querySelector('.hl code'));
+    this.holdUntil = 0;     // playback following waits while you scroll or type here
+  }
+  get visible() { return !this.root.hidden; }
+}
+const panes = [new Pane($('paneA')), new Pane($('paneB'))];
+let pane = panes[0];
+const code = panes[0].code;   // both panes hold the same text; this one always exists
+const shownPanes = () => panes.filter((p) => p.visible);
+let splitMode = 'off';
+
 let markRows = new Map();   // row -> 'err' | 'warn'
 let markSpots = [];         // { row, col, kind } for the wavy underline
 
@@ -186,45 +223,49 @@ function renderGutter() {
     const m = markRows.get(i);
     html += m ? `<span class="${m}">${i}</span>` : `<span>${i}</span>`;
   }
-  gutter.innerHTML = html;
+  for (const p of shownPanes()) p.gutter.innerHTML = html;
   renderMarks();
 }
 
 function renderMarks() {
-  const lh = parseFloat(getComputedStyle(code).lineHeight) || 20;
-  const pad = parseFloat(getComputedStyle(code).paddingTop) || 12;
-  let html = '';
-  for (const [row, kind] of markRows) {
-    html += `<div class="${kind}" style="top:${pad + (row - 1) * lh - code.scrollTop}px"></div>`;
+  for (const p of shownPanes()) {
+    const style = getComputedStyle(p.code);
+    const lh = parseFloat(style.lineHeight) || 20;
+    const pad = parseFloat(style.paddingTop) || 12;
+    let html = '';
+    for (const [row, kind] of markRows) {
+      html += `<div class="${kind}" style="top:${pad + (row - 1) * lh - p.code.scrollTop}px"></div>`;
+    }
+    // A wavy underline under the word the compiler points at (its column counts Shift-JIS bytes).
+    for (const m of markSpots) {
+      const line = lines[m.row - 1];
+      if (line === undefined) continue;
+      const start = charIndex(line, Math.max(0, m.col - 1));
+      const word = /^\S*/.exec(line.slice(start))[0] || ' ';
+      const pt = textPoint(m.row, start, p);
+      const w = Math.max(measure.measureText(word).width, 8);
+      html += `<span class="squiggle ${m.kind}" style="left:${pt.x}px;top:${pt.y + lh - 4}px;width:${w}px"></span>`;
+    }
+    p.marks.innerHTML = html;
+    p.gutter.scrollTop = p.code.scrollTop;
   }
-  // A wavy underline under the word the compiler points at (its column counts Shift-JIS bytes).
-  for (const m of markSpots) {
-    const line = lines[m.row - 1];
-    if (line === undefined) continue;
-    const start = charIndex(line, Math.max(0, m.col - 1));
-    const word = /^\S*/.exec(line.slice(start))[0] || ' ';
-    const p = textPoint(m.row, start);
-    const w = Math.max(measure.measureText(word).width, 8);
-    html += `<span class="squiggle ${m.kind}" style="left:${p.x}px;top:${p.y + lh - 4}px;width:${w}px"></span>`;
-  }
-  marks.innerHTML = html;
-  gutter.scrollTop = code.scrollTop;
 }
 
-// Pixel position of a character in the editor, relative to the code area.
-function textPoint(row, charIdx) {
-  const style = getComputedStyle(code);
+// Pixel position of a character in a pane, relative to its code area.
+function textPoint(row, charIdx, p = pane) {
+  const style = getComputedStyle(p.code);
   measure.font = style.font;
   const lh = parseFloat(style.lineHeight) || 20;
   const line = lines[row - 1] || '';
   return {
-    x: (parseFloat(style.paddingLeft) || 14) + measure.measureText(expandTabs(line.slice(0, charIdx))).width - code.scrollLeft,
-    y: (parseFloat(style.paddingTop) || 12) + (row - 1) * lh - code.scrollTop,
+    x: (parseFloat(style.paddingLeft) || 14) + measure.measureText(expandTabs(line.slice(0, charIdx))).width - p.code.scrollLeft,
+    y: (parseFloat(style.paddingTop) || 12) + (row - 1) * lh - p.code.scrollTop,
     lh,
   };
 }
 
 function updateCursor() {
+  const code = pane.code;
   const before = code.value.slice(0, code.selectionStart);
   const row = before.split('\n').length;
   const col = before.length - before.lastIndexOf('\n');
@@ -234,6 +275,8 @@ function updateCursor() {
 function updateBytes() { $('bytes').textContent = t('bytes', new Blob([code.value]).size); }
 
 function goToRow(row, col = 1) {
+  if (viewMode === 'channels') setView('editor');
+  const code = pane.visible ? pane.code : panes[0].code;
   const lines = code.value.split('\n');
   let pos = 0;
   for (let i = 0; i < row - 1 && i < lines.length; i++) pos += lines[i].length + 1;
@@ -246,7 +289,16 @@ function goToRow(row, col = 1) {
 }
 
 let saveTimer = 0, scanTimer = 0;
-code.addEventListener('input', (e) => {
+function onInput(p, e) {
+  // Keep the other pane's text, caret and scroll position as they were.
+  for (const o of panes) {
+    if (o === p || o.code.value === p.code.value) continue;
+    const { scrollTop, scrollLeft, selectionStart, selectionEnd } = o.code;
+    o.code.value = p.code.value;
+    o.code.setSelectionRange(selectionStart, selectionEnd);
+    o.code.scrollTop = scrollTop;
+    o.code.scrollLeft = scrollLeft;
+  }
   lines = code.value.split('\n');
   scheduleHighlight();
   scheduleCheck();
@@ -256,7 +308,7 @@ code.addEventListener('input', (e) => {
   }
   traceStale = true;
   clearTrace();
-  holdFollow();
+  holdFollow(p);
   renderGutter();
   updateBytes();
   clearTimeout(saveTimer);
@@ -264,28 +316,45 @@ code.addEventListener('input', (e) => {
   clearTimeout(scanTimer);
   scanTimer = setTimeout(renderFiles, 400);
   if (current !== 'mine') { current = 'mine'; $('examples').value = 'mine'; }
-});
-code.addEventListener('scroll', () => { renderMarks(); traceDirty = true; highlighter.scroll(code.scrollLeft, code.scrollTop); closeSuggest(); });
-['wheel', 'keydown', 'pointerdown'].forEach((ev) => code.addEventListener(ev, holdFollow));
+}
+for (const p of panes) {
+  p.code.addEventListener('input', (e) => onInput(p, e));
+  p.code.addEventListener('scroll', () => {
+    renderMarks();
+    traceDirty = true;
+    p.highlighter.scroll(p.code.scrollLeft, p.code.scrollTop);
+    if (p === pane) closeSuggest();
+  });
+  ['wheel', 'keydown', 'pointerdown'].forEach((ev) => p.code.addEventListener(ev, () => holdFollow(p)));
+  ['keyup', 'click', 'select'].forEach((ev) => p.code.addEventListener(ev, updateCursor));
+  p.code.addEventListener('focus', () => {
+    if (pane !== p) closeSuggest();
+    pane = p;
+    for (const o of panes) o.root.classList.toggle('focused', o === p && splitMode !== 'off');
+    updateCursor();
+  });
+}
 // Don't lose the last keystrokes to the autosave delay when the tab closes.
 const flushSave = () => { clearTimeout(saveTimer); store.set(STORE_SOURCE, code.value); };
 window.addEventListener('pagehide', flushSave);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
-['keyup', 'click', 'select'].forEach((ev) => code.addEventListener(ev, updateCursor));
 window.addEventListener('resize', renderMarks);
 
 function setSource(text) {
-  code.value = text;
+  for (const p of panes) {
+    p.code.value = text;
+    p.code.scrollTop = 0;
+    p.code.scrollLeft = 0;
+    p.highlighter.scroll(0, 0);
+  }
   lines = text.split('\n');
-  highlighter.render(text);
-  highlighter.scroll(0, 0);
+  renderHighlight();
   markSpots = [];
   scheduleCheck();
   markRows = new Map();
   renderGutter();
   updateBytes();
   updateCursor();
-  code.scrollTop = 0;
   store.set(STORE_SOURCE, text);
   renderFiles();
 }
@@ -607,6 +676,7 @@ function onEngineMessage(m, source) {
       clockFrames = 0;
       clockAt = ctx ? ctx.currentTime : 0;
       clearTrace();
+      startChannelView(m, source);
       break;
     case 'loop':
       if (source === active) loopCount = m.loop;
@@ -627,6 +697,12 @@ function onEngineMessage(m, source) {
     }
     case 'trace':
       if (m.session === traceSession) for (const v of m.events) traceEvents.push(v);
+      break;
+    case 'chips':
+      if (source === cvSource && m.session === cvSession) channelView.push(m.events);
+      break;
+    case 'levels':
+      if (source === cvSource && m.session === cvSession) channelView.pushLevels(m.events);
       break;
     case 'encoded':
       pendingEncodes.get(m.id)?.(new Uint8Array(m.data));
@@ -676,6 +752,7 @@ function onAudioMessage(m, source) {
       showClock(m.frames);
       playing = false;
       clearTrace();
+      channelView.stop();
       setStatus(t('ended'));
     }
   }
@@ -698,7 +775,7 @@ $('volume').addEventListener('input', setVolume);
 // playback highlights, suggestions) reads the editor's font, so it all follows.
 function setFontSize(value) {
   const size = Math.min(24, Math.max(10, Number(value) || 13.5));
-  const editor = document.querySelector('.editor');
+  const editor = $('panes');
   editor.style.fontSize = `${size}px`;
   editor.style.setProperty('--lh', `${Math.round(size * 1.48)}px`);
   $('fontSize').value = size;
@@ -720,6 +797,7 @@ async function play() {
   }
   flushSave();
   stop();
+  if (autoChannels) setView('editor');
   active = 'muc';
   playingName = '';
   underruns = 0;
@@ -739,6 +817,8 @@ function stop() {
   if (playing) setStatus(t('stopped'));
   playing = false;
   clearTrace();
+  channelView.stop();
+  cvSession = -1;
 }
 
 // ---------- playing .mub / .vgm files ----------
@@ -776,11 +856,13 @@ async function playFile(name, data) {
   underruns = 0;
   loopCount = 0;
   showClock(0);
+  setView('channels', true);
   if (kind === 'mub') {
     if (!engineReady) { pendingPlay = false; pendingFile = { name, data }; setStatus(t('loading')); return; }
     active = 'muc';
     worker.postMessage({ type: 'playFile', data: data.slice(0) });
   } else {
+    try { vgmForView = await gunzipIfNeeded(new Uint8Array(data)); } catch { vgmForView = null; }
     bootVgm();
     active = 'vgm';
     if (!vgmReady) { pendingVgm = data.slice(0); return; }
@@ -809,12 +891,14 @@ $('play').addEventListener('click', play);
 $('stop').addEventListener('click', stop);
 
 // ---------- colouring, suggestions and checking while typing ----------
-const highlighter = new Highlighter($('hl'));
 let highlightQueued = false;
+function renderHighlight() {
+  for (const p of shownPanes()) p.highlighter.render(code.value);
+}
 function scheduleHighlight() {
   if (highlightQueued) return;
   highlightQueued = true;
-  requestAnimationFrame(() => { highlightQueued = false; highlighter.render(code.value); });
+  requestAnimationFrame(() => { highlightQueued = false; renderHighlight(); });
 }
 
 let checkTimer = 0, checkId = 0;
@@ -830,6 +914,7 @@ const suggest = { open: false, items: [], index: 0, prefix: '' };
 let suppressSuggest = false;
 
 function refreshSuggest(force) {
+  const code = pane.code;
   const r = suggestionsAt(code.value, code.selectionStart, lang, force);
   if (!r || !r.items.length) { closeSuggest(); return; }
   Object.assign(suggest, { open: true, items: r.items, index: 0, prefix: r.prefix });
@@ -843,7 +928,9 @@ function closeSuggest() {
 }
 
 function renderSuggest() {
+  const code = pane.code;
   const box = $('ac');
+  if (box.parentElement !== pane.area) pane.area.appendChild(box);
   const list = box.querySelector('ul');
   list.innerHTML = '';
   suggest.items.slice(0, 40).forEach((item, i) => {
@@ -871,6 +958,7 @@ function renderSuggest() {
 }
 
 function acceptSuggest() {
+  const code = pane.code;
   const item = suggest.items[suggest.index];
   closeSuggest();
   if (!item) return;
@@ -890,7 +978,7 @@ function acceptSuggest() {
   updateCursor();
 }
 
-code.addEventListener('keydown', (e) => {
+function onEditorKey(e) {
   if ((e.ctrlKey || e.metaKey) && e.code === 'Space') { e.preventDefault(); refreshSuggest(true); return; }
   if (!suggest.open) return;
   const n = Math.min(suggest.items.length, 40);
@@ -906,9 +994,12 @@ code.addEventListener('keydown', (e) => {
   }
   else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeSuggest(); }
   else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') closeSuggest();
-});
-code.addEventListener('blur', closeSuggest);
-code.addEventListener('click', closeSuggest);
+}
+for (const p of panes) {
+  p.code.addEventListener('keydown', onEditorKey);
+  p.code.addEventListener('blur', closeSuggest);
+  p.code.addEventListener('click', closeSuggest);
+}
 document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); play(); }
   else if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveMuc(); }
@@ -933,6 +1024,7 @@ function drawScope() {
     }
     g.stroke();
     updateTrace();
+    if (viewMode === 'channels') channelView.update(playedFrame());
     requestAnimationFrame(frame);
   };
   frame();
@@ -945,7 +1037,7 @@ let lines = [];
 let traceSession = -1, traceEvents = [], traceIndex = 0, traceStale = false, traceDirty = false;
 let clockFrames = 0, clockAt = 0;
 const positions = new Map();     // channel key -> { row, col, len }
-let followKey = null, followHoldUntil = 0;
+let followKey = null;
 const measure = document.createElement('canvas').getContext('2d');
 
 function partInfo(key) {
@@ -957,11 +1049,11 @@ function partInfo(key) {
   };
 }
 
-function holdFollow() { followHoldUntil = performance.now() + 4000; }
+function holdFollow(p = pane) { p.holdUntil = performance.now() + 4000; }
 
 function clearTrace() {
   positions.clear();
-  $('trace').innerHTML = '';
+  for (const p of panes) p.trace.innerHTML = '';
   renderParts();
 }
 
@@ -1011,32 +1103,41 @@ function updateTrace() {
   if (traceDirty) { traceDirty = false; renderTrace(); }
 }
 
+// With the editor split, the pane you are working in stays put and the other one follows.
 function follow(changed) {
-  if (!$('follow').checked || performance.now() < followHoldUntil || !positions.size) return;
+  if (!$('follow').checked || !positions.size) return;
   const key = followKey !== null && positions.has(followKey) ? followKey : Math.min(...positions.keys());
   if (!changed.includes(key)) return;
-  const lh = parseFloat(getComputedStyle(code).lineHeight) || 20;
-  const y = (positions.get(key).row - 1) * lh;
-  if (y < code.scrollTop || y > code.scrollTop + code.clientHeight - lh * 2) {
-    code.scrollTop = Math.max(0, y - code.clientHeight / 3);
+  const now = performance.now();
+  for (const p of splitMode === 'off' ? [panes[0]] : panes.filter((o) => o !== pane)) {
+    if (now < p.holdUntil) continue;
+    const code = p.code;
+    const lh = parseFloat(getComputedStyle(code).lineHeight) || 20;
+    const y = (positions.get(key).row - 1) * lh;
+    if (y < code.scrollTop || y > code.scrollTop + code.clientHeight - lh * 2) {
+      code.scrollTop = Math.max(0, y - code.clientHeight / 3);
+    }
   }
 }
 
 function renderTrace() {
-  const style = getComputedStyle(code);
-  measure.font = style.font;
-  const lh = parseFloat(style.lineHeight) || 20;
-  const padTop = parseFloat(style.paddingTop) || 12, padLeft = parseFloat(style.paddingLeft) || 14;
-  let html = '';
-  for (const [key, p] of positions) {
-    const tok = tokenAt(p);
-    const x = padLeft + measure.measureText(expandTabs(tok.line.slice(0, tok.start))).width - code.scrollLeft;
-    const w = Math.max(measure.measureText(tok.text).width, 6);
-    const y = padTop + (p.row - 1) * lh - code.scrollTop;
-    if (y < -lh || y > code.clientHeight) continue;
-    html += `<div style="--c:${partInfo(key).color};left:${x - 1}px;top:${y}px;width:${w + 2}px"></div>`;
+  for (const pn of shownPanes()) {
+    const code = pn.code;
+    const style = getComputedStyle(code);
+    measure.font = style.font;
+    const lh = parseFloat(style.lineHeight) || 20;
+    const padTop = parseFloat(style.paddingTop) || 12, padLeft = parseFloat(style.paddingLeft) || 14;
+    let html = '';
+    for (const [key, p] of positions) {
+      const tok = tokenAt(p);
+      const x = padLeft + measure.measureText(expandTabs(tok.line.slice(0, tok.start))).width - code.scrollLeft;
+      const w = Math.max(measure.measureText(tok.text).width, 6);
+      const y = padTop + (p.row - 1) * lh - code.scrollTop;
+      if (y < -lh || y > code.clientHeight) continue;
+      html += `<div style="--c:${partInfo(key).color};left:${x - 1}px;top:${y}px;width:${w + 2}px"></div>`;
+    }
+    pn.trace.innerHTML = html;
   }
-  $('trace').innerHTML = html;
 }
 
 function renderParts() {
@@ -1055,7 +1156,7 @@ function renderParts() {
     b.querySelector('code').textContent = tokenAt(positions.get(key)).text.trim();
     b.addEventListener('click', () => {
       followKey = followKey === key ? null : key;
-      followHoldUntil = 0;
+      for (const p of panes) p.holdUntil = 0;
       renderParts();
     });
     li.appendChild(b);
@@ -1179,16 +1280,110 @@ async function loadRepoFile(path) {
   }
 }
 
+// ---------- split editor ----------
+function setSplit(mode) {
+  splitMode = ['side', 'stack'].includes(mode) ? mode : 'off';
+  const box = $('panes');
+  box.classList.toggle('split-side', splitMode === 'side');
+  box.classList.toggle('split-stack', splitMode === 'stack');
+  panes[1].root.hidden = splitMode === 'off';
+  $('splitter').hidden = splitMode === 'off';
+  $('splitter').setAttribute('aria-orientation', splitMode === 'stack' ? 'horizontal' : 'vertical');
+  $('splitModes').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.split === splitMode)));
+  if (splitMode === 'off' && pane === panes[1]) { closeSuggest(); pane = panes[0]; }
+  for (const o of panes) o.root.classList.toggle('focused', o === pane && splitMode !== 'off');
+  if (panes[1].code.value !== code.value) panes[1].code.value = code.value;
+  renderGutter();
+  renderHighlight();
+  for (const p of panes) p.highlighter.scroll(p.code.scrollLeft, p.code.scrollTop);
+  traceDirty = true;
+  store.set(STORE_SPLIT, splitMode);
+}
+$('splitModes').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setSplit(b.dataset.split); });
+
+// Drag the bar between the panes to share the space differently; double-click to even it.
+$('splitter').addEventListener('pointerdown', (e) => {
+  const bar = e.currentTarget;
+  bar.setPointerCapture(e.pointerId);
+  bar.classList.add('drag');
+  const box = $('panes').getBoundingClientRect();
+  const move = (ev) => {
+    const f = splitMode === 'side' ? (ev.clientX - box.left) / box.width : (ev.clientY - box.top) / box.height;
+    $('panes').style.setProperty('--split', `${Math.round(Math.min(0.85, Math.max(0.15, f)) * 1000) / 10}%`);
+    renderMarks();
+    traceDirty = true;
+  };
+  const up = () => {
+    bar.classList.remove('drag');
+    bar.removeEventListener('pointermove', move);
+    bar.removeEventListener('pointerup', up);
+  };
+  bar.addEventListener('pointermove', move);
+  bar.addEventListener('pointerup', up);
+});
+$('splitter').addEventListener('dblclick', () => { $('panes').style.setProperty('--split', '50%'); renderMarks(); traceDirty = true; });
+
+// ---------- channel view ----------
+// MDPlayer4Mac's channel view in place of the editor. Playing a .mub or .vgm switches to
+// it; while a MUC plays, the button switches between it and the editor.
+const channelView = new ChannelView($('chview'));
+let viewMode = 'editor';
+let autoChannels = false;          // opened by playing a file, so a MUC play returns to the editor
+let cvSource = null, cvSession = -1;
+let vgmForView = null;             // the (decompressed) VGM that is playing, read for the view
+
+function setView(mode, auto = false) {
+  viewMode = mode === 'channels' ? 'channels' : 'editor';
+  autoChannels = viewMode === 'channels' && auto;
+  const channels = viewMode === 'channels';
+  if (channels) closeSuggest();
+  $('panes').hidden = channels;
+  $('chview').hidden = !channels;
+  $('viewToggle').setAttribute('aria-pressed', String(channels));
+  document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = channels; });
+  document.querySelector('.editor-foot .cv').hidden = !channels;
+  if (!channels) {
+    renderGutter();
+    renderHighlight();
+    traceDirty = true;
+  }
+}
+$('viewToggle').addEventListener('click', () => setView(viewMode === 'channels' ? 'editor' : 'channels'));
+
+let zoomIndex = 0;
+function setZoom(index) {
+  zoomIndex = ((Number(index) || 0) % SCALES.length + SCALES.length) % SCALES.length;
+  channelView.setScale(SCALES[zoomIndex]);
+  $('cvZoom').textContent = `${SCALES[zoomIndex]}%`;
+  store.set(STORE_ZOOM, String(zoomIndex));
+}
+$('cvZoom').addEventListener('click', () => setZoom(zoomIndex + 1));
+
+// "YM2608:0:7987200;AY8910:0:1789773" from the MUC engine.
+const parseChipList = (text) => (text || '').split(';').filter(Boolean).map((entry) => {
+  const [type, id, clock] = entry.split(':');
+  return { type, id: Number(id) || 0, clock: Number(clock) || 0 };
+});
+
+function startChannelView(m, source) {
+  cvSource = source;
+  cvSession = m.session;
+  if (source === 'vgm') channelView.start([], [], vgmForView);
+  else channelView.start(parseChipList(m.info.chipList));
+}
+
 // ---------- start ----------
 {
   const savedVolume = store.get(STORE_VOLUME);
   if (savedVolume !== null) $('volume').value = savedVolume;
   const savedFont = store.get(STORE_FONT);
   if (savedFont !== null) setFontSize(savedFont);
+  setZoom(store.get(STORE_ZOOM) || 0);
   // Restore your text synchronously so nothing loaded later can overwrite what you type.
   const saved = store.get(STORE_SOURCE);
   if (saved && saved.trim()) setSource(saved);
   else renderGutter();
+  setSplit(store.get(STORE_SPLIT) || 'off');
   applyLanguage();
   if (!engineReady) setStatus(t('loading'));
   (async () => {
