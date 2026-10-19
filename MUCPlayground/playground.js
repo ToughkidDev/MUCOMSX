@@ -7,6 +7,7 @@ import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/cha
 
 const SAMPLE_RATE = 44100;
 const STORE_SOURCE = 'mucplayground.source';
+const STORE_SONG = 'mucplayground.song';      // { name, current }: what the editor holds
 const STORE_LANG = 'mucplayground.lang';
 const STORE_VOLUME = 'mucplayground.volume';
 const STORE_FONT = 'mucplayground.fontSize';
@@ -52,6 +53,7 @@ const T = {
     channelView: '▦ Channels', channelViewTip: 'Channel view (MDPlayer4Mac style) / editor', split: 'Split', splitOff: 'One view', splitSide: 'Two views, side by side',
     splitStack: 'Two views, one above the other', zoom: 'Size', zoomFit: 'Fit',
     cvEmpty: 'Play a song to see its chips here, as in MDPlayer.', cvOther: 'No channel view for: ',
+    recovered: (n) => `Attached ${n} again from the Samples folder.`,
   },
   ko: {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
@@ -92,6 +94,7 @@ const T = {
     channelView: '▦ 채널 뷰', channelViewTip: '채널 뷰(MDPlayer4Mac 방식) / 에디터 전환', split: '분할', splitOff: '하나로 보기', splitSide: '좌우로 나눠 보기',
     splitStack: '위아래로 나눠 보기', zoom: '크기', zoomFit: '화면 맞춤',
     cvEmpty: '곡을 재생하면 MDPlayer처럼 칩별 채널이 여기에 표시됩니다.', cvOther: '채널 뷰가 없는 칩: ',
+    recovered: (n) => `${n}을(를) Samples 폴더에서 다시 첨부했습니다.`,
   },
   ja: {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
@@ -132,6 +135,7 @@ const T = {
     channelView: '▦ チャンネル', channelViewTip: 'チャンネルビュー（MDPlayer4Mac風）/ エディタの切り替え', split: '分割', splitOff: '1画面', splitSide: '左右に分割',
     splitStack: '上下に分割', zoom: 'サイズ', zoomFit: '画面に合わせる',
     cvEmpty: '曲を再生すると、MDPlayerのようにチップごとのチャンネルがここに表示されます。', cvOther: 'チャンネルビューのないチップ: ',
+    recovered: (n) => `${n}をSamplesフォルダーから再び添付しました。`,
   },
 };
 
@@ -292,7 +296,7 @@ let saveTimer = 0, scanTimer = 0;
 function onInput(p, e) {
   // Keep the other pane's text, caret and scroll position as they were.
   for (const o of panes) {
-    if (o === p || o.code.value === p.code.value) continue;
+    if (o === p || !o.visible || o.code.value === p.code.value) continue;   // a hidden pane catches up in setSplit
     const { scrollTop, scrollLeft, selectionStart, selectionEnd } = o.code;
     o.code.value = p.code.value;
     o.code.setSelectionRange(selectionStart, selectionEnd);
@@ -312,7 +316,7 @@ function onInput(p, e) {
   renderGutter();
   updateBytes();
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => store.set(STORE_SOURCE, code.value), 400);
+  saveTimer = setTimeout(() => { store.set(STORE_SOURCE, code.value); saveSong(); }, 400);
   clearTimeout(scanTimer);
   scanTimer = setTimeout(renderFiles, 400);
   if (current !== 'mine') { current = 'mine'; $('examples').value = 'mine'; }
@@ -335,7 +339,8 @@ for (const p of panes) {
   });
 }
 // Don't lose the last keystrokes to the autosave delay when the tab closes.
-const flushSave = () => { clearTimeout(saveTimer); store.set(STORE_SOURCE, code.value); };
+const saveSong = () => store.set(STORE_SONG, JSON.stringify({ name: sourceName, current }));
+const flushSave = () => { clearTimeout(saveTimer); store.set(STORE_SOURCE, code.value); saveSong(); };
 window.addEventListener('pagehide', flushSave);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushSave(); });
 window.addEventListener('resize', renderMarks);
@@ -458,10 +463,39 @@ function referencedFiles() {
   return names;
 }
 
-function attach(name, data) {
+// Attached files are also kept in the browser (IndexedDB), so a song restored on the next
+// visit comes back with its voice / PCM files and plays as before.
+const fileStore = (() => {
+  let db = null;
+  const open = () => (db ||= new Promise((resolve, reject) => {
+    const r = indexedDB.open('mucplayground', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('files');
+    r.onsuccess = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+  }));
+  const run = async (mode, op) => {
+    const store = (await open()).transaction('files', mode).objectStore('files');
+    return new Promise((resolve, reject) => {
+      const req = op(store);
+      store.transaction.oncomplete = () => resolve(req.result);
+      store.transaction.onerror = store.transaction.onabort = () => reject(store.transaction.error);
+    });
+  };
+  // Storage can be unavailable (private windows, blocked site data): then files just aren't kept.
+  return {
+    put: (key, value) => run('readwrite', (s) => s.put(value, key)).catch(() => {}),
+    delete: (key) => run('readwrite', (s) => s.delete(key)).catch(() => {}),
+    clear: () => run('readwrite', (s) => s.clear()).catch(() => {}),
+    all: () => run('readonly', (s) => s.getAll()).catch(() => []),
+  };
+})();
+let fileGeneration = 0;   // bumps when the attached set is replaced, so a late restore stands down
+
+function attach(name, data, keep = true) {
   const base = name.split(/[\\/]/).pop();
   files.set(base.toLowerCase(), { name: base, data });
   worker.postMessage({ type: 'setFile', name: base, data: data.slice(0) });
+  if (keep) fileStore.put(base.toLowerCase(), { name: base, data: data.slice(0) });
   renderFiles();
 }
 
@@ -470,13 +504,45 @@ function detach(key) {
   if (!f) return;
   files.delete(key);
   worker.postMessage({ type: 'removeFile', name: f.name });
+  fileStore.delete(key);
   renderFiles();
 }
 
 function clearFiles() {
+  fileGeneration++;
   files.clear();
   worker.postMessage({ type: 'clearFiles' });
+  fileStore.clear();
   renderFiles();
+}
+
+// Files a restored song names but that were not kept (for example from before files were
+// saved): fetched from the song's Samples folder, or, if exactly one file in Samples has
+// that name, from there.
+async function recoverMissingFiles() {
+  const missing = referencedFiles().filter((n) => !files.has(n.toLowerCase().split(/[\\/]/).pop()));
+  if (!missing.length) return;
+  const generation = fileGeneration;
+  const tree = await readSampleTree(false);
+  const dir = current.startsWith('repo:') ? current.slice(5, current.lastIndexOf('/') + 1) : null;
+  const found = [];
+  for (const ref of missing) {
+    const base = ref.split(/[\\/]/).pop().toLowerCase();
+    const named = tree.files.filter((f) => f.slice(f.lastIndexOf('/') + 1).toLowerCase() === base);
+    const paths = [];
+    if (dir) paths.push(tree.files.find((f) => f.toLowerCase() === (dir + ref).toLowerCase()) || dir + ref);
+    if (named.length === 1) paths.push(named[0]);
+    for (const path of paths) {
+      try {
+        const data = await fetchRepoFile(path);
+        if (generation !== fileGeneration) return;
+        attach(ref, data);
+        found.push(ref);
+        break;
+      } catch { /* try the next place */ }
+    }
+  }
+  if (found.length) { setStatus(t('recovered', found.join(', '))); scheduleCheck(); }
 }
 
 function renderFiles() {
@@ -542,6 +608,7 @@ async function loadExample(value) {
     setSource(await (await fetch('demo.muc')).text());
     sourceName = 'DEMO.MUC';
     current = value;
+    saveSong();
     buildExamples();
     setStatus(engineReady ? t('ready') : t('loading'));
   } catch (e) {
@@ -579,6 +646,7 @@ function openMuc(name, buffer) {
   sourceName = name;
   setSource(decodeText(buffer));
   current = 'mine';
+  saveSong();
   $('examples').value = 'mine';
 }
 
@@ -789,6 +857,7 @@ $('fontSize').addEventListener('input', (e) => setFontSize(e.target.value));
 
 async function play() {
   if (!engineReady) { pendingPlay = true; setStatus(t('loading')); return; }
+  await filesRestored;
   try {
     await ensureAudio();
   } catch (e) {
@@ -1267,6 +1336,7 @@ async function loadRepoFile(path) {
     setSource(decodeText(data));
     sourceName = name;
     current = 'repo:' + path;
+    saveSong();
     buildExamples();
     // #voice / #pcm files from the same folder, matched without regard to case.
     const dir = path.slice(0, path.lastIndexOf('/') + 1);
@@ -1382,8 +1452,14 @@ function startChannelView(m, source) {
   setZoom(DEFAULT_SCALE);
   // Restore your text synchronously so nothing loaded later can overwrite what you type.
   const saved = store.get(STORE_SOURCE);
-  if (saved && saved.trim()) setSource(saved);
-  else renderGutter();
+  if (saved && saved.trim()) {
+    setSource(saved);
+    try {
+      const song = JSON.parse(store.get(STORE_SONG) || 'null');
+      if (song?.name) sourceName = song.name;
+      if (typeof song?.current === 'string' && song.current !== 'demo') current = song.current;
+    } catch { /* keep the defaults */ }
+  } else renderGutter();
   setSplit(store.get(STORE_SPLIT) || 'off');
   applyLanguage();
   if (!engineReady) setStatus(t('loading'));
@@ -1400,3 +1476,13 @@ function startChannelView(m, source) {
     buildExamples();
   })();
 }
+
+// The voice / PCM files that went with the restored song. Play waits for this.
+const filesRestored = (async () => {
+  const generation = fileGeneration;
+  const kept = await fileStore.all();
+  if (generation !== fileGeneration) return;
+  for (const f of kept) if (f && f.name && f.data && !files.has(f.name.toLowerCase())) attach(f.name, f.data, false);
+  if (kept.length) scheduleCheck();
+  try { await recoverMissingFiles(); } catch { /* listed as not attached */ }
+})();
