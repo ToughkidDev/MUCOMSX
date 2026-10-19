@@ -24,7 +24,7 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
   - `.mub` is the playground compiler's output, the same as MDPlayer4Mac produces from that MUC. It is not byte-for-byte what MUC2MUB on the MSX writes, so check it on the machine before relying on it there.
   - `.vgm` (VGM 1.71) logs every chip write. A looping song is written as intro + one more pass, with the VGM loop point set so the loop is exactly one pass; songs are capped at 10 minutes. Played back in MDPlayer4Mac it matches the playground's own audio (correlation 1.0000 on the test songs).
 - What you type is kept in your browser between visits. Nothing is uploaded anywhere.
-- Plays YM2608 (FM, SSG, rhythm, ADPCM), the extended `muPb` layouts, and the MUCOMSX native MSX parts: MSX-MUSIC, PSG, SCC/SCC+.
+- Plays YM2608 (FM, SSG, rhythm, ADPCM), the extended `muPb` layouts, and the MUCOMSX native MSX parts: MSX-MUSIC, PSG, SCC/SCC+, including the five dedicated SCC/SCC+ parts `SCCA`–`SCCE` of msPb0102 (MDPlayer4Mac v0.2.3) with inline `@Wn:{…}` waves and `#sccvoice` wave banks.
 
 ## How it works
 

@@ -7,11 +7,15 @@ export const PART_LETTERS = 'ABCDEFGHIJK';
 export const PART_COLORS = ['#e4572e', '#e09f1f', '#7fa83a', '#1f9e89', '#3d7cc9', '#8e5bd1', '#d6457f',
   '#c46a2b', '#3fa34d', '#5b7f95', '#b0306a'];
 
-const PART_LINE = /^((?:MSX)?[A-K][A-K0-9]*)(?=[ \t])/;
+// Part names: A–K, MUCOMSX native MSXA…, and the msPb0102 dedicated SCC parts SCCA–SCCE.
+const PART_LINE = /^((?:MSX)?[A-K][A-K0-9]*|SCC(?:[A-E][0-9]?)+)(?=[ \t])/;
+export const SCC_COLOR = '#0fa3b8';
 const MACRO_DEF = /^#\s*\*(\d+)\s*\{/;
 const VOICE_DEF = /^[ \t]+@(\d+)/;
+const WAVE_DEF = /^[ \t]+@W(\d+):/;     // SCC5 inline 32-sample wave: @W0:{ … }
 
 export function partKind(label) {
+  if (label.startsWith('SCC')) return 'ssg';   // SCC5 parts take the SSG commands (v0–15, E …)
   const letter = label.replace(/^MSX/, '')[0];
   if ('ABCHIJ'.includes(letter)) return 'fm';
   if ('DEF'.includes(letter)) return 'ssg';
@@ -70,9 +74,11 @@ export function highlightLine(line) {
   const p = PART_LINE.exec(line);
   if (p) {
     const letter = p[1].replace(/^MSX/, '')[0];
-    const color = PART_COLORS[PART_LETTERS.indexOf(letter)] || 'inherit';
+    const color = p[1].startsWith('SCC') ? SCC_COLOR : PART_COLORS[PART_LETTERS.indexOf(letter)] || 'inherit';
     return `<span class="t-part" style="color:${color}">${esc(p[1])}</span>` + mml(line.slice(p[1].length));
   }
+  const w = WAVE_DEF.exec(line);
+  if (w) return esc(w[0].slice(0, w[0].indexOf('@'))) + span('t-mac', '@W' + w[1]) + mml(line.slice(w[0].length - 1));
   const v = VOICE_DEF.exec(line);
   if (v) {
     const [body, comment] = commentSplit(line.slice(v[0].length));
@@ -135,6 +141,14 @@ export function suggestionsAt(text, caret, language, force) {
 
   const prefix = /[@*]?[A-Za-z]*$/.exec(body)[0];
   const lines = text.split('\n');
+  if (prefix === '@' && p && p[1].startsWith('SCC')) {
+    const waves = [];
+    lines.forEach((l, i) => {
+      const w = WAVE_DEF.exec(l);
+      if (w) waves.push({ label: '@' + w[1], insert: '@' + w[1], sig: `line ${i + 1}`, desc: describe({ en: 'SCC wave defined in this song (@W)', ko: '이 곡에 정의된 SCC 파형(@W)', ja: 'この曲で定義したSCC波形（@W）' }) });
+    });
+    return { prefix, items: waves };
+  }
   if (prefix === '@' && kind === 'fm') {
     const voices = [];
     lines.forEach((l, i) => {

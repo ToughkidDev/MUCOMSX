@@ -20,7 +20,7 @@ const T = {
     addFiles: 'Add voice / PCM', save: 'Save', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice or #pcm. Add them with the button, or drop them on the page.',
     reference: 'Quick reference', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'Rhythm (v needs 7 values)',
-    refPcm: 'ADPCM (needs #pcm)', refTempo: 'Tempo in BPM / raw Timer-B', refOctave: 'Octave, up, down',
+    refPcm: 'ADPCM (needs #pcm)', refScc: 'SCC 1–5, waves @W0:{…}', refTempo: 'Tempo in BPM / raw Timer-B', refOctave: 'Octave, up, down',
     refLength: 'Default length, length, clocks', refVoice: 'Volume, voice', refLoop: 'Repeat, song loop point',
     refComment: 'Comment', manual: 'Full MML guide:',
     credit1: "Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: mucomDotNET by kuma4649 and MDSound. GPL-3.0.",
@@ -61,7 +61,7 @@ const T = {
     addFiles: '음색 / PCM 추가', save: '저장', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요.',
     reference: '빠른 참조', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: '리듬 (v는 값 7개)',
-    refPcm: 'ADPCM (#pcm 필요)', refTempo: '템포 BPM / Timer-B 값', refOctave: '옥타브, 올림, 내림',
+    refPcm: 'ADPCM (#pcm 필요)', refScc: 'SCC 1–5, 파형 @W0:{…}', refTempo: '템포 BPM / Timer-B 값', refOctave: '옥타브, 올림, 내림',
     refLength: '기본 길이, 길이, 클록', refVoice: '음량, 음색', refLoop: '반복, 곡 루프 지점',
     refComment: '주석', manual: 'MML 전체 설명:',
     credit1: '컴파일러, 드라이버, 칩 에뮬레이션은 MDPlayer4Mac의 것을 브라우저용으로 빌드했습니다: kuma4649의 mucomDotNET, MDSound. GPL-3.0.',
@@ -102,7 +102,7 @@ const T = {
     addFiles: '音色 / PCMを追加', save: '保存', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。',
     reference: 'クイックリファレンス', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'リズム（vは7つの値）',
-    refPcm: 'ADPCM（#pcmが必要）', refTempo: 'テンポ BPM / Timer-B値', refOctave: 'オクターブ、上げ、下げ',
+    refPcm: 'ADPCM（#pcmが必要）', refScc: 'SCC 1–5、波形 @W0:{…}', refTempo: 'テンポ BPM / Timer-B値', refOctave: 'オクターブ、上げ、下げ',
     refLength: '基本音長、音長、クロック', refVoice: '音量、音色', refLoop: '繰り返し、曲のループ位置',
     refComment: 'コメント', manual: 'MMLの詳しい説明:',
     credit1: 'コンパイラ・ドライバ・チップエミュレーションはMDPlayer4Macのものをブラウザ向けにビルドしています: kuma4649氏のmucomDotNET、MDSound。GPL-3.0。',
@@ -421,7 +421,7 @@ function renderMessages(result) {
     head.querySelector('code').textContent = m.code || '';
     if (pos) {
       const line = lines[pos.row - 1] ?? '';
-      const part = /^((?:MSX)?[A-K][A-K0-9]*)[ \t]/.exec(line);
+      const part = /^((?:MSX)?[A-K][A-K0-9]*|SCC(?:[A-E][0-9]?)+)[ \t]/.exec(line);
       head.querySelector('.where').textContent = t('where', pos.row, pos.col, part ? part[1] : '', located);
       li.dataset.row = pos.row;
       li.addEventListener('click', () => { goToRow(pos.row, pos.col || 1, kind); li.classList.add('picked'); });
@@ -474,7 +474,7 @@ function voiceRow(n) {
   const code = (line) => line.replace(/;.*$/, '');
   const at = new RegExp(`@%?${n}(?!\\d)`);
   let i = lines.findIndex((l) => new RegExp(`^\\s+@%?${n}(?!\\d)`).test(code(l)));
-  if (i < 0) i = lines.findIndex((l) => /^(?:MSX)?[A-K][A-K0-9]*[ \t]/.test(l) && at.test(code(l)));
+  if (i < 0) i = lines.findIndex((l) => /^(?:(?:MSX)?[A-K][A-K0-9]*|SCC(?:[A-E][0-9]?)+)[ \t]/.test(l) && at.test(code(l)));
   if (i < 0) return null;
   const col = code(lines[i]).search(at);
   return { row: i + 1, col: sjisBytes(lines[i].slice(0, col)) + 1 };
@@ -487,7 +487,7 @@ const files = new Map();   // lower-case name -> { name, data:ArrayBuffer }
 
 function referencedFiles() {
   const names = [];
-  const re = /^#(voice|pcm)[ \t]+([^\s;]+)/gim;
+  const re = /^#(voice|pcm|sccvoice)[ \t]+([^\s;]+)/gim;
   let m;
   while ((m = re.exec(code.value))) names.push(m[2].replace(/^"|"$/g, ''));
   return names;

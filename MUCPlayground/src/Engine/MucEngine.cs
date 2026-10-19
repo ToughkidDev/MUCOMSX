@@ -404,8 +404,8 @@ public sealed class MucPlayer
             });
             if (msx != null)
             {
-                driver.ConfigureMsx(msx.Capabilities, mapper.Upload, msx.RawFlags.HasValue);
-                mapper.Start(msx.NativeGroup, msx.SccSsg, msx.RawFlags);
+                driver.ConfigureMsx(msx.Capabilities, mapper.Upload, msx.RawFlags.HasValue, mapper.WriteSccNative);
+                mapper.Start(msx.NativeGroup, msx.SccSsg, msx.RawFlags, msx.DedicatedScc);
             }
             driver.MusicSTART(0);
             return true;

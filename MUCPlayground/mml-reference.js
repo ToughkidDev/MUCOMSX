@@ -15,6 +15,7 @@ export const TAGS = [
   { label: '#comment', insert: '#comment $0', en: 'Description or comment', ko: '설명이나 메모', ja: '説明・コメント' },
   { label: '#voice', insert: '#voice $0', en: 'External FM voice file, e.g. VOICE.DAT. Keep it in the header at the top', ko: '외부 FM 음색 파일 (예: VOICE.DAT). 파일 맨 위 헤더에 두세요', ja: '外部FM音色ファイル（例: VOICE.DAT）。先頭のヘッダーに置きます' },
   { label: '#pcm', insert: '#pcm $0', en: 'PCM bank file for part K, e.g. PCM01.BIN', ko: 'K 파트용 PCM 뱅크 파일 (예: PCM01.BIN)', ja: 'Kパート用PCMバンクファイル（例: PCM01.BIN）' },
+  { label: '#sccvoice', insert: '#sccvoice $0', en: 'MUCOMSX msPb0102: SCC wave bank file (SCWD) for SCCA–SCCE; inline @Wn:{…} waves override it. Put it before the music', ko: 'MUCOMSX msPb0102: SCCA–SCCE용 SCC 파형 뱅크 파일(SCWD). 인라인 @Wn:{…}이 우선하며, 악보보다 앞에 둡니다', ja: 'MUCOMSX msPb0102: SCCA–SCCE用のSCC波形バンク（SCWD）。インライン@Wn:{…}が優先。曲より前に置きます' },
   { label: '#SSGExtend', insert: '#SSGExtend On', en: 'MUCOMSX: play D/E/F through SCC/SCC+ (needs the cartridge)', ko: 'MUCOMSX: D/E/F를 SCC/SCC+로 연주 (카트리지 필요)', ja: 'MUCOMSX: D/E/FをSCC/SCC+で演奏（カートリッジが必要）' },
   { label: '#PCMInvert', insert: '#PCMInvert On', en: 'MUCOMSX: reverse K\'s relative octave > and < at compile time', ko: 'MUCOMSX: K 파트의 상대 옥타브 >, <를 컴파일 때 반대로', ja: 'MUCOMSX: Kの相対オクターブ>と<をコンパイル時に反転' },
   { label: '#*', insert: '#*$0{}', en: 'Macro definition: #*1{o4 l8 cdef}, called as *1', ko: '매크로 정의: #*1{o4 l8 cdef}, 호출은 *1', ja: 'マクロ定義: #*1{o4 l8 cdef}、呼び出しは*1' },
@@ -35,6 +36,7 @@ export const PARTS = [
   { label: 'K', kind: 'pcm', en: 'ADPCM (needs #pcm)', ko: 'ADPCM (#pcm 필요)', ja: 'ADPCM（#pcmが必要）' },
   { label: 'MSXA', kind: 'fm', en: 'MUCOMSX: MSX-MUSIC (YM2413) 1; MSXB/C/H/I/J are 2–6', ko: 'MUCOMSX: MSX-MUSIC(YM2413) 1, MSXB/C/H/I/J는 2–6', ja: 'MUCOMSX: MSX-MUSIC（YM2413）1、MSXB/C/H/I/Jは2–6' },
   { label: 'MSXD', kind: 'ssg', en: 'MUCOMSX: internal MSX PSG 1; MSXE/F are 2–3', ko: 'MUCOMSX: MSX 내장 PSG 1, MSXE/F는 2–3', ja: 'MUCOMSX: MSX内蔵PSG 1、MSXE/Fは2–3' },
+  { label: 'SCCA', kind: 'ssg', en: 'MUCOMSX msPb0102: dedicated SCC/SCC+ 1; SCCB–SCCE are 2–5. Waves from @Wn:{32 values −128…127} or #sccvoice; v0–15 is linear', ko: 'MUCOMSX msPb0102: 전용 SCC/SCC+ 1, SCCB–SCCE는 2–5. 파형은 @Wn:{−128…127 값 32개} 또는 #sccvoice, v0–15는 선형 음량', ja: 'MUCOMSX msPb0102: 専用SCC/SCC+ 1、SCCB–SCCEは2–5。波形は@Wn:{−128…127の32値}か#sccvoice、v0–15は線形音量' },
   { label: 'MSXG', kind: 'rhythm', en: 'MUCOMSX: MSX-MUSIC rhythm', ko: 'MUCOMSX: MSX-MUSIC 리듬', ja: 'MUCOMSX: MSX-MUSICリズム' },
 ];
 
