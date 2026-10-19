@@ -52,6 +52,20 @@ public static partial class Interop
         });
     }
 
+    // Compiles for errors and warnings only, while typing. Leaves the playing song alone.
+    [JSExport]
+    public static string Check(string text)
+    {
+        CompileResult r = MucEngine.Compile(MucEngine.ShiftJis.GetBytes(text ?? ""), Open);
+        return Json(w =>
+        {
+            w.WriteBoolean("ok", r.Ok);
+            w.WriteNumber("size", r.Mub?.Length ?? 0);
+            Messages(w, "errors", r.Errors);
+            Messages(w, "warnings", r.Warnings);
+        });
+    }
+
     // Plays a compiled .mub file directly (no source, so no position trace).
     [JSExport]
     public static string StartFile(byte[] data)

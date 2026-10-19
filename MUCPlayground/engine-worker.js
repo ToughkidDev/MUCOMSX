@@ -124,6 +124,9 @@ onmessage = async (event) => {
         play(session, () => E.StartFile(data));
         break;
       }
+      case 'check':
+        postMessage({ type: 'checked', id: m.id, result: JSON.parse(E.Check(m.text)) });
+        break;
       case 'stop':
         stopPlayback();
         postMessage({ type: 'stopped' });

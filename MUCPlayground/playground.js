@@ -1,6 +1,8 @@
 // MUCPlayground page logic: editor, examples, attached files and audio plumbing.
 // The engine itself runs in engine-worker.js; audio is played by pcm-worklet.js.
 
+import { Highlighter, suggestionsAt, PART_LETTERS, PART_COLORS } from './editor-assist.js';
+
 const SAMPLE_RATE = 44100;
 const STORE_SOURCE = 'mucplayground.source';
 const STORE_LANG = 'mucplayground.lang';
@@ -31,7 +33,7 @@ const T = {
     audioFailed: 'Audio could not start: ', bytes: (n) => `${n.toLocaleString()} bytes`,
     saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
-    followPart: (p) => `Follow part ${p}`,
+    followPart: (p) => `Follow part ${p}`, hintSuggest: 'suggestions',
     loadingVgm: 'Loading the VGM player (about 6.7 MB, first time only)…', vgmFailed: 'The VGM player could not be loaded: ',
     clickToStart: 'Click anywhere on the page to start the sound (the browser needs a click first).',
     unsupported: (n) => `${n} is not a file this player opens.`, playingFile: (n) => `Playing ${n}`,
@@ -60,7 +62,7 @@ const T = {
     audioFailed: '오디오를 시작하지 못했습니다: ', bytes: (n) => `${n.toLocaleString()} 바이트`,
     saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
-    followPart: (p) => `${p} 파트 따라가기`,
+    followPart: (p) => `${p} 파트 따라가기`, hintSuggest: '명령 제안',
     loadingVgm: 'VGM 플레이어를 불러오는 중 (약 6.7 MB, 처음 한 번만)…', vgmFailed: 'VGM 플레이어를 불러오지 못했습니다: ',
     clickToStart: '페이지 아무 곳이나 클릭하면 소리가 나옵니다 (브라우저가 먼저 클릭을 요구합니다).',
     unsupported: (n) => `${n}은(는) 열 수 없는 파일입니다.`, playingFile: (n) => `${n} 재생 중`,
@@ -89,7 +91,7 @@ const T = {
     audioFailed: 'オーディオを開始できませんでした: ', bytes: (n) => `${n.toLocaleString()}バイト`,
     saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
-    followPart: (p) => `${p}パートを追う`,
+    followPart: (p) => `${p}パートを追う`, hintSuggest: 'コマンド候補',
     loadingVgm: 'VGMプレーヤーを読み込み中（約6.7 MB、初回のみ）…', vgmFailed: 'VGMプレーヤーを読み込めませんでした: ',
     clickToStart: 'ページのどこかをクリックすると音が出ます（ブラウザが最初のクリックを必要とします）。',
     unsupported: (n) => `${n}は開けないファイルです。`, playingFile: (n) => `${n}を再生中`,
@@ -147,6 +149,7 @@ document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('cli
 
 // ---------- editor ----------
 let markRows = new Map();   // row -> 'err' | 'warn'
+let markSpots = [];         // { row, col, kind } for the wavy underline
 
 function lineCount() { let n = 1; for (let i = 0; i < code.value.length; i++) if (code.value.charCodeAt(i) === 10) n++; return n; }
 
@@ -168,8 +171,31 @@ function renderMarks() {
   for (const [row, kind] of markRows) {
     html += `<div class="${kind}" style="top:${pad + (row - 1) * lh - code.scrollTop}px"></div>`;
   }
+  // A wavy underline under the word the compiler points at (its column counts Shift-JIS bytes).
+  for (const m of markSpots) {
+    const line = lines[m.row - 1];
+    if (line === undefined) continue;
+    const start = charIndex(line, Math.max(0, m.col - 1));
+    const word = /^\S*/.exec(line.slice(start))[0] || ' ';
+    const p = textPoint(m.row, start);
+    const w = Math.max(measure.measureText(word).width, 8);
+    html += `<span class="squiggle ${m.kind}" style="left:${p.x}px;top:${p.y + lh - 4}px;width:${w}px"></span>`;
+  }
   marks.innerHTML = html;
   gutter.scrollTop = code.scrollTop;
+}
+
+// Pixel position of a character in the editor, relative to the code area.
+function textPoint(row, charIdx) {
+  const style = getComputedStyle(code);
+  measure.font = style.font;
+  const lh = parseFloat(style.lineHeight) || 20;
+  const line = lines[row - 1] || '';
+  return {
+    x: (parseFloat(style.paddingLeft) || 14) + measure.measureText(expandTabs(line.slice(0, charIdx))).width - code.scrollLeft,
+    y: (parseFloat(style.paddingTop) || 12) + (row - 1) * lh - code.scrollTop,
+    lh,
+  };
 }
 
 function updateCursor() {
@@ -194,9 +220,14 @@ function goToRow(row, col = 1) {
 }
 
 let saveTimer = 0, scanTimer = 0;
-code.addEventListener('input', () => {
-  if (markRows.size) { markRows = new Map(); }
+code.addEventListener('input', (e) => {
   lines = code.value.split('\n');
+  scheduleHighlight();
+  scheduleCheck();
+  if (!suppressSuggest) {
+    if (suggest.open) refreshSuggest(false);
+    else if (e.inputType === 'insertText' && /^[A-Za-z@*#]$/.test(e.data || '')) refreshSuggest(false);
+  }
   traceStale = true;
   clearTrace();
   holdFollow();
@@ -208,7 +239,7 @@ code.addEventListener('input', () => {
   scanTimer = setTimeout(renderFiles, 400);
   if (current !== 'mine') { current = 'mine'; $('examples').value = 'mine'; }
 });
-code.addEventListener('scroll', () => { renderMarks(); traceDirty = true; });
+code.addEventListener('scroll', () => { renderMarks(); traceDirty = true; highlighter.scroll(code.scrollLeft, code.scrollTop); closeSuggest(); });
 ['wheel', 'keydown', 'pointerdown'].forEach((ev) => code.addEventListener(ev, holdFollow));
 // Don't lose the last keystrokes to the autosave delay when the tab closes.
 const flushSave = () => { clearTimeout(saveTimer); store.set(STORE_SOURCE, code.value); };
@@ -220,6 +251,10 @@ window.addEventListener('resize', renderMarks);
 function setSource(text) {
   code.value = text;
   lines = text.split('\n');
+  highlighter.render(text);
+  highlighter.scroll(0, 0);
+  markSpots = [];
+  scheduleCheck();
   markRows = new Map();
   renderGutter();
   updateBytes();
@@ -244,6 +279,7 @@ function renderMessages(result) {
   const list = $('messages');
   list.innerHTML = '';
   markRows = new Map();
+  markSpots = [];
   const add = (m, kind) => {
     const li = document.createElement('li');
     li.className = kind;
@@ -257,6 +293,7 @@ function renderMessages(result) {
       li.appendChild(span);
       li.addEventListener('click', () => goToRow(pos.row, pos.col));
       if (kind === 'err' || !markRows.has(pos.row)) markRows.set(pos.row, kind);
+      markSpots.push({ row: pos.row, col: pos.col, kind });
     }
     li.appendChild(document.createTextNode(text));
     list.appendChild(li);
@@ -524,6 +561,10 @@ function onEngineMessage(m, source) {
     case 'loop':
       if (source === active) loopCount = m.loop;
       break;
+    case 'checked':
+      // Only the newest check counts; an older one describes text that has since changed.
+      if (m.id === checkId) { lastResult = m.result; renderMessages(m.result); }
+      break;
     case 'exported': {
       const name = pendingExports.get(m.id);
       pendingExports.delete(m.id);
@@ -700,6 +741,108 @@ function waitForClick() {
 
 $('play').addEventListener('click', play);
 $('stop').addEventListener('click', stop);
+
+// ---------- colouring, suggestions and checking while typing ----------
+const highlighter = new Highlighter($('hl'));
+let highlightQueued = false;
+function scheduleHighlight() {
+  if (highlightQueued) return;
+  highlightQueued = true;
+  requestAnimationFrame(() => { highlightQueued = false; highlighter.render(code.value); });
+}
+
+let checkTimer = 0, checkId = 0;
+function scheduleCheck() {
+  clearTimeout(checkTimer);
+  checkTimer = setTimeout(() => {
+    if (!engineReady || !code.value.trim()) return;
+    worker.postMessage({ type: 'check', id: ++checkId, text: code.value });
+  }, 700);
+}
+
+const suggest = { open: false, items: [], index: 0, prefix: '' };
+let suppressSuggest = false;
+
+function refreshSuggest(force) {
+  const r = suggestionsAt(code.value, code.selectionStart, lang, force);
+  if (!r || !r.items.length) { closeSuggest(); return; }
+  Object.assign(suggest, { open: true, items: r.items, index: 0, prefix: r.prefix });
+  renderSuggest();
+}
+
+function closeSuggest() {
+  if (!suggest.open) return;
+  suggest.open = false;
+  $('ac').hidden = true;
+}
+
+function renderSuggest() {
+  const box = $('ac');
+  const list = box.querySelector('ul');
+  list.innerHTML = '';
+  suggest.items.slice(0, 40).forEach((item, i) => {
+    const li = document.createElement('li');
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', String(i === suggest.index));
+    li.innerHTML = '<b></b><span></span>';
+    li.querySelector('b').textContent = item.label;
+    li.querySelector('span').textContent = item.sig || item.desc;
+    li.addEventListener('mousedown', (e) => { e.preventDefault(); suggest.index = i; acceptSuggest(); });
+    list.appendChild(li);
+  });
+  box.querySelector('p').textContent = suggest.items[suggest.index].desc || '';
+  // Under the caret, or above it when there is no room below.
+  const before = code.value.slice(0, code.selectionStart);
+  const row = before.split('\n').length;
+  const col = before.length - before.lastIndexOf('\n') - 1 - suggest.prefix.length;
+  const pt = textPoint(row, Math.max(0, col));
+  box.hidden = false;
+  const area = box.parentElement;
+  const below = pt.y + pt.lh + 4;
+  box.style.left = `${Math.max(4, Math.min(pt.x, area.clientWidth - box.offsetWidth - 4))}px`;
+  box.style.top = `${below + box.offsetHeight > area.clientHeight ? Math.max(4, pt.y - box.offsetHeight - 4) : below}px`;
+  list.children[suggest.index]?.scrollIntoView({ block: 'nearest' });
+}
+
+function acceptSuggest() {
+  const item = suggest.items[suggest.index];
+  closeSuggest();
+  if (!item) return;
+  const end = code.selectionStart;
+  const start = end - suggest.prefix.length;
+  const caretAt = item.insert.indexOf('$0');
+  const text = item.insert.replace('$0', '');
+  suppressSuggest = true;
+  code.setSelectionRange(start, end);
+  // execCommand keeps the browser's own undo history; setRangeText is the fallback.
+  if (!document.execCommand('insertText', false, text)) {
+    code.setRangeText(text, start, end, 'end');
+    code.dispatchEvent(new Event('input'));
+  }
+  suppressSuggest = false;
+  if (caretAt >= 0) code.setSelectionRange(start + caretAt, start + caretAt);
+  updateCursor();
+}
+
+code.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.code === 'Space') { e.preventDefault(); refreshSuggest(true); return; }
+  if (!suggest.open) return;
+  const n = Math.min(suggest.items.length, 40);
+  if (e.key === 'ArrowDown') { e.preventDefault(); suggest.index = (suggest.index + 1) % n; renderSuggest(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); suggest.index = (suggest.index + n - 1) % n; renderSuggest(); }
+  else if (e.key === 'Tab') { e.preventDefault(); acceptSuggest(); }
+  else if (e.key === 'Enter') {
+    // Nothing to add (the command is already typed in full): let Enter make a new line.
+    const item = suggest.items[suggest.index];
+    if (item && item.insert === suggest.prefix) { closeSuggest(); return; }
+    e.preventDefault();
+    acceptSuggest();
+  }
+  else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeSuggest(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') closeSuggest();
+});
+code.addEventListener('blur', closeSuggest);
+code.addEventListener('click', closeSuggest);
 document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); play(); }
   else if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveMuc(); }
@@ -732,9 +875,6 @@ function drawScope() {
 // ---------- playback position highlighting ----------
 // The engine reports, per part, which command in the source it is playing and at which
 // audio frame. Those are applied when that frame is actually heard.
-const PART_LETTERS = 'ABCDEFGHIJK';
-const PART_COLORS = ['#e4572e', '#e09f1f', '#7fa83a', '#1f9e89', '#3d7cc9', '#8e5bd1', '#d6457f',
-  '#c46a2b', '#3fa34d', '#5b7f95', '#b0306a'];
 let lines = [];
 let traceSession = -1, traceEvents = [], traceIndex = 0, traceStale = false, traceDirty = false;
 let clockFrames = 0, clockAt = 0;
