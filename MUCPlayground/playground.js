@@ -35,6 +35,8 @@ const T = {
     loadingSample: (n) => `Loading ${n}…`, sampleFailed: 'Could not load the sample: ',
     underrun: 'Playback is catching up; this device renders slowly.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'Replace the editor contents? Your current text is lost unless you saved it.',
+    newSong: 'New', newSongTip: 'Clear the editor and start a new MUC', newStarted: 'New song: the editor is empty. Save it as .muc when you are done.',
+    confirmNew: 'Clear the editor and start a new song? Your current text and attached files are removed unless you saved them.',
     audioFailed: 'Audio could not start: ', bytes: (n) => `${n.toLocaleString()} bytes`,
     saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
@@ -76,6 +78,8 @@ const T = {
     loadingSample: (n) => `${n} 불러오는 중…`, sampleFailed: '샘플을 불러오지 못했습니다: ',
     underrun: '렌더링이 재생을 따라잡는 중입니다. 이 기기에서는 느릴 수 있습니다.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: '에디터 내용을 바꿀까요? 저장하지 않은 현재 내용은 사라집니다.',
+    newSong: '새로', newSongTip: '에디터를 비우고 새 MUC 작성 시작', newStarted: '새 곡: 에디터를 비웠습니다. 다 쓰면 .muc로 저장하세요.',
+    confirmNew: '에디터를 비우고 새 곡을 시작할까요? 저장하지 않은 현재 내용과 첨부 파일은 사라집니다.',
     audioFailed: '오디오를 시작하지 못했습니다: ', bytes: (n) => `${n.toLocaleString()} 바이트`,
     saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
@@ -117,6 +121,8 @@ const T = {
     loadingSample: (n) => `${n}を読み込み中…`, sampleFailed: 'サンプルを読み込めませんでした: ',
     underrun: 'レンダリングが再生に追いつこうとしています。この端末では遅い場合があります。', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'エディタの内容を置き換えますか？保存していない現在の内容は失われます。',
+    newSong: '新規', newSongTip: 'エディタを空にして新しいMUCを書き始める', newStarted: '新しい曲: エディタを空にしました。書き終えたら.mucで保存してください。',
+    confirmNew: 'エディタを空にして新しい曲を始めますか？保存していない現在の内容と添付ファイルは失われます。',
     audioFailed: 'オーディオを開始できませんでした: ', bytes: (n) => `${n.toLocaleString()}バイト`,
     saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
@@ -652,6 +658,26 @@ async function loadExample(value) {
   }
 }
 $('examples').addEventListener('change', (e) => loadExample(e.target.value));
+
+// New: an empty editor (and no attached files) for a song written from scratch.
+function newSong() {
+  if (current === 'mine' && code.value.trim() && !confirm(t('confirmNew'))) return;
+  stopByUser();
+  clearFiles();
+  setSource('');
+  sourceName = 'SONG.MUC';
+  current = 'mine';
+  saveSong();
+  buildExamples();
+  lastResult = null;
+  renderMessages({ errors: [], warnings: [] });
+  $('nowTitle').textContent = '—';
+  $('nowMeta').textContent = '';
+  setView('editor');
+  if (!matchMedia('(pointer: coarse)').matches) panes[0].code.focus();
+  setStatus(t('newStarted'));
+}
+$('newSong').addEventListener('click', newSong);
 
 // ---------- open / save / drop ----------
 $('open').addEventListener('click', () => $('openInput').click());
@@ -1536,8 +1562,9 @@ function startChannelView(m, source) {
   if (savedFont !== null) setFontSize(savedFont);
   setZoom(DEFAULT_SCALE);
   // Restore your text synchronously so nothing loaded later can overwrite what you type.
+  // An empty editor stays empty (New); only a first visit gets the demo.
   const saved = store.get(STORE_SOURCE);
-  if (saved && saved.trim()) {
+  if (saved !== null) {
     setSource(saved);
     try {
       const song = JSON.parse(store.get(STORE_SONG) || 'null');
@@ -1550,7 +1577,7 @@ function startChannelView(m, source) {
   if (!engineReady) setStatus(t('loading'));
   (async () => {
     try { samples = await (await fetch('samples.json')).json(); } catch { samples = []; }
-    if (!code.value) {
+    if (saved === null && !code.value) {
       const demo = await (await fetch('demo.muc')).text();
       if (!code.value) {   // still untouched while the demo was loading
         setSource(demo);
