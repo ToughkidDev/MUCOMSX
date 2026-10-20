@@ -264,6 +264,18 @@ textarea::selection{background:var(--sel);color:transparent}
 .bank-tabs .btn{padding:1px 10px;font-size:.78rem}
 .bank-tabs .btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
 .bank-file{font-family:var(--mono);color:var(--muted);font-size:.78rem}
+.we-spacer{flex:1}
+.pe-fields{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:6px 12px;border-bottom:1px solid var(--line);font-size:.82rem}
+.pe-fields input[type=text]{width:12em;font-family:var(--mono)}
+.pe-fields input[type=number]{width:5.5em}
+.pe-main{flex:1;display:flex;flex-direction:column;padding:10px 12px;min-height:240px}
+.pe-canvas{flex:1;width:100%;min-height:200px;border:1px solid var(--line);border-radius:6px;cursor:text;touch-action:none}
+.pe-canvas:focus{outline:2px solid var(--accent2);outline-offset:1px}
+.pe-warn{margin:4px 0 0;color:var(--accent);font-size:.8rem}
+.pe-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 12px 10px;border-top:1px solid var(--line);font-size:.82rem}
+.pe-tools .we-tool input[type=number]{width:5em}
+.pe-tools .we-tool select{padding:2px 4px}
+.pe-tools .tool-group,.pe-fields .tool-group{flex-wrap:wrap;max-width:100%}
 .bank-file.missing{color:var(--accent)}
 .bank-bar label{display:inline-flex;align-items:center;gap:5px;color:var(--muted)}
 .bank-bar select{padding:2px 4px}
@@ -493,6 +505,7 @@ footer p{margin:2px 0}
     <div class="chview" id="chview" hidden></div>
     <div class="wavedit" id="waveEditor" hidden></div>
     <div class="wavedit" id="fmEditor" hidden></div>
+    <div class="wavedit" id="pcmEditor" hidden></div>
     <div class="editor-foot">
       <span class="grp ed"><span data-i18n="split">Split</span>
         <span class="tool-group" role="group" id="splitModes">
@@ -527,6 +540,7 @@ footer p{margin:2px 0}
         <button class="btn small" id="addFiles" type="button" data-i18n="addFiles">Add voice / PCM</button>
         <button type="button" class="btn small keys-toggle" id="bankToggle" data-kind="fm" aria-pressed="false" data-i18n-title="bankTip"><span aria-hidden="true">🎛</span> <span data-i18n="bankFmButton">FM bank</span></button>
         <button type="button" class="btn small keys-toggle" id="sccBankToggle" data-kind="scc" aria-pressed="false" data-i18n-title="bankSccTip"><span aria-hidden="true">〰</span> <span data-i18n="bankSccButton">SCC bank</span></button>
+        <button type="button" class="btn small keys-toggle" id="pcmBankToggle" data-kind="pcm" aria-pressed="false" data-i18n-title="bankPcmTip"><span aria-hidden="true">🥁</span> <span data-i18n="bankPcmButton">PCM bank</span></button>
       </div>
       <p class="hint" data-i18n="filesHint">Files named by #voice or #pcm. Add them with the button, or drop them on the page.</p>
     </div>

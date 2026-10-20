@@ -13,6 +13,8 @@ import { Tracker } from './tracker.js';
 import { BankView } from './bank-view.js';
 import { mucVoices, voiceLines, writeDat as writeDatSlot, newDat as newDatBytes, readDat, voiceKey, importVoices } from './voice-bank.js';
 import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, importWaves } from './scc-bank.js';
+import { readPcmBank, putPcm, mucPcms, pcmLine, mucSamples, pcmKey, importPcm, encodeAdpcm, decodeAdpcm, resample, readWav, writeWav, wavFitsCompiler, NATIVE_RATE, SLOTS as PCM_SLOTS, RAM_SIZE } from './pcm-bank.js';
+import { PcmEditor } from './pcm-editor.js';
 import { timeline } from './mml-timeline.js';
 import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
@@ -32,9 +34,9 @@ const T = {
     back: '← MUCOMSX', tagline: 'Write MUCOM88 MML, hear it right away',
     play: '▶ Play', stop: '■ Stop', volume: 'Volume', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
-    files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice or #pcm. Add them with the button, or drop them on the page. FM bank / SCC bank show and edit their voices and waves.',
+    files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
     reference: 'Quick reference', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'Rhythm (v needs 7 values)',
-    refPcm: 'ADPCM (needs #pcm)', refScc: 'SCC 1–5, waves @W0:{…}', refTempo: 'Tempo in BPM / raw Timer-B', refOctave: 'Octave, up, down',
+    refPcm: 'ADPCM (needs #pcm or #@pcm)', refScc: 'SCC 1–5, waves @W0:{…}', refTempo: 'Tempo in BPM / raw Timer-B', refOctave: 'Octave, up, down',
     refLength: 'Default length, length, clocks', refVoice: 'Volume, voice', refLoop: 'Repeat, song loop point',
     refComment: 'Comment', manual: 'Full MML guide:',
     credit1: "Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: MDPlayer4Mac and MUCOMSX by ToughkidCST, mucomDotNET and MDSound by kuma4649. GPL-3.0.",
@@ -52,6 +54,12 @@ const T = {
     waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
     bankTitle: 'Voice bank', bankTip: 'FM voice bank: the song\'s FM voices (voice file and MUC) next to the text', bankTo: 'To',
     bankFmButton: 'FM bank', bankSccButton: 'SCC bank', bankSccTip: 'SCC wave bank: the song\'s SCC waves (wave file and MUC) next to the text',
+    bankPcmButton: 'PCM bank', bankPcmTip: 'ADPCM sample bank: the song\'s PCM samples (#pcm bank file or #@pcm WAVs in the MUC) next to the text',
+    bankFile_pcm: (name, n) => `${name} · ${n} samples`, bankNoFile_pcm: 'no PCM bank file', bankFileIgnored: (name) => `${name}: not used (the MUC's #@pcm lines replace it)`,
+    bankEmpty_pcm: 'No PCM samples yet: Import a .wav (or a bank, .mub, .vgm), or Load a bank file (mucompcm.bin).', bankNotDat_pcm: (name) => `${name} is not a MUCOM88 PCM bank`,
+    bankLoaded_pcm: (name, n) => `${name}: ${n} samples`, bankImported_pcm: (n, to) => `${n} samples added to the ${to}`, bankImportNone_pcm: (names) => `no PCM samples in ${names}`,
+    bankCopiedAll: (n) => `${n} copied from the bank file into the MUC (with #@pcm the compiler uses only the MUC's)`, bankMovedAllToDat: (n, name) => `all ${n} #@pcm samples moved into ${name}`,
+    pcmMissingWav: (name) => `${name}: not attached`, pcmBadWav: 'WAV must be 8 / 16-bit mono (Edit and Apply writes one)', pcmFileNote: (kb) => ` · ${kb} KB of 256`,
     bankShowEmpty: 'empty slots', bankAdd: 'Add', bankDel: 'Del', bankEdit: 'Edit', bankRename: 'Name', bankImport: 'Import', bankLoad: 'Load', bankSave: 'Save',
     bankAddTip: 'Add a voice (Furnace\'s default) at the first free number, to the voice file or the MUC (To)', bankDelTip: 'Delete the selected voice (Delete)', bankEditTip: 'Edit the selected voice in the FM voice editor (Enter)',
     bankRenameTip: 'Rename the selected voice (six characters, voice file only)', bankToDatTip: 'Move the selected MUC voice into the voice file (same number)', bankToMucTip: 'Copy the selected voice-file voice into the MUC as a definition',
@@ -60,7 +68,7 @@ const T = {
     bankEmpty_fm: 'No FM voices yet: Add one, Import from a file, or Load a voice file.', bankEmpty_scc: 'No SCC waves yet: Add one, Import from a file (.dat, .muc, .vgm, Furnace), or Load a wave file (SCWD).', bankHint: 'Click a voice to hear it, double-click to write @n at the caret',
     bankSrc_dat: 'DAT', bankSrc_muc: 'MUC', bankSrc_over: 'MUC▸DAT', bankOverTip: 'defined in the MUC too, which wins over the voice file', bankInline: '(in the MUC)',
     bankInMuc: (row) => `defined in the MUC, line ${row}`, bankInDat: (name) => `in ${name}`, bankUses: (n) => `${n} notes use it`, bankUnused: 'not used in the song',
-    bankFull: 'All 255 numbers are taken', bankAdded: (n, to) => `${n} added to the ${to}`, bankDelUsed: (n, k) => `${n} is used by ${k} notes. Delete it anyway?`,
+    bankFull: (n) => `All ${n} numbers are taken`, bankAdded: (n, to) => `${n} added to the ${to}`, bankDelUsed: (n, k) => `${n} is used by ${k} notes. Delete it anyway?`,
     bankDeleted: (n) => `${n} deleted`, bankDelMucKeepDat: (n) => `${n}'s MUC definition deleted; the voice file's ${n} is used again`,
     bankFormText: 'This voice is written in the @% form: edit it in the text', bankRenameDatOnly: 'Only voice-file voices have names', bankRenamePrompt: 'Name (up to six letters or digits)',
     bankToDatNeedsMuc: 'Pick a voice defined in the MUC', bankToMucNeedsDat: 'Pick a voice from the voice file', bankAlreadyMuc: 'The MUC already defines this number',
@@ -120,9 +128,9 @@ const T = {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
     play: '▶ 재생', stop: '■ 정지', volume: '음량', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
-    files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM 뱅크 / SCC 뱅크에서 음색과 파형을 보고 편집합니다.',
+    files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
     reference: '빠른 참조', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: '리듬 (v는 값 7개)',
-    refPcm: 'ADPCM (#pcm 필요)', refScc: 'SCC 1–5, 파형 @W0:{…}', refTempo: '템포 BPM / Timer-B 값', refOctave: '옥타브, 올림, 내림',
+    refPcm: 'ADPCM (#pcm 또는 #@pcm 필요)', refScc: 'SCC 1–5, 파형 @W0:{…}', refTempo: '템포 BPM / Timer-B 값', refOctave: '옥타브, 올림, 내림',
     refLength: '기본 길이, 길이, 클록', refVoice: '음량, 음색', refLoop: '반복, 곡 루프 지점',
     refComment: '주석', manual: 'MML 전체 설명:',
     credit1: '컴파일러, 드라이버, 칩 에뮬레이션은 MDPlayer4Mac의 것을 브라우저용으로 빌드했습니다: ToughkidCST의 MDPlayer4Mac과 MUCOMSX, kuma4649의 mucomDotNET과 MDSound. GPL-3.0.',
@@ -140,6 +148,12 @@ const T = {
     waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
     bankTitle: '음색 뱅크', bankTip: 'FM 음색 뱅크: 곡의 FM 음색(음색 파일과 MUC)을 텍스트 옆에 표시', bankTo: '대상',
     bankFmButton: 'FM 뱅크', bankSccButton: 'SCC 뱅크', bankSccTip: 'SCC 파형 뱅크: 곡의 SCC 파형(파형 파일과 MUC)을 텍스트 옆에 표시',
+    bankPcmButton: 'PCM 뱅크', bankPcmTip: 'ADPCM 샘플 뱅크: 곡의 PCM 샘플(#pcm 뱅크 파일 또는 MUC의 #@pcm WAV)을 텍스트 옆에 표시',
+    bankFile_pcm: (name, n) => `${name} · 샘플 ${n}개`, bankNoFile_pcm: 'PCM 뱅크 파일 없음', bankFileIgnored: (name) => `${name}: 사용 안 됨 (MUC의 #@pcm이 대신함)`,
+    bankEmpty_pcm: '아직 PCM 샘플이 없습니다. .wav(또는 뱅크, .mub, .vgm)를 가져오거나, 뱅크 파일(mucompcm.bin)을 로드하세요.', bankNotDat_pcm: (name) => `${name}은 MUCOM88 PCM 뱅크가 아닙니다`,
+    bankLoaded_pcm: (name, n) => `${name}: 샘플 ${n}개`, bankImported_pcm: (n, to) => `${to}에 샘플 ${n}개 추가`, bankImportNone_pcm: (names) => `${names}에 PCM 샘플 없음`,
+    bankCopiedAll: (n) => `뱅크 파일의 ${n}개를 MUC로 복사 (#@pcm이 있으면 컴파일러는 MUC 것만 씀)`, bankMovedAllToDat: (n, name) => `#@pcm 샘플 ${n}개를 모두 ${name}로 옮김`,
+    pcmMissingWav: (name) => `${name}: 첨부 안 됨`, pcmBadWav: 'WAV는 8 / 16비트 모노여야 함 (편집 후 적용하면 맞춰 씀)', pcmFileNote: (kb) => ` · ${kb} KB / 256`,
     bankShowEmpty: '빈 칸', bankAdd: '추가', bankDel: '삭제', bankEdit: '편집', bankRename: '이름', bankImport: '가져오기', bankLoad: '로드', bankSave: '저장',
     bankAddTip: '첫 빈 번호에 음색 추가 (Furnace 기본 음색). 대상: 음색 파일 또는 MUC', bankDelTip: '선택한 음색 삭제 (Delete)', bankEditTip: '선택한 음색을 FM 음색 편집기에서 편집 (Enter)',
     bankRenameTip: '선택한 음색 이름 바꾸기 (6자, 음색 파일만)', bankToDatTip: '선택한 MUC 음색을 음색 파일로 옮기기 (같은 번호)', bankToMucTip: '선택한 음색 파일의 음색을 MUC 정의로 복사',
@@ -148,7 +162,7 @@ const T = {
     bankEmpty_fm: '아직 FM 음색이 없습니다. 추가하거나, 파일에서 가져오거나, 음색 파일을 로드하세요.', bankEmpty_scc: '아직 SCC 파형이 없습니다. 추가하거나, 파일(.dat, .muc, .vgm, Furnace)에서 가져오거나, 파형 파일(SCWD)을 로드하세요.', bankHint: '음색을 클릭하면 들리고, 더블클릭하면 커서 위치에 @n을 씁니다',
     bankSrc_dat: 'DAT', bankSrc_muc: 'MUC', bankSrc_over: 'MUC▸DAT', bankOverTip: 'MUC에도 정의되어 있어 음색 파일보다 우선합니다', bankInline: '(MUC 정의)',
     bankInMuc: (row) => `MUC ${row}행에 정의`, bankInDat: (name) => `${name}에 있음`, bankUses: (n) => `음표 ${n}개가 사용`, bankUnused: '곡에서 사용 안 함',
-    bankFull: '255개 번호를 모두 쓰고 있습니다', bankAdded: (n, to) => `${n}을 ${to}에 추가`, bankDelUsed: (n, k) => `${n}은 음표 ${k}개가 사용합니다. 그래도 삭제할까요?`,
+    bankFull: (n) => `${n}개 번호를 모두 쓰고 있습니다`, bankAdded: (n, to) => `${n}을 ${to}에 추가`, bankDelUsed: (n, k) => `${n}은 음표 ${k}개가 사용합니다. 그래도 삭제할까요?`,
     bankDeleted: (n) => `${n} 삭제`, bankDelMucKeepDat: (n) => `${n}의 MUC 정의를 삭제했습니다. 이제 음색 파일의 ${n}이 쓰입니다`,
     bankFormText: '이 음색은 @% 형식이라 텍스트에서 편집하세요', bankRenameDatOnly: '이름은 음색 파일의 음색에만 있습니다', bankRenamePrompt: '이름 (영문·숫자 6자까지)',
     bankToDatNeedsMuc: 'MUC에 정의된 음색을 고르세요', bankToMucNeedsDat: '음색 파일의 음색을 고르세요', bankAlreadyMuc: 'MUC에 이미 이 번호가 정의되어 있습니다',
@@ -208,9 +222,9 @@ const T = {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
     play: '▶ 再生', stop: '■ 停止', volume: '音量', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
-    files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FMバンク / SCCバンクで音色と波形を表示・編集します。',
+    files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
     reference: 'クイックリファレンス', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'リズム（vは7つの値）',
-    refPcm: 'ADPCM（#pcmが必要）', refScc: 'SCC 1–5、波形 @W0:{…}', refTempo: 'テンポ BPM / Timer-B値', refOctave: 'オクターブ、上げ、下げ',
+    refPcm: 'ADPCM（#pcmか#@pcmが必要）', refScc: 'SCC 1–5、波形 @W0:{…}', refTempo: 'テンポ BPM / Timer-B値', refOctave: 'オクターブ、上げ、下げ',
     refLength: '基本音長、音長、クロック', refVoice: '音量、音色', refLoop: '繰り返し、曲のループ位置',
     refComment: 'コメント', manual: 'MMLの詳しい説明:',
     credit1: 'コンパイラ・ドライバ・チップエミュレーションはMDPlayer4Macのものをブラウザ向けにビルドしています: ToughkidCST氏のMDPlayer4MacとMUCOMSX、kuma4649氏のmucomDotNETとMDSound。GPL-3.0。',
@@ -228,6 +242,12 @@ const T = {
     waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
     bankTitle: '音色バンク', bankTip: 'FM音色バンク: 曲のFM音色（音色ファイルとMUC）をテキストの横に表示', bankTo: '追加先',
     bankFmButton: 'FMバンク', bankSccButton: 'SCCバンク', bankSccTip: 'SCC波形バンク: 曲のSCC波形（波形ファイルとMUC）をテキストの横に表示',
+    bankPcmButton: 'PCMバンク', bankPcmTip: 'ADPCMサンプルバンク: 曲のPCMサンプル（#pcmバンクファイルまたはMUCの#@pcm WAV）をテキストの横に表示',
+    bankFile_pcm: (name, n) => `${name} · ${n}サンプル`, bankNoFile_pcm: 'PCMバンクファイルなし', bankFileIgnored: (name) => `${name}: 未使用（MUCの#@pcmが代わりに使われる）`,
+    bankEmpty_pcm: 'PCMサンプルがまだありません。.wav（またはバンク、.mub、.vgm）をインポートするか、バンクファイル（mucompcm.bin）をロードしてください。', bankNotDat_pcm: (name) => `${name}はMUCOM88 PCMバンクではありません`,
+    bankLoaded_pcm: (name, n) => `${name}: ${n}サンプル`, bankImported_pcm: (n, to) => `${to}に${n}サンプルを追加`, bankImportNone_pcm: (names) => `${names}にPCMサンプルなし`,
+    bankCopiedAll: (n) => `バンクファイルの${n}個をMUCへコピー（#@pcmがあるとコンパイラはMUCのものだけを使う）`, bankMovedAllToDat: (n, name) => `#@pcmサンプル${n}個をすべて${name}へ移動`,
+    pcmMissingWav: (name) => `${name}: 未添付`, pcmBadWav: 'WAVは8 / 16ビットモノラルが必要（編集して適用すると書き直す）', pcmFileNote: (kb) => ` · ${kb} KB / 256`,
     bankShowEmpty: '空き', bankAdd: '追加', bankDel: '削除', bankEdit: '編集', bankRename: '名前', bankImport: 'インポート', bankLoad: 'ロード', bankSave: '保存',
     bankAddTip: '最初の空き番号に音色を追加（Furnaceの初期音色）。追加先: 音色ファイルかMUC', bankDelTip: '選んだ音色を削除（Delete）', bankEditTip: '選んだ音色をFM音色エディタで編集（Enter）',
     bankRenameTip: '選んだ音色の名前を変える（6文字、音色ファイルのみ）', bankToDatTip: '選んだMUCの音色を音色ファイルへ移す（同じ番号）', bankToMucTip: '選んだ音色ファイルの音色をMUCの定義としてコピー',
@@ -236,7 +256,7 @@ const T = {
     bankEmpty_fm: 'FM音色がまだありません。追加、ファイルからインポート、または音色ファイルをロードしてください。', bankEmpty_scc: 'SCC波形がまだありません。追加、ファイル（.dat, .muc, .vgm, Furnace）からインポート、または波形ファイル（SCWD）をロードしてください。', bankHint: '音色をクリックで試聴、ダブルクリックでカーソル位置に@nを書きます',
     bankSrc_dat: 'DAT', bankSrc_muc: 'MUC', bankSrc_over: 'MUC▸DAT', bankOverTip: 'MUCにも定義があり、音色ファイルより優先されます', bankInline: '（MUC定義）',
     bankInMuc: (row) => `MUC ${row}行目で定義`, bankInDat: (name) => `${name}内`, bankUses: (n) => `${n}音符が使用`, bankUnused: '曲では未使用',
-    bankFull: '255番まで埋まっています', bankAdded: (n, to) => `${n}を${to}に追加`, bankDelUsed: (n, k) => `${n}は${k}音符が使っています。削除しますか？`,
+    bankFull: (n) => `${n}個の番号がすべて使われています`, bankAdded: (n, to) => `${n}を${to}に追加`, bankDelUsed: (n, k) => `${n}は${k}音符が使っています。削除しますか？`,
     bankDeleted: (n) => `${n}を削除`, bankDelMucKeepDat: (n) => `${n}のMUC定義を削除しました。音色ファイルの${n}が使われます`,
     bankFormText: 'この音色は@%形式なのでテキストで編集してください', bankRenameDatOnly: '名前は音色ファイルの音色にだけあります', bankRenamePrompt: '名前（英数字6文字まで）',
     bankToDatNeedsMuc: 'MUCで定義された音色を選んでください', bankToMucNeedsDat: '音色ファイルの音色を選んでください', bankAlreadyMuc: 'MUCにすでにこの番号の定義があります',
@@ -749,6 +769,7 @@ function referencedFiles() {
   const re = /^#(voice|pcm|sccvoice)[ \t]+([^\s;]+)/gim;
   let m;
   while ((m = re.exec(code.value))) names.push(m[2].replace(/^"|"$/g, ''));
+  for (const d of mucPcms(code.value)) if (d.file) names.push(d.file);
   return names;
 }
 
@@ -1907,6 +1928,14 @@ const fmEditor = new FmEditor($('fmEditor'), {
   }),
 });
 
+const pcmEditor = new PcmEditor($('pcmEditor'), {
+  lang: () => lang,
+  onApply: (r) => writePcm(r),
+  onClose: () => closeWaveEditor(),
+  audio: () => { unlockAudio(); return ctx; },
+  volume: () => (+$('volume').value / 100) ** 2,
+});
+
 function startEdit(def, fm) {
   if (viewMode === 'channels') setView('editor');
   hideWave();
@@ -1929,7 +1958,8 @@ function openFmEditor(def) {
 // Writes what the open editor holds into the song.
 function writeEdit() {
   if (!waveEdit) return;
-  if (waveEdit.fm) writeVoice(fmEditor.voice);
+  if (waveEdit.pcm) writePcm(pcmEditor.result());
+  else if (waveEdit.fm) writeVoice(fmEditor.voice);
   else writeWave(waveEditor.values.slice());
 }
 
@@ -1977,10 +2007,11 @@ function writeWave(values) {
 
 function closeWaveEditor() {
   if (!waveEdit) return;
-  const row = waveEdit.row, wasDat = !!waveEdit.dat || waveEdit.scc !== undefined;
+  const row = waveEdit.row, wasDat = !!waveEdit.dat || waveEdit.scc !== undefined || !!waveEdit.pcm;
   waveEdit = null;
   if (waveEditor.isOpen) waveEditor.close();
   if (fmEditor.isOpen) fmEditor.close();
+  if (pcmEditor.isOpen) pcmEditor.close();
   $('panes').hidden = viewMode === 'channels';
   document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = viewMode === 'channels'; });
   renderGutter();
@@ -2369,6 +2400,139 @@ function drawWaveMini(canvas, wave) {
   wave.forEach((v, i) => { const x = (i / 32) * w, y = h / 2 - (v / 128) * (h / 2 - 1); if (i) g.lineTo(x, y); else g.moveTo(x, y); g.lineTo(((i + 1) / 32) * w, y); });
   g.stroke();
 }
+// ADPCM samples: the audio an entry was made from this visit (ADPCM-B loses detail, so
+// edits start from it rather than from the decoded data), decoded data for drawing and
+// hearing, and the #@pcm WAVs read as the compiler reads them.
+const pcmSources = new Map();     // pcmKey(adpcm) -> { samples, rate }
+const pcmDecoded = new Map();     // pcmKey(adpcm) -> Float32Array
+const pcmFromWav = new WeakMap(); // the WAV's ArrayBuffer -> Map('volume|R' -> data)
+const PCM_FILE_VOLUME = 32;       // what MUCOM88's bank tools put in a new entry
+function decodedPcm(adpcm) {
+  const key = pcmKey(adpcm);
+  let x = pcmDecoded.get(key);
+  if (!x) {
+    x = decodeAdpcm(adpcm);
+    if (pcmDecoded.size > 200) pcmDecoded.clear();
+    pcmDecoded.set(key, x);
+  }
+  return x;
+}
+// { samples, rate } for editing an entry.
+function pcmAudio(d) {
+  if (d.source) return d.source;
+  if (!d.adpcm) return null;
+  return pcmSources.get(pcmKey(d.adpcm)) || { samples: decodedPcm(d.adpcm), rate: NATIVE_RATE };
+}
+function pcmEntry(samples, rate, volume) {
+  const adpcm = encodeAdpcm(samples), source = { samples, rate };
+  pcmSources.set(pcmKey(adpcm), source);
+  return { adpcm, volume, source };
+}
+function mucPcmData(def) {
+  const f = files.get(def.file.split(/[\\/]/).pop().toLowerCase());
+  if (!f) return { missing: true, wav: def.file, volume: def.volume };
+  let byDef = pcmFromWav.get(f.data);
+  if (!byDef) pcmFromWav.set(f.data, (byDef = new Map()));
+  const key = `${def.volume}|${def.reverse}`;
+  if (!byDef.has(key)) {
+    const bytes = new Uint8Array(f.data);
+    const got = mucSamples(def, bytes);
+    // The compiler encodes the WAV as it is: its samples at its own rate.
+    byDef.set(key, got
+      ? { adpcm: encodeAdpcm(got.samples), volume: def.volume, wav: f.name, source: got, bad: !wavFitsCompiler(bytes) }
+      : { missing: true, bad: true, wav: f.name, volume: def.volume });
+  }
+  return byDef.get(key);
+}
+// Audio the browser can decode (mp3, ogg, flac, ...), mixed to mono.
+async function decodeAudioFile(bytes) {
+  const c = new OfflineAudioContext(1, 1, 44100);
+  const buf = await c.decodeAudioData(bytes.slice().buffer);
+  const out = new Float32Array(buf.length);
+  for (let ch = 0; ch < buf.numberOfChannels; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < d.length; i++) out[i] += d[i] / buf.numberOfChannels; }
+  return { samples: out, rate: buf.sampleRate };
+}
+// A WAV for #@pcm named after the sample, not overwriting another file (one with the very
+// same bytes can stay).
+function pcmWavName(n, name, bytes) {
+  const base = (name || '').replace(/[^A-Za-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 12) || `pcm${n}`;
+  const taken = new Set(mucPcms(code.value).map((d) => d.file.toLowerCase()));
+  const same = (f) => f.data.byteLength === bytes.length && new Uint8Array(f.data).every((x, i) => x === bytes[i]);
+  for (let k = 0; k < 100; k++) {
+    const cand = k ? `${base}_${k + 1}.wav` : `${base}.wav`;
+    const f = files.get(cand.toLowerCase());
+    if (!taken.has(cand.toLowerCase()) && (!f || same(f))) return cand;
+  }
+  return `pcm${n}_${Date.now() % 100000}.wav`;
+}
+let pcmPreview = null;
+function previewPcm(d) {
+  if (!d.adpcm) return;
+  unlockAudio();
+  if (!ctx) return;
+  try { pcmPreview?.stop(); } catch { /* ended */ }
+  const data = decodedPcm(d.adpcm), rate = d.source?.rate ?? NATIVE_RATE;
+  const buf = ctx.createBuffer(1, data.length, Math.max(3000, Math.min(384000, rate)));
+  buf.copyToChannel(data, 0);
+  const src = ctx.createBufferSource(), gain = ctx.createGain();
+  src.buffer = buf;
+  src.playbackRate.value = rate / buf.sampleRate;
+  gain.gain.value = 0.6 * (+$('volume').value / 100) ** 2;
+  src.connect(gain).connect(ctx.destination);
+  src.onended = () => gain.disconnect();
+  src.start();
+  pcmPreview = src;
+}
+function drawPcmMini(canvas, d) {
+  const g = setupMini(canvas), w = 44, h = 20;
+  g.strokeStyle = cssColor('--line');
+  g.beginPath(); g.moveTo(0, h / 2 + .5); g.lineTo(w, h / 2 + .5); g.stroke();
+  if (!d.adpcm) return;
+  const s = d.source?.samples || decodedPcm(d.adpcm);
+  g.fillStyle = cssColor('--accent2');
+  for (let x = 0; x < w; x++) {
+    const from = Math.floor((x / w) * s.length), to = Math.max(from + 1, Math.floor(((x + 1) / w) * s.length));
+    let peak = 0;
+    for (let i = from; i < to && i < s.length; i++) peak = Math.max(peak, Math.abs(s[i]));
+    const y = Math.max(0.5, peak * (h / 2 - 1));
+    g.fillRect(x, h / 2 - y, 1, y * 2);
+  }
+}
+function describePcm(d) {
+  if (d.missing) return d.bad ? t('pcmBadWav') : t('pcmMissingWav', d.wav);
+  const rate = d.source?.rate ?? NATIVE_RATE, n = d.adpcm.length * 2;
+  return `${(Math.min(n, d.source?.samples.length ?? n) / rate).toFixed(2)}s ${(d.adpcm.length / 1024).toFixed(1)}K` + (d.bad ? ' ⚠' : '');
+}
+function openPcmEditor(target, n, d, name) {
+  const audio = pcmAudio(d);
+  if (!audio) { bank.info(t('pcmMissingWav', d.wav)); return; }
+  startEdit({ row: target.def?.row || 0 }, false);
+  waveEdit.pcm = { ...target, n, extra: d.extra };
+  pcmEditor.open({ title: `@${n}`, name, volume: d.volume ?? (target.def ? 100 : PCM_FILE_VOLUME), samples: audio.samples, rate: audio.rate, nameMax: 16 });
+  $('pcmEditor').querySelector('.pe-canvas')?.focus?.();
+}
+// What the PCM editor holds, into the bank file entry or the #@pcm WAV and line.
+function writePcm(r) {
+  const p = waveEdit?.pcm;
+  if (!p) return;
+  const adpcm = encodeAdpcm(r.samples);
+  if (adpcm.length > 65536) return;
+  pcmSources.set(pcmKey(adpcm), { samples: r.samples, rate: r.rate });
+  if (p.def) {
+    const def = mucPcms(code.value).find((x) => x.row === p.def.row && x.n === p.def.n) || p.def;
+    // The WAV holds the audio as it is; the line keeps its volume (a % of it) and R.
+    const wav = writeWav(def.reverse ? r.samples.slice().reverse() : r.samples, r.rate);
+    const file = def.file || pcmWavName(def.n, r.name, wav);
+    attach(file, wav.buffer);
+    replaceRows(def.row, def.row, [pcmLine(def.n, r.name, file, r.volume, def.reverse)]);
+    p.def = { ...def, file, row: def.row };
+    scheduleCheck();
+    return;
+  }
+  bank.kind = 'pcm';
+  try { bank.put(p.n, { adpcm, volume: r.volume, extra: p.extra }, r.name); } catch (err) { bank.info(String(err.message || err)); }
+  bank.refresh();
+}
 // The bank's file for the FM editor / wave editor writing a file entry.
 function bankWriteVoice(n, voice, name) {
   const s = bank.state.fm;
@@ -2462,6 +2626,64 @@ const bank = new BankView($('bank'), {
       },
       importFile: async (name, bytes) => (await importWaves(name, bytes)).waves.map((x) => ({ data: x.wave })),
     },
+    pcm: {
+      id: 'pcm', label: 'PCM', first: 1, last: PCM_SLOTS, mark: '@', hasNames: true, whole: true, fileLabel: 'BIN', defaultFile: 'mucompcm.bin',
+      accept: '.wav,.bin,.pcm,.mub,.vgm,.vgz,.mp3,.ogg,.flac,.aif,.aiff,.m4a', loadAccept: '.bin,.pcm',
+      file: () => {
+        const f = attachedTagFile('pcm', 'mucompcm.bin');
+        const bytes = f.file ? new Uint8Array(f.file.data) : null;
+        return { name: f.tagged ? f.name : f.file ? f.file.name : '', bytes: bytes && readPcmBank(bytes) ? bytes : null };
+      },
+      setFile: (bytes, { name, link }) => {
+        if (bytes) { attach(name, bytes.slice().buffer); if (link) setFileTag('pcm', name); }
+        else { detach(name.toLowerCase()); removeFileTag('pcm'); }
+        scheduleCheck();
+      },
+      fileNote: (bytes) => t('pcmFileNote', Math.ceil(Math.max(0, bytes.length - 0x400) / 1024)),
+      read: (bytes) => (readPcmBank(bytes)?.entries || []).map((e) => ({ n: e.n, name: e.name, data: { adpcm: e.adpcm, volume: e.volume, extra: e.extra, source: pcmSources.get(pcmKey(e.adpcm)) } })),
+      put: (bytes, n, d, name) => {
+        if (d && !d.adpcm) throw new Error(t('pcmMissingWav', d.wav));
+        return putPcm(bytes, n, d ? { name, volume: d.volume ?? PCM_FILE_VOLUME, adpcm: d.adpcm, extra: d.extra } : null);
+      },
+      validFile: (b) => !!readPcmBank(b),
+      muc: () => mucPcms(code.value).map((def) => ({ ...def, data: mucPcmData(def), editable: true })),
+      key: (d) => (d.adpcm ? pcmKey(d.adpcm) : `wav:${d.wav}`),
+      usage: () => usageFor(/^K$/),
+      describe: describePcm,
+      drawMini: drawPcmMini,
+      preview: previewPcm,
+      initData: () => {
+        // A short blip to start from (Import brings real samples).
+        const s = new Float32Array(Math.round(NATIVE_RATE * 0.15));
+        for (let i = 0; i < s.length; i++) s[i] = 0.7 * Math.sin((2 * Math.PI * 880 * i) / NATIVE_RATE) * Math.exp(-i / (s.length / 4));
+        return pcmEntry(s, NATIVE_RATE, PCM_FILE_VOLUME);
+      },
+      removeMuc: (m) => replaceRows(m.row, m.endRow, null),
+      addMuc: (n, d, name) => {
+        const audio = pcmAudio(d);
+        if (!audio) return;
+        const wav = writeWav(audio.samples, audio.rate);
+        const file = pcmWavName(n, name, wav);
+        attach(file, wav.buffer);
+        // The WAV is the sample itself: 100 % (the volume also scales it).
+        addDefinition([pcmLine(n, name || file.replace(/\.wav$/, ''), file, 100)], mucPcms(code.value), true);
+      },
+      editMuc: (m) => {
+        const f = files.get(m.file.split(/[\\/]/).pop().toLowerCase());
+        const w = f && readWav(new Uint8Array(f.data));
+        if (!w) { bank.info(t('pcmMissingWav', m.file)); return; }
+        openPcmEditor({ def: m }, m.n, { source: { samples: m.reverse ? w.samples.slice().reverse() : w.samples, rate: w.rate }, volume: m.volume }, m.name);
+      },
+      editFile: (n, d, name) => openPcmEditor({}, n, d, name),
+      importFile: async (name, bytes) => (await importPcm(name, bytes, decodeAudioFile)).samples.map((x) => {
+        if (x.adpcm) return { data: { adpcm: x.adpcm, volume: x.volume ?? PCM_FILE_VOLUME, extra: x.extra }, name: x.name };
+        // Audio: down to o1 c's rate when it is above it, and at most one entry long.
+        let { samples, rate } = x;
+        if (rate > NATIVE_RATE * 1.02) { samples = resample(samples, rate, NATIVE_RATE); rate = NATIVE_RATE; }
+        if (samples.length > 131072) samples = samples.slice(0, 131072);
+        return { data: pcmEntry(samples, rate, PCM_FILE_VOLUME), name: x.name.slice(0, 16) };
+      }),
+    },
   },
 });
 bankReady = true;
@@ -2494,7 +2716,9 @@ function addDefinition(rows, defs, beforeMusic = false) {
   const starts = [0];
   for (let i = 0; i < lines.length; i++) starts.push(starts[i] + lines[i].length + 1);
   const at = after < lines.length ? starts[after] : code.value.length;
-  const text = (at === code.value.length && !code.value.endsWith('\n') ? '\n' : '') + (defs.length ? '' : '\n') + rows.join('\n') + '\n' + (defs.length || at === code.value.length ? '' : '\n');
+  // A first definition gets a blank line around it, unless one is there already.
+  const blankBefore = after === 0 || !lines[after - 1].trim();
+  const text = (at === code.value.length && !code.value.endsWith('\n') ? '\n' : '') + (defs.length || blankBefore ? '' : '\n') + rows.join('\n') + '\n' + (defs.length || at === code.value.length ? '' : '\n');
   code.setRangeText(text, at, at, 'preserve');
   code.dispatchEvent(new Event('input'));
 }
@@ -2524,9 +2748,9 @@ function removeFileTag(tag) {
 // FM bank / SCC bank, in the voice / PCM files card: each opens the bank on its tab (and
 // closes it when that tab is showing); from the channel view it goes back to the editor.
 function markBankButtons() {
-  for (const id of ['bankToggle', 'sccBankToggle']) $(id).setAttribute('aria-pressed', String(splitMode === 'bank' && bank.kind === $(id).dataset.kind));
+  for (const id of ['bankToggle', 'sccBankToggle', 'pcmBankToggle']) $(id).setAttribute('aria-pressed', String(splitMode === 'bank' && bank.kind === $(id).dataset.kind));
 }
-for (const id of ['bankToggle', 'sccBankToggle']) {
+for (const id of ['bankToggle', 'sccBankToggle', 'pcmBankToggle']) {
   $(id).addEventListener('click', () => {
     const kind = $(id).dataset.kind;
     if (splitMode === 'bank' && bank.kind === kind) { setSplit('off'); return; }

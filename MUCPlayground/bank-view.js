@@ -1,11 +1,14 @@
-// Voice bank view: the song's FM voices or SCC waves as a list next to the text (like the
-// tracker view), on two tabs. Each list joins the file the song uses (FM: #voice / VOICE.DAT,
-// SCC: #sccvoice / SCCVOICE.DAT) and what the MUC defines itself; where both have a number,
-// the MUC's wins, as in the compilers. The buttons work on the selected entry; new ones go to
-// the file (DAT) or into the MUC text, whichever "To" says.
+// Voice bank view: the song's FM voices, SCC waves or ADPCM samples as a list next to the
+// text (like the tracker view), on tabs. Each list joins the file the song uses (FM: #voice /
+// VOICE.DAT, SCC: #sccvoice / SCCVOICE.DAT, PCM: #pcm / mucompcm.bin) and what the MUC
+// defines itself; where both have a number, the MUC's wins, as in the compilers (PCM: any
+// #@pcm line and the compiler ignores the whole #pcm file). The buttons work on the selected
+// entry; new ones go to the file (DAT) or into the MUC text, whichever "To" says.
 //
-// What differs between FM and SCC lives in a kind (made by the page):
-//   id, label; first number; mark ('@' / '@W'); hasNames; defaultFile; accept (import);
+// What differs between the kinds lives in a kind (made by the page):
+//   id, label; first / last number; mark ('@' / '@W'); hasNames; defaultFile; accept
+//   (import); loadAccept; fileLabel ('DAT'); whole (the MUC's entries replace the file's);
+//   fileNote() (shown after the file name);
 //   file() -> { name, bytes | null }; setFile(bytes | null, { name, link });
 //   read(bytes) -> [{ n, data, name }]; put(bytes, n, data | null, name) -> bytes | null;
 //   validFile(bytes); muc() -> [{ n, data, row, endRow, editable }]; key(data);
@@ -89,8 +92,11 @@ export class BankView {
     s.fileBytes = file.bytes;
     const byN = new Map();
     for (const d of file.bytes ? k.read(file.bytes) || [] : []) byN.set(d.n, { n: d.n, file: d });
-    for (const m of k.muc()) {
-      if (m.n < k.first || m.n > 255) continue;
+    const muc = k.muc().filter((m) => m.n >= k.first && m.n <= this.last);
+    // A kind whose MUC entries replace the file: the file's are not used then.
+    s.fileIgnored = !!(k.whole && muc.length && file.bytes);
+    if (s.fileIgnored) byN.clear();
+    for (const m of muc) {
       const e = byN.get(m.n) || { n: m.n };
       if (!e.muc) e.muc = m;   // the first definition is the one the compiler finds
       byN.set(m.n, e);
@@ -98,33 +104,36 @@ export class BankView {
     const usage = k.usage();
     for (const e of byN.values()) {
       e.data = (e.muc || e.file).data;
-      e.name = e.file?.name || '';
+      e.name = e.file?.name || e.muc?.name || '';
       e.uses = (usage.get(e.n) || 0) + (e.name ? usage.get(e.name) || 0 : 0);
     }
     s.entries = [...byN.values()].sort((a, b) => a.n - b.n);
     // To: the file when the song has one, else the MUC, until chosen by hand.
-    if (!s.targetChosen) s.target = file.bytes ? 'dat' : 'muc';
+    if (!s.targetChosen) s.target = file.bytes && !s.fileIgnored ? 'dat' : 'muc';
     this.render();
   }
 
   entry(n) { return this.entries.find((e) => e.n === n) || null; }
+  get last() { return this.k.last ?? 255; }
 
   shown() {
     if (!this.showEmpty) return this.entries;
     const first = this.k.first;
-    return Array.from({ length: 256 - first }, (_, i) => this.entry(i + first) || { n: i + first, empty: true });
+    return Array.from({ length: this.last + 1 - first }, (_, i) => this.entry(i + first) || { n: i + first, empty: true });
   }
 
   render() {
     if (!this.isOpen) return;
     const T = this.o.t, k = this.k, s = this.s;
     this.root.querySelectorAll('[data-kind]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.kind === this.kind)));
+    this.root.querySelector('.bank-target option[value="dat"]').textContent = k.fileLabel || 'DAT';
     this.root.querySelector('.bank-target').value = s.target;
     this.root.querySelector('[data-act="rename"]').hidden = !k.hasNames;
+    this.root.querySelector('[data-act="toDat"]').textContent = '→' + (k.fileLabel || 'DAT');
     const file = this.root.querySelector('.bank-file');
     const count = this.entries.filter((e) => e.file).length;
-    file.textContent = s.fileBytes ? T('bankFile_' + k.id, s.fileName, count) : s.fileName ? T('bankFileMissing', s.fileName) : T('bankNoFile_' + k.id);
-    file.classList.toggle('missing', !s.fileBytes);
+    file.textContent = s.fileIgnored ? T('bankFileIgnored', s.fileName) : s.fileBytes ? T('bankFile_' + k.id, s.fileName, count) + (k.fileNote?.(s.fileBytes) || '') : s.fileName ? T('bankFileMissing', s.fileName) : T('bankNoFile_' + k.id);
+    file.classList.toggle('missing', !s.fileBytes || s.fileIgnored);
     const list = this.root.querySelector('.bank-list');
     const keep = list.scrollTop;
     list.innerHTML = '';
@@ -146,7 +155,8 @@ export class BankView {
         row.innerHTML = `<span class="n">${k.mark}${e.n}</span><span class="name">—</span>`;
       } else {
         const src = e.muc && e.file ? 'over' : e.muc ? 'muc' : 'dat';
-        row.innerHTML = `<span class="n">${k.mark}${e.n}</span><span class="name"></span><span class="src ${src}">${T('bankSrc_' + src)}</span><canvas class="alg"></canvas><span class="fa"></span><span class="uses"></span>`;
+        const srcText = src === 'dat' && k.fileLabel ? k.fileLabel : T('bankSrc_' + src);
+        row.innerHTML = `<span class="n">${k.mark}${e.n}</span><span class="name"></span><span class="src ${src}">${srcText}</span><canvas class="alg"></canvas><span class="fa"></span><span class="uses"></span>`;
         row.querySelector('.name').textContent = e.name || (e.muc ? T('bankInline') : '');
         row.querySelector('.fa').textContent = k.describe(e.data);
         row.querySelector('.uses').textContent = e.uses ? `×${e.uses}` : '';
@@ -205,8 +215,18 @@ export class BankView {
   }
 
   freeNumber(taken) {
-    for (let n = this.k.first; n < 256; n++) if (!taken.has(n)) return n;
+    for (let n = this.k.first; n <= this.last; n++) if (!taken.has(n)) return n;
     return -1;
+  }
+
+  // A kind whose MUC entries replace the file: before the first one goes into the MUC, the
+  // file's entries are copied there too, so none of them stops being used.
+  keepFileInMuc() {
+    const k = this.k, s = this.s;
+    if (!k.whole || !s.fileBytes || s.fileIgnored || this.entries.some((x) => x.muc)) return 0;
+    const list = this.entries.filter((x) => x.file);
+    for (const x of list) k.addMuc(x.n, x.file.data, x.name);
+    return list.length;
   }
 
   // ---------- the buttons ----------
@@ -216,12 +236,13 @@ export class BankView {
     switch (what) {
       case 'add': {
         const n = this.freeNumber(new Set(this.entries.map((x) => x.n)));
-        if (n < 0) { this.info(T('bankFull')); return; }
+        if (n < 0) { this.info(T('bankFull', this.last + 1 - k.first)); return; }
+        let copied = 0;
         if (s.target === 'dat') this.put(n, k.initData(), `new${n}`.slice(0, 6));
-        else k.addMuc(n, k.initData());
+        else { copied = this.keepFileInMuc(); k.addMuc(n, k.initData(), `new${n}`.slice(0, 6)); }
         s.selected = n;
         this.refresh();
-        this.info(T('bankAdded', k.mark + n, s.target.toUpperCase()));
+        this.info(T('bankAdded', k.mark + n, s.target === 'dat' ? k.fileLabel || 'DAT' : 'MUC') + (copied ? ' · ' + T('bankCopiedAll', copied) : ''));
         return;
       }
       case 'del': {
@@ -243,15 +264,33 @@ export class BankView {
         if (!e || !e.file) { this.info(T('bankRenameDatOnly')); return; }
         const name = prompt(T('bankRenamePrompt'), e.name);
         if (name === null) return;
-        this.put(e.n, e.file.data, name);
+        try { this.put(e.n, e.file.data, name); } catch (err) { this.info(String(err.message || err)); return; }
         this.refresh();
         return;
       }
       case 'toDat': {
         if (!e || !e.muc) { this.info(T('bankToDatNeedsMuc')); return; }
+        if (k.whole) {
+          // All of them: one left in the MUC would keep the file unused.
+          const list = this.entries.filter((x) => x.muc).sort((a, b) => b.muc.row - a.muc.row);
+          let bytes = s.fileIgnored ? null : s.fileBytes;
+          const link = !s.fileBytes;
+          // The file first (it can refuse an entry), then the definitions go, bottom up.
+          try { for (const x of list) bytes = k.put(bytes, x.n, x.muc.data, x.name); }
+          catch (err) { this.info(String(err.message || err)); return; }
+          for (const x of list) k.removeMuc(x.muc);
+          this.writeFile(bytes, link);
+          this.refresh();
+          this.info(T('bankMovedAllToDat', list.length, s.fileName || k.defaultFile));
+          return;
+        }
         // The definition goes first: writing a new file adds a tag line, which moves the rows.
+        let bytes;
+        try { bytes = k.put(s.fileBytes, e.n, e.muc.data, e.name || `muc${e.n}`.slice(0, 6)); }
+        catch (err) { this.info(String(err.message || err)); return; }
+        const link = !s.fileBytes;
         k.removeMuc(e.muc);
-        this.put(e.n, e.muc.data, e.name || `muc${e.n}`.slice(0, 6));
+        this.writeFile(bytes, link);
         this.refresh();
         this.info(T('bankMovedToDat', k.mark + e.n, s.fileName || k.defaultFile));
         return;
@@ -259,6 +298,12 @@ export class BankView {
       case 'toMuc': {
         if (!e || !e.file) { this.info(T('bankToMucNeedsDat')); return; }
         if (e.muc) { this.info(T('bankAlreadyMuc')); return; }
+        if (k.whole) {
+          const copied = this.keepFileInMuc();
+          this.refresh();
+          this.info(T('bankCopiedAll', copied));
+          return;
+        }
         k.addMuc(e.n, e.file.data, e.name);
         this.refresh();
         this.info(T('bankCopiedToMuc', k.mark + e.n));
@@ -270,7 +315,7 @@ export class BankView {
         return;
       }
       case 'load': {
-        const [file] = await this.choose('.dat', false);
+        const [file] = await this.choose(k.loadAccept || '.dat', false);
         if (!file) return;
         const bytes = new Uint8Array(await file.arrayBuffer());
         if (!k.validFile(bytes)) { this.info(T('bankNotDat_' + k.id, file.name)); return; }
@@ -287,7 +332,8 @@ export class BankView {
         if (s.fileBytes) { this.o.download(s.fileName || k.defaultFile, s.fileBytes); return; }
         // No file yet: one made from the MUC's entries (same numbers).
         let bytes = null;
-        for (const x of this.entries) if (x.muc) bytes = k.put(bytes, x.n, x.muc.data, `muc${x.n}`.slice(0, 6));
+        try { for (const x of this.entries) if (x.muc) bytes = k.put(bytes, x.n, x.muc.data, x.name || `muc${x.n}`.slice(0, 6)); }
+        catch (err) { this.info(String(err.message || err)); return; }
         if (!bytes) { this.info(T('bankEmpty_' + k.id)); return; }
         this.o.download(k.defaultFile, bytes);
         this.info(T('bankSavedFromMuc'));
@@ -326,10 +372,11 @@ export class BankView {
     let bytes = s.fileBytes;
     const link = !bytes;
     const toMuc = [];
+    const copied = s.target === 'muc' ? this.keepFileInMuc() : 0;
     for (const file of fileList) {
       let found;
       try { found = await k.importFile(file.name, new Uint8Array(await file.arrayBuffer())); }
-      catch { found = []; }
+      catch (err) { console.warn(err); found = []; }
       if (!found.length) { none.push(file.name); continue; }
       for (const v of found) {
         const key = k.key(v.data);
@@ -339,13 +386,15 @@ export class BankView {
         have.add(key);
         taken.add(n);
         added++;
-        if (s.target === 'dat') bytes = k.put(bytes, n, v.data, v.name);
-        else toMuc.push([n, v.data, v.name]);
+        if (s.target === 'dat') {
+          try { bytes = k.put(bytes, n, v.data, v.name); }
+          catch (err) { added--; noRoom++; this.info(String(err.message || err)); continue; }
+        } else toMuc.push([n, v.data, v.name]);
       }
     }
     if (s.target === 'dat' && added) this.writeFile(bytes, link);
     for (const [n, data, name] of toMuc) k.addMuc(n, data, name);
     this.refresh();
-    this.info([T('bankImported_' + k.id, added, s.target.toUpperCase()), same ? T('bankImportSame', same) : '', noRoom ? T('bankImportFull', noRoom) : '', none.length ? T('bankImportNone_' + k.id, none.join(', ')) : ''].filter(Boolean).join(' · '));
+    this.info([T('bankImported_' + k.id, added, s.target === 'dat' ? k.fileLabel || 'DAT' : 'MUC'), copied ? T('bankCopiedAll', copied) : '', same ? T('bankImportSame', same) : '', noRoom ? T('bankImportFull', noRoom) : '', none.length ? T('bankImportNone_' + k.id, none.join(', ')) : ''].filter(Boolean).join(' · '));
   }
 }
