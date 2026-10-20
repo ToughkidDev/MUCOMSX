@@ -401,6 +401,7 @@ footer p{margin:2px 0}
 .s-source{margin:0;padding:0 16px 8px;font-size:.78rem;color:var(--muted)}
 .s-list{overflow:auto;padding:0 8px 12px;border-top:1px solid var(--line)}
 .s-list details{border-bottom:1px solid var(--line)}
+.m-actions{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
 .s-list summary{cursor:pointer;padding:8px;font-weight:600;font-size:.9rem}
 /* Touch screens (iPhone, iPad): finger-sized rows, no double-tap zoom delay, and 16px text in
    inputs so iOS does not zoom the page when one is focused. */
@@ -464,14 +465,16 @@ footer p{margin:2px 0}
   <select id="examples"></select>
   <button class="btn" id="newSong" type="button" data-i18n="newSong" data-i18n-title="newSongTip">New</button>
   <button class="btn" id="browse" type="button" data-i18n="browse">Samples…</button>
-  <button class="btn" id="open" type="button" data-i18n="open" title=".muc / .mub / .vgm / .vgz">Open…</button>
+  <button class="btn" id="open" type="button" data-i18n="open">Open…</button>
+  <button class="btn" id="openFolder" type="button" data-i18n="openFolder">Folder…</button>
   <div class="save-group" role="group" aria-labelledby="saveLabel">
     <button type="button" class="save-main" id="saveLabel" data-i18n="save" data-i18n-title="saveTip">Save</button>
     <button type="button" id="save" title="MML source (Shift-JIS)">.muc</button>
     <button type="button" id="saveMub" title="Compiled song">.mub</button>
     <button type="button" id="saveVgm" title="Chip log">.vgm</button>
   </div>
-  <input id="openInput" type="file" accept=".muc,.mub,.vgm,.vgz,.MUC,.MUB,.VGM,.VGZ,.txt" hidden>
+  <input id="openInput" type="file" multiple accept=".muc,.mub,.vgm,.vgz,.MUC,.MUB,.VGM,.VGZ,.txt,.dat,.DAT,.pcm,.PCM,.bin,.BIN,.wav,.WAV" hidden>
+  <input id="folderInput" type="file" webkitdirectory multiple hidden>
   <input id="filesInput" type="file" multiple hidden>
   <div class="status" id="status" role="status"></div>
 </div>
@@ -586,6 +589,17 @@ footer p{margin:2px 0}
   </div>
   <p class="s-source" id="sampleSource"></p>
   <div class="s-list" id="sampleList"></div>
+</dialog>
+
+<dialog class="samples" id="folderDlg" aria-labelledby="folderTitle">
+  <div class="s-head">
+    <h2 id="folderTitle"></h2>
+    <input id="folderSearch" type="search" autocomplete="off" aria-label="Search">
+    <button class="btn" id="folderPick" type="button" data-i18n="folderOther">Another folder…</button>
+    <button class="btn" id="folderClose" type="button" aria-label="Close">✕</button>
+  </div>
+  <p class="s-source" id="folderSource"></p>
+  <div class="s-list" id="folderList"></div>
 </dialog>
 
 <div class="drop" id="drop" data-i18n="drop">Drop .muc / .mub / .vgm / .vgz to play — voice and PCM files are attached</div>

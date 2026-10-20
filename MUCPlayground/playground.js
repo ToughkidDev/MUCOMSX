@@ -16,6 +16,7 @@ import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, im
 import { readPcmBank, putPcm, mucPcms, pcmLine, mucSamples, pcmKey, importPcm, encodeAdpcm, decodeAdpcm, resample, readWav, writeWav, wavFitsCompiler, NATIVE_RATE, SLOTS as PCM_SLOTS, RAM_SIZE } from './pcm-bank.js';
 import { PcmEditor } from './pcm-editor.js';
 import { applyTips, bankTip } from './tooltips.js';
+import { pickFolder, fromDropEntries, findRef, findSong, openRemembered } from './local-folder.js';
 import { timeline } from './mml-timeline.js';
 import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
@@ -42,7 +43,7 @@ const T = {
     refComment: 'Comment', manual: 'Full MML guide:',
     credit1: "Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: MDPlayer4Mac and MUCOMSX by ToughkidCST, mucomDotNET and MDSound by kuma4649. GPL-3.0.",
     credit2: 'MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.', source: 'Source and licenses',
-    drop: 'Drop .muc / .mub / .vgm / .vgz to play — voice and PCM files are attached',
+    drop: 'Drop .muc / .mub / .vgm / .vgz to play — voice and PCM files are attached; drop a folder to choose a song from it',
     loading: 'Loading the engine (about 11 MB, first time only)…', ready: 'Ready. Press Play or Ctrl+Enter.',
     loadFailed: 'The engine could not be loaded: ', compiling: 'Compiling…', playing: 'Playing',
     compiled: (ms, size) => `Compiled in ${ms} ms, ${size.toLocaleString()} bytes.`,
@@ -105,6 +106,13 @@ const T = {
     noMessages: 'No messages.', loop: (n) => `loop ${n}`, missing: 'not attached', remove: 'Remove this file from the song\'s attached files (and from this browser)',
     demo: 'Demo (FM + SSG + rhythm)', template: 'Template (OPNA + MSX chips)', yourSong: 'Your song (autosaved)', samples: 'Samples',
     loadingSample: (n) => `Loading ${n}…`, sampleFailed: 'Could not load the sample: ',
+    openFolder: 'Folder…', folderOther: 'Another folder…', folderFailed: 'Could not read the folder: ',
+    folderTitle: (n) => `Folder: ${n}`, folderSource: (songs, all) => `${songs} songs among ${all} files. Opening one attaches the voice / PCM files it names from the folder.`,
+    folderOpened: (n) => `Opened ${n} from the folder`, attachedFiles: (list) => `attached ${list}`, stillMissing: (list) => `still missing: ${list}`,
+    missingFile_pcm: (f) => `${f} (#pcm) is not attached, so the ADPCM part K plays nothing.`, missingFile_voice: (f) => `${f} (#voice) is not attached, so voices the MUC does not define itself cannot be found.`,
+    missingFile_sccvoice: (f) => `${f} (#sccvoice) is not attached, so SCC waves the MUC does not define itself cannot be found.`, missingFile_atpcm: (f, n) => `${f} (#@pcm ${n}) is not attached, so PCM sample @${n} is silent.`,
+    missingAttach: 'Attach file…', missingAttachTip: (f) => `Pick ${f} (and any other files the song needs) from your computer; several can be picked at once`,
+    missingFolder: 'Find in folder', missingFolderTip: (f) => `Look for ${f} in the song's folder: the folder opened with Folder… (or the one remembered), else pick the folder the song is in; every file the song names is attached from there`,
     underrun: 'Playback is catching up; this device renders slowly.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'Replace the editor contents? Your current text is lost unless you saved it.',
     newSong: 'New', newSongTip: 'Start a new MUC from the template (OPNA + MSX chips)', newStarted: 'New song from the template: OPNA and every MSX chip, with comments on each part. Save it as .muc when you are done.',
@@ -141,7 +149,7 @@ const T = {
     refComment: '주석', manual: 'MML 전체 설명:',
     credit1: '컴파일러, 드라이버, 칩 에뮬레이션은 MDPlayer4Mac의 것을 브라우저용으로 빌드했습니다: ToughkidCST의 MDPlayer4Mac과 MUCOMSX, kuma4649의 mucomDotNET과 MDSound. GPL-3.0.',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0.', source: '소스와 라이선스',
-    drop: '.muc / .mub / .vgm / .vgz를 놓으면 재생합니다 — 음색·PCM 파일은 첨부됩니다',
+    drop: '.muc / .mub / .vgm / .vgz를 놓으면 재생합니다 — 음색·PCM 파일은 첨부되고, 폴더를 놓으면 그 안의 곡을 고를 수 있습니다',
     loading: '엔진을 불러오는 중 (약 11 MB, 처음 한 번만)…', ready: '준비됐습니다. 재생 또는 Ctrl+Enter를 누르세요.',
     loadFailed: '엔진을 불러오지 못했습니다: ', compiling: '컴파일 중…', playing: '재생 중',
     compiled: (ms, size) => `${ms} ms에 컴파일, ${size.toLocaleString()} 바이트.`,
@@ -204,6 +212,13 @@ const T = {
     noMessages: '메시지 없음.', loop: (n) => `루프 ${n}`, missing: '첨부 안 됨', remove: '이 파일을 곡의 첨부 파일에서 뺍니다 (이 브라우저에서도 지워짐)',
     demo: '데모 (FM + SSG + 리듬)', template: '템플릿 (OPNA + MSX 칩)', yourSong: '내 곡 (자동 저장)', samples: '샘플',
     loadingSample: (n) => `${n} 불러오는 중…`, sampleFailed: '샘플을 불러오지 못했습니다: ',
+    openFolder: '폴더…', folderOther: '다른 폴더…', folderFailed: '폴더를 읽지 못했습니다: ',
+    folderTitle: (n) => `폴더: ${n}`, folderSource: (songs, all) => `파일 ${all}개 중 곡 ${songs}개. 곡을 열면 그 곡이 쓰는 음색·PCM 파일을 폴더에서 찾아 함께 첨부합니다.`,
+    folderOpened: (n) => `폴더에서 ${n}을 열었습니다`, attachedFiles: (list) => `첨부: ${list}`, stillMissing: (list) => `아직 없음: ${list}`,
+    missingFile_pcm: (f) => `${f}(#pcm)가 첨부되지 않아 ADPCM 파트 K가 소리 나지 않습니다.`, missingFile_voice: (f) => `${f}(#voice)가 첨부되지 않아 MUC에 정의되지 않은 음색을 찾을 수 없습니다.`,
+    missingFile_sccvoice: (f) => `${f}(#sccvoice)가 첨부되지 않아 MUC에 정의되지 않은 SCC 파형을 찾을 수 없습니다.`, missingFile_atpcm: (f, n) => `${f}(#@pcm ${n})가 첨부되지 않아 PCM 샘플 @${n}이 소리 나지 않습니다.`,
+    missingAttach: '파일 첨부…', missingAttachTip: (f) => `내 컴퓨터에서 ${f}(와 곡에 필요한 다른 파일)를 고릅니다. 여러 개를 한 번에 고를 수 있습니다`,
+    missingFolder: '폴더에서 찾기', missingFolderTip: (f) => `곡의 폴더에서 ${f}를 찾습니다. 폴더…로 연 폴더(또는 기억된 폴더)를 쓰고, 없으면 곡이 있는 폴더를 고르게 합니다. 곡이 쓰는 파일을 모두 거기서 첨부합니다`,
     underrun: '렌더링이 재생을 따라잡는 중입니다. 이 기기에서는 느릴 수 있습니다.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: '에디터 내용을 바꿀까요? 저장하지 않은 현재 내용은 사라집니다.',
     newSong: '새로', newSongTip: '템플릿(OPNA + MSX 칩)으로 새 MUC 작성 시작', newStarted: '템플릿으로 새 곡을 시작했습니다. OPNA와 MSX 칩을 모두 쓰고 파트마다 설명이 있습니다. 다 쓰면 .muc로 저장하세요.',
@@ -240,7 +255,7 @@ const T = {
     refComment: 'コメント', manual: 'MMLの詳しい説明:',
     credit1: 'コンパイラ・ドライバ・チップエミュレーションはMDPlayer4Macのものをブラウザ向けにビルドしています: ToughkidCST氏のMDPlayer4MacとMUCOMSX、kuma4649氏のmucomDotNETとMDSound。GPL-3.0。',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0。', source: 'ソースとライセンス',
-    drop: '.muc / .mub / .vgm / .vgzをドロップすると再生します — 音色・PCMファイルは添付されます',
+    drop: '.muc / .mub / .vgm / .vgzをドロップすると再生します — 音色・PCMファイルは添付され、フォルダをドロップするとその中の曲を選べます',
     loading: 'エンジンを読み込み中（約11 MB、初回のみ）…', ready: '準備完了。再生またはCtrl+Enterを押してください。',
     loadFailed: 'エンジンを読み込めませんでした: ', compiling: 'コンパイル中…', playing: '再生中',
     compiled: (ms, size) => `${ms} msでコンパイル、${size.toLocaleString()}バイト。`,
@@ -303,6 +318,13 @@ const T = {
     noMessages: 'メッセージなし。', loop: (n) => `ループ ${n}`, missing: '未添付', remove: 'このファイルを曲の添付ファイルから外します（このブラウザからも消える）',
     demo: 'デモ（FM + SSG + リズム）', template: 'テンプレート（OPNA + MSXチップ）', yourSong: '自分の曲（自動保存）', samples: 'サンプル曲',
     loadingSample: (n) => `${n}を読み込み中…`, sampleFailed: 'サンプルを読み込めませんでした: ',
+    openFolder: 'フォルダ…', folderOther: '別のフォルダ…', folderFailed: 'フォルダを読めませんでした: ',
+    folderTitle: (n) => `フォルダ: ${n}`, folderSource: (songs, all) => `${all}ファイル中${songs}曲。曲を開くと、その曲が使う音色・PCMファイルをフォルダから探して一緒に添付します。`,
+    folderOpened: (n) => `フォルダから${n}を開きました`, attachedFiles: (list) => `添付: ${list}`, stillMissing: (list) => `まだない: ${list}`,
+    missingFile_pcm: (f) => `${f}（#pcm）が添付されていないため、ADPCMパートKが鳴りません。`, missingFile_voice: (f) => `${f}（#voice）が添付されていないため、MUCで定義していない音色が見つかりません。`,
+    missingFile_sccvoice: (f) => `${f}（#sccvoice）が添付されていないため、MUCで定義していないSCC波形が見つかりません。`, missingFile_atpcm: (f, n) => `${f}（#@pcm ${n}）が添付されていないため、PCMサンプル@${n}が鳴りません。`,
+    missingAttach: 'ファイルを添付…', missingAttachTip: (f) => `自分のパソコンから${f}（と曲に必要な他のファイル）を選びます。複数まとめて選べます`,
+    missingFolder: 'フォルダから探す', missingFolderTip: (f) => `曲のフォルダで${f}を探します。フォルダ…で開いたフォルダ（または記憶したフォルダ）を使い、なければ曲のあるフォルダを選びます。曲が使うファイルをすべてそこから添付します`,
     underrun: 'レンダリングが再生に追いつこうとしています。この端末では遅い場合があります。', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'エディタの内容を置き換えますか？保存していない現在の内容は失われます。',
     newSong: '新規', newSongTip: 'テンプレート（OPNA + MSXチップ）で新しいMUCを書き始める', newStarted: 'テンプレートで新しい曲を始めました。OPNAと全MSXチップを使い、パートごとに説明があります。書き終えたら.mucで保存してください。',
@@ -683,7 +705,25 @@ function withSilenceWarnings(result) {
     row: s.row, col: s.col, code: what === 'env' ? 'PG01' : 'PG02',
     text: t(what === 'env' ? 'silentEnv' : 'silentVol', s.part),
   })));
+  // Files the song names that are not attached.
+  for (const m of missingFileRefs()) extra.push({ row: m.row, col: 0, code: 'PG03', text: t('missingFile_' + m.tag, m.file, m.n), missingFile: m.file });
   return extra.length ? { ...result, warnings: [...result.warnings, ...extra] } : result;
+}
+function missingFileRefs() {
+  const out = [];
+  lines.forEach((line, i) => {
+    let m = /^#(voice|pcm|sccvoice)[ \t]+([^\s;]+)/i.exec(line);
+    if (m) {
+      const file = m[2].replace(/^"|"$/g, '');
+      if (!files.has(file.split(/[\\/]/).pop().toLowerCase())) out.push({ row: i + 1, tag: m[1].toLowerCase(), file });
+      return;
+    }
+    if (/^#@pcm[ \t]/i.test(line)) {
+      const d = mucPcms(line)[0];
+      if (d?.file && !files.has(d.file.split(/[\\/]/).pop().toLowerCase())) out.push({ row: i + 1, tag: 'atpcm', file: d.file, n: d.n });
+    }
+  });
+  return out;
 }
 
 function renderMessages(result) {
@@ -757,6 +797,20 @@ function renderMessages(result) {
       p.querySelector('b').textContent = t(label + 'Label');
       p.querySelector('span').textContent = body;
       li.appendChild(p);
+    }
+    if (m.missingFile) {
+      // What to do about it, right here.
+      const actions = document.createElement('div');
+      actions.className = 'm-actions';
+      actions.innerHTML = '<button type="button" class="btn small" data-a="attach"></button><button type="button" class="btn small" data-a="folder"></button>';
+      const [attachBtn, folderBtn] = actions.querySelectorAll('button');
+      attachBtn.textContent = t('missingAttach');
+      attachBtn.title = t('missingAttachTip', m.missingFile);
+      folderBtn.textContent = t('missingFolder');
+      folderBtn.title = t('missingFolderTip', m.missingFile);
+      attachBtn.addEventListener('click', (ev) => { ev.stopPropagation(); $('filesInput').click(); });
+      folderBtn.addEventListener('click', (ev) => { ev.stopPropagation(); findMissingInFolder(); });
+      li.appendChild(actions);
     }
     list.appendChild(li);
   };
@@ -911,7 +965,127 @@ $('addFiles').addEventListener('click', () => $('filesInput').click());
 $('filesInput').addEventListener('change', async (e) => {
   for (const f of e.target.files) attach(f.name, await f.arrayBuffer());
   e.target.value = '';
+  scheduleCheck();
 });
+
+// ---------- songs from a folder on this computer ----------
+// Folder… (or a folder dropped on the page) lists the folder's songs; opening one attaches
+// the files it names (#voice, #sccvoice, #pcm, #@pcm, and voice.dat / mucompcm.bin /
+// SCCVOICE.DAT next to it when it names none), found by name, whatever their case.
+let currentFolder = null;     // the folder last opened (this visit)
+let songFolderPath = null;    // the song's path in it, when it came from there
+const DEFAULT_FILES = [['voice', 'voice.dat'], ['pcm', 'mucompcm.bin'], ['sccvoice', 'SCCVOICE.DAT']];
+
+function missingFiles() {
+  return [...new Set(referencedFiles())].filter((n) => !files.has(n.split(/[\\/]/).pop().toLowerCase()));
+}
+
+// Attaches what the song needs from the folder; returns the names attached.
+async function attachRefs(folder, songPath) {
+  const found = [];
+  const wanted = missingFiles().map((ref) => [ref, false]);
+  for (const [tag, name] of DEFAULT_FILES) {
+    if (!new RegExp(`^#${tag}[ \\t]`, 'im').test(code.value) && !files.has(name.toLowerCase())) wanted.push([name, true]);
+  }
+  for (const [ref, optional] of wanted) {
+    const entry = findRef(folder, songPath, ref);
+    // A default file only from the song's own folder.
+    if (!entry || (optional && songPath !== null && entry.path.slice(0, entry.path.lastIndexOf('/') + 1) !== songPath.slice(0, songPath.lastIndexOf('/') + 1))) continue;
+    try {
+      attach(ref.split(/[\\/]/).pop(), await (await entry.get()).arrayBuffer());
+      found.push(ref.split(/[\\/]/).pop());
+    } catch { /* unreadable: stays missing */ }
+  }
+  return found;
+}
+
+// A song opened by itself: its files from the folder opened before (or the remembered one,
+// if it may be read without asking), when the song is in there.
+async function attachFromKnownFolder(songName) {
+  if (!missingFiles().length) return [];
+  const folder = currentFolder || await openRemembered(false).catch(() => null);
+  if (!folder) return [];
+  const path = findSong(folder, songName);
+  if (path === null) return [];
+  currentFolder = folder;
+  songFolderPath = path;
+  return attachRefs(folder, path);
+}
+
+async function chooseFolder() {
+  try { return await pickFolder($('folderInput')); }
+  catch (e) { setStatus(t('folderFailed') + (e.message || e), true); return null; }
+}
+
+$('openFolder').addEventListener('click', async () => {
+  if (currentFolder) { showFolder(currentFolder); return; }
+  const folder = await openRemembered(true).catch(() => null) || await chooseFolder();
+  if (folder) showFolder(folder);
+});
+$('folderPick').addEventListener('click', async () => {
+  const folder = await chooseFolder();
+  if (folder) showFolder(folder);
+});
+$('folderClose').addEventListener('click', () => $('folderDlg').close());
+$('folderSearch').addEventListener('input', () => renderFolderList());
+
+function renderFolderList() {
+  if (!currentFolder) return;
+  fillSongList($('folderList'), currentFolder.entries.map((e) => e.path), $('folderSearch').value, 0, (d) => d,
+    (path) => { $('folderDlg').close(); loadFolderSong(currentFolder, path); });
+}
+
+// A folder's songs to choose from; a folder with one song opens it at once.
+function showFolder(folder) {
+  if (!folder) return;
+  currentFolder = folder;
+  const songs = folder.entries.filter((e) => PLAYABLE.test(e.path));
+  if (songs.length === 1) { loadFolderSong(folder, songs[0].path); return; }
+  const dlg = $('folderDlg');
+  $('folderTitle').textContent = t('folderTitle', folder.name || '');
+  $('folderSource').textContent = t('folderSource', songs.length, folder.entries.length);
+  $('folderSearch').value = '';
+  renderFolderList();
+  if (!dlg.open) dlg.showModal();
+  if (!matchMedia('(pointer: coarse)').matches) $('folderSearch').focus();
+}
+
+async function loadFolderSong(folder, path) {
+  const name = path.slice(path.lastIndexOf('/') + 1);
+  try {
+    setStatus(t('loadingSample', name));
+    const entry = folder.entries.find((e) => e.path === path);
+    const data = await (await entry.get()).arrayBuffer();
+    if (kindOf(name, data) !== 'muc') { playFile(name, data); return; }
+    clearFiles();
+    openMuc(name, data);
+    songFolderPath = path;
+    const found = await attachRefs(folder, path);
+    const missing = missingFiles();
+    setStatus([t('folderOpened', name), found.length ? t('attachedFiles', found.join(', ')) : '', missing.length ? t('stillMissing', missing.join(', ')) : ''].filter(Boolean).join(' · '));
+    scheduleCheck();
+  } catch (e) {
+    setStatus(t('sampleFailed') + (e.message || e), true);
+  }
+}
+
+// The missing-file warning's "Find in folder": the song's folder (asking for the
+// remembered one, or picking one), then its files from there.
+async function findMissingInFolder() {
+  let folder = currentFolder || await openRemembered(true).catch(() => null);
+  let path = folder ? (folder === currentFolder && songFolderPath) || findSong(folder, sourceName) : null;
+  if (!folder || path === null) {
+    folder = await chooseFolder();
+    if (!folder) return;
+    path = findSong(folder, sourceName);
+  }
+  currentFolder = folder;
+  songFolderPath = path;
+  const found = await attachRefs(folder, path);
+  const missing = missingFiles();
+  setStatus([found.length ? t('attachedFiles', found.join(', ')) : '', missing.length ? t('stillMissing', missing.join(', ')) : ''].filter(Boolean).join(' · ') || t('ready'));
+  scheduleCheck();
+}
 
 // ---------- examples ----------
 let samples = [];
@@ -981,13 +1155,36 @@ $('newSong').addEventListener('click', newSong);
 // ---------- open / save / drop ----------
 $('open').addEventListener('click', () => $('openInput').click());
 $('openInput').addEventListener('change', async (e) => {
-  const f = e.target.files[0];
-  if (f) {
-    const data = await f.arrayBuffer();
-    if (kindOf(f.name, data) === 'muc') openMuc(f.name, data); else playFile(f.name, data);
-  }
+  const picked = [...e.target.files];
   e.target.value = '';
+  await openPicked(picked, false);
 });
+
+// Files picked or dropped together: voice / PCM files are attached first, then the song
+// (the first .muc / .mub / .vgm) opens; a song with files still missing looks for them in
+// the folder opened with Folder…, when it is there.
+async function openPicked(list, playMuc) {
+  let playable = null;
+  const attached = [];
+  for (const f of list) {
+    const data = await f.arrayBuffer();
+    const kind = kindOf(f.name, data);
+    if (kind === 'other') { attach(f.name, data); attached.push(f.name); }
+    else if (!playable) playable = { name: f.name, data, kind };
+  }
+  if (!playable) {
+    if (attached.length) { setStatus(t('attachedFiles', attached.join(', '))); scheduleCheck(); }
+    return;
+  }
+  if (playable.kind !== 'muc') { playFile(playable.name, playable.data); return; }
+  openMuc(playable.name, playable.data);
+  songFolderPath = null;
+  const found = await attachFromKnownFolder(playable.name);
+  const missing = missingFiles();
+  setStatus([attached.length || found.length ? t('attachedFiles', [...attached, ...found].join(', ')) : '', missing.length ? t('stillMissing', missing.join(', ')) : ''].filter(Boolean).join(' · ') || (engineReady ? t('ready') : t('loading')));
+  scheduleCheck();
+  if (playMuc) play();
+}
 
 // What a file is, by its first bytes where they are distinctive, else by its extension.
 function kindOf(name, data) {
@@ -1059,17 +1256,12 @@ window.addEventListener('drop', async (e) => {
   e.preventDefault();
   dragDepth = 0;
   $('drop').classList.remove('on');
+  // The drop's items can only be read now, before anything is awaited.
+  const dirs = [...e.dataTransfer.items].map((i) => i.webkitGetAsEntry?.()).filter((en) => en?.isDirectory);
+  const list = [...e.dataTransfer.files];
+  if (dirs.length) { showFolder(await fromDropEntries(dirs)); return; }
   // Attach voice / PCM files first, so a song dropped together with them finds them.
-  let playable = null;
-  for (const f of e.dataTransfer.files) {
-    const data = await f.arrayBuffer();
-    const kind = kindOf(f.name, data);
-    if (kind === 'other') attach(f.name, data);
-    else if (!playable) playable = { name: f.name, data, kind };
-  }
-  if (!playable) return;
-  if (playable.kind === 'muc') { openMuc(playable.name, playable.data); play(); }
-  else playFile(playable.name, playable.data);
+  await openPicked(list, true);
 });
 
 // ---------- engine ----------
@@ -1780,19 +1972,24 @@ async function readSampleTree(force) {
 }
 
 function renderSampleList() {
-  const list = $('sampleList');
-  const query = $('sampleSearch').value.trim().toLowerCase();
+  // Templates come first: they are where a new song usually starts.
+  fillSongList($('sampleList'), sampleTree.files, $('sampleSearch').value, SAMPLES_ROOT.length,
+    (d) => (d.startsWith('Muc/Templates') ? '0' : '1') + d, (path) => { $('samplesDlg').close(); loadRepoFile(path); });
+}
+
+// The playable files among `paths`, grouped by folder (folders after the first `skip`
+// characters), the ones matching `query`; onPick(path) when one is clicked.
+function fillSongList(list, paths, query, skip, order, onPick) {
+  query = query.trim().toLowerCase();
   list.innerHTML = '';
   const groups = new Map();
-  for (const path of sampleTree.files) {
+  for (const path of paths) {
     if (!PLAYABLE.test(path) || (query && !path.toLowerCase().includes(query))) continue;
-    const dir = path.slice(SAMPLES_ROOT.length, path.lastIndexOf('/'));
+    const dir = path.slice(skip, Math.max(skip, path.lastIndexOf('/')));
     if (!groups.has(dir)) groups.set(dir, []);
     groups.get(dir).push(path);
   }
   if (!groups.size) { list.innerHTML = `<p class="s-empty">${t('noMatch')}</p>`; return; }
-  // Templates come first: they are where a new song usually starts.
-  const order = (d) => (d.startsWith('Muc/Templates') ? '0' : '1') + d;
   for (const dir of [...groups.keys()].sort((a, b) => order(a).localeCompare(order(b)))) {
     const d = document.createElement('details');
     d.open = !!query || groups.size <= 3;
@@ -1806,7 +2003,7 @@ function renderSampleList() {
       li.innerHTML = '<button type="button"><span></span><span class="ext"></span></button>';
       li.querySelector('span').textContent = name.replace(PLAYABLE, '');
       li.querySelector('.ext').textContent = name.slice(name.lastIndexOf('.') + 1).toLowerCase();
-      li.querySelector('button').addEventListener('click', () => { $('samplesDlg').close(); loadRepoFile(path); });
+      li.querySelector('button').addEventListener('click', () => onPick(path));
       d.querySelector('ul').appendChild(li);
     }
     list.appendChild(d);
