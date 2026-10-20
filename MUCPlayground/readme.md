@@ -21,7 +21,7 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
 - **New:** starts a song from the template (`template.muc`, also in the examples list as *Template (OPNA + MSX chips)*), an 8-bar song that uses OPNA and every MSX target of the latest msPb format together, with a comment on each part: OPNA FM (inline voices), OPNA rhythm, MSX-MUSIC (`MSXA`/`MSXB` and the `MSXG` drums), the MSX PSG (`MSXD`, with a software envelope) and the five SCC/SCC+ parts `SCCA`–`SCCE` (inline `@Wn:{…}` waves, envelopes, macros, repeats with `/`, the `L` loop). Attached files are removed. New asks first when the editor holds your own text; the template counts as yours from the first keystroke.
 - **Your own files:** open a `.muc`, attach `#voice` / `#pcm` files, or drop them on the page. Your song is autosaved in the browser **together with its attached voice / PCM files** (IndexedDB), so after leaving and coming back it plays exactly as before. If a restored song names a file that was not kept (for example one saved by an older version of the page), it is fetched again from the song's Samples folder, or from `Samples/` when exactly one file there has that name.
 - **Play `.mub`, `.vgm` and `.vgz` files** with **Open…** or by dragging them from your computer onto the page. A dropped `.muc` opens in the editor and starts playing; voice / PCM files dropped with it are attached first. `.mub` plays on the editor's engine. `.vgm` / `.vgz` play on MDPlayer4Mac's own VGM player, which is downloaded the first time you play one (about 20 MB, 7.3 MB compressed) and sounds sample-for-sample like the desktop app.
-- **Save** as `.muc` (Shift-JIS with CR+LF, ready for the MSX), `.mub` or `.vgm`:
+- **Save** (or `Ctrl+S`) writes the song to your computer as `.muc`, for samples as well as your own songs; the buttons next to it save `.muc` (Shift-JIS with CR+LF, ready for the MSX), `.mub` or `.vgm`:
   - `.mub` is the playground compiler's output, the same as MDPlayer4Mac produces from that MUC. It is not byte-for-byte what MUC2MUB on the MSX writes, so check it on the machine before relying on it there.
   - `.vgm` (VGM 1.71) logs every chip write. A looping song is written as intro + one more pass, with the VGM loop point set so the loop is exactly one pass; songs are capped at 10 minutes. Played back in MDPlayer4Mac it matches the playground's own audio (correlation 1.0000 on the test songs).
 - What you type is kept in your browser between visits. Nothing is uploaded anywhere.
@@ -92,11 +92,12 @@ dotnet run -c Release --project MUCPlayground/src/NativeCheck -p:Mdp4MacDir=<MDP
 
 ## Credits and licenses
 
+- **MDPlayer4Mac** and **MUCOMSX** by ToughkidCST — the macOS player whose MUC path this engine is, and the MSX extensions it plays (MSX-MUSIC, PSG and SCC/SCC+ parts, the msPb formats); MUCPlayground is also written by ToughkidCST
 - **MUCOM88** © Yuzo Koshiro (古代祐三), CC BY-NC-SA 4.0 — `LICENSES/MUCOM88.txt`
 - **mucomDotNET** by kuma4649, GPL-3.0
 - **MDSound** by kuma4649, GPL-3.0; includes **fmgen** © cisc (`LICENSES/fmgen-readme.txt`, Shift-JIS, unmodified), **emu2413** by Mitsutaka Okazaki and MAME-derived cores (`LICENSES/MAME.txt`)
 - **ymfm** tables used by the MSX playback code, BSD-3-Clause — `LICENSES/ymfm.txt`
-- **MDPlayer / MDPlayer4Mac**, GPL-3.0 — `LICENSES/GPL-3.0.txt`. The channel view (`chview/`) is a port of MDPlayer4Mac's visualizers and MDPlayer's `DrawBuff`, and uses MDPlayer's panel and font bitmaps.
+- **MDPlayer** by kuma4649 / **MDPlayer4Mac** by ToughkidCST, GPL-3.0 — `LICENSES/GPL-3.0.txt`. The channel view (`chview/`) is a port of MDPlayer4Mac's visualizers and MDPlayer's `DrawBuff`, and uses MDPlayer's panel and font bitmaps.
 
 MUCPlayground's engine (`engine/` and `src/`) is distributed under GPL-3.0. Its
 corresponding source is `src/` together with MDPlayer4Mac at the commit pinned in

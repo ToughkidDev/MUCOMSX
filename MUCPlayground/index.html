@@ -67,7 +67,7 @@ h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
 .vol output{font-family:var(--mono);font-size:.8rem;min-width:2.6em;color:var(--muted)}
 .spacer{flex:1}
 .save-group{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg);font-size:.9rem}
-.save-group span{padding:6px 10px;color:var(--muted);border-right:1px solid var(--line);white-space:nowrap}
+.save-group .save-main{font-family:var(--sans);font-size:.9rem;font-weight:600;color:var(--ink);white-space:nowrap}
 .save-group button{border:0;border-right:1px solid var(--line);background:transparent;padding:6px 10px;cursor:pointer;font-family:var(--mono);font-size:.85rem}
 .save-group button:last-child{border-right:0}
 .save-group button:hover{color:var(--accent2);background:var(--panel)}
@@ -273,7 +273,7 @@ footer p{margin:2px 0}
   <button class="btn" id="browse" type="button" data-i18n="browse">Samples…</button>
   <button class="btn" id="open" type="button" data-i18n="open" title=".muc / .mub / .vgm / .vgz">Open…</button>
   <div class="save-group" role="group" aria-labelledby="saveLabel">
-    <span id="saveLabel" data-i18n="save">Save</span>
+    <button type="button" class="save-main" id="saveLabel" data-i18n="save" data-i18n-title="saveTip">Save</button>
     <button type="button" id="save" title="MML source (Shift-JIS)">.muc</button>
     <button type="button" id="saveMub" title="Compiled song">.mub</button>
     <button type="button" id="saveVgm" title="Chip log">.vgm</button>
@@ -364,7 +364,7 @@ footer p{margin:2px 0}
 
 <footer>
   <p><strong>MUCPlayground</strong> — Written by ToughkidCST</p>
-  <p data-i18n="credit1">Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: mucomDotNET by kuma4649 and MDSound. GPL-3.0.</p>
+  <p data-i18n="credit1">Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: MDPlayer4Mac and MUCOMSX by ToughkidCST, mucomDotNET and MDSound by kuma4649. GPL-3.0.</p>
   <p><span data-i18n="credit2">MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.</span>
      <a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/MUCPlayground" target="_blank" rel="noopener" data-i18n="source">Source and licenses</a></p>
 </footer>
