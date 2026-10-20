@@ -149,6 +149,53 @@ textarea::selection{background:var(--sel);color:transparent}
 .wave .fm-legend{display:block;font-size:.72rem;margin-top:1px}
 .wave .fm-legend i{font-style:normal;font-family:var(--mono);font-weight:700}
 .wave .wave-note:empty{display:none}
+.wave .wave-edit{pointer-events:auto;float:right;margin:-2px 0 0 8px;padding:2px 8px}
+/* SCC wave editor (wave-editor.js) */
+.wavedit{flex:1;display:flex;flex-direction:column;min-height:0;overflow:auto;background:var(--panel)}
+.wavedit[hidden]{display:none!important}
+.we-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 12px;border-bottom:1px solid var(--line)}
+.we-title{font-family:var(--mono);font-size:.9rem;color:var(--t-mac)}
+.we-bar .btn[aria-pressed="true"],.we-values .btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.we-bar select{padding:3px 6px}
+.we-main{flex:1;display:flex;gap:12px;padding:10px 12px;min-height:280px}
+.we-graph{flex:1;display:flex;flex-direction:column;min-width:0}
+.we-canvas{flex:1;width:100%;min-height:220px;border:1px solid var(--line);border-radius:6px;cursor:crosshair;touch-action:none}
+.we-hint{margin:4px 0 0;font-size:.78rem;color:var(--muted)}
+.we-pos{font-family:var(--mono);color:var(--ink);margin-right:6px}
+.we-side{width:300px;flex:none;display:flex;flex-direction:column;gap:6px;font-size:.82rem;min-height:0}
+.we-panes{flex:1;min-height:0;overflow:auto;padding-right:2px}
+.we-tabs{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.we-tabs button{flex:1;border:0;background:transparent;padding:5px 6px;cursor:pointer;font-size:.82rem}
+.we-tabs button[aria-selected="true"]{background:var(--accent);color:#fff}
+.we-pane{display:flex;flex-direction:column;gap:6px}
+.we-pane[hidden]{display:none}
+.we-pane label{display:flex;align-items:center;gap:6px}
+.we-pane label input[type=range]{flex:1}
+.we-pane output{font-family:var(--mono);min-width:2.6em;text-align:right;color:var(--muted)}
+.we-note{margin:0;color:var(--muted);font-size:.76rem}
+.we-harm,.we-fm,.we-con{border-collapse:collapse;width:100%}
+.we-harm td,.we-fm td,.we-con td,.we-harm th,.we-fm th,.we-con th{padding:1px 3px;text-align:center;font-weight:400;color:var(--muted)}
+.we-harm input[type=range],.we-fm input[type=range]{width:100%}
+.we-fm input[type=number]{width:3.5em}
+.we-fm select{width:100%;max-width:none;font-size:.78rem;padding:2px 4px}
+.we-tool{display:flex;align-items:center;gap:6px}
+.we-tool span{flex:1}
+.we-tool input{width:5em}
+.we-buttons{display:flex;flex-wrap:wrap;gap:6px}
+.we-values{padding:8px 12px 10px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.we-text{flex:1;min-width:240px;font-family:var(--mono);font-size:.82rem;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--code-bg)}
+.we-bad{margin:0;color:var(--accent);font-size:.8rem;width:100%}
+.we-bad:empty{display:none}
+.we-mml{margin:0;width:100%;font-size:.76rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.we-mml code{font-family:var(--mono);color:var(--ink)}
+@media (max-width:900px){
+  .editor-wrap:has(> .wavedit:not([hidden])){height:auto}
+  .wavedit{flex:none;overflow:visible}
+  .we-main{flex-direction:column;min-height:0}
+  .we-canvas{flex:none;height:240px}
+  .we-side{width:auto}
+  .we-panes{overflow:visible}
+}
 /* Suggestions */
 .ac{position:absolute;z-index:5;width:min(440px,calc(100% - 8px));background:var(--panel);border:1px solid var(--line);
     border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);font-family:var(--sans);font-size:.82rem;overflow:hidden}
@@ -326,6 +373,7 @@ footer p{margin:2px 0}
       </div>
     </div>
     <div class="chview" id="chview" hidden></div>
+    <div class="wavedit" id="waveEditor" hidden></div>
     <div class="editor-foot">
       <span class="grp ed"><span data-i18n="split">Split</span>
         <span class="tool-group" role="group" id="splitModes">

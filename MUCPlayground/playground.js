@@ -6,6 +6,7 @@ import { explain, readableText } from './diagnostics.js';
 import { silentParts } from './silence-check.js';
 import { waveAt, drawWave } from './wave-preview.js';
 import { voiceAt, drawVoice, OP_COLORS } from './fm-preview.js';
+import { WaveEditor } from './wave-editor.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 
 const SAMPLE_RATE = 44100;
@@ -39,7 +40,7 @@ const T = {
     sjisLoss: (chars, n) => `${n} kind(s) of character cannot be written in Shift-JIS and will be saved as "?": ${chars}\nMUC files for the MSX can hold English and Japanese only. Save anyway?`,
     waveInfo: (n, e, lo, hi) => `${n}/${e} samples · min ${lo} · max ${hi}`, wave64: ' · played as 32 (averaged)',
     waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
-    waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.',
+    waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)',
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · carriers ${car}`, fmLegend: 'solid: carrier (heard) · dashed: modulator · envelopes include TL',
     fmCount: (w, n, need) => `${w}: ${need} values are needed; this has ${n}.`, fmRange: (w, f, v, max) => `${w} ${f} ${v} is outside 0–${max}.`,
     noMessages: 'No messages.', loop: (n) => `loop ${n}`, missing: 'not attached', remove: 'Remove',
@@ -91,7 +92,7 @@ const T = {
     sjisLoss: (chars, n) => `Shift-JIS로 쓸 수 없는 문자 ${n}종류가 "?"로 저장됩니다: ${chars}\nMSX용 MUC에는 영어와 일본어만 쓸 수 있습니다. 그래도 저장할까요?`,
     waveInfo: (n, e, lo, hi) => `샘플 ${n}/${e} · 최소 ${lo} · 최대 ${hi}`, wave64: ' · 평균 내어 32개로 연주',
     waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
-    waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.',
+    waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)',
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · 캐리어 ${car}`, fmLegend: '실선: 캐리어(들리는 음) · 점선: 모듈레이터 · 엔벨로프는 TL 포함',
     fmCount: (w, n, need) => `${w}: 값이 ${need}개 필요한데 ${n}개입니다.`, fmRange: (w, f, v, max) => `${w} ${f} ${v}: 0–${max} 범위를 벗어났습니다.`,
     noMessages: '메시지 없음.', loop: (n) => `루프 ${n}`, missing: '첨부 안 됨', remove: '제거',
@@ -143,7 +144,7 @@ const T = {
     sjisLoss: (chars, n) => `Shift-JISで書けない文字${n}種類が「?」として保存されます: ${chars}\nMSX用のMUCに使えるのは英語と日本語だけです。それでも保存しますか？`,
     waveInfo: (n, e, lo, hi) => `サンプル ${n}/${e} · 最小 ${lo} · 最大 ${hi}`, wave64: ' · 平均して32個で演奏',
     waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
-    waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。',
+    waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）',
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · キャリア ${car}`, fmLegend: '実線: キャリア（聞こえる音）・点線: モジュレータ・エンベロープはTL込み',
     fmCount: (w, n, need) => `${w}: 値が${need}個必要ですが、${n}個です。`, fmRange: (w, f, v, max) => `${w} ${f} ${v}は0–${max}の範囲外です。`,
     noMessages: 'メッセージなし。', loop: (n) => `ループ ${n}`, missing: '未添付', remove: '削除',
@@ -217,6 +218,7 @@ function download(name, bytes, type) {
 // ---------- language ----------
 function applyLanguage() {
   document.documentElement.lang = lang;
+  if (typeof waveEditor !== 'undefined' && waveEditor.isOpen) { waveEditor.build(); waveEditor.render(); }
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
   $('chview').dataset.empty = t('cvEmpty');
@@ -367,6 +369,16 @@ function updateWave(row) {
   } else {
     const nums = def.values.filter(Number.isFinite);
     head.querySelector('b').textContent = `@W${def.id}`;
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.className = 'btn small wave-edit';
+    edit.textContent = t('waveEdit');
+    edit.title = t('waveEditTip');
+    // Keep the caret (and so the preview) in the text while the button is pressed.
+    edit.addEventListener('pointerdown', (e) => e.preventDefault());
+    edit.addEventListener('mousedown', (e) => e.preventDefault());
+    edit.addEventListener('click', () => openWaveEditor(def));
+    head.prepend(edit);
     head.querySelector('span').textContent = t('waveInfo', def.values.length, def.expected,
       nums.length ? Math.min(...nums) : '-', nums.length ? Math.max(...nums) : '-') + (def.expected === 64 ? t('wave64') : '');
     if (def.values.length !== def.expected) notes.push(t('waveCount', def.values.length, def.expected));
@@ -467,6 +479,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 window.addEventListener('resize', renderMarks);
 
 function setSource(text) {
+  if (waveEdit) { waveEdit = null; waveEditor.close(); $('panes').hidden = viewMode === 'channels'; }
   for (const p of panes) {
     p.code.value = text;
     p.code.scrollTop = 0;
@@ -1108,6 +1121,7 @@ window.addEventListener('resize', applyUiSize);
 
 async function play() {
   unlockAudio();   // in the tap itself, even while the engine is still loading
+  if (waveEdit) writeWave(waveEditor.values.slice());   // hear what is being drawn
   if (!engineReady) { pendingPlay = true; setStatus(t('loading')); return; }
   await filesRestored;
   try {
@@ -1326,7 +1340,7 @@ function onEditorKey(e) {
 }
 for (const p of panes) {
   p.code.addEventListener('keydown', onEditorKey);
-  p.code.addEventListener('blur', () => { closeSuggest(); hideWave(); });
+  p.code.addEventListener('blur', () => { closeSuggest(); if (!$('wave').matches(':hover')) hideWave(); });
   p.code.addEventListener('click', closeSuggest);
 }
 document.addEventListener('keydown', (e) => {
@@ -1670,9 +1684,75 @@ let autoChannels = false;          // opened by playing a file, so a MUC play re
 let cvSource = null, cvSession = -1;
 let vgmForView = null;             // the (decompressed) VGM that is playing, read for the view
 
+// ---------- SCC wave editor ----------
+// Opens in place of the text; Apply / Done write the definition back (as one @Wn:{…}
+// line, or @Wn and four rows for a 64-sample #SSGExtend wave).
+let waveEdit = null;   // { row } of the definition being edited
+const waveEditor = new WaveEditor($('waveEditor'), {
+  lang: () => lang,
+  onApply: (values) => writeWave(values),
+  onClose: () => closeWaveEditor(),
+  audio: () => { unlockAudio(); return ctx; },
+  volume: () => (+$('volume').value / 100) ** 2,
+});
+
+function openWaveEditor(def) {
+  if (viewMode === 'channels') setView('editor');
+  hideWave();
+  closeSuggest();
+  const header = lines[def.row - 1] || '';
+  waveEdit = { row: def.row };
+  $('panes').hidden = true;
+  document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = true; });
+  waveEditor.open({ ...def, indent: header.slice(0, def.col) || '  ' });
+  $('waveEditor').querySelector('.we-canvas').focus?.();
+}
+
+function writeWave(values) {
+  if (!waveEdit) return;
+  const def = waveAt(lines, waveEdit.row, code.value);
+  if (!def) return;
+  // Keep a comment after the definition's last value.
+  const last = lines[def.endRow - 1] || '';
+  const comment = /;.*$/.exec(last.replace(/^[^;]*?\}/, ''))?.[0] || '';
+  const indent = (lines[def.row - 1] || '').slice(0, def.col) || '  ';
+  const text = waveEditor.serialize(indent) + (comment ? ' ' + comment : '');
+  const starts = [0];
+  for (let i = 0; i < lines.length; i++) starts.push(starts[i] + lines[i].length + 1);
+  const from = starts[def.row - 1], to = starts[def.endRow - 1] + last.length;
+  if (code.value.slice(from, to) === text) return;
+  code.setRangeText(text, from, to, 'preserve');
+  code.dispatchEvent(new Event('input'));
+}
+
+function closeWaveEditor() {
+  if (!waveEdit) return;
+  const row = waveEdit.row;
+  waveEdit = null;
+  if (waveEditor.isOpen) waveEditor.close();
+  $('panes').hidden = viewMode === 'channels';
+  document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = viewMode === 'channels'; });
+  renderGutter();
+  renderHighlight();
+  traceDirty = true;
+  if (viewMode !== 'channels') {
+    const at = lines.slice(0, row - 1).reduce((n, l) => n + l.length + 1, 0);
+    code.focus();
+    code.setSelectionRange(at, at);
+    updateCursor();
+  }
+}
+// Leaving the editor any other way keeps what was drawn.
+function leaveWaveEditor() {
+  if (!waveEdit) return;
+  writeWave(waveEditor.values.slice());
+  closeWaveEditor();
+}
+
 function setView(mode, auto = false) {
   // The channel view always opens fitted to the frame; Size changes it from there.
   if (mode === 'channels' && viewMode !== 'channels') setZoom(DEFAULT_SCALE);
+  if (mode === 'channels') leaveWaveEditor();
   viewMode = mode === 'channels' ? 'channels' : 'editor';
   autoChannels = viewMode === 'channels' && auto;
   const channels = viewMode === 'channels';
