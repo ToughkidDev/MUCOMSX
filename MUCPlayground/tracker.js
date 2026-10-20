@@ -5,9 +5,10 @@
 //             there (C#4), its voice (@) and volume (v) in hex, OFF where a rest follows a
 //             note, and a line while a note is held. Notes from repeats or macros are dimmed:
 //             they come from the same text as the first time
-//   editing   a note typed in a cell (tracker keys Z S X … / Q 2 W …, or the note names
-//             c d e f g a b with Shift for a sharp, as chosen under Keys; or the keys mode
-//             piano), Delete (rest) or note off rewrites the MML token behind it: a new pitch,
+//   editing   a cell is typed the way it is shown: C#4 / D-5 (note, sharp or -, octave),
+//             OFF (note off), ... (empty: a rest), two hex digits for @ and v; or, chosen
+//             under Keys, Furnace's quick keys Z S X … / Q 2 W …; or the keys mode piano.
+//             A note, Delete (rest) or note off rewrites the MML token behind it: a new pitch,
 //             or the token cut in two where the cell lies inside a note or rest. Below a
 //             part's last note, the note is added to the part's text (the note before it
 //             held up to there). Hex digits in the @ and v columns set the voice / volume
@@ -39,8 +40,8 @@ export class Tracker {
     this.tracks = [];
     this.perWhole = 16;
     this.cursor = { track: 0, row: 0, col: 0 };   // col: 0 note, 1 voice (@), 2 volume (v)
-    this.input = 'tracker';   // 'tracker' (Z S X … / Q 2 W …) or 'names' (c d e …)
-    try { this.input = localStorage.getItem('mucplayground.trackerInput') === 'names' ? 'names' : 'tracker'; } catch { /* default */ }
+    this.input = 'display';   // 'display' (typed as shown: C#4, OFF, 0F) or 'tracker' (Z S X … / Q 2 W …)
+    try { this.input = localStorage.getItem('mucplayground.trackerInput') === 'tracker' ? 'tracker' : 'display'; } catch { /* default */ }
     this.armed = false;       // the tracker was the last place written in (the piano writes here then)
     this.octave = 4;
     this.playTick = null;
@@ -59,7 +60,7 @@ export class Tracker {
         <b>🎼 ${T('trkTitle')}</b>
         <label>${T('trkRow')} <select class="trk-res">${RESOLUTIONS.map((r) => `<option value="${r}"${r === this.perWhole ? ' selected' : ''}>1/${r}</option>`).join('')}</select></label>
         <span class="tool-group" role="group" aria-label="${T('keysOctave')}"><button type="button" class="btn small" data-oct="-1">−</button><output class="trk-oct"></output><button type="button" class="btn small" data-oct="1">+</button></span>
-        <label>${T('trkInput')} <select class="trk-input"><option value="tracker">${T('trkInputTracker')}</option><option value="names">${T('trkInputNames')}</option></select></label>
+        <label>${T('trkInput')} <select class="trk-input"><option value="display">${T('trkInputDisplay')}</option><option value="tracker">${T('trkInputTracker')}</option></select></label>
         <span class="tool-group trk-tools" role="group"><button type="button" class="btn small" data-act="rest" title="${T('trkRestTip')}">${T('trkRest')}</button><button type="button" class="btn small" data-act="off" title="${T('trkOffTip')}">OFF</button><button type="button" class="btn small" data-act="keys" title="${T('trkKeysTip')}">🎹</button></span>
         <span class="trk-info"></span>
       </div>
@@ -324,7 +325,7 @@ export class Tracker {
   showInfo(ev, message) {
     const info = this.root.querySelector('.trk-info');
     if (message) { info.textContent = message; return; }
-    if (!ev) { info.textContent = this.o.t(this.input === 'names' ? 'trkHintNames' : 'trkHint'); return; }
+    if (!ev) { info.textContent = this.o.t(this.input === 'display' ? 'trkHintDisplay' : 'trkHint'); return; }
     const where = this.o.t('trkWhere', ev.src.row, ev.tick, ev.len);
     info.textContent = where + (ev.shared ? ' · ' + this.o.t('trkShared') : '') + (ev.src.macro ? ' · ' + this.o.t('trkMacro') : '') + (ev.src.alone ? '' : ' · ' + this.o.t('trkMulti'));
   }
@@ -358,6 +359,17 @@ export class Tracker {
     }
     const move = { ArrowUp: -1, ArrowDown: 1, PageUp: -16, PageDown: 16 }[e.code];
     if (move) { e.preventDefault(); this.moveTo(track, row + move); return; }
+    if (this.input === 'display') {
+      // Typed as shown: a letter, O, . or - starts a note field; hex digits an @ / v field;
+      // Enter opens the field with what it shows.
+      const starts = this.cursor.col === 0 ? /^[a-go.\-]$/i : /^[0-9a-f]$/i;
+      if (e.key === 'Enter' || e.key === 'F2') { e.preventDefault(); this.openEditor(this.fieldText(), true); return; }
+      if (e.key.length === 1 && starts.test(e.key)) { e.preventDefault(); this.openEditor(e.key.toUpperCase()); return; }
+      if (e.code === 'Delete' || e.code === 'Backspace') { e.preventDefault(); if (this.cursor.col === 0) this.edit('rest'); return; }
+      if (e.code === 'Home') { e.preventDefault(); this.moveTo(track, 0); return; }
+      if (e.code === 'End') { e.preventDefault(); this.moveTo(track, this.rows - 1); return; }
+      return;
+    }
     if (this.cursor.col > 0) {
       // @ / v fields: hex digits, two make the value
       if (/^[0-9a-f]$/i.test(e.key)) {
@@ -375,25 +387,101 @@ export class Tracker {
     if (e.code === 'End') { e.preventDefault(); this.moveTo(track, this.rows - 1); return; }
     if (e.code === 'NumpadDivide' || e.code === 'NumpadMultiply') { e.preventDefault(); this.setOctave(this.octave + (e.code === 'NumpadMultiply' ? 1 : -1)); return; }
     if (e.code === 'Delete' || e.code === 'Backspace') { e.preventDefault(); this.edit('rest'); return; }
-    let midi = null;
-    if (this.input === 'names') {
-      // MML-like: c d e f g a b (Shift: sharp), r a rest / note off, < > the octave
-      if (e.key === '<' || e.key === '>') { e.preventDefault(); this.setOctave(this.octave + (e.key === '>' ? 1 : -1)); return; }
-      if (e.key === 'r' || e.key === 'R') { e.preventDefault(); this.edit('off'); return; }
-      const name = /^Key([A-G])$/.exec(e.code);
-      if (!name) return;
-      midi = 12 * (this.octave + 1) + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[name[1]] + (e.shiftKey ? 1 : 0);
-    } else {
-      if (e.code === 'Digit1' || e.code === 'Backquote') { e.preventDefault(); this.edit('off'); return; }
-      const semi = KEY_MAP[e.code];
-      if (semi === undefined) return;
-      midi = 12 * (this.octave + 1) + semi;
-    }
+    if (e.code === 'Digit1' || e.code === 'Backquote') { e.preventDefault(); this.edit('off'); return; }
+    const semi = KEY_MAP[e.code];
+    if (semi === undefined) return;
+    const midi = 12 * (this.octave + 1) + semi;
     e.preventDefault();
     if (e.repeat) return;
     this.o.preview(true, midi, this.tracks[track]?.name);
     this.held = e.code; this.heldMidi = midi;
     this.edit('note', midi);
+  }
+
+  // ---------- typing a cell as it is shown ----------
+  // What the cursor's field shows: C#4 / OFF / ... for the note, 03 / .. for @ and v.
+  fieldText() {
+    const { track, row, col } = this.cursor;
+    const ev = this.startsIn(track, row)[0];
+    if (!ev) return col ? '' : '';
+    if (col === 0) {
+      if (ev.kind === 'rest') return 'OFF';
+      return NAMES[ev.midi % 12] + (Math.floor(ev.midi / 12) - 1);
+    }
+    const v = col === 1 ? ev.inst : ev.vol;
+    return typeof v === 'number' ? hex2(v) : '';
+  }
+
+  // A text box over the field, in the tracker's own format; it closes by itself once the
+  // value is complete (C#4, C-4, C4, OFF, ..., two hex digits), or with Enter.
+  openEditor(initial, select = false) {
+    this.closeEditor();
+    const { track, row, col } = this.cursor;
+    const [fx, fw] = this.subColumn(col);
+    const sr = this.scroller.getBoundingClientRect(), rr = this.root.getBoundingClientRect();
+    const box = document.createElement('input');
+    box.className = 'trk-cell-edit';
+    box.spellcheck = false;
+    box.autocomplete = 'off';
+    box.maxLength = col === 0 ? 3 : 2;
+    box.style.left = `${sr.left - rr.left + this.colX(track) + fx - 4}px`;
+    box.style.top = `${sr.top - rr.top + this.rowY(row)}px`;
+    box.style.width = `${fw + 8}px`;
+    box.style.height = `${this.m.rowH}px`;
+    box.value = initial;
+    this.root.appendChild(box);
+    this.editor = box;
+    box.focus();
+    if (select) box.select();
+    this.showInfo(null, this.o.t(col === 0 ? 'trkTypeNote' : 'trkTypeHex', col === 1 ? '@' : 'v'));
+    const done = () => this.commitEditor(false);
+    box.addEventListener('input', () => {
+      const v = box.value.toUpperCase().replace(/\s/g, '').replace('+', '#');
+      if (v !== box.value) box.value = v;
+      const complete = col === 0 ? /^([A-G][-#]?[1-8]|OFF|\.\.\.|---)$/.test(v) : /^[0-9A-F]{2}$/.test(v);
+      if (complete) done();
+    });
+    box.addEventListener('keydown', (e) => {
+      e.stopPropagation();
+      if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); this.commitEditor(true); }
+      else if (e.key === 'Escape') { e.preventDefault(); this.closeEditor(); this.scroller.focus(); }
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); this.commitEditor(true); }
+    });
+    box.addEventListener('blur', () => { if (this.editor === box) this.closeEditor(); });
+  }
+
+  closeEditor() {
+    const box = this.editor;
+    this.editor = null;
+    box?.remove();
+  }
+
+  // forced: Enter, which also takes an incomplete value (C → the octave set above, 3 → 03).
+  commitEditor(forced) {
+    const box = this.editor;
+    if (!box) return;
+    const v = box.value.toUpperCase();
+    const col = this.cursor.col;
+    this.closeEditor();
+    this.scroller.focus({ preventScroll: true });
+    if (col === 0) {
+      if (v === 'OFF') { this.edit('off'); return; }
+      if (v === '' || /^[.\-]+$/.test(v)) { if (v) this.edit('rest'); return; }
+      const m = /^([A-G])([-#]?)([1-8])?$/.exec(v);
+      if (!m || (!m[3] && !forced)) { this.showInfo(null, this.o.t('trkTypeNote')); return; }
+      const oct = m[3] ? +m[3] : this.octave;
+      const midi = 12 * (oct + 1) + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] === '#' ? 1 : 0);
+      this.setOctave(oct);
+      this.o.preview(true, midi, this.tracks[this.cursor.track]?.name);
+      setTimeout(() => this.o.preview(false, midi), 300);
+      this.edit('note', midi);
+    } else {
+      if (!/^[0-9A-F]{1,2}$/.test(v)) return;
+      const { row } = this.cursor;
+      this.setParam(col === 1 ? '@' : 'v', parseInt(v, 16), true);
+      this.cursor.row = Math.min(this.rows - 1, row + 1);
+      this.draw();
+    }
   }
 
   // A note from the keys mode piano.

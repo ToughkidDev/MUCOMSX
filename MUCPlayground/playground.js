@@ -48,8 +48,9 @@ const T = {
     waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
     trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
     trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave',
-    trkHintNames: 'Click a cell and type: c d e f g a b (Shift: sharp), r a rest / note off, < > octave, Delete a rest; hex digits in @ and v',
-    trkInput: 'Keys', trkInputTracker: 'Tracker (Z S X / Q 2 W)', trkInputNames: 'Note names (c d e …)',
+    trkInput: 'Input', trkInputDisplay: 'As shown (C#4, OFF, 0F)', trkInputTracker: 'Quick keys (Z S X / Q 2 W)',
+    trkHintDisplay: 'Click a cell and type it as shown: C#4 / D-5 (note, # or -, octave 1–8), OFF, ... (rest); two hex digits in @ and v; Enter edits what is there, Delete a rest',
+    trkTypeNote: 'Note: A–G, then # or -, then the octave 1–8 (C#4, D-5); OFF; ... for a rest. Enter takes C as C at the octave shown above', trkTypeHex: (k) => `${k}: two hex digits (00–FF); Enter takes one`,
     trkRest: 'Rest', trkRestTip: 'Make the note in this cell a rest (Delete)', trkOffTip: 'Note off: a rest from this row on', trkKeysTip: 'Open the keys mode piano: its keys write notes here',
     trkParamNote: 'Voice and volume go on a cell where a note starts', trkParamSet: (k, v) => `${k}${v} set`, trkParamNext: (k, v) => `${k}${v}: type a second hex digit for a two-digit value`,
     trkEnded: 'This part ends with : here; write after it in the text', trkMulti: 'this line is written by several parts (e.g. BC): an edit changes all of them',
@@ -118,8 +119,9 @@ const T = {
     waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
     trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
     trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브',
-    trkHintNames: '셀을 클릭하고 입력: c d e f g a b (Shift는 샵), r은 쉼표/노트 오프, < > 옥타브, Delete는 쉼표. @·v 칸은 16진 숫자',
-    trkInput: '입력 키', trkInputTracker: '트래커 (Z S X / Q 2 W)', trkInputNames: '음이름 (c d e …)',
+    trkInput: '입력', trkInputDisplay: '표시 형식대로 (C#4, OFF, 0F)', trkInputTracker: '빠른 키 (Z S X / Q 2 W)',
+    trkHintDisplay: '셀을 클릭하고 표시된 형식대로 입력: C#4 / D-5 (음, # 또는 -, 옥타브 1–8), OFF, ... (쉼표). @·v 칸은 16진 두 자리. Enter는 지금 값을 편집, Delete는 쉼표',
+    trkTypeNote: '음: A–G, # 또는 -, 옥타브 1–8 (C#4, D-5). OFF는 노트 오프, ...는 쉼표. Enter로 C만 넣으면 위의 옥타브로', trkTypeHex: (k) => `${k}: 16진 두 자리 (00–FF). 한 자리는 Enter`,
     trkRest: '쉼표', trkRestTip: '이 칸의 음을 쉼표로 (Delete)', trkOffTip: '노트 오프: 이 행부터 쉼표', trkKeysTip: '건반 모드 열기: 건반을 누르면 여기에 음이 입력됩니다',
     trkParamNote: '음색과 볼륨은 음이 시작하는 칸에 넣습니다', trkParamSet: (k, v) => `${k}${v} 설정`, trkParamNext: (k, v) => `${k}${v}: 두 자리 값이면 16진 숫자를 하나 더 입력하세요`,
     trkEnded: '이 파트는 여기서 :로 끝납니다. 텍스트에서 그 뒤에 써 주세요', trkMulti: '여러 파트(예: BC)가 함께 쓰는 줄입니다. 고치면 모두 바뀝니다',
@@ -188,8 +190,9 @@ const T = {
     waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
     trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
     trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ',
-    trkHintNames: 'セルをクリックして入力: c d e f g a b（Shiftでシャープ）、rで休符/ノートオフ、< > でオクターブ、Deleteで休符。@・v欄は16進数字',
-    trkInput: '入力キー', trkInputTracker: 'トラッカー (Z S X / Q 2 W)', trkInputNames: '音名 (c d e …)',
+    trkInput: '入力', trkInputDisplay: '表示どおり (C#4, OFF, 0F)', trkInputTracker: 'クイックキー (Z S X / Q 2 W)',
+    trkHintDisplay: 'セルをクリックして表示どおりに入力: C#4 / D-5（音、# か -、オクターブ1–8）、OFF、...（休符）。@・v欄は16進2桁。Enterで今の値を編集、Deleteで休符',
+    trkTypeNote: '音: A–G、# か -、オクターブ1–8（C#4, D-5）。OFFはノートオフ、...は休符。EnterでCだけなら上のオクターブで', trkTypeHex: (k) => `${k}: 16進2桁（00–FF）。1桁はEnter`,
     trkRest: '休符', trkRestTip: 'このセルの音を休符に（Delete）', trkOffTip: 'ノートオフ: この行から休符', trkKeysTip: '鍵盤モードを開く: 鍵盤を押すとここに音が入ります',
     trkParamNote: '音色と音量は音が始まるセルに入れます', trkParamSet: (k, v) => `${k}${v} を設定`, trkParamNext: (k, v) => `${k}${v}: 2桁の値ならもう1つ16進数字を入力`,
     trkEnded: 'このパートはここで : で終わります。テキストでその後に書いてください', trkMulti: '複数のパート（例: BC）が共有する行です。直すとすべて変わります',
@@ -2144,8 +2147,19 @@ const tracker = new Tracker($('tracker'), {
     const starts = [0];
     for (let i = 0; i < lines.length; i++) starts.push(starts[i] + lines[i].length + 1);
     for (const e of edits) {
-      const at = starts[e.row - 1] + e.col;
-      code.setRangeText(e.text, at, at + e.len, 'end');
+      // > and < next to each other cancel: <g8.>< becomes <g8. (also across the edit's ends).
+      const line = lines[e.row - 1] || '';
+      let { text, col, len } = e;
+      for (let again = true; again;) {
+        again = false;
+        const before = text;
+        text = text.replace(/><|<>/g, '');
+        if (/[<>]$/.test(text) && line[col + len] === (text.endsWith('>') ? '<' : '>')) { text = text.slice(0, -1); len++; }
+        if (/^[<>]/.test(text) && col > 0 && line[col - 1] === (text.startsWith('>') ? '<' : '>')) { text = text.slice(1); col--; len++; }
+        again = text !== before;
+      }
+      const at = starts[e.row - 1] + col;
+      code.setRangeText(text, at, at + len, 'end');
     }
     code.dispatchEvent(new Event('input'));
     tracker.setText(code.value);
