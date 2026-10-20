@@ -1,29 +1,35 @@
-// Voice bank view: the song's FM voices as a list next to the text (like the tracker view).
-// The list joins the voice file the song uses (#voice, or VOICE.DAT by default) and the
-// voices the MUC defines itself; where both have @n, the MUC's wins, as in the compiler.
-// The buttons work on the selected voice; voices go to the file (DAT) or into the MUC text,
-// whichever "To" says. Everything that changes the song goes through the page (opts).
-
-import { readDat, writeDat, newDat, mucVoices, voiceKey, cleanName, importVoices, cloneVoice } from './voice-bank.js';
-import { ALGS, OP_COLORS } from './fm-preview.js';
+// Voice bank view: the song's FM voices or SCC waves as a list next to the text (like the
+// tracker view), on two tabs. Each list joins the file the song uses (FM: #voice / VOICE.DAT,
+// SCC: #sccvoice / SCCVOICE.DAT) and what the MUC defines itself; where both have a number,
+// the MUC's wins, as in the compilers. The buttons work on the selected entry; new ones go to
+// the file (DAT) or into the MUC text, whichever "To" says.
+//
+// What differs between FM and SCC lives in a kind (made by the page):
+//   id, label; first number; mark ('@' / '@W'); hasNames; defaultFile; accept (import);
+//   file() -> { name, bytes | null }; setFile(bytes | null, { name, link });
+//   read(bytes) -> [{ n, data, name }]; put(bytes, n, data | null, name) -> bytes | null;
+//   validFile(bytes); muc() -> [{ n, data, row, endRow, editable }]; key(data);
+//   usage() -> Map(n | name -> notes); describe(data); drawMini(canvas, data);
+//   preview(data); initData(); removeMuc(entry); addMuc(n, data, name); editMuc(entry);
+//   editFile(n, data, name); importFile(name, bytes) -> [{ data, name? }]
 
 export class BankView {
-  // opts: t; text(); dat() -> { name, bytes | null }; setDat(bytes, { name, link }) (attach
-  // the file, link: write #voice); removeMuc(entry); addMuc(n, voice, name); editMuc(entry);
-  // editDat(n, voice, name); insertAt(text); preview(voice); usage() -> Map(n | name -> count);
-  // download(name, bytes); initVoice; colors() -> { muted, panel }.
+  // opts: t; kinds: { fm, scc }; insertAt(text); download(name, bytes).
   constructor(root, opts) {
     this.root = root;
     this.o = opts;
-    this.entries = [];
-    this.selected = null;
-    this.target = 'dat';
+    this.kind = 'fm';
+    this.state = {};
+    for (const k of Object.keys(opts.kinds)) this.state[k] = { entries: [], selected: null, target: 'dat', targetChosen: false, history: [], message: null };
     this.showEmpty = false;
-    this.history = [];   // earlier versions of the voice file, for Undo
     this.build();
   }
 
   get isOpen() { return !this.root.hidden; }
+  get k() { return this.o.kinds[this.kind]; }
+  get s() { return this.state[this.kind]; }
+  get entries() { return this.s.entries; }
+  get selected() { return this.s.selected; }
 
   build() {
     const T = this.o.t;
@@ -31,6 +37,7 @@ export class BankView {
     this.root.innerHTML = `
       <div class="bank-bar">
         <b>🎛 ${T('bankTitle')}</b>
+        <span class="tool-group bank-tabs" role="tablist">${Object.values(this.o.kinds).map((k) => `<button type="button" class="btn small" role="tab" data-kind="${k.id}">${k.label}</button>`).join('')}</span>
         <span class="bank-file"></span>
         <label>${T('bankTo')} <select class="bank-target"><option value="dat">DAT</option><option value="muc">MUC</option></select></label>
         <label class="bank-empty"><input type="checkbox"> ${T('bankShowEmpty')}</label>
@@ -45,10 +52,10 @@ export class BankView {
       <p class="bank-info"></p>
       <input type="file" class="bank-pick" hidden multiple>`;
     const q = (s) => this.root.querySelector(s);
-    q('.bank-target').value = this.target;
-    q('.bank-target').onchange = (e) => { this.target = e.target.value; this.targetChosen = true; };
+    q('.bank-target').onchange = (e) => { this.s.target = e.target.value; this.s.targetChosen = true; };
     q('.bank-empty input').checked = this.showEmpty;
     q('.bank-empty input').onchange = (e) => { this.showEmpty = e.target.checked; this.render(); };
+    this.root.querySelectorAll('[data-kind]').forEach((b) => { b.onclick = () => this.setKind(b.dataset.kind); });
     this.root.querySelectorAll('[data-act]').forEach((b) => { b.onclick = () => this.act(b.dataset.act); });
     const list = q('.bank-list');
     list.addEventListener('click', (e) => { const r = e.target.closest('.bank-row'); if (r) this.select(+r.dataset.n, true); });
@@ -66,29 +73,35 @@ export class BankView {
     this.pick = q('.bank-pick');
   }
 
+  setKind(id) {
+    if (!this.o.kinds[id]) return;
+    this.kind = id;
+    this.refresh();
+  }
+
   // ---------- the list ----------
   refresh() {
-    const dat = this.o.dat();
-    this.datName = dat.name;
-    this.datBytes = dat.bytes;
+    const k = this.k, s = this.s;
+    const file = k.file();
+    s.fileName = file.name;
+    s.fileBytes = file.bytes;
     const byN = new Map();
-    for (const d of dat.bytes ? readDat(dat.bytes) : []) byN.set(d.n, { n: d.n, dat: d });
-    for (const m of mucVoices(this.o.text())) {
-      if (m.n < 1 || m.n > 255) continue;
+    for (const d of file.bytes ? k.read(file.bytes) || [] : []) byN.set(d.n, { n: d.n, file: d });
+    for (const m of k.muc()) {
+      if (m.n < k.first || m.n > 255) continue;
       const e = byN.get(m.n) || { n: m.n };
       if (!e.muc) e.muc = m;   // the first definition is the one the compiler finds
       byN.set(m.n, e);
     }
-    const usage = this.o.usage();
+    const usage = k.usage();
     for (const e of byN.values()) {
-      e.voice = (e.muc || e.dat).voice;
-      e.name = e.dat?.name || '';
+      e.data = (e.muc || e.file).data;
+      e.name = e.file?.name || '';
       e.uses = (usage.get(e.n) || 0) + (e.name ? usage.get(e.name) || 0 : 0);
     }
-    this.entries = [...byN.values()].sort((a, b) => a.n - b.n);
-    // To: the voice file when the song has one, else the MUC, until chosen by hand.
-    if (!this.targetChosen) this.target = dat.bytes ? 'dat' : 'muc';
-    this.root.querySelector('.bank-target').value = this.target;
+    s.entries = [...byN.values()].sort((a, b) => a.n - b.n);
+    // To: the file when the song has one, else the MUC, until chosen by hand.
+    if (!s.targetChosen) s.target = file.bytes ? 'dat' : 'muc';
     this.render();
   }
 
@@ -96,16 +109,20 @@ export class BankView {
 
   shown() {
     if (!this.showEmpty) return this.entries;
-    return Array.from({ length: 255 }, (_, k) => this.entry(k + 1) || { n: k + 1, empty: true });
+    const first = this.k.first;
+    return Array.from({ length: 256 - first }, (_, i) => this.entry(i + first) || { n: i + first, empty: true });
   }
 
   render() {
     if (!this.isOpen) return;
-    const T = this.o.t;
+    const T = this.o.t, k = this.k, s = this.s;
+    this.root.querySelectorAll('[data-kind]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.kind === this.kind)));
+    this.root.querySelector('.bank-target').value = s.target;
+    this.root.querySelector('[data-act="rename"]').hidden = !k.hasNames;
     const file = this.root.querySelector('.bank-file');
-    const count = this.entries.filter((e) => e.dat).length;
-    file.textContent = this.datBytes ? T('bankFile', this.datName, count) : this.datName ? T('bankFileMissing', this.datName) : T('bankNoFile');
-    file.classList.toggle('missing', !this.datBytes);
+    const count = this.entries.filter((e) => e.file).length;
+    file.textContent = s.fileBytes ? T('bankFile_' + k.id, s.fileName, count) : s.fileName ? T('bankFileMissing', s.fileName) : T('bankNoFile_' + k.id);
+    file.classList.toggle('missing', !s.fileBytes);
     const list = this.root.querySelector('.bank-list');
     const keep = list.scrollTop;
     list.innerHTML = '';
@@ -113,7 +130,7 @@ export class BankView {
     if (!shown.length) {
       const p = document.createElement('p');
       p.className = 'bank-none';
-      p.textContent = T('bankEmpty');
+      p.textContent = T('bankEmpty_' + k.id);
       list.appendChild(p);
     }
     const frag = document.createDocumentFragment();
@@ -124,64 +141,42 @@ export class BankView {
       row.setAttribute('role', 'option');
       row.setAttribute('aria-selected', String(e.n === this.selected));
       if (e.empty) {
-        row.innerHTML = `<span class="n">@${e.n}</span><span class="name">—</span>`;
+        row.innerHTML = `<span class="n">${k.mark}${e.n}</span><span class="name">—</span>`;
       } else {
-        const src = e.muc && e.dat ? 'over' : e.muc ? 'muc' : 'dat';
-        row.innerHTML = `<span class="n">@${e.n}</span><span class="name"></span><span class="src ${src}">${T('bankSrc_' + src)}</span><canvas class="alg"></canvas><span class="fa">ALG ${e.voice.alg} FB ${e.voice.fb}</span><span class="uses"></span>`;
+        const src = e.muc && e.file ? 'over' : e.muc ? 'muc' : 'dat';
+        row.innerHTML = `<span class="n">${k.mark}${e.n}</span><span class="name"></span><span class="src ${src}">${T('bankSrc_' + src)}</span><canvas class="alg"></canvas><span class="fa"></span><span class="uses"></span>`;
         row.querySelector('.name').textContent = e.name || (e.muc ? T('bankInline') : '');
+        row.querySelector('.fa').textContent = k.describe(e.data);
         row.querySelector('.uses').textContent = e.uses ? `×${e.uses}` : '';
-        row.title = e.muc && e.dat ? T('bankOverTip') : '';
+        row.title = e.muc && e.file ? T('bankOverTip') : '';
       }
       frag.appendChild(row);
     }
     list.appendChild(frag);
     list.scrollTop = keep;
-    list.querySelectorAll('.bank-row:not(.empty) canvas.alg').forEach((c) => this.drawAlg(c, this.entry(+c.parentElement.dataset.n).voice.alg));
+    list.querySelectorAll('.bank-row:not(.empty) canvas.alg').forEach((c) => k.drawMini(c, this.entry(+c.parentElement.dataset.n).data));
     this.info();
   }
 
-  drawAlg(canvas, a) {
-    const dpr = window.devicePixelRatio || 1;
-    const w = 44, h = 20;
-    canvas.width = w * dpr; canvas.height = h * dpr;
-    const g = canvas.getContext('2d');
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const alg = ALGS[a] || ALGS[0];
-    const cols = Math.max(...alg.pos.map((p) => p[0])) + 1, rows = Math.max(...alg.pos.map((p) => p[1])) + 1;
-    const at = (k) => ({ x: 4 + (alg.pos[k][0] + 0.5) * ((w - 10) / cols), y: (alg.pos[k][1] + 0.5) * (h / rows) });
-    const c = this.o.colors();
-    g.strokeStyle = c.muted; g.lineWidth = 1;
-    for (const [s, d] of alg.edges) { const A = at(s), B = at(d); g.beginPath(); g.moveTo(A.x, A.y); g.lineTo(B.x, B.y); g.stroke(); }
-    for (const k of alg.out) { const A = at(k); g.beginPath(); g.moveTo(A.x, A.y); g.lineTo(w - 1, A.y); g.stroke(); }
-    const box = Math.min(6, h / rows - 1);
-    for (let k = 0; k < 4; k++) {
-      const A = at(k);
-      g.fillStyle = alg.out.includes(k) ? OP_COLORS[k] : c.panel;
-      g.strokeStyle = OP_COLORS[k];
-      g.fillRect(A.x - box / 2, A.y - box / 2, box, box);
-      g.strokeRect(A.x - box / 2 + .5, A.y - box / 2 + .5, box - 1, box - 1);
-    }
-  }
-
-  // A message stays until another voice is picked (the list is redrawn when the file or the
+  // A message stays until another entry is picked (the list is redrawn when the file or the
   // text changes, which should not wipe it).
   info(message) {
     const p = this.root.querySelector('.bank-info');
-    if (message) this.message = message;
-    if (this.message) { p.textContent = this.message; return; }
+    if (message) this.s.message = message;
+    if (this.s.message) { p.textContent = this.s.message; return; }
     const e = this.entry(this.selected);
     if (!e) { p.textContent = this.o.t('bankHint'); return; }
     const T = this.o.t;
     p.textContent = [
-      `@${e.n}` + (e.name ? ` "${e.name}"` : ''),
-      e.muc && e.dat ? T('bankOverTip') : e.muc ? T('bankInMuc', e.muc.row) : T('bankInDat', this.datName),
+      `${this.k.mark}${e.n}` + (e.name ? ` "${e.name}"` : ''),
+      e.muc && e.file ? T('bankOverTip') : e.muc ? T('bankInMuc', e.muc.row) : T('bankInDat', this.s.fileName),
       e.uses ? T('bankUses', e.uses) : T('bankUnused'),
     ].join(' · ');
   }
 
   select(n, preview = false) {
-    this.selected = n;
-    this.message = null;
+    this.s.selected = n;
+    this.s.message = null;
     for (const r of this.root.querySelectorAll('.bank-row')) {
       const on = +r.dataset.n === n;
       r.classList.toggle('sel', on);
@@ -190,86 +185,85 @@ export class BankView {
     }
     this.info();
     const e = this.entry(n);
-    if (preview && e) this.o.preview(e.voice);
+    if (preview && e) this.k.preview(e.data);
   }
 
-  // ---------- changing the voice file ----------
-  writeDat(bytes, link = false) {
-    if (this.datBytes) { this.history.push(this.datBytes); if (this.history.length > 50) this.history.shift(); }
-    this.datBytes = bytes;
-    this.o.setDat(bytes, { name: this.datName || 'VOICE.DAT', link });
+  // ---------- changing the file ----------
+  writeFile(bytes, link = false) {
+    const s = this.s;
+    if (s.fileBytes) { s.history.push(s.fileBytes); if (s.history.length > 50) s.history.shift(); }
+    s.fileBytes = bytes;
+    this.k.setFile(bytes, { name: s.fileName || this.k.defaultFile, link });
   }
 
-  datOrNew() {
-    if (this.datBytes) return { bytes: this.datBytes, link: false };
-    return { bytes: newDat(), link: true };
+  // Writes data as number n (null: removes it) into the file, making one if there is none.
+  put(n, data, name) {
+    const link = !this.s.fileBytes;
+    this.writeFile(this.k.put(this.s.fileBytes, n, data, name), link);
   }
 
   freeNumber(taken) {
-    for (let n = 1; n < 256; n++) if (!taken.has(n)) return n;
-    return 0;
+    for (let n = this.k.first; n < 256; n++) if (!taken.has(n)) return n;
+    return -1;
   }
 
   // ---------- the buttons ----------
   async act(what) {
-    const T = this.o.t;
+    const T = this.o.t, k = this.k, s = this.s;
     const e = this.entry(this.selected);
     switch (what) {
       case 'add': {
         const n = this.freeNumber(new Set(this.entries.map((x) => x.n)));
-        if (!n) { this.info(T('bankFull')); return; }
-        const voice = cloneVoice(this.o.initVoice);
-        if (this.target === 'dat') {
-          const { bytes, link } = this.datOrNew();
-          this.writeDat(writeDat(bytes, n, voice, `new${n}`.slice(0, 6)), link);
-        } else this.o.addMuc(n, voice);
-        this.selected = n;
+        if (n < 0) { this.info(T('bankFull')); return; }
+        if (s.target === 'dat') this.put(n, k.initData(), `new${n}`.slice(0, 6));
+        else k.addMuc(n, k.initData());
+        s.selected = n;
         this.refresh();
-        this.info(T('bankAdded', n, this.target.toUpperCase()));
+        this.info(T('bankAdded', k.mark + n, s.target.toUpperCase()));
         return;
       }
       case 'del': {
         if (!e) return;
-        if (e.uses && !confirm(T('bankDelUsed', e.n, e.uses))) return;
-        if (e.muc) { this.o.removeMuc(e.muc); this.info(T(e.dat ? 'bankDelMucKeepDat' : 'bankDeleted', e.n)); }
-        else { this.writeDat(writeDat(this.datBytes, e.n, null)); this.info(T('bankDeleted', e.n)); }
+        if (e.uses && !confirm(T('bankDelUsed', k.mark + e.n, e.uses))) return;
+        if (e.muc) { k.removeMuc(e.muc); this.info(T(e.file ? 'bankDelMucKeepDat' : 'bankDeleted', k.mark + e.n)); }
+        else { this.put(e.n, null); this.info(T('bankDeleted', k.mark + e.n)); }
         this.refresh();
         return;
       }
       case 'edit':
         if (!e) return;
         if (e.muc) {
-          if (e.muc.form !== 'plain') { this.info(T('bankFormText')); return; }
-          this.o.editMuc(e.muc);
-        } else this.o.editDat(e.n, e.voice, e.name);
+          if (!e.muc.editable) { this.info(T('bankFormText')); return; }
+          k.editMuc(e.muc);
+        } else k.editFile(e.n, e.data, e.name);
         return;
       case 'rename': {
-        if (!e || !e.dat) { this.info(T('bankRenameDatOnly')); return; }
+        if (!e || !e.file) { this.info(T('bankRenameDatOnly')); return; }
         const name = prompt(T('bankRenamePrompt'), e.name);
         if (name === null) return;
-        this.writeDat(writeDat(this.datBytes, e.n, e.dat.voice, cleanName(name)));
+        this.put(e.n, e.file.data, name);
         this.refresh();
         return;
       }
       case 'toDat': {
         if (!e || !e.muc) { this.info(T('bankToDatNeedsMuc')); return; }
-        const { bytes, link } = this.datOrNew();
-        this.writeDat(writeDat(bytes, e.n, e.muc.voice, e.name || `muc${e.n}`.slice(0, 6)), link);
-        this.o.removeMuc(e.muc);
+        // The definition goes first: writing a new file adds a tag line, which moves the rows.
+        k.removeMuc(e.muc);
+        this.put(e.n, e.muc.data, e.name || `muc${e.n}`.slice(0, 6));
         this.refresh();
-        this.info(T('bankMovedToDat', e.n, this.datName || 'VOICE.DAT'));
+        this.info(T('bankMovedToDat', k.mark + e.n, s.fileName || k.defaultFile));
         return;
       }
       case 'toMuc': {
-        if (!e || !e.dat) { this.info(T('bankToMucNeedsDat')); return; }
+        if (!e || !e.file) { this.info(T('bankToMucNeedsDat')); return; }
         if (e.muc) { this.info(T('bankAlreadyMuc')); return; }
-        this.o.addMuc(e.n, e.dat.voice, e.name);
+        k.addMuc(e.n, e.file.data, e.name);
         this.refresh();
-        this.info(T('bankCopiedToMuc', e.n));
+        this.info(T('bankCopiedToMuc', k.mark + e.n));
         return;
       }
       case 'import': {
-        const picked = await this.choose('.dat,.muc,.mub,.vgm,.vgz,.txt', true);
+        const picked = await this.choose(k.accept, true);
         if (picked.length) await this.importFiles(picked);
         return;
       }
@@ -277,30 +271,31 @@ export class BankView {
         const [file] = await this.choose('.dat', false);
         if (!file) return;
         const bytes = new Uint8Array(await file.arrayBuffer());
-        if (bytes.length % 32 || bytes.length < 64 || bytes.length > 8192) { this.info(T('bankNotDat', file.name)); return; }
-        this.history = [];
-        this.datName = file.name;
-        this.datBytes = bytes;
-        this.o.setDat(bytes, { name: file.name, link: true });
-        this.targetChosen = false;
+        if (!k.validFile(bytes)) { this.info(T('bankNotDat_' + k.id, file.name)); return; }
+        s.history = [];
+        s.fileName = file.name;
+        s.fileBytes = bytes;
+        k.setFile(bytes, { name: file.name, link: true });
+        s.targetChosen = false;
         this.refresh();
-        this.info(T('bankLoaded', file.name, readDat(bytes).length));
+        this.info(T('bankLoaded_' + k.id, file.name, (k.read(bytes) || []).length));
         return;
       }
       case 'save': {
-        if (this.datBytes) { this.o.download(this.datName || 'VOICE.DAT', this.datBytes); return; }
-        // No voice file yet: one made from the MUC's voices (same numbers).
-        let bytes = newDat();
-        for (const x of this.entries) if (x.muc) bytes = writeDat(bytes, x.n, x.muc.voice, `muc${x.n}`.slice(0, 6));
-        this.o.download('VOICE.DAT', bytes);
+        if (s.fileBytes) { this.o.download(s.fileName || k.defaultFile, s.fileBytes); return; }
+        // No file yet: one made from the MUC's entries (same numbers).
+        let bytes = null;
+        for (const x of this.entries) if (x.muc) bytes = k.put(bytes, x.n, x.muc.data, `muc${x.n}`.slice(0, 6));
+        if (!bytes) { this.info(T('bankEmpty_' + k.id)); return; }
+        this.o.download(k.defaultFile, bytes);
         this.info(T('bankSavedFromMuc'));
         return;
       }
       case 'undo': {
-        const prev = this.history.pop();
+        const prev = s.history.pop();
         if (!prev) { this.info(T('bankNothingToUndo')); return; }
-        this.datBytes = prev;
-        this.o.setDat(prev, { name: this.datName || 'VOICE.DAT', link: false });
+        s.fileBytes = prev;
+        k.setFile(prev, { name: s.fileName || k.defaultFile, link: false });
         this.refresh();
         return;
       }
@@ -318,35 +313,37 @@ export class BankView {
     });
   }
 
-  // Voices from other files, added after the ones there are (to the voice file, or as
-  // definitions in the MUC); a voice the bank already has is not added again.
+  // Entries from other files, added after the ones there are (to the file, or as
+  // definitions in the MUC); one the bank already has is not added again.
   async importFiles(fileList) {
-    const T = this.o.t;
-    const have = new Set(this.entries.map((x) => voiceKey(x.voice)));
+    const T = this.o.t, k = this.k, s = this.s;
+    const have = new Set(this.entries.map((x) => k.key(x.data)));
     const taken = new Set(this.entries.map((x) => x.n));
-    let added = 0, same = 0, noRoom = 0, none = [];
-    let { bytes, link } = this.target === 'dat' ? this.datOrNew() : { bytes: null, link: false };
+    let added = 0, same = 0, noRoom = 0;
+    const none = [];
+    let bytes = s.fileBytes;
+    const link = !bytes;
     const toMuc = [];
     for (const file of fileList) {
       let found;
-      try { found = await importVoices(file.name, new Uint8Array(await file.arrayBuffer())); }
-      catch { found = { voices: [] }; }
-      if (!found.voices.length) { none.push(file.name); continue; }
-      for (const v of found.voices) {
-        const key = voiceKey(v.voice);
+      try { found = await k.importFile(file.name, new Uint8Array(await file.arrayBuffer())); }
+      catch { found = []; }
+      if (!found.length) { none.push(file.name); continue; }
+      for (const v of found) {
+        const key = k.key(v.data);
         if (have.has(key)) { same++; continue; }
         const n = this.freeNumber(taken);
-        if (!n) { noRoom++; continue; }
+        if (n < 0) { noRoom++; continue; }
         have.add(key);
         taken.add(n);
         added++;
-        if (this.target === 'dat') bytes = writeDat(bytes, n, v.voice, v.name);
-        else toMuc.push([n, v.voice, v.name]);
+        if (s.target === 'dat') bytes = k.put(bytes, n, v.data, v.name);
+        else toMuc.push([n, v.data, v.name]);
       }
     }
-    if (this.target === 'dat' && added) this.writeDat(bytes, link);
-    for (const [n, voice, name] of toMuc) this.o.addMuc(n, voice, name);
+    if (s.target === 'dat' && added) this.writeFile(bytes, link);
+    for (const [n, data, name] of toMuc) k.addMuc(n, data, name);
     this.refresh();
-    this.info([T('bankImported', added, this.target.toUpperCase()), same ? T('bankImportSame', same) : '', noRoom ? T('bankImportFull', noRoom) : '', none.length ? T('bankImportNone', none.join(', ')) : ''].filter(Boolean).join(' · '));
+    this.info([T('bankImported_' + k.id, added, s.target.toUpperCase()), same ? T('bankImportSame', same) : '', noRoom ? T('bankImportFull', noRoom) : '', none.length ? T('bankImportNone_' + k.id, none.join(', ')) : ''].filter(Boolean).join(' · '));
   }
 }
