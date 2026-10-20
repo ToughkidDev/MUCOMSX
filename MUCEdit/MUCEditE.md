@@ -459,7 +459,7 @@ A MUC is a text file that writes a song in MML. As a rule it reads most easily w
 #date 2026/09/14
 #comment First test on MSX
 
-D t200 C128 o4 l8 v10 cdefgab>c4
+D t200 C128 @0 o4 l8 v10 cdefgab>c4
 ```
 
 | Tag | Purpose |
@@ -676,6 +676,8 @@ SSG is channels D, E, and F. Beyond the basic note, length, octave, and volume, 
 | `SN` | Hardware envelope shape |
 | `mN` | Hardware envelope period |
 
+**An SSG channel stays silent until it has a preset or an envelope, and a volume.** Before the first note, put `@0` (a plain, steady tone) or an `E` envelope, and a `v` such as `v10`. A hardware envelope (`S`) also works. This is MUCOM88's own behaviour, and the internal MSX PSG channels (`MSXD`–`MSXF`) work the same way. The dedicated SCC channels of the msPb0102 format (`SCCA`–`SCCE`) are different: they need only `v`.
+
 Changing presets and envelopes all at once makes it hard to tell which setting changed the sound. Check that a simple SSG melody plays correctly first, then add one item at a time.
 
 ### 16.6 Rhythm: G
@@ -746,10 +748,10 @@ The current safe limits are 1023 bytes for a macro body and 8 levels of call nes
 ### 17.5 Portamento
 
 ```muc
-D o4 l4 {c>c}4 d4
+D o4 l4 {c4>c} d4
 ```
 
-This notation slides between the notes inside the braces. It uses the same characters as a macro definition's braces, but plays a different role. When editing an existing phrase, check the brace positions together with the length specification that follows.
+This notation slides between the notes inside the braces. The length goes **right after the first note**: `{c4>c}` slides from C to the C above over a quarter note. Without a length the `l` value is used. Do not write the length after the closing brace: `{c>c}4` is not MUCOM88 syntax, and the mucomDotNET compiler (MUCPlayground, MDPlayer4Mac v0.2.3) rejects it. The braces are the same characters as a macro definition's, but play a different role. When editing an existing phrase, check the brace positions and the length together.
 
 ### 17.6 Advanced command quick guide
 
@@ -795,9 +797,9 @@ Type the following into a new document and use the name `FIRST.MUC`.
 #author ToughkidCST
 #comment Simple SSG test
 
-D T120 C128 o4 l8 v10 q0 cdef gab>c4 r4
-E C128 o3 l4 v8 c r g r c r g r
-F C128 o2 l2 v7 c g c g
+D T120 C128 @0 o4 l8 v10 q0 cdef gab>c4 r4
+E C128 @0 o3 l4 v8 c r g r c r g r
+F C128 @0 o2 l2 v7 c g c g
 ```
 
 1. Save `FIRST.MUC` with Ctrl+S.
@@ -808,7 +810,7 @@ F C128 o2 l2 v7 c g c g
 6. If you do not like it, undo and compile again.
 7. When you have the state you want to keep, press Ctrl+S.
 
-This example uses only SSG so that it needs no PCM or external FM voices. Even so, actually playing it from the editor still requires the MUCPLAY-supported sound environment described earlier.
+`@0` gives each SSG channel a plain tone. Without it, or an `E` envelope, the channels stay silent. This example uses only SSG so that it needs no PCM or external FM voices. Even so, actually playing it from the editor still requires the MUCPLAY-supported sound environment described earlier.
 
 ### 18.2 Using repeats and macros together
 
@@ -819,8 +821,8 @@ This example uses only SSG so that it needs no PCM or external FM voices. Even s
 
 # *1{o4 l8 cdef}
 # *2{g4 e4 c4 r4}
-D t200 C128 v10 [*1]2 *2
-E C128 o3 l4 v8 [c r g r]2
+D t200 C128 @0 v10 [*1]2 *2
+E C128 @0 o3 l4 v8 [c r g r]2
 ```
 
 Changing `*1` applies the change everywhere that macro is called. That is easier to manage than editing the same phrase separately in each place you copied it.

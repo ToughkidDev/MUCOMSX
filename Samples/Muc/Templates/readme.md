@@ -26,7 +26,7 @@ A genre template plays drums, bass and chords. Write your melody in the part at 
 
 ### Good to know
 
-- An SSG or PSG part (`D E F`, `MSXD E F`) stays silent until it has a preset (`@0`) or an envelope (`E`).
+- An SSG or PSG part (`D E F`, `MSXD E F`) stays silent until it has a preset (`@0`) or an envelope (`E`), and a volume (`v`). SCC parts and `MSXG` need `v` too.
 - FM voices are written in the song. Their four operator lines are OP1–OP4; keep a carrier's TL at 0 and set loudness with `v`.
 - MSX-MUSIC parts reuse the same FM voices: each becomes the nearest of the 15 built-in OPLL instruments.
 - Templates that use `SCCA`–`SCCE` need the msPb0102 format of MUCOMSX (MDPlayer4Mac v0.2.3 or later).
@@ -53,7 +53,7 @@ All templates compile without errors or warnings. In MDPlayer4Mac v0.2.3 they pr
 
 ### 知っておくと便利なこと
 
-- SSG・PSGのパート(`D E F`、`MSXD E F`)は、プリセット(`@0`)かエンベロープ(`E`)を指定するまで音が出ません。
+- SSG・PSGのパート(`D E F`、`MSXD E F`)は、プリセット(`@0`)かエンベロープ(`E`)、そして音量(`v`)を指定するまで音が出ません。SCCのパートと`MSXG`にも`v`が必要です。
 - FM音色は曲の中に書きます。4行のオペレータはOP1~OP4の順です。キャリアのTLは0にして、音量は`v`で決めます。
 - MSX-MUSICのパートも同じFM音色を使います。それぞれOPLL内蔵の15音色のうち最も近いものになります。
 - `SCCA`~`SCCE`を使うテンプレートには、MUCOMSXのmsPb0102形式(MDPlayer4Mac v0.2.3以降)が必要です。
@@ -80,7 +80,7 @@ MSX用のMUCと同じく、ファイルはShift-JISです。コメントは英�
 
 ### 알아 두면 좋은 것
 
-- SSG·PSG 파트(`D E F`, `MSXD E F`)는 프리셋(`@0`)이나 엔벨로프(`E`)를 정해야 소리가 납니다.
+- SSG·PSG 파트(`D E F`, `MSXD E F`)는 프리셋(`@0`)이나 엔벨로프(`E`), 그리고 음량(`v`)을 정해야 소리가 납니다. SCC 파트와 `MSXG`에도 `v`가 필요합니다.
 - FM 음색은 곡 안에 씁니다. 오퍼레이터 네 줄은 OP1~OP4 순서입니다. 캐리어의 TL은 0으로 두고, 음량은 `v`로 정합니다.
 - MSX-MUSIC 파트도 같은 FM 음색을 씁니다. 각각 OPLL 내장 15음색 중 가장 가까운 것으로 바뀝니다.
 - `SCCA`~`SCCE`를 쓰는 템플릿은 MUCOMSX의 msPb0102 형식(MDPlayer4Mac v0.2.3 이상)이 필요합니다.

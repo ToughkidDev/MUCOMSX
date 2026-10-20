@@ -3,6 +3,7 @@
 
 import { Highlighter, suggestionsAt, PART_LETTERS, PART_COLORS } from './editor-assist.js';
 import { explain, readableText } from './diagnostics.js';
+import { silentParts } from './silence-check.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 
 const SAMPLE_RATE = 44100;
@@ -30,6 +31,9 @@ const T = {
     loadFailed: 'The engine could not be loaded: ', compiling: 'Compiling…', playing: 'Playing',
     compiled: (ms, size) => `Compiled in ${ms} ms, ${size.toLocaleString()} bytes.`,
     compileFailed: 'Compile error. See the messages on the right.', stopped: 'Stopped.', ended: 'Finished.',
+    silentEnv: (p) => `Part ${p} has no @ or E before its first note, so it makes no sound.`,
+    silentVol: (p) => `Part ${p} has no v before its first note, so it makes no sound.`,
+    sjisLoss: (chars, n) => `${n} kind(s) of character cannot be written in Shift-JIS and will be saved as "?": ${chars}\nMUC files for the MSX can hold English and Japanese only. Save anyway?`,
     noMessages: 'No messages.', loop: (n) => `loop ${n}`, missing: 'not attached', remove: 'Remove',
     demo: 'Demo (FM + SSG + rhythm)', template: 'Template (OPNA + MSX chips)', yourSong: 'Your song (autosaved)', samples: 'Samples',
     loadingSample: (n) => `Loading ${n}…`, sampleFailed: 'Could not load the sample: ',
@@ -73,6 +77,9 @@ const T = {
     loadFailed: '엔진을 불러오지 못했습니다: ', compiling: '컴파일 중…', playing: '재생 중',
     compiled: (ms, size) => `${ms} ms에 컴파일, ${size.toLocaleString()} 바이트.`,
     compileFailed: '컴파일 오류입니다. 오른쪽 메시지를 확인하세요.', stopped: '정지했습니다.', ended: '끝났습니다.',
+    silentEnv: (p) => `${p} 파트는 첫 음표 앞에 @나 E가 없어서 소리가 나지 않습니다.`,
+    silentVol: (p) => `${p} 파트는 첫 음표 앞에 v가 없어서 소리가 나지 않습니다.`,
+    sjisLoss: (chars, n) => `Shift-JIS로 쓸 수 없는 문자 ${n}종류가 "?"로 저장됩니다: ${chars}\nMSX용 MUC에는 영어와 일본어만 쓸 수 있습니다. 그래도 저장할까요?`,
     noMessages: '메시지 없음.', loop: (n) => `루프 ${n}`, missing: '첨부 안 됨', remove: '제거',
     demo: '데모 (FM + SSG + 리듬)', template: '템플릿 (OPNA + MSX 칩)', yourSong: '내 곡 (자동 저장)', samples: '샘플',
     loadingSample: (n) => `${n} 불러오는 중…`, sampleFailed: '샘플을 불러오지 못했습니다: ',
@@ -116,6 +123,9 @@ const T = {
     loadFailed: 'エンジンを読み込めませんでした: ', compiling: 'コンパイル中…', playing: '再生中',
     compiled: (ms, size) => `${ms} msでコンパイル、${size.toLocaleString()}バイト。`,
     compileFailed: 'コンパイルエラーです。右のメッセージを確認してください。', stopped: '停止しました。', ended: '再生が終わりました。',
+    silentEnv: (p) => `${p}パートは最初の音符の前に@もEも無いため、鳴りません。`,
+    silentVol: (p) => `${p}パートは最初の音符の前にvが無いため、鳴りません。`,
+    sjisLoss: (chars, n) => `Shift-JISで書けない文字${n}種類が「?」として保存されます: ${chars}\nMSX用のMUCに使えるのは英語と日本語だけです。それでも保存しますか？`,
     noMessages: 'メッセージなし。', loop: (n) => `ループ ${n}`, missing: '未添付', remove: '削除',
     demo: 'デモ（FM + SSG + リズム）', template: 'テンプレート（OPNA + MSXチップ）', yourSong: '自分の曲（自動保存）', samples: 'サンプル曲',
     loadingSample: (n) => `${n}を読み込み中…`, sampleFailed: 'サンプルを読み込めませんでした: ',
@@ -397,7 +407,17 @@ function messagePosition(m) {
   return p && +p[1] > 0 ? { row: +p[1], col: +p[2] } : null;
 }
 
+// Compiler messages plus the page's own warnings about parts that cannot sound.
+function withSilenceWarnings(result) {
+  const extra = silentParts(code.value).flatMap((s) => s.missing.map((what) => ({
+    row: s.row, col: s.col, code: what === 'env' ? 'PG01' : 'PG02',
+    text: t(what === 'env' ? 'silentEnv' : 'silentVol', s.part),
+  })));
+  return extra.length ? { ...result, warnings: [...result.warnings, ...extra] } : result;
+}
+
 function renderMessages(result) {
+  result = withSilenceWarnings(result);
   const list = $('messages');
   list.innerHTML = '';
   markRows = new Map();
@@ -721,12 +741,27 @@ function openMuc(name, buffer) {
 
 let encodeId = 0;
 const pendingEncodes = new Map();
-function saveMuc() {
+const encodeSjis = (text) => new Promise((resolve) => {
+  const id = ++encodeId;
+  pendingEncodes.set(id, resolve);
+  worker.postMessage({ type: 'encode', id, text });
+});
+
+// Characters Shift-JIS cannot hold (Hangul, emoji …) would be saved as "?". Each distinct
+// non-ASCII character is encoded on its own line; the ones that come back as "?" are lost.
+async function sjisLosses(text) {
+  const chars = [...new Set(text)].filter((c) => c.codePointAt(0) > 0x7f);
+  if (!chars.length) return [];
+  const back = new TextDecoder('shift_jis').decode(await encodeSjis(chars.join('\n'))).split('\n');
+  return chars.filter((c, i) => /^\?+$/.test(back[i]));
+}
+
+async function saveMuc() {
   const text = code.value.replace(/\r?\n/g, '\r\n');
   if (!engineReady) { download(sourceName, new TextEncoder().encode(text), 'text/plain'); return; }
-  const id = ++encodeId;
-  pendingEncodes.set(id, (bytes) => download(sourceName, bytes, 'application/octet-stream'));
-  worker.postMessage({ type: 'encode', id, text });
+  const lost = await sjisLosses(text);
+  if (lost.length && !confirm(t('sjisLoss', lost.slice(0, 12).join(' ') + (lost.length > 12 ? ' …' : ''), lost.length))) return;
+  download(sourceName, await encodeSjis(text), 'application/octet-stream');
 }
 $('save').addEventListener('click', saveMuc);
 $('saveLabel').addEventListener('click', saveMuc);
