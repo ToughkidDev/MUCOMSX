@@ -235,6 +235,11 @@ public sealed class MucPlayer
     MsxSoundMapper mapper;
     long frame;
     VgmWriter vgm;          // only while exporting
+    double speedDue;        // driver steps owed (Speed per output sample)
+
+    // Playback speed (0.25–2): the driver's timers run this many steps per output sample,
+    // so the tempo changes and the pitch does not. Exports always run at 1.
+    public double Speed { get; set; } = 1;
 
     // Where each channel is in the source, as the driver plays it: flat groups of
     // frame, channel key, row, column, length. Only changes are recorded.
@@ -469,7 +474,13 @@ public sealed class MucPlayer
         if (Stopped || driver == null) return;
         try
         {
-            driver.Rendering();
+            speedDue += vgm != null ? 1 : Speed;
+            while (speedDue >= 1)
+            {
+                speedDue -= 1;
+                driver.Rendering();
+                if (driver.GetStatus() < 1) break;
+            }
             frame++;
             if (driver.GetStatus() < 1) { Silence(); Stopped = true; }
         }

@@ -34,7 +34,7 @@ const STORE_KEYS = 'mucplayground.keys';      // { open, octave, source }
 const T = {
   en: {
     back: '← MUCOMSX', tagline: 'Write MUCOM88 MML, hear it right away',
-    play: '▶ Play', stop: '■ Stop', volume: 'Volume', examples: 'Examples', open: 'Open…',
+    play: '▶ Play', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
     reference: 'Quick reference', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'Rhythm (v needs 7 values)',
@@ -140,7 +140,7 @@ const T = {
   },
   ko: {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
-    play: '▶ 재생', stop: '■ 정지', volume: '음량', examples: '예제', open: '열기…',
+    play: '▶ 재생', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
     reference: '빠른 참조', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: '리듬 (v는 값 7개)',
@@ -246,7 +246,7 @@ const T = {
   },
   ja: {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
-    play: '▶ 再生', stop: '■ 停止', volume: '音量', examples: 'サンプル', open: '開く…',
+    play: '▶ 再生', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
     reference: 'クイックリファレンス', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'リズム（vは7つの値）',
@@ -1445,6 +1445,37 @@ function setVolume() {
 }
 $('volume').addEventListener('input', setVolume);
 
+// Playback speed, 25–200 %: the tempo changes, the pitch does not (the engines run the
+// driver faster or slower). Dragging rests at 100 % for a moment (a detent): while the
+// pointer is within SPEED_DETENT pixels of it the slider stays on 100, then moves on.
+// Double-click: back to 100 %. Arrow keys step 1 % with no detent.
+const SPEED_DETENT = 4;   // px
+let speedDragging = false, speedHeld = false;
+function setSpeed(percent) {
+  const v = Math.max(25, Math.min(200, Math.round(percent)));
+  $('speed').value = v;
+  $('speedOut').textContent = `${v}%`;
+  $('speed').closest('.vol').classList.toggle('off', v !== 100);
+  worker.postMessage({ type: 'speed', value: v / 100 });
+  vgmWorker?.postMessage({ type: 'speed', value: v / 100 });
+}
+$('speed').addEventListener('pointerdown', () => { speedDragging = true; });
+window.addEventListener('pointerup', () => { speedDragging = false; });
+window.addEventListener('pointercancel', () => { speedDragging = false; });
+$('speed').addEventListener('input', () => {
+  const el = $('speed');
+  let v = +el.value;
+  const perPx = (+el.max - +el.min) / Math.max(1, el.getBoundingClientRect().width - 16);
+  const near = Math.abs(v - 100) <= SPEED_DETENT * perPx;
+  if (speedDragging && near) {
+    v = 100;
+    if (!speedHeld) navigator.vibrate?.(8);   // a small tick where the phone can
+  }
+  speedHeld = speedDragging && near;
+  setSpeed(v);
+});
+$('speed').addEventListener('dblclick', () => setSpeed(100));
+
 // Editor text size. Everything drawn over the text (line numbers, colouring, error marks,
 // playback highlights, suggestions) reads the editor's font, so it all follows.
 function setFontSize(value) {
@@ -1587,6 +1618,7 @@ function bootVgm() {
   vgmWorker.onmessage = (e) => onEngineMessage(e.data, 'vgm');
   vgmWorker.onerror = (e) => setStatus(t('vgmFailed') + (e.message || 'worker error'), true);
   vgmWorker.postMessage({ type: 'boot', language: 'en' });
+  vgmWorker.postMessage({ type: 'speed', value: +$('speed').value / 100 });
 }
 
 function connectVgmAudio() {

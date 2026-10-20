@@ -133,6 +133,9 @@ onmessage = async (event) => {
         play(session, () => E.StartFile(data));
         break;
       }
+      case 'speed':
+        E.SetSpeed(m.value);
+        break;
       case 'check':
         postMessage({ type: 'checked', id: m.id, result: JSON.parse(E.Check(m.text)) });
         break;

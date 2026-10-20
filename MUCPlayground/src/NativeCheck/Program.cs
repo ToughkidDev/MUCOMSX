@@ -27,6 +27,7 @@ if (Environment.GetEnvironmentVariable("VGM_OUT") is string vgmPath)
 }
 
 MucPlayer player = new();
+if (Environment.GetEnvironmentVariable("SPEED") is string speedText) player.Speed = double.Parse(speedText);
 if (!player.Start(r, Open, Environment.GetEnvironmentVariable("NO_TRACE") == null)) { Console.WriteLine("start failed: " + player.Error); return 1; }
 Console.WriteLine($"chips: {player.Chips}  title: {player.Title}");
 

@@ -71,6 +71,12 @@ h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
 .clock{font-family:var(--mono);font-size:.95rem;min-width:6em;color:var(--muted)}
 .vol{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem}
 .vol input{width:64px;accent-color:var(--accent)}
+.vol.speed input{width:120px;margin:0}
+/* A small mark under the track where 100 % is ((100 − 25) / (200 − 25) of the way). */
+.speed-track{position:relative;display:inline-flex;align-items:center;padding-bottom:5px}
+.speed-track::after{content:'';position:absolute;left:calc(8px + (100% - 16px) * .4286 - 1px);bottom:0;width:2px;height:5px;border-radius:1px;background:var(--muted);pointer-events:none}
+.vol.speed output{font-family:var(--mono);font-size:.78rem;min-width:3.2em}
+.vol.speed.off output{color:var(--accent);font-weight:700}
 .vol output{font-family:var(--mono);font-size:.8rem;min-width:2.6em;color:var(--muted)}
 .spacer{flex:1}
 .save-group{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg);font-size:.9rem}
@@ -460,6 +466,7 @@ footer p{margin:2px 0}
   <span class="clock" id="clock" aria-live="off">0:00.0</span>
   <button class="btn" id="viewToggle" type="button" aria-pressed="false" data-i18n-title="channelViewTip"><span data-i18n="channelView">▦ Channels</span></button>
   <label class="vol"><span data-i18n="volume">Volume</span> <input id="volume" type="range" min="0" max="100" value="70"></label>
+  <label class="vol speed"><span data-i18n="speed">Speed</span> <span class="speed-track"><input id="speed" type="range" min="25" max="200" step="1" value="100"></span> <output id="speedOut" for="speed">100%</output></label>
   <span class="spacer"></span>
   <label class="sr-only" for="examples" data-i18n="examples">Examples</label>
   <select id="examples"></select>

@@ -10,6 +10,7 @@ public static partial class Interop
     static readonly Dictionary<string, byte[]> files = new(StringComparer.OrdinalIgnoreCase);
     static CompileResult compiled;
     static MucPlayer player;
+    static double speed = 1;
     static string exportError = "";
     static short[] pcm = new short[0];
 
@@ -84,7 +85,7 @@ public static partial class Interop
     {
         player?.Stop();
         compiled = null;
-        player = new MucPlayer();
+        player = new MucPlayer { Speed = speed };
         bool ok = player.Start(data, Open);
         return Json(w =>
         {
@@ -101,7 +102,7 @@ public static partial class Interop
     [JSExport]
     public static string Start()
     {
-        player = new MucPlayer();
+        player = new MucPlayer { Speed = speed };
         bool ok = compiled != null && player.Start(compiled, Open);
         return Json(w =>
         {
@@ -113,6 +114,14 @@ public static partial class Interop
             w.WriteString("title", player.Title);
             w.WriteString("composer", player.Composer);
         });
+    }
+
+    // Playback speed for this song and the next ones (1 = as written).
+    [JSExport]
+    public static void SetSpeed(double value)
+    {
+        speed = Math.Clamp(value, 0.25, 2);
+        if (player != null) player.Speed = speed;
     }
 
     // Renders up to `frames` stereo frames as little-endian 16-bit PCM. An empty result means the song ended.

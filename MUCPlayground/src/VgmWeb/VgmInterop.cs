@@ -10,6 +10,7 @@ namespace MucPlayground;
 public static partial class Interop
 {
     static MusicEngineSession session;
+    static double speed = 1;
     static short[] pcm = new short[0];
 
     public static void Main() { }
@@ -43,6 +44,7 @@ public static partial class Interop
         rendered = 0;
         try { session = VgmEngine.Load(data, 2048, SongPath); }
         catch (Exception e) { session = null; error = e.Message; }
+        if (session != null) session.Driver.vgmSpeed = speed;
         if (session == null && error == "") error = "Not a VGM file this player supports.";
         GD3 tag = session?.Driver.GD3;
         return Json(w =>
@@ -56,6 +58,15 @@ public static partial class Interop
     }
 
     static string First(params string[] values) => values.FirstOrDefault(v => !string.IsNullOrWhiteSpace(v)) ?? "";
+
+    // Playback speed for this song and the next ones: MDPlayer's own VGM speed (the
+    // commands run faster or slower; the pitch stays).
+    [JSExport]
+    public static void SetSpeed(double value)
+    {
+        speed = Math.Clamp(value, 0.25, 2);
+        if (session != null) session.Driver.vgmSpeed = speed;
+    }
 
     // Interleaved 16-bit stereo at 44100 Hz; empty when the song has ended.
     [JSExport]
