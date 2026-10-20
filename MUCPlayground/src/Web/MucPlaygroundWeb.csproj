@@ -13,9 +13,22 @@
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
     <WasmEnableWebcil>true</WasmEnableWebcil>
+    <!-- Ahead-of-time compiled: about 7x faster than the interpreter, so songs that drive
+         OPNA and all the MSX chips at once still render well ahead of playback. -->
+    <RunAOTCompilation>true</RunAOTCompilation>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Engine/MucEngine.csproj" />
     <TrimmerRootAssembly Include="System.Text.Encoding.CodePages" />
+    <!-- AOT compiles every method, including ones that name musicDriverInterface types, so
+         the assembly must survive trimming and reach the AOT compiler (see below). -->
+    <TrimmerRootAssembly Include="musicDriverInterface" />
   </ItemGroup>
+  <!-- musicDriverInterface is a plain file reference (no project), which the SDK leaves out
+       of the assemblies it hands to the AOT compiler; add the trimmed copy by hand. -->
+  <Target Name="BundleMusicDriverInterface" AfterTargets="_GatherWasmFilesToPublish">
+    <ItemGroup>
+      <WasmAssembliesToBundle Include="$(ProjectDir)$(IntermediateOutputPath)linked/musicDriverInterface.dll" />
+    </ItemGroup>
+  </Target>
 </Project>

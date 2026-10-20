@@ -1,0 +1,129 @@
+#mucom88 1.7
+#title New Song
+#composer
+#comment OPNA + MSX (msPb0102) template. Edit anything, then press Play (Ctrl+Enter).
+
+; ================================================================
+;  MUCPlayground template: OPNA and MSX chips in one song
+;
+;  OPNA (YM2608), the original MUCOM88 parts
+;   A B C H I J   FM 1-6
+;   D E F         SSG 1-3
+;   G             rhythm
+;   K             ADPCM
+;  MSX targets (msPb format), each its own chip
+;   MSXA-C,H-J    MSX-MUSIC melodic 1-6     (YM2413 / OPLL)
+;   MSXG          MSX-MUSIC rhythm          (OPLL drums)
+;   MSXD-F        MSX internal PSG 1-3      (AY-3-8910)
+;   SCCA-SCCE     SCC/SCC+ wave channels 1-5 (K052539)
+;
+;  Lines starting with ; are comments. Write comments in English
+;  or Japanese: the file is saved as Shift-JIS.
+; ================================================================
+
+; ---- FM voices: @n / FB,ALG / one line per operator ----
+;      AR,D1R,D2R,RR,D1L,TL,KS,ML,DT
+; OPNA parts play them as written. MSX-MUSIC parts use the
+; nearest of the 15 OPLL ROM instruments instead.
+
+; @1 lead: ALG 5, one modulator into three carriers
+  @1
+   6,5
+   31,12,0,7,3,28,0,1,3
+   31,6,3,7,3,0,0,1,3
+   31,6,3,7,3,0,0,2,7
+   31,6,3,7,3,0,0,1,0
+
+; @2 bass: ALG 0, four operators in series
+  @2
+   5,0
+   31,14,0,8,2,30,0,0,0
+   31,14,0,8,2,40,0,1,3
+   31,12,0,8,2,36,0,1,7
+   31,8,4,8,2,0,0,1,0
+
+; @3 soft pad: ALG 4, two operator pairs
+  @3
+   4,4
+   20,4,2,6,2,30,0,2,0
+   18,3,2,6,2,4,0,1,3
+   20,4,2,6,2,30,0,2,7
+   18,3,2,6,2,4,0,1,0
+
+; ---- SCC waves: @Wn:{ 32 signed samples, -128..127 } ----
+; Put them before the music rows; pick one with @n in an SCC part.
+; (#sccvoice FILE.DAT loads a SCWD wave bank instead.)
+  @W0:{ 0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-127,-125,-117,-106,-90,-71,-49,-25 }
+  @W1:{ -128,-120,-112,-104,-96,-88,-80,-72,-64,-56,-48,-40,-32,-24,-16,-8,0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120 }
+  @W2:{ 96,96,96,96,96,96,96,96,96,96,96,96,96,96,96,96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96 }
+  @W3:{ 96,96,96,96,96,96,96,96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96 }
+  @W4:{ -127,-111,-95,-79,-63,-47,-31,-15,1,17,33,49,65,81,97,113,127,111,95,79,63,47,31,15,-1,-17,-33,-49,-65,-81,-97,-113 }
+
+; ---- Macros: #*n{ ... }, used as *n inside a part ----
+; Arpeggios for the SCC: C, F, G and Am
+#*1{ ceg>c<gece }
+#*2{ cfa>c<afcf }
+#*3{ dgb>d<bgdg }
+#*4{ cea>c<aece }
+
+; ================================================================
+;  Common commands
+;   T tempo   o octave   > < octave up/down   l default length
+;   v volume  @ voice/wave   q gate   & tie   r rest
+;   [ ... ]n repeat n times   / leaves the repeat on the last pass
+;   L loop point: the song repeats from here
+;  SSG, PSG and SCC parts: E = software envelope
+;   E AL,AR,DR,SR,SL,RR (start level, attack, decay, sustain rate,
+;   sustain level, release; 0-255). SCC volume v0-15 is linear.
+;
+;  The song is 8 bars: | C | C | F | G | C | Am | G | C |
+; ================================================================
+
+; ---------------- OPNA ----------------
+; FM 1: melody
+A T128 @1 v10 o5 l8 q7
+A L e4.d c4 e4 g4.a g2 a4.g f4 e4 d2 r2
+A   e4.d c4 e4 g4.a >c2< a4 g4 f4 d4 c2 r2
+
+; FM 2: bass
+B @2 v10 o2 l8
+B L [c c >c< c]4 [f f >f< f]2 [g g >g< g]2
+B   [c c >c< c]2 [a a >a< a]2 [g g >g< g]2 [c c >c< c]2
+
+; FM 3: pad, one whole note per bar
+C @3 v6 o4 l1 L e e f d e e d e
+
+; Rhythm: @mask picks drums (1 bass, 2 snare, 8 hi-hat; add them)
+G v44,24,22,18,14,20,20 l8 L [@9c@8c@10c@8c@9c@9c@10c@8c]8
+
+; ---------------- MSX ----------------
+; MSX-MUSIC: off-beat chord stabs on the OPLL
+MSXA @1 v15 o4 l8 L [rg]8 [ra]4 [rb]4 [rg]4 [ra]4 [rb]4 [rg]4
+MSXB @1 v15 o4 l8 L [re]8 [rf]4 [rd]4 [re]4 [re]4 [rd]4 [re]4
+
+; MSX-MUSIC rhythm: extra hi-hats on the off 16ths
+MSXG v63,31,31,31,31,31,31 @8 l16 L [rc]64
+
+; MSX PSG: short bell notes on beats 2 and 4
+MSXD @0 E255,0,12,0,0,255 v15 o6 l8
+MSXD L [r4 c r]4 [r4 f r]2 [r4 g r]2 [r4 c r]2 [r4 a r]2 [r4 g r]2 [r4 c r]2
+
+; SCC 1: arpeggio with a decaying envelope (pulse wave), macros *1-*4
+SCCA @3 E255,0,24,4,128,64 v6 o4 l16
+SCCA L [*1]4 [*2]2 [*3]2 [*1]2 [*4]2 [*3]2 [*1]2
+
+; SCC 2: harmony a third below the melody (triangle wave)
+SCCB @4 E255,0,0,0,0,255 v5 o5 l8 q7
+SCCB L c4.<b g4 >c4 e4.f e2 f4.e d4 c4 <b2 r2
+SCCB  >c4.<b g4 >c4 e4.f a2 f4 e4 d4 <b4 >c2 r2
+
+; SCC 3: echo of the melody, one 16th late (sine wave)
+SCCC @0 E255,0,0,0,0,255 v3 o5 l8 q7
+SCCC L r16 e4.d c4 e4 g4.a g2 a4.g f4 e4 d2 r4. r16
+SCCC   r16 e4.d c4 e4 g4.a >c2< a4 g4 f4 d4 c2 r4. r16
+
+; SCC 4: sub bass under the FM bass (sawtooth)
+SCCD @1 E255,0,8,2,192,96 v6 o2 l2 L c c c c f f g g c c a a g g c c
+
+; SCC 5: long notes, using a repeat with an alternative ending
+SCCE @2 E255,0,16,2,96,64 v4 o5 l2 L [g e g e / a a b b]2 b >d c1<

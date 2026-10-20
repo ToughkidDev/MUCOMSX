@@ -13,6 +13,8 @@
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
     <WasmEnableWebcil>true</WasmEnableWebcil>
+    <!-- Ahead-of-time compiled, like the MUC engine: about 7x faster than the interpreter. -->
+    <RunAOTCompilation>true</RunAOTCompilation>
     <Mdp4MacDir Condition="'$(Mdp4MacDir)' == ''">$(MSBuildThisFileDirectory)../../.mdplayer4mac</Mdp4MacDir>
   </PropertyGroup>
   <ItemGroup>

@@ -18,9 +18,9 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
 - **Channel view, as in MDPlayer4Mac:** while a song plays, **▦ Channels** swaps the editor for MDPlayer4Mac's channel view: each chip's panel (YM2608, YM2610, YM2203, YM2151, YM2413, AY-3-8910 PSG, K051649 SCC/SCC+) with a keyboard per channel, note names, frequencies, level meters, pan, voice registers and, for the SCC, the wave tables, drawn with MDPlayer's own bitmaps. The chips the song uses are named at the top left in MDPlayer's note font (`YM2608`, `AY8910  YM2413  K052539`, the same chip twice as `YM2610 X2`). Panels are stacked FM → SSG/PSG → PCM, rows are grouped the MDPlayer4Mac way, the rhythm / ADPCM meters follow the emulator's real output, and **Size** opens at *Fit* each time the view is shown and goes back and forth, *Fit* → 100 → 75 → 50 → 25 → 50 → 75 → 100 % → *Fit* …; *Fit* scales the panels, keeping their shape, to the largest size at which all of them fill the view, and follows the window as it is resized. Playing a `.mub` or `.vgm` switches to it by itself; playing a MUC afterwards returns to the editor. Stopping keeps the panels on screen. The view follows what you hear: the engine logs every chip write with its audio frame (for VGM files the page reads the writes from the file), and they are applied as that frame is played.
 - **Split editor:** the **Split** buttons under the editor show the song twice, side by side or one above the other, to work on two places of a long MUC at once. Both views are live; typing in either changes both. While a song plays, the view you are working in stays where it is and the other one follows the playing part. Drag the bar between them to resize (double-click to even them); the choice is remembered.
 - **Examples:** a short demo with inline FM voices, and **Samples…**, a browser for this repository's [`Samples`](../Samples) folder (search, grouped by folder; `.muc` opens in the editor, `.mub` / `.vgm` / `.vgz` play). The folder is read live from GitHub, so **a song committed to `Samples/` shows up straight away**, without rebuilding anything. Voice / PCM files the song names (for example `SNATCHEA.DAT`) are fetched from the same folder. The list is cached for 10 minutes (*Refresh* rereads it); if GitHub cannot be reached, for example after GitHub's limit of about 60 anonymous API requests an hour, the list built into the page (`samples.json`) is used instead.
-- **New:** empties the editor (and the attached files) to write a MUC from scratch; it asks first when the editor holds your own text. An empty editor stays empty on the next visit — only a first visit opens the demo.
+- **New:** starts a song from the template (`template.muc`, also in the examples list as *Template (OPNA + MSX chips)*), an 8-bar song that uses OPNA and every MSX target of the latest msPb format together, with a comment on each part: OPNA FM (inline voices), OPNA rhythm, MSX-MUSIC (`MSXA`/`MSXB` and the `MSXG` drums), the MSX PSG (`MSXD`, with a software envelope) and the five SCC/SCC+ parts `SCCA`–`SCCE` (inline `@Wn:{…}` waves, envelopes, macros, repeats with `/`, the `L` loop). Attached files are removed. New asks first when the editor holds your own text; the template counts as yours from the first keystroke.
 - **Your own files:** open a `.muc`, attach `#voice` / `#pcm` files, or drop them on the page. Your song is autosaved in the browser **together with its attached voice / PCM files** (IndexedDB), so after leaving and coming back it plays exactly as before. If a restored song names a file that was not kept (for example one saved by an older version of the page), it is fetched again from the song's Samples folder, or from `Samples/` when exactly one file there has that name.
-- **Play `.mub`, `.vgm` and `.vgz` files** with **Open…** or by dragging them from your computer onto the page. A dropped `.muc` opens in the editor and starts playing; voice / PCM files dropped with it are attached first. `.mub` plays on the editor's engine. `.vgm` / `.vgz` play on MDPlayer4Mac's own VGM player, which is downloaded the first time you play one (about 6.8 MB) and sounds sample-for-sample like the desktop app.
+- **Play `.mub`, `.vgm` and `.vgz` files** with **Open…** or by dragging them from your computer onto the page. A dropped `.muc` opens in the editor and starts playing; voice / PCM files dropped with it are attached first. `.mub` plays on the editor's engine. `.vgm` / `.vgz` play on MDPlayer4Mac's own VGM player, which is downloaded the first time you play one (about 20 MB, 7.3 MB compressed) and sounds sample-for-sample like the desktop app.
 - **Save** as `.muc` (Shift-JIS with CR+LF, ready for the MSX), `.mub` or `.vgm`:
   - `.mub` is the playground compiler's output, the same as MDPlayer4Mac produces from that MUC. It is not byte-for-byte what MUC2MUB on the MSX writes, so check it on the machine before relying on it there.
   - `.vgm` (VGM 1.71) logs every chip write. A looping song is written as intro + one more pass, with the VGM loop point set so the loop is exactly one pass; songs are capped at 10 minutes. Played back in MDPlayer4Mac it matches the playground's own audio (correlation 1.0000 on the test songs).
@@ -31,7 +31,7 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
 
 ## How it works
 
-The sound engine is not a new implementation. It is **[MDPlayer4Mac](https://github.com/ToughkidDev/MDPlayer4Mac)'s** MUC path compiled to WebAssembly with .NET 8:
+The sound engine is not a new implementation. It is **[MDPlayer4Mac](https://github.com/ToughkidDev/MDPlayer4Mac)'s** MUC path compiled ahead of time (AOT) to WebAssembly with .NET 8:
 
 | Part | Source |
 |---|---|
@@ -47,8 +47,11 @@ EngineSmokeTest for its 20 MSX regression songs and a Gradius sample, both nativ
 in Chromium.
 
 The page runs the engine in a Web Worker and streams audio to an AudioWorklet about one
-second ahead. On a desktop browser it renders roughly 2.5–3× faster than real time; a
-slow phone may stutter on dense songs.
+second ahead. The engine is AOT-compiled, which renders about 7× faster than .NET's
+WebAssembly interpreter with sample-for-sample the same output. In headless Chromium on a
+modest 4-core server it renders an OPNA song about 16× faster than real time and the
+template, which runs OPNA and all the MSX chips at once, about 6× (the YM2413 emulation is
+the heaviest chip); the interpreter managed 2.2× and 0.6×.
 
 ## Files
 
@@ -63,6 +66,7 @@ slow phone may stutter on dense songs.
 | `engine/` | The built MUC engine (generated by `src/build.sh`) |
 | `engine-vgm/` | The built VGM player, loaded on first use (generated by `src/build.sh`) |
 | `demo.muc` | The default example |
+| `template.muc` | What **New** opens: OPNA plus every MSX chip, commented |
 | `samples.json` | Offline copy of the Samples list (used when GitHub is unreachable), generated from `../Samples` |
 | `src/` | Engine glue (`Engine`), browser bindings (`Web`, `VgmWeb`), native check tool, build script |
 | `LICENSES/` | License texts |
@@ -75,8 +79,9 @@ MUCPlayground/src/build.sh
 ```
 
 `build.sh` checks out MDPlayer4Mac at the pinned commit, publishes `src/Web` and
-`src/VgmWeb`, and copies only the files the browser loads into `engine/` (about 4.5 MB)
-and `engine-vgm/` (about 6.8 MB). Run it again after
+`src/VgmWeb`, and copies only the files the browser loads into `engine/` (about 11 MB, 4.2 MB
+compressed) and `engine-vgm/` (about 20 MB, 7.3 MB compressed); AOT compilation takes a
+few minutes. Run it again after
 adding samples to refresh `samples.json`.
 
 To compare against MDPlayer4Mac on the desktop:

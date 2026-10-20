@@ -26,17 +26,17 @@ const T = {
     credit1: "Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: mucomDotNET by kuma4649 and MDSound. GPL-3.0.",
     credit2: 'MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.', source: 'Source and licenses',
     drop: 'Drop .muc / .mub / .vgm / .vgz to play — voice and PCM files are attached',
-    loading: 'Loading the engine (about 4.5 MB, first time only)…', ready: 'Ready. Press Play or Ctrl+Enter.',
+    loading: 'Loading the engine (about 11 MB, first time only)…', ready: 'Ready. Press Play or Ctrl+Enter.',
     loadFailed: 'The engine could not be loaded: ', compiling: 'Compiling…', playing: 'Playing',
     compiled: (ms, size) => `Compiled in ${ms} ms, ${size.toLocaleString()} bytes.`,
     compileFailed: 'Compile error. See the messages on the right.', stopped: 'Stopped.', ended: 'Finished.',
     noMessages: 'No messages.', loop: (n) => `loop ${n}`, missing: 'not attached', remove: 'Remove',
-    demo: 'Demo (FM + SSG + rhythm)', yourSong: 'Your song (autosaved)', samples: 'Samples',
+    demo: 'Demo (FM + SSG + rhythm)', template: 'Template (OPNA + MSX chips)', yourSong: 'Your song (autosaved)', samples: 'Samples',
     loadingSample: (n) => `Loading ${n}…`, sampleFailed: 'Could not load the sample: ',
     underrun: 'Playback is catching up; this device renders slowly.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'Replace the editor contents? Your current text is lost unless you saved it.',
-    newSong: 'New', newSongTip: 'Clear the editor and start a new MUC', newStarted: 'New song: the editor is empty. Save it as .muc when you are done.',
-    confirmNew: 'Clear the editor and start a new song? Your current text and attached files are removed unless you saved them.',
+    newSong: 'New', newSongTip: 'Start a new MUC from the template (OPNA + MSX chips)', newStarted: 'New song from the template: OPNA and every MSX chip, with comments on each part. Save it as .muc when you are done.',
+    confirmNew: 'Start a new song from the template? Your current text and attached files are removed unless you saved them.',
     audioFailed: 'Audio could not start: ', bytes: (n) => `${n.toLocaleString()} bytes`,
     saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
@@ -49,7 +49,7 @@ const T = {
     where: (r, c, part, located) => `line ${r}${c > 0 ? `, column ${c}` : ''}${part ? ` · part ${part}` : ''}${located ? ' · found by the playground' : ''}`,
     whatLabel: 'What it means:', fixLabel: 'How to fix:', formLabel: 'Correct form:',
     compileFailedN: (n) => `Could not compile: ${n} error${n === 1 ? '' : 's'}. Details are on the right.`,
-    loadingVgm: 'Loading the VGM player (about 6.7 MB, first time only)…', vgmFailed: 'The VGM player could not be loaded: ',
+    loadingVgm: 'Loading the VGM player (about 20 MB, first time only)…', vgmFailed: 'The VGM player could not be loaded: ',
     clickToStart: 'Click anywhere on the page to start the sound (the browser needs a click first).',
     unsupported: (n) => `${n} is not a file this player opens.`, playingFile: (n) => `Playing ${n}`,
     channelView: '▦ Channels', channelViewTip: 'Channel view (MDPlayer4Mac style) / editor', split: 'Split', splitOff: 'One view', splitSide: 'Two views, side by side',
@@ -69,17 +69,17 @@ const T = {
     credit1: '컴파일러, 드라이버, 칩 에뮬레이션은 MDPlayer4Mac의 것을 브라우저용으로 빌드했습니다: kuma4649의 mucomDotNET, MDSound. GPL-3.0.',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0.', source: '소스와 라이선스',
     drop: '.muc / .mub / .vgm / .vgz를 놓으면 재생합니다 — 음색·PCM 파일은 첨부됩니다',
-    loading: '엔진을 불러오는 중 (약 4.5 MB, 처음 한 번만)…', ready: '준비됐습니다. 재생 또는 Ctrl+Enter를 누르세요.',
+    loading: '엔진을 불러오는 중 (약 11 MB, 처음 한 번만)…', ready: '준비됐습니다. 재생 또는 Ctrl+Enter를 누르세요.',
     loadFailed: '엔진을 불러오지 못했습니다: ', compiling: '컴파일 중…', playing: '재생 중',
     compiled: (ms, size) => `${ms} ms에 컴파일, ${size.toLocaleString()} 바이트.`,
     compileFailed: '컴파일 오류입니다. 오른쪽 메시지를 확인하세요.', stopped: '정지했습니다.', ended: '끝났습니다.',
     noMessages: '메시지 없음.', loop: (n) => `루프 ${n}`, missing: '첨부 안 됨', remove: '제거',
-    demo: '데모 (FM + SSG + 리듬)', yourSong: '내 곡 (자동 저장)', samples: '샘플',
+    demo: '데모 (FM + SSG + 리듬)', template: '템플릿 (OPNA + MSX 칩)', yourSong: '내 곡 (자동 저장)', samples: '샘플',
     loadingSample: (n) => `${n} 불러오는 중…`, sampleFailed: '샘플을 불러오지 못했습니다: ',
     underrun: '렌더링이 재생을 따라잡는 중입니다. 이 기기에서는 느릴 수 있습니다.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: '에디터 내용을 바꿀까요? 저장하지 않은 현재 내용은 사라집니다.',
-    newSong: '새로', newSongTip: '에디터를 비우고 새 MUC 작성 시작', newStarted: '새 곡: 에디터를 비웠습니다. 다 쓰면 .muc로 저장하세요.',
-    confirmNew: '에디터를 비우고 새 곡을 시작할까요? 저장하지 않은 현재 내용과 첨부 파일은 사라집니다.',
+    newSong: '새로', newSongTip: '템플릿(OPNA + MSX 칩)으로 새 MUC 작성 시작', newStarted: '템플릿으로 새 곡을 시작했습니다. OPNA와 MSX 칩을 모두 쓰고 파트마다 설명이 있습니다. 다 쓰면 .muc로 저장하세요.',
+    confirmNew: '템플릿으로 새 곡을 시작할까요? 저장하지 않은 현재 내용과 첨부 파일은 사라집니다.',
     audioFailed: '오디오를 시작하지 못했습니다: ', bytes: (n) => `${n.toLocaleString()} 바이트`,
     saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
@@ -92,7 +92,7 @@ const T = {
     where: (r, c, part, located) => `${r}줄${c > 0 ? ` ${c}칸` : ''}${part ? ` · ${part} 파트` : ''}${located ? ' · 플레이그라운드가 찾은 위치' : ''}`,
     whatLabel: '무슨 뜻:', fixLabel: '고치는 법:', formLabel: '올바른 형태:',
     compileFailedN: (n) => `컴파일하지 못했습니다: 오류 ${n}개. 자세한 내용은 오른쪽에 있습니다.`,
-    loadingVgm: 'VGM 플레이어를 불러오는 중 (약 6.7 MB, 처음 한 번만)…', vgmFailed: 'VGM 플레이어를 불러오지 못했습니다: ',
+    loadingVgm: 'VGM 플레이어를 불러오는 중 (약 20 MB, 처음 한 번만)…', vgmFailed: 'VGM 플레이어를 불러오지 못했습니다: ',
     clickToStart: '페이지 아무 곳이나 클릭하면 소리가 나옵니다 (브라우저가 먼저 클릭을 요구합니다).',
     unsupported: (n) => `${n}은(는) 열 수 없는 파일입니다.`, playingFile: (n) => `${n} 재생 중`,
     channelView: '▦ 채널 뷰', channelViewTip: '채널 뷰(MDPlayer4Mac 방식) / 에디터 전환', split: '분할', splitOff: '하나로 보기', splitSide: '좌우로 나눠 보기',
@@ -112,17 +112,17 @@ const T = {
     credit1: 'コンパイラ・ドライバ・チップエミュレーションはMDPlayer4Macのものをブラウザ向けにビルドしています: kuma4649氏のmucomDotNET、MDSound。GPL-3.0。',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0。', source: 'ソースとライセンス',
     drop: '.muc / .mub / .vgm / .vgzをドロップすると再生します — 音色・PCMファイルは添付されます',
-    loading: 'エンジンを読み込み中（約4.5 MB、初回のみ）…', ready: '準備完了。再生またはCtrl+Enterを押してください。',
+    loading: 'エンジンを読み込み中（約11 MB、初回のみ）…', ready: '準備完了。再生またはCtrl+Enterを押してください。',
     loadFailed: 'エンジンを読み込めませんでした: ', compiling: 'コンパイル中…', playing: '再生中',
     compiled: (ms, size) => `${ms} msでコンパイル、${size.toLocaleString()}バイト。`,
     compileFailed: 'コンパイルエラーです。右のメッセージを確認してください。', stopped: '停止しました。', ended: '再生が終わりました。',
     noMessages: 'メッセージなし。', loop: (n) => `ループ ${n}`, missing: '未添付', remove: '削除',
-    demo: 'デモ（FM + SSG + リズム）', yourSong: '自分の曲（自動保存）', samples: 'サンプル曲',
+    demo: 'デモ（FM + SSG + リズム）', template: 'テンプレート（OPNA + MSXチップ）', yourSong: '自分の曲（自動保存）', samples: 'サンプル曲',
     loadingSample: (n) => `${n}を読み込み中…`, sampleFailed: 'サンプルを読み込めませんでした: ',
     underrun: 'レンダリングが再生に追いつこうとしています。この端末では遅い場合があります。', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'エディタの内容を置き換えますか？保存していない現在の内容は失われます。',
-    newSong: '新規', newSongTip: 'エディタを空にして新しいMUCを書き始める', newStarted: '新しい曲: エディタを空にしました。書き終えたら.mucで保存してください。',
-    confirmNew: 'エディタを空にして新しい曲を始めますか？保存していない現在の内容と添付ファイルは失われます。',
+    newSong: '新規', newSongTip: 'テンプレート（OPNA + MSXチップ）で新しいMUCを書き始める', newStarted: 'テンプレートで新しい曲を始めました。OPNAと全MSXチップを使い、パートごとに説明があります。書き終えたら.mucで保存してください。',
+    confirmNew: 'テンプレートで新しい曲を始めますか？保存していない現在の内容と添付ファイルは失われます。',
     audioFailed: 'オーディオを開始できませんでした: ', bytes: (n) => `${n.toLocaleString()}バイト`,
     saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
@@ -135,7 +135,7 @@ const T = {
     where: (r, c, part, located) => `${r}行${c > 0 ? ` ${c}桁` : ''}${part ? ` · ${part}パート` : ''}${located ? ' · プレイグラウンドが特定' : ''}`,
     whatLabel: '意味:', fixLabel: '直し方:', formLabel: '正しい形:',
     compileFailedN: (n) => `コンパイルできません: エラー${n}件。詳細は右側にあります。`,
-    loadingVgm: 'VGMプレーヤーを読み込み中（約6.7 MB、初回のみ）…', vgmFailed: 'VGMプレーヤーを読み込めませんでした: ',
+    loadingVgm: 'VGMプレーヤーを読み込み中（約20 MB、初回のみ）…', vgmFailed: 'VGMプレーヤーを読み込めませんでした: ',
     clickToStart: 'ページのどこかをクリックすると音が出ます（ブラウザが最初のクリックを必要とします）。',
     unsupported: (n) => `${n}は開けないファイルです。`, playingFile: (n) => `${n}を再生中`,
     channelView: '▦ チャンネル', channelViewTip: 'チャンネルビュー（MDPlayer4Mac風）/ エディタの切り替え', split: '分割', splitOff: '1画面', splitSide: '左右に分割',
@@ -623,7 +623,8 @@ $('filesInput').addEventListener('change', async (e) => {
 
 // ---------- examples ----------
 let samples = [];
-let current = 'mine';   // what the editor holds: 'mine', 'demo' or 's:<group>:<song>'
+let current = 'mine';   // what the editor holds: 'mine', 'demo', 'template' or 's:<group>:<song>'
+const BUILT_IN = { demo: ['demo.muc', 'DEMO.MUC'], template: ['template.muc', 'SONG.MUC'] };
 
 function buildExamples() {
   const sel = $('examples');
@@ -631,6 +632,7 @@ function buildExamples() {
   const opt = (value, label) => { const o = document.createElement('option'); o.value = value; o.textContent = label; sel.appendChild(o); };
   opt('mine', t('yourSong'));
   opt('demo', t('demo'));
+  opt('template', t('template'));
   if (current.startsWith('repo:')) opt(current, current.slice(current.lastIndexOf('/') + 1).replace(/\.muc$/i, ''));
   sel.value = [...sel.options].some((o) => o.value === current) ? current : 'mine';
   $('sampleSearch').placeholder = t('search');
@@ -645,10 +647,12 @@ async function loadExample(value) {
   }
   stop();
   try {
-    setStatus(t('loadingSample', 'demo.muc'));
+    const [file, name] = BUILT_IN[value];
+    setStatus(t('loadingSample', file));
+    const text = await (await fetch(file)).text();
     clearFiles();
-    setSource(await (await fetch('demo.muc')).text());
-    sourceName = 'DEMO.MUC';
+    setSource(text);
+    sourceName = name;
     current = value;
     saveSong();
     buildExamples();
@@ -659,14 +663,17 @@ async function loadExample(value) {
 }
 $('examples').addEventListener('change', (e) => loadExample(e.target.value));
 
-// New: an empty editor (and no attached files) for a song written from scratch.
-function newSong() {
+// New: the template (OPNA plus every MSX chip, commented) and no attached files.
+// It counts as an unedited example until the first keystroke makes it 'mine'.
+async function newSong() {
   if (current === 'mine' && code.value.trim() && !confirm(t('confirmNew'))) return;
+  let text;
+  try { text = await (await fetch(BUILT_IN.template[0])).text(); } catch (e) { setStatus(t('sampleFailed') + e.message, true); return; }
   stopByUser();
   clearFiles();
-  setSource('');
-  sourceName = 'SONG.MUC';
-  current = 'mine';
+  setSource(text);
+  sourceName = BUILT_IN.template[1];
+  current = 'template';
   saveSong();
   buildExamples();
   lastResult = null;
