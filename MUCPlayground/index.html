@@ -51,6 +51,9 @@ header.top{display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap;padding:
 h1{margin:0;font-size:1.25rem;letter-spacing:-.01em}
 h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
 .byline{margin:1px 0 0;font-size:.78rem;color:var(--muted);letter-spacing:.02em}
+/* Text and menu size, left of the language switch */
+.sizes{margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px}
+.sizes + .lang{margin-left:0}
 .lang{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
 .lang button{border:0;background:transparent;padding:4px 12px;font-size:.82rem;cursor:pointer;color:var(--muted)}
 .lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
@@ -376,6 +379,10 @@ footer p{margin:2px 0}
     <h1>MUCPlayground <span class="sub" data-i18n="tagline">Write MUCOM88 MML, hear it right away</span></h1>
     <p class="byline">Written by ToughkidCST</p>
   </div>
+  <div class="sizes">
+    <label class="vol"><span data-i18n="fontSize" data-i18n-title="fontSizeTip">Text</span> <input id="fontSize" data-i18n-title="fontSizeTip" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
+    <label class="vol"><span data-i18n="uiSize" data-i18n-title="uiSizeTip">Menus</span> <input id="uiSize" data-i18n-title="uiSizeTip" type="range" min="100" max="200" step="10" value="100"> <output id="uiSizeOut" for="uiSize">100%</output></label>
+  </div>
   <div class="lang" role="group" aria-label="Language">
     <button type="button" data-lang="en" aria-pressed="false">EN</button>
     <button type="button" data-lang="ko" aria-pressed="false">한국어</button>
@@ -389,8 +396,6 @@ footer p{margin:2px 0}
   <span class="clock" id="clock" aria-live="off">0:00.0</span>
   <button class="btn" id="viewToggle" type="button" aria-pressed="false" data-i18n-title="channelViewTip"><span data-i18n="channelView">▦ Channels</span></button>
   <label class="vol"><span data-i18n="volume">Volume</span> <input id="volume" type="range" min="0" max="100" value="70"></label>
-  <label class="vol"><span data-i18n="fontSize" data-i18n-title="fontSizeTip">Text</span> <input id="fontSize" data-i18n-title="fontSizeTip" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
-  <label class="vol"><span data-i18n="uiSize" data-i18n-title="uiSizeTip">Menus</span> <input id="uiSize" data-i18n-title="uiSizeTip" type="range" min="100" max="200" step="10" value="100"> <output id="uiSizeOut" for="uiSize">100%</output></label>
   <span class="spacer"></span>
   <label class="sr-only" for="examples" data-i18n="examples">Examples</label>
   <select id="examples"></select>

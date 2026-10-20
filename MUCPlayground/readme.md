@@ -9,7 +9,7 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
 ## What it does
 
 - Type MML in the editor and press **Play** (`Ctrl+Enter`). `Esc` stops.
-- **Text size:** the *Text* slider next to *Volume* sets the editor's font size (10–24 px); line numbers, colouring, error marks and playback highlights follow, and the size is remembered.
+- **Text size:** the *Text* slider at the top, left of the language switch, sets the editor's font size (10–24 px); line numbers, colouring, error marks and playback highlights follow, and the size is remembered.
 - **Menus size:** the *Menus* slider next to it enlarges the header, toolbar buttons, side panel (messages, files, quick reference), the editor's bottom bar, the footer and the samples dialog from 100 to 200 %, for anyone who finds the interface hard to read. It applies when the slider is let go, is remembered, and is limited on narrow windows so the panels still fit (100 % per 640 px of width: a phone stays at 100 %, 1280 px and wider allow 200 %).
 - **MML colouring:** parts (in their playback colour), notes, commands, numbers, loops and brackets, macros, tags and comments each have their own colour.
 - **Suggestions while typing**, like a code editor: type a command letter, `@`, `*`, or `#` / a part letter at the start of a line and a list appears with each command's argument form and a one-line explanation (English, Korean or Japanese). Only commands that apply to the part's type (FM, SSG, rhythm, ADPCM) are offered; `@` also lists the voices defined in the song and `*` its macros. `Ctrl+Space` opens the list anywhere; `Tab` or `Enter` inserts, `Esc` closes. Typing notes never opens it. Command descriptions come from the MUCEdit manual (`mml-reference.js`).
