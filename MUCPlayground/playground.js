@@ -7,7 +7,8 @@ import { silentParts } from './silence-check.js';
 import { waveAt, drawWave } from './wave-preview.js';
 import { voiceAt, drawVoice, OP_COLORS } from './fm-preview.js';
 import { WaveEditor } from './wave-editor.js';
-import { FmEditor, formatVoice } from './fm-editor.js';
+import { FmEditor, formatVoice, INIT as INIT_VOICE } from './fm-editor.js';
+import { Keyboard } from './keyboard.js';
 import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 
@@ -19,6 +20,7 @@ const STORE_VOLUME = 'mucplayground.volume';
 const STORE_FONT = 'mucplayground.fontSize';
 const STORE_UI = 'mucplayground.uiSize';
 const STORE_SPLIT = 'mucplayground.split';
+const STORE_KEYS = 'mucplayground.keys';      // { open, octave, source }
 
 const T = {
   en: {
@@ -43,6 +45,12 @@ const T = {
     waveInfo: (n, e, lo, hi) => `${n}/${e} samples · min ${lo} · max ${hi}`, wave64: ' · played as 32 (averaged)',
     waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
     waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
+    keysMode: 'Keys', keysTip: 'Keys mode: a piano under the editor, played with the mouse or the computer keyboard',
+    keysSource: 'Sound', keysOctave: 'Octave', keysOctDown: 'Octave down (↓)', keysOctUp: 'Octave up (↑)', keysClose: 'Close keys mode',
+    keysHintOn: 'Playing from the keyboard: Z S X D C … (lower), Q 2 W 3 E … (upper), ↑↓ octave',
+    keysHintOff: 'Click the keys to play them from the computer keyboard',
+    keysAuto: (what) => `Caret's part (${what})`, keysSsg: 'SSG / PSG (square)', keysSine: 'Sine', keysNoise: 'Noise (rhythm)',
+    keysFm: (n) => `FM voice @${n}`, keysScc: (n) => `SCC wave @W${n}`, keysDefault: 'default FM voice',
     linePlay: 'Play this line (Ctrl+Shift+Enter); with several lines selected, those lines', lineStop: 'Stop',
     playingLines: (a, b) => (a === b ? `Playing line ${a}` : `Playing lines ${a}–${b}`),
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · carriers ${car}`, fmLegend: 'solid: carrier (heard) · dashed: modulator · envelopes include TL',
@@ -97,6 +105,12 @@ const T = {
     waveInfo: (n, e, lo, hi) => `샘플 ${n}/${e} · 최소 ${lo} · 최대 ${hi}`, wave64: ' · 평균 내어 32개로 연주',
     waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
     waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
+    keysMode: '건반', keysTip: '건반 모드: 에디터 아래에 건반을 표시하고 마우스나 키보드로 연주',
+    keysSource: '음원', keysOctave: '옥타브', keysOctDown: '옥타브 내림 (↓)', keysOctUp: '옥타브 올림 (↑)', keysClose: '건반 모드 닫기',
+    keysHintOn: '키보드로 연주 중: Z S X D C … (아래), Q 2 W 3 E … (위), ↑↓ 옥타브',
+    keysHintOff: '건반을 클릭하면 키보드로 연주할 수 있습니다',
+    keysAuto: (what) => `커서 위치 파트 (${what})`, keysSsg: 'SSG / PSG (사각파)', keysSine: '사인파', keysNoise: '노이즈 (리듬)',
+    keysFm: (n) => `FM 음색 @${n}`, keysScc: (n) => `SCC 파형 @W${n}`, keysDefault: '기본 FM 음색',
     linePlay: '이 행 듣기 (Ctrl+Shift+Enter). 여러 행을 선택하면 그 행들', lineStop: '정지',
     playingLines: (a, b) => (a === b ? `${a}행 재생 중` : `${a}–${b}행 재생 중`),
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · 캐리어 ${car}`, fmLegend: '실선: 캐리어(들리는 음) · 점선: 모듈레이터 · 엔벨로프는 TL 포함',
@@ -151,6 +165,12 @@ const T = {
     waveInfo: (n, e, lo, hi) => `サンプル ${n}/${e} · 最小 ${lo} · 最大 ${hi}`, wave64: ' · 平均して32個で演奏',
     waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
     waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
+    keysMode: '鍵盤', keysTip: '鍵盤モード: エディタの下に鍵盤を出し、マウスやキーボードで演奏',
+    keysSource: '音源', keysOctave: 'オクターブ', keysOctDown: 'オクターブ下げ (↓)', keysOctUp: 'オクターブ上げ (↑)', keysClose: '鍵盤モードを閉じる',
+    keysHintOn: 'キーボードで演奏中: Z S X D C …（下）、Q 2 W 3 E …（上）、↑↓ オクターブ',
+    keysHintOff: '鍵盤をクリックするとキーボードで演奏できます',
+    keysAuto: (what) => `カーソル位置のパート（${what}）`, keysSsg: 'SSG / PSG（矩形波）', keysSine: 'サイン波', keysNoise: 'ノイズ（リズム）',
+    keysFm: (n) => `FM音色 @${n}`, keysScc: (n) => `SCC波形 @W${n}`, keysDefault: '既定のFM音色',
     linePlay: 'この行を試聴（Ctrl+Shift+Enter）。複数行を選ぶとその行', lineStop: '停止',
     playingLines: (a, b) => (a === b ? `${a}行目を再生中` : `${a}–${b}行目を再生中`),
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · キャリア ${car}`, fmLegend: '実線: キャリア（聞こえる音）・点線: モジュレータ・エンベロープはTL込み',
@@ -227,6 +247,7 @@ function download(name, bytes, type) {
 function applyLanguage() {
   document.documentElement.lang = lang;
   if (typeof waveEditor !== 'undefined') for (const ed of [waveEditor, fmEditor]) if (ed.isOpen) { ed.build(); ed.render(); }
+  if (typeof keyboard !== 'undefined') { keyboard.build(); refreshKeySources(); }
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
   $('chview').dataset.empty = t('cvEmpty');
@@ -334,6 +355,7 @@ function updateCursor() {
   const col = before.length - before.lastIndexOf('\n');
   $('cursor').textContent = `Ln ${row}, Col ${col}`;
   updateWave(row);
+  if (keysOpen) refreshKeySources();
 }
 
 // Definition previews: with the caret on an SCC wave (@Wn) the wave is drawn under it;
@@ -1088,6 +1110,7 @@ function showClock(frames) {
 function setVolume() {
   const v = +$('volume').value / 100;
   if (gain) gain.gain.value = v * v;
+  keysNode?.port.postMessage({ type: 'gain', value: 0.35 * v * v });
   store.set(STORE_VOLUME, $('volume').value);
 }
 $('volume').addEventListener('input', setVolume);
@@ -1878,6 +1901,7 @@ function setView(mode, auto = false) {
   if (channels) closeSuggest();
   $('panes').hidden = channels;
   $('chview').hidden = !channels;
+  $('keys').hidden = channels || !keysOpen;
   $('viewToggle').setAttribute('aria-pressed', String(channels));
   document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = channels; });
   document.querySelector('.editor-foot .cv').hidden = !channels;
@@ -1912,6 +1936,149 @@ function startChannelView(m, source) {
     const plus = /SCC\+/.test(m.info.chips || '');
     channelView.start(parseChipList(m.info.chipList).map((c) => (c.type === 'K051649' && plus ? { ...c, label: 'K052539' } : c)));
   }
+}
+
+// ---------- keys mode ----------
+// A piano under the editor (keyboard.js), sounding through its own low-latency
+// AudioContext and synthesizer (keys-worklet.js). The sound follows the part the caret is
+// in: its FM voice (inline definition), SCC wave, the SSG square or noise for rhythm; or
+// pick a voice / wave of the song.
+let keysOpen = false, keysCtx = null, keysNode = null, keysReady = null, keysSource = 'auto';
+const keyboard = new Keyboard($('keys'), {
+  t,
+  onNote: (on, midi) => keyNote(on, midi),
+  onClose: () => setKeys(false),
+  onSource: (v) => { keysSource = v; saveKeys(); },
+  onFocus: (focused) => { if (focused) keysCtx?.resume().catch(() => {}); },
+});
+
+function saveKeys() { store.set(STORE_KEYS, JSON.stringify({ open: keysOpen, octave: keyboard.octave, source: keysSource })); }
+
+function ensureKeysAudio() {
+  if (keysReady) return keysReady;
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* older Safari */ }
+  keysCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+  keysReady = keysCtx.audioWorklet.addModule('keys-worklet.js').then(() => {
+    keysNode = new AudioWorkletNode(keysCtx, 'keys-synth', { numberOfInputs: 0, outputChannelCount: [2] });
+    keysNode.connect(keysCtx.destination);
+    setVolume();
+  }).catch((e) => { keysReady = null; setStatus(t('audioFailed') + e.message, true); });
+  return keysReady;
+}
+
+function setKeys(open) {
+  keysOpen = open;
+  $('keysToggle').setAttribute('aria-pressed', String(open));
+  $('keys').hidden = !open || viewMode === 'channels';
+  if (open) {
+    ensureKeysAudio();
+    keysCtx?.resume().catch(() => {});
+    refreshKeySources();
+    keyboard.focus();
+  } else {
+    keyboard.releaseAll();
+    keysNode?.port.postMessage({ type: 'allOff' });
+  }
+  saveKeys();
+  // The editor got shorter or taller.
+  renderMarks();
+  traceDirty = true;
+  updateWave();
+}
+$('keysToggle').addEventListener('click', () => setKeys(!keysOpen));
+
+// The parts a part name plays (as silence-check.js reads them): 'A', 'MSXD', 'SCCB' …
+function partTokens(name) {
+  if (name.startsWith('SCC')) return [...name.slice(3).replace(/[0-9]/g, '')].map((l) => 'SCC' + l);
+  if (name.startsWith('MSX')) return [...name.slice(3).replace(/[0-9]/g, '')].map((l) => 'MSX' + l);
+  return [...name.replace(/[0-9]/g, '')];
+}
+
+function inlineVoices() {
+  const found = new Map();
+  lines.forEach((l, i) => {
+    if (!/^ .@\d+[ \t]*(?:;.*)?$/.test(l)) return;
+    const v = voiceAt(lines, i + 1);
+    if (v && !v.problems.length && !found.has(v.id)) found.set(v.id, { fb: v.fb, alg: v.alg, ops: v.ops });
+  });
+  return found;
+}
+
+function songWaves() {
+  const found = new Map();
+  const text = code.value;
+  lines.forEach((l, i) => {
+    if (!/^[ \t]+@W\d+/.test(l)) return;
+    const w = waveAt(lines, i + 1, text);
+    if (!w || found.has(w.id) || w.values.length !== w.expected || !w.values.every(Number.isFinite)) return;
+    // A 64-sample #SSGExtend wave is played as 32, averaging pairs like the player.
+    const v = w.expected === 64 ? Array.from({ length: 32 }, (_, k) => (w.values[2 * k] + w.values[2 * k + 1]) / 2) : w.values;
+    found.set(w.id, v.map((x) => Math.max(-128, Math.min(127, x)) / 128));
+  });
+  return found;
+}
+
+const SQUARE = Array.from({ length: 32 }, (_, i) => (i < 16 ? 0.6 : -0.6));
+
+// What the caret's part sounds like: { inst, label }.
+function caretInstrument(voices, waves) {
+  const c = pane.code;
+  let row = c.value.slice(0, c.selectionStart).split('\n').length;
+  let p = null;
+  for (; row >= 1 && !p; row--) p = partLine(lines[row - 1]);
+  if (!p) return { inst: { kind: 'fm', voice: INIT_VOICE }, label: t('keysDefault') };
+  const token = partTokens(p.name)[0];
+  const at = row + 1;
+  // The last @n this part used up to the caret's line.
+  let id = null;
+  for (let r = 1; r <= at; r++) {
+    const q = partLine(lines[r - 1]);
+    if (!q || !partTokens(q.name).includes(token)) continue;
+    for (const m of q.body.split(';')[0].matchAll(/@(\d+)/g)) id = +m[1];
+  }
+  const letter = token.startsWith('SCC') || token.startsWith('MSX') ? token[3] : token;
+  if (token.startsWith('SCC')) {
+    const wave = id !== null ? waves.get(id) : null;
+    return wave ? { inst: { kind: 'wave', table: wave }, label: `${token} · @W${id}` } : { inst: { kind: 'wave', table: SQUARE }, label: `${token} · ${t('keysSsg')}` };
+  }
+  if ('DEF'.includes(letter)) return { inst: { kind: 'wave', table: SQUARE }, label: `${token} · SSG` };
+  if (letter === 'G') return { inst: { kind: 'noise' }, label: `${token} · ${t('keysNoise')}` };
+  if (letter === 'K') return { inst: { kind: 'sine' }, label: `${token} · ${t('keysSine')}` };
+  // FM; MSX-MUSIC's built-in voices are not modelled, so they get the default voice too.
+  const voice = !token.startsWith('MSX') && id !== null ? voices.get(id) : null;
+  return voice ? { inst: { kind: 'fm', voice }, label: `${token} · FM @${id}` } : { inst: { kind: 'fm', voice: INIT_VOICE }, label: `${token} · ${t('keysDefault')}` };
+}
+
+let keysInstruments = new Map();
+function refreshKeySources() {
+  const voices = inlineVoices(), waves = songWaves();
+  const auto = caretInstrument(voices, waves);
+  keysInstruments = new Map([['auto', auto.inst]]);
+  const options = [['auto', t('keysAuto', auto.label)]];
+  for (const [id, voice] of [...voices].sort((a, b) => a[0] - b[0])) { keysInstruments.set(`fm${id}`, { kind: 'fm', voice }); options.push([`fm${id}`, t('keysFm', id)]); }
+  for (const [id, table] of [...waves].sort((a, b) => a[0] - b[0])) { keysInstruments.set(`scc${id}`, { kind: 'wave', table }); options.push([`scc${id}`, t('keysScc', id)]); }
+  keysInstruments.set('ssg', { kind: 'wave', table: SQUARE }); options.push(['ssg', t('keysSsg')]);
+  keysInstruments.set('sine', { kind: 'sine' }); options.push(['sine', t('keysSine')]);
+  keysInstruments.set('noise', { kind: 'noise' }); options.push(['noise', t('keysNoise')]);
+  keysSource = keyboard.setSources(options, keysSource);
+}
+
+function keyNote(on, midi) {
+  if (!keysNode) { ensureKeysAudio(); return; }
+  if (keysCtx.state !== 'running') keysCtx.resume().catch(() => {});
+  if (!on) { keysNode.port.postMessage({ type: 'off', id: midi }); return; }
+  const inst = keysInstruments.get(keysSource) || keysInstruments.get('auto');
+  keysNode.port.postMessage({ type: 'on', id: midi, freq: 440 * 2 ** ((midi - 69) / 12), inst });
+}
+
+{
+  let saved = {};
+  try { saved = JSON.parse(store.get(STORE_KEYS) || '{}'); } catch { /* ignore */ }
+  if (saved.octave) keyboard.octave = Math.max(1, Math.min(6, saved.octave));
+  if (saved.source) keysSource = saved.source;
+  keyboard.drawKeys();
+  // Reopened without a tap: the audio starts on the first key.
+  if (saved.open) { keysOpen = true; $('keysToggle').setAttribute('aria-pressed', 'true'); $('keys').hidden = viewMode === 'channels'; refreshKeySources(); }
 }
 
 // ---------- start ----------

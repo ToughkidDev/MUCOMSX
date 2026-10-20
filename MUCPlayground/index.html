@@ -235,6 +235,28 @@ textarea::selection{background:var(--sel);color:transparent}
   .fe-overview{flex:none;width:100%}
   .fe-global{width:auto}
 }
+/* Keys mode (keyboard.js): a piano under the editor */
+.keys{flex:none;display:flex;flex-direction:column;gap:6px;padding:6px 12px 10px;border-top:1px solid var(--line);background:var(--panel)}
+.keys[hidden]{display:none}
+.keys-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:.8rem;color:var(--muted)}
+.keys-bar .spacer{flex:1}
+.keys-title{color:var(--ink);font-size:.85rem}
+.keys-bar label{display:inline-flex;align-items:center;gap:6px}
+.keys-bar select{max-width:260px;padding:3px 6px}
+.keys-oct output{font-family:var(--mono);min-width:5.6em;text-align:center;color:var(--ink);padding:0 4px}
+.keys-hint{font-size:.76rem}
+.keys.focused .keys-hint{color:var(--accent2)}
+.kb{position:relative;height:clamp(90px,16vh,150px);border-radius:6px;outline:none;touch-action:none;user-select:none;-webkit-user-select:none}
+.keys.focused .kb{box-shadow:0 0 0 2px var(--accent2)}
+.kb .key{position:absolute;top:0;box-sizing:border-box;border:1px solid var(--line);border-radius:0 0 5px 5px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:1px;padding-bottom:4px;font-family:var(--mono);font-size:10px;cursor:pointer}
+.kb .white{height:100%;background:#fdfcf8;color:#8a8577;z-index:1}
+.kb .black{height:60%;background:#2b2a27;color:#c9c4b5;border-color:#1a1918;z-index:2}
+.kb .key .nm{color:var(--accent);font-weight:700}
+.kb .white.on{background:var(--accent2);color:#fff}
+.kb .black.on{background:var(--accent2);color:#fff}
+.editor-foot .keys-toggle{padding:1px 8px;font-size:.78rem}
+.keys-toggle[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+@media (max-width:640px){.kb .key .pc,.keys-hint{display:none}}
 /* Suggestions */
 .ac{position:absolute;z-index:5;width:min(440px,calc(100% - 8px));background:var(--panel);border:1px solid var(--line);
     border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);font-family:var(--sans);font-size:.82rem;overflow:hidden}
@@ -412,6 +434,7 @@ footer p{margin:2px 0}
         </div>
       </div>
     </div>
+    <div class="keys" id="keys" hidden></div>
     <div class="chview" id="chview" hidden></div>
     <div class="wavedit" id="waveEditor" hidden></div>
     <div class="wavedit" id="fmEditor" hidden></div>
@@ -422,6 +445,7 @@ footer p{margin:2px 0}
           <button type="button" data-split="side" aria-pressed="false" data-i18n-title="splitSide">◫</button>
           <button type="button" data-split="stack" aria-pressed="false" data-i18n-title="splitStack">⊟</button>
         </span></span>
+      <button type="button" class="btn small ed keys-toggle" id="keysToggle" aria-pressed="false" data-i18n-title="keysTip"><span aria-hidden="true">🎹</span> <span data-i18n="keysMode">Keys</span></button>
       <span class="ed" id="cursor">Ln 1, Col 1</span><span class="ed" id="bytes"></span>
       <span class="ed"><kbd>Ctrl+Space</kbd> <span data-i18n="hintSuggest">suggestions</span></span>
       <span class="grp cv" hidden><span data-i18n="zoom">Size</span> <button type="button" class="btn small" id="cvZoom">75%</button></span>

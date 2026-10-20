@@ -56,7 +56,7 @@ const DT_SHOWN = ['0', '+1', '+2', '+3', '-0', '-1', '-2', '-3'];
 
 // Furnace's default FM instrument (engine/instrument.h) in MUC terms: DT 5 and 0 there are
 // +2 and -3, which the chip writes as 2 and 7.
-const INIT = {
+export const INIT = {
   fb: 4, alg: 0,
   ops: [[31, 8, 0, 3, 15, 42, 0, 5, 2], [31, 4, 0, 1, 11, 48, 0, 1, 2], [31, 10, 0, 4, 15, 18, 0, 1, 7], [31, 9, 0, 9, 15, 0, 0, 1, 7]]
     .map((v) => Object.fromEntries(FIELDS.map((f, i) => [f, v[i]]))),
