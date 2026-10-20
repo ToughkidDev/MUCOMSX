@@ -2409,7 +2409,11 @@ function setVoiceTag(name) {
   code.setRangeText(`#voice ${name}\n`, at, at, 'preserve');
   code.dispatchEvent(new Event('input'));
 }
-$('bankToggle').addEventListener('click', () => setSplit(splitMode === 'bank' ? 'off' : 'bank'));
+// In the voice / PCM files card; opening it from the channel view goes back to the editor.
+$('bankToggle').addEventListener('click', () => {
+  if (splitMode !== 'bank' && viewMode === 'channels') setView('editor');
+  setSplit(splitMode === 'bank' ? 'off' : 'bank');
+});
 for (const p of panes) p.code.addEventListener('input', scheduleBank);
 
 // ---------- start ----------

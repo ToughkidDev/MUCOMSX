@@ -303,6 +303,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .kb .white.on{background:var(--accent2);color:#fff}
 .kb .black.on{background:var(--accent2);color:#fff}
 .editor-foot .keys-toggle{padding:1px 8px;font-size:.78rem}
+.file-actions{display:flex;flex-wrap:wrap;gap:6px}
 .keys-toggle[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
 @media (max-width:640px){.kb .key .pc,.keys-hint{display:none}}
 /* Suggestions */
@@ -498,7 +499,6 @@ footer p{margin:2px 0}
           <button type="button" data-split="stack" aria-pressed="false" data-i18n-title="splitStack">⊟</button>
         </span></span>
       <button type="button" class="btn small ed keys-toggle" id="trackerToggle" aria-pressed="false" data-i18n-title="trkTip"><span aria-hidden="true">🎼</span> <span data-i18n="trkTitle">Tracker</span></button>
-      <button type="button" class="btn small ed keys-toggle" id="bankToggle" aria-pressed="false" data-i18n-title="bankTip"><span aria-hidden="true">🎛</span> <span data-i18n="bankTitle">Voice bank</span></button>
       <button type="button" class="btn small ed keys-toggle" id="keysToggle" aria-pressed="false" data-i18n-title="keysTip"><span aria-hidden="true">🎹</span> <span data-i18n="keysMode">Keys</span></button>
       <span class="ed" id="cursor">Ln 1, Col 1</span><span class="ed" id="bytes"></span>
       <span class="ed"><kbd>Ctrl+Space</kbd> <span data-i18n="hintSuggest">suggestions</span></span>
@@ -521,7 +521,10 @@ footer p{margin:2px 0}
     <div class="card">
       <h2 data-i18n="files">Voice / PCM files</h2>
       <ul class="files" id="files"></ul>
-      <button class="btn small" id="addFiles" type="button" data-i18n="addFiles">Add voice / PCM</button>
+      <div class="file-actions">
+        <button class="btn small" id="addFiles" type="button" data-i18n="addFiles">Add voice / PCM</button>
+        <button type="button" class="btn small keys-toggle" id="bankToggle" aria-pressed="false" data-i18n-title="bankTip"><span aria-hidden="true">🎛</span> <span data-i18n="bankTitle">Voice bank</span></button>
+      </div>
       <p class="hint" data-i18n="filesHint">Files named by #voice or #pcm. Add them with the button, or drop them on the page.</p>
     </div>
     <div class="card">
