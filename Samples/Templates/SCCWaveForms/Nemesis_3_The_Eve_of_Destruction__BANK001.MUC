@@ -1,0 +1,152 @@
+; Nemesis_3_The_Eve_of_Destruction W0001 Warm_Organ_H1 - original SCC RAM waveform
+@W1 = {
+0,-8,-16,-24,-32,-40,-48,-56,-64,-72,-80,-88,-96,-104,-112,-120,-128,120,112,104,96,88,80,72,64,56,48,40,32,24,16,8
+}
+; Nemesis_3_The_Eve_of_Destruction W0002 Warm_Organ_H3 - original SCC RAM waveform
+@W2 = {
+-128,-80,-64,16,26,42,44,26,0,-32,-48,-32,34,83,112,117,112,49,-22,-128,-120,-118,-116,-114,0,127,117,115,98,0,-64,-112
+}
+; Nemesis_3_The_Eve_of_Destruction W0003 Metallic_Bright_H1 - original SCC RAM waveform
+@W3 = {
+0,112,80,32,80,112,48,0,80,127,96,16,48,64,0,-80,16,96,0,-32,-16,0,-80,-112,-64,16,-32,-96,-64,-16,-64,-96
+}
+; Nemesis_3_The_Eve_of_Destruction W0004 Bright_Lead_H1 - original SCC RAM waveform
+@W4 = {
+0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,-128,-96,-64,-32,0,32,64,96,-128,-96,-64,-32,0,32,64,96
+}
+; Nemesis_3_The_Eve_of_Destruction W0005 Bright_Lead_H1 - original SCC RAM waveform
+@W5 = {
+48,80,80,48,0,0,16,64,96,112,96,48,-16,-32,-32,0,32,32,16,-64,-96,-112,-96,-64,0,0,-48,-80,-80,-48,0,0
+}
+; Nemesis_3_The_Eve_of_Destruction W0006 Pulse_H2 - original SCC RAM waveform
+@W6 = {
+112,112,112,112,112,112,112,112,-128,-128,-128,-128,-128,-128,-128,-128,112,112,112,-128,-128,-128,112,112,112,112,-128,-128,-128,-128,-128,-128
+}
+; Nemesis_3_The_Eve_of_Destruction W0007 Bright_Lead_H1 - original SCC RAM waveform
+@W7 = {
+0,127,0,-128,-96,-64,-40,-16,8,32,48,64,80,96,112,120,124,127,124,120,112,96,80,64,48,32,8,-16,-40,-64,-96,-128
+}
+; Nemesis_3_The_Eve_of_Destruction W0008 Warm_Organ_H1 - original SCC RAM waveform
+@W8 = {
+0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,-128,-112,-96,-80,-64,-48,-32,-16,0,16,32,48,64,80,96,112
+}
+; Nemesis_3_The_Eve_of_Destruction W0009 Warm_Organ_H1 - original SCC RAM waveform
+@W9 = {
+-112,-120,-112,-100,-80,-64,-32,38,112,124,112,86,64,32,16,-4,-32,-4,16,36,64,84,114,127,112,38,-32,-64,-80,-100,-112,-120
+}
+; Nemesis_3_The_Eve_of_Destruction W0010 Warm_Organ_H1 - original SCC RAM waveform
+@W10 = {
+-96,-112,-112,-96,-96,-80,-80,-80,-64,-64,-48,-48,-32,-32,-16,-16,0,0,16,16,32,32,48,48,64,64,80,80,96,96,96,80
+}
+; Nemesis_3_The_Eve_of_Destruction W0011 Warm_Organ_H1 - original SCC RAM waveform
+@W11 = {
+0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-32,-64,-96,-128,-96,-64,-32,0,32,64,96,127,96,64,32
+}
+; Nemesis_3_The_Eve_of_Destruction W0012 Metallic_Bright_H1 - original SCC RAM waveform
+@W12 = {
+0,104,64,4,0,38,64,-11,16,64,32,-48,-16,0,-64,-128,-48,48,-64,-96,-80,-64,-128,-48,-16,64,16,-64,-44,0,-64,-32
+}
+; Nemesis_3_The_Eve_of_Destruction W0013 Pulse_H2 - original SCC RAM waveform
+@W13 = {
+0,0,0,-128,0,112,112,112,0,0,0,-128,0,0,0,-128,-128,-128,-128,0,-128,0,0,0,0,-128,-128,-128,0,-128,-128,-128
+}
+; Nemesis_3_The_Eve_of_Destruction W0014 Bright_Lead_H1 - original SCC RAM waveform
+@W14 = {
+-96,-112,-96,-84,-16,10,22,0,-112,0,32,64,96,80,56,28,-14,-30,-42,-48,-48,-38,-36,-32,-30,-30,-30,-32,-36,-40,-48,-80
+}
+; Nemesis_3_The_Eve_of_Destruction W0015 Soft_Sine_H1 - original SCC RAM waveform
+@W15 = {
+0,32,48,64,80,88,96,104,112,104,96,88,80,64,48,32,0,-32,-48,-64,-80,-96,-104,-112,-120,-112,-104,-96,-80,-64,-48,-32
+}
+; Nemesis_3_The_Eve_of_Destruction W0016 Bright_Lead_H3 - original SCC RAM waveform
+@W16 = {
+0,64,127,64,1,-64,-127,-64,1,64,127,64,1,-64,1,64,1,-32,1,32,1,-16,1,16,1,-1,-1,-1,-1,64,64,64
+}
+; Nemesis_3_The_Eve_of_Destruction W0017 Warm_Organ_H2 - original SCC RAM waveform
+@W17 = {
+-128,-86,-56,0,36,64,92,112,127,106,74,38,0,-48,-88,-116,-128,-86,-56,0,36,64,92,112,127,106,74,38,0,-48,-88,-116
+}
+; Nemesis_3_The_Eve_of_Destruction W0018 Bright_Lead_H2 - original SCC RAM waveform
+@W18 = {
+-128,-128,-24,24,56,102,120,127,-128,-128,-128,-128,-128,-128,-128,-100,-128,-36,-128,32,-48,-128,127,-128,-48,32,-128,-36,-128,-100,-128,-120
+}
+; Nemesis_3_The_Eve_of_Destruction W0019 Bright_Lead_H1 - original SCC RAM waveform
+@W19 = {
+-128,-114,-96,-64,-32,0,32,63,62,60,58,55,49,41,32,28,16,0,-26,-64,-48,0,32,63,16,-32,-128,-64,0,32,0,-112
+}
+; Nemesis_3_The_Eve_of_Destruction W0020 Square_H16 - original SCC RAM waveform
+@W20 = {
+127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128,127,-128
+}
+; Nemesis_3_The_Eve_of_Destruction W0021 Warm_Organ_H1 - original SCC RAM waveform
+@W21 = {
+0,-16,-32,-48,-64,-80,-96,-112,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,-128,127,112,96,80,64,48,32,16
+}
+; Nemesis_3_The_Eve_of_Destruction W0022 Soft_Sine_H1 - original SCC RAM waveform
+@W22 = {
+0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-128,-125,-117,-106,-90,-71,-49,-25
+}
+; Nemesis_3_The_Eve_of_Destruction W0023 Bright_Lead_H4 - original SCC RAM waveform
+@W23 = {
+112,112,96,-128,-112,-112,-128,-128,64,64,48,-128,-112,-112,-128,-128,32,32,16,-128,-112,-112,-128,-128,0,0,-16,-128,-112,-112,-128,-128
+}
+; Nemesis_3_The_Eve_of_Destruction W0024 Hollow_Reed_H1 - original SCC RAM waveform
+@W24 = {
+0,49,90,117,127,117,90,49,0,-49,-90,-117,-128,-117,-90,-49,0,-32,-64,-96,-128,-96,-64,-32,0,32,64,96,127,96,64,32
+}
+; Nemesis_3_The_Eve_of_Destruction W0025 Bright_Lead_H3 - original SCC RAM waveform
+@W25 = {
+0,90,127,90,0,-90,-128,-90,0,-64,-128,-64,0,64,127,64,0,-128,0,127,0,-128,0,127,0,90,127,90,0,-128,0,127
+}
+; Nemesis_3_The_Eve_of_Destruction W0026 Bright_Lead_H4 - original SCC RAM waveform
+@W26 = {
+0,106,117,25,-90,-125,-49,-48,-128,-48,32,112,64,-32,-64,96,0,-96,64,32,90,125,49,-96,0,96,49,125,90,-112,-32,48
+}
+; Nemesis_3_The_Eve_of_Destruction W0027 Bright_Lead_H2 - original SCC RAM waveform
+@W27 = {
+0,71,117,125,90,25,-49,-106,-128,-106,-49,-16,-64,-112,-96,-48,0,48,96,112,64,16,-64,-96,0,96,64,-32,-128,-32,64,96
+}
+; Nemesis_3_The_Eve_of_Destruction W0028 Metallic_Bright_H5 - original SCC RAM waveform
+@W28 = {
+0,117,90,-49,-128,-49,-64,-96,0,96,64,-64,0,64,-128,64,0,117,90,-64,0,64,90,117,-128,-32,64,49,127,49,0,-64
+}
+; Nemesis_3_The_Eve_of_Destruction W0029 Bright_Lead_H7 - original SCC RAM waveform
+@W29 = {
+0,125,49,-106,-90,-48,-96,16,127,16,-64,96,-128,96,49,125,0,-32,64,106,90,-80,32,25,127,25,64,32,92,104,-64,-120
+}
+; Nemesis_3_The_Eve_of_Destruction W0030 Metallic_Bright_H8 - original SCC RAM waveform
+@W30 = {
+0,127,0,-128,0,-128,0,127,0,0,0,0,0,127,0,0,0,127,-128,0,0,127,-128,-128,1,127,-1,-127,0,1,1,1
+}
+; Nemesis_3_The_Eve_of_Destruction W0031 Metallic_Bright_H9 - original SCC RAM waveform
+@W31 = {
+0,125,-49,-106,-64,-48,96,16,0,-32,64,71,90,-96,64,125,-128,16,49,106,0,32,112,42,-127,64,127,32,-1,-80,-128,-128
+}
+; Nemesis_3_The_Eve_of_Destruction W0032 Metallic_Bright_H7 - original SCC RAM waveform
+@W32 = {
+0,117,-90,-49,-128,32,64,-64,0,64,90,49,0,49,90,-32,0,117,0,64,127,-64,-92,-127,1,-1,-64,-128,127,80,-112,0
+}
+; Nemesis_3_The_Eve_of_Destruction W0033 Square_H3 - original SCC RAM waveform
+@W33 = {
+0,0,0,0,0,112,112,0,0,-128,-128,-128,0,0,0,0,112,112,112,0,-128,-128,0,0,0,0,112,112,0,0,-128,-128
+}
+; Nemesis_3_The_Eve_of_Destruction W0034 Metallic_Bright_H1 - original SCC RAM waveform
+@W34 = {
+0,106,-117,-16,-64,112,-64,96,0,71,49,32,90,25,32,106,-128,-32,112,-42,-92,-64,1,64,-128,-128,32,-48,96,-112,96,-112
+}
+; Nemesis_3_The_Eve_of_Destruction W0035 Metallic_Bright_H7 - original SCC RAM waveform
+@W35 = {
+0,90,-128,-64,0,64,0,-128,0,90,0,90,-128,64,127,0,1,92,-127,1,1,-1,-128,-128,0,-112,-96,0,32,-80,-64,32
+}
+; Nemesis_3_The_Eve_of_Destruction W0036 Metallic_Bright_H3 - original SCC RAM waveform
+@W36 = {
+0,49,-90,-96,127,-64,-128,49,0,64,90,32,127,64,92,-64,0,1,-1,-128,127,80,96,80,32,0,-32,80,8,80,127,127
+}
+; Nemesis_3_The_Eve_of_Destruction W0037 Metallic_Bright_H9 - original SCC RAM waveform
+@W37 = {
+0,71,-117,-112,64,-32,64,96,127,-96,49,25,64,125,64,80,-1,-80,127,16,-64,-128,32,-96,-96,0,16,0,-32,64,-40,120
+}
+; Nemesis_3_The_Eve_of_Destruction W0038 Metallic_Bright_H12 - original SCC RAM waveform
+@W38 = {
+0,25,-49,-48,64,96,64,125,0,125,-32,106,0,80,-64,64,1,64,-128,48,-112,-64,96,0,-64,48,-40,96,127,-128,127,0
+}

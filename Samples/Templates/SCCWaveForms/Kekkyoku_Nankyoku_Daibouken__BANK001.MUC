@@ -1,0 +1,40 @@
+; Kekkyoku_Nankyoku_Daibouken W0001 Bright_Lead_H1 - original SCC RAM waveform
+@W1 = {
+48,80,80,48,0,0,16,64,96,112,96,48,-16,-32,-32,0,32,32,16,-64,-96,-112,-96,-64,0,0,-48,-80,-80,-48,0,0
+}
+; Kekkyoku_Nankyoku_Daibouken W0002 Warm_Organ_H3 - original SCC RAM waveform
+@W2 = {
+-128,-80,-64,16,26,42,44,26,0,-32,-48,-32,34,83,112,117,112,49,-22,-128,-120,-118,-116,-114,0,127,117,115,98,0,-64,-112
+}
+; Kekkyoku_Nankyoku_Daibouken W0003 Bright_Lead_H3 - original SCC RAM waveform
+@W3 = {
+0,64,127,64,1,-64,-127,-64,1,64,127,64,1,-64,1,64,1,-32,1,32,1,-16,1,16,1,-1,-1,-1,-1,64,64,64
+}
+; Kekkyoku_Nankyoku_Daibouken W0004 Warm_Organ_H1 - original SCC RAM waveform
+@W4 = {
+0,-8,-16,-24,-32,-40,-48,-56,-64,-72,-80,-88,-96,-104,-112,-120,-128,120,112,104,96,88,80,72,64,56,48,40,32,24,16,8
+}
+; Kekkyoku_Nankyoku_Daibouken W0005 Bright_Lead_H1 - original SCC RAM waveform
+@W5 = {
+0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,-128,-96,-64,-32,0,32,64,96,-128,-96,-64,-32,0,32,64,96
+}
+; Kekkyoku_Nankyoku_Daibouken W0006 Warm_Organ_H1 - original SCC RAM waveform
+@W6 = {
+0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,-128,-112,-96,-80,-64,-48,-32,-16,0,16,32,48,64,80,96,112
+}
+; Kekkyoku_Nankyoku_Daibouken W0007 Pulse_H2 - original SCC RAM waveform
+@W7 = {
+0,0,0,-128,0,112,112,112,0,0,0,-128,0,0,0,-128,-128,-128,-128,0,-128,0,0,0,0,-128,-128,-128,0,-128,-128,-128
+}
+; Kekkyoku_Nankyoku_Daibouken W0008 Pulse_H2 - original SCC RAM waveform
+@W8 = {
+112,112,112,112,112,112,112,112,-128,-128,-128,-128,-128,-128,-128,-128,112,112,112,-128,-128,-128,112,112,112,112,-128,-128,-128,-128,-128,-128
+}
+; Kekkyoku_Nankyoku_Daibouken W0009 Bright_Lead_H1 - original SCC RAM waveform
+@W9 = {
+0,127,0,-128,-96,-64,-40,-16,8,32,48,64,80,96,112,120,124,127,124,120,112,96,80,64,48,32,8,-16,-40,-64,-96,-128
+}
+; Kekkyoku_Nankyoku_Daibouken W0010 Metallic_Bright_H1 - original SCC RAM waveform
+@W10 = {
+0,112,80,32,80,112,48,0,80,127,96,16,48,64,0,-80,16,96,0,-32,-16,0,-80,-112,-64,16,-32,-96,-64,-16,-64,-96
+}
