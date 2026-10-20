@@ -12,7 +12,9 @@ const PART_LINE = /^((?:MSX)?[A-K][A-K0-9]*|SCC(?:[A-E][0-9]?)+)(?=[ \t])/;
 export const SCC_COLOR = '#0fa3b8';
 const MACRO_DEF = /^#\s*\*(\d+)\s*\{/;
 const VOICE_DEF = /^[ \t]+@(\d+)/;
-const WAVE_DEF = /^[ \t]+@W(\d+):/;     // SCC5 inline 32-sample wave: @W0:{ … }
+// SCC5 inline wave: @W0:{ … }, read as MUCOMSX's compiler reads it: spaces and : or = are
+// optional (@W1 : { … }, @W1={ … }, @W1 { … }), and @W1 alone heads a 64-sample wave.
+const WAVE_DEF = /^[ \t]+@W(\d+)(?=[ \t]*(?:[:={;]|$))/;
 
 export function partKind(label) {
   if (label.startsWith('SCC')) return 'ssg';   // SCC5 parts take the SSG commands (v0–15, E …)
@@ -78,7 +80,11 @@ export function highlightLine(line) {
     return `<span class="t-part" style="color:${color}">${esc(p[1])}</span>` + mml(line.slice(p[1].length));
   }
   const w = WAVE_DEF.exec(line);
-  if (w) return esc(w[0].slice(0, w[0].indexOf('@'))) + span('t-mac', '@W' + w[1]) + mml(line.slice(w[0].length - 1));
+  if (w) {
+    // The : or = between the number and the values, coloured alike.
+    const sep = /^[ \t]*[:=]/.exec(line.slice(w[0].length))?.[0] || '';
+    return esc(w[0].slice(0, w[0].indexOf('@'))) + span('t-mac', '@W' + w[1]) + (sep ? esc(sep.slice(0, -1)) + span('t-str', sep.slice(-1)) : '') + mml(line.slice(w[0].length + sep.length));
+  }
   const v = VOICE_DEF.exec(line);
   if (v) {
     const [body, comment] = commentSplit(line.slice(v[0].length));
