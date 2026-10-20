@@ -8,12 +8,12 @@
 // ignoring DT and KS; envelope times follow the OPN rate table roughly.
 
 const HEAD = /^ .@(\d+)[ \t]*(?:;.*)?$/;
-const FIELDS = ['AR', 'D1R', 'D2R', 'RR', 'D1L', 'TL', 'KS', 'ML', 'DT'];
-const LIMITS = [31, 31, 31, 15, 15, 127, 3, 15, 7];
+export const FIELDS = ['AR', 'D1R', 'D2R', 'RR', 'D1L', 'TL', 'KS', 'ML', 'DT'];
+export const LIMITS = [31, 31, 31, 15, 15, 127, 3, 15, 7];
 export const OP_COLORS = ['#d1495b', '#e09f3e', '#2a9d8f', '#577fd8'];
 
 // Which operators each algorithm sends to which, and which are heard (carriers).
-const ALGS = [
+export const ALGS = [
   { edges: [[0, 1], [1, 2], [2, 3]], out: [3], pos: [[0, 1], [1, 1], [2, 1], [3, 1]] },
   { edges: [[0, 2], [1, 2], [2, 3]], out: [3], pos: [[0, 0], [0, 2], [1, 1], [2, 1]] },
   { edges: [[0, 3], [1, 2], [2, 3]], out: [3], pos: [[1, 0], [0, 2], [1, 2], [2, 1]] },
@@ -90,9 +90,10 @@ export function computeWave(voice, n = 1024) {
 
 // Attenuation (dB, 0 = loudest) of one operator over time; key-off at `off` seconds.
 // OPN: a 96 dB slope takes about 39.6 s at rate 4 and halves every 4 rate steps; rates
-// are 2*AR, 2*D1R, 2*D2R, 4*RR+2. The attack is curved like the chip's.
-function envelope(op, t, off) {
-  const t96 = (rate) => (rate <= 0 ? Infinity : 39.6 * 2 ** (-(Math.min(rate, 63) - 4) / 4));
+// are 2*AR, 2*D1R, 2*D2R, 4*RR+2, plus `rks` (the key scaling of the note) when not 0.
+// The attack is curved like the chip's.
+export function envelope(op, t, off, rks = 0) {
+  const t96 = (rate) => (rate <= 0 ? Infinity : 39.6 * 2 ** (-(Math.min(rate + rks, 63) - 4) / 4));
   const ar = val(op.AR, 31, 0), d1r = val(op.D1R, 31, 0), d2r = val(op.D2R, 31, 0);
   const rr = val(op.RR, 15, 15), sl = val(op.D1L, 15, 0) === 15 ? 96 : val(op.D1L, 15, 0) * 3;
   const tl = val(op.TL, 127, 127) * 0.75;

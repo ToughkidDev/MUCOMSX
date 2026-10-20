@@ -150,7 +150,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .wave .fm-legend i{font-style:normal;font-family:var(--mono);font-weight:700}
 .wave .wave-note:empty{display:none}
 .wave .wave-edit{pointer-events:auto;float:right;margin:-2px 0 0 8px;padding:2px 8px}
-/* SCC wave editor (wave-editor.js) */
+/* SCC wave editor (wave-editor.js); the FM voice editor (fm-editor.js) shares its frame */
 .wavedit{flex:1;display:flex;flex-direction:column;min-height:0;overflow:auto;background:var(--panel)}
 .wavedit[hidden]{display:none!important}
 .we-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 12px;border-bottom:1px solid var(--line)}
@@ -188,6 +188,37 @@ textarea::selection{background:var(--sel);color:transparent}
 .we-bad:empty{display:none}
 .we-mml{margin:0;width:100%;font-size:.76rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .we-mml code{font-family:var(--mono);color:var(--ink)}
+/* FM voice editor (fm-editor.js) */
+.fe-main{flex:1 0 auto;display:flex;flex-direction:column;gap:10px;padding:10px 12px}
+.fe-top{display:flex;gap:12px;align-items:stretch}
+.fe-overview{flex:1;min-width:0;height:270px;background:var(--code-bg);border:1px solid var(--line);border-radius:6px}
+.fe-global{width:300px;flex:none;display:flex;flex-direction:column;gap:6px;font-size:.82rem}
+.fe-label{margin:0;color:var(--muted)}
+.fe-algs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.fe-algs button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:3px;border:1px solid var(--line);border-radius:6px;background:var(--code-bg);cursor:pointer;color:var(--muted);font-family:var(--mono);font-size:.72rem}
+.fe-algs button[aria-checked="true"]{border-color:var(--accent2);box-shadow:0 0 0 2px var(--accent2) inset;color:var(--ink)}
+.fe-algs canvas{width:100%;height:44px;display:block}
+.fe-fb{display:flex;align-items:center;gap:6px}
+.fe-fb input[type=range]{flex:1}
+.fe-fb input[type=number],.fe-rows input[type=number]{width:3.6em;font-family:var(--mono);padding:1px 3px}
+.fe-ops{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.fe-op{border:1px solid var(--line);border-top:3px solid var(--op);border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:4px;font-size:.8rem;min-width:0}
+.fe-op.carrier{background:color-mix(in srgb,var(--op) 7%,transparent)}
+.fe-op header{display:flex;align-items:center;gap:6px}
+.fe-op header b{font-family:var(--mono);color:var(--op)}
+.fe-op header .spacer{flex:1}
+.fe-op header .btn{padding:1px 6px;font-size:.72rem}
+.fe-role{color:var(--muted)}
+.fe-env{width:100%;height:64px;display:block;border-radius:4px}
+.fe-rows label{display:grid;grid-template-columns:2.8em 1fr auto 3.8em;align-items:center;gap:4px}
+.fe-rows span{font-family:var(--mono);color:var(--ink)}
+.fe-rows input[type=range]{width:100%;min-width:0;accent-color:var(--op)}
+.fe-rows output{font-family:var(--mono);color:var(--muted);font-size:.72rem;text-align:right}
+.fe-note{margin:0;color:var(--muted);font-size:.72rem}
+.fe-note.warn{color:var(--accent)}
+.fe-mml-label{font-size:.76rem;color:var(--muted);width:100%}
+.wavedit textarea.fe-text{position:static;flex:1;width:auto;height:auto;min-width:240px;font-family:var(--mono);font-size:.82rem;line-height:1.45;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--code-bg);color:var(--ink);resize:vertical;overflow:auto}
+.wavedit textarea.fe-text::selection{color:var(--ink)}
 @media (max-width:900px){
   .editor-wrap:has(> .wavedit:not([hidden])){height:auto}
   .wavedit{flex:none;overflow:visible}
@@ -195,6 +226,9 @@ textarea::selection{background:var(--sel);color:transparent}
   .we-canvas{flex:none;height:240px}
   .we-side{width:auto}
   .we-panes{overflow:visible}
+  .fe-top{flex-direction:column}
+  .fe-overview{flex:none;width:100%}
+  .fe-global{width:auto}
 }
 /* Suggestions */
 .ac{position:absolute;z-index:5;width:min(440px,calc(100% - 8px));background:var(--panel);border:1px solid var(--line);
@@ -374,6 +408,7 @@ footer p{margin:2px 0}
     </div>
     <div class="chview" id="chview" hidden></div>
     <div class="wavedit" id="waveEditor" hidden></div>
+    <div class="wavedit" id="fmEditor" hidden></div>
     <div class="editor-foot">
       <span class="grp ed"><span data-i18n="split">Split</span>
         <span class="tool-group" role="group" id="splitModes">
