@@ -5,25 +5,17 @@
 
 ; ==================================================================
 ;  MSX-MUSIC rhythm pattern library (part MSXG)
-;  MSX-MUSICリズムパターン集(パートMSXG)
-;  MSX-MUSIC 리듬 패턴 모음(파트 MSXG)
+;  MSX-MUSIC���Y���p�^�[���W(�p�[�gMSXG)
 ; ==================================================================
 ; [EN] The same eleven beats on the MSX-MUSIC drums. MSX-MUSIC has no rim
 ;      shot, so the rim parts of bossa nova and reggae are left out.
-; [JA] 同じ11種類のビートをMSX-MUSICのドラムで。MSX-MUSICには .
-;      リムショットが無いので、ボサノバとレゲエのリムは省いています。 .
-; [KO] 같은 비트 11가지를 MSX-MUSIC 드럼으로. MSX-MUSIC에는 림샷이 .
-;      없어서 보사노바와 레게의 림은 뺐습니다.
+; [JA] ����11��ނ̃r�[�g��MSX-MUSIC�̃h�����ŁBMSX-MUSIC�ɂ�
+;      �����V���b�g�������̂ŁA�{�T�m�o�ƃ��Q�G�̃����͏Ȃ��Ă��܂��B
 ;
 ; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
 ;      and keep what you like. Save makes a .muc on your computer.
-; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
-;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
-; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
-;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
-; [EN] This file is UTF-8 because of the Korean comments.
-; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
-; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; [JA] �Đ�(Ctrl+Enter)�Œ����Ă݂܂��傤�B1�����ς��Ă͂܂��Đ����A
+;      �C�ɓ�������c���܂��B�u�ۑ��v�Ńp�\�R����.muc��ۑ��ł��܂��B
 ; ==================================================================
 
 ; [EN] Rhythm part: each note plays the drums chosen with @. Add the
@@ -31,94 +23,85 @@
 ;      8 hi-hat, 16 tom, 32 rim shot (@9 = bass drum + hi-hat). The note
 ;      name does not matter; its length is the time to the next hit.
 ;      v takes 7 values: total (0-63), then BD SD CYM HH TOM RIM (0-31).
-; [JA] リズムパート: 各音符で@で選んだ楽器が鳴ります。数を足すと同時に .
-;      鳴らせます: 1バスドラム、2スネア、4シンバル、8ハイハット、16タム、 .
-;      32リムショット(@9 = バスドラム+ハイハット)。音名は何でもよく、 .
-;      音長は次の打音までの時間です。vは7つの値: 全体(0-63)、 .
-;      続いてBD SD CYM HH TOM RIM(0-31)。 .
-; [KO] 리듬 파트: 음표마다 @로 고른 악기가 울립니다. 숫자를 더하면 .
-;      동시에 칩니다: 1 베이스 드럼, 2 스네어, 4 심벌, 8 하이햇, 16 탐,
-;      32 림샷(@9 = 베이스 드럼+하이햇). 음 이름은 상관없고, 길이는 .
-;      다음 타격까지의 시간입니다. v는 값 7개: 전체(0-63),
-;      이어서 BD SD CYM HH TOM RIM(0-31).
+; [JA] ���Y���p�[�g: �e������@�őI�񂾊y�킪��܂��B���𑫂��Ɠ�����
+;      �点�܂�: 1�o�X�h�����A2�X�l�A�A4�V���o���A8�n�C�n�b�g�A16�^���A
+;      32�����V���b�g(@9 = �o�X�h����+�n�C�n�b�g)�B�����͉��ł��悭�A
+;      �����͎��̑ŉ��܂ł̎��Ԃł��Bv��7�̒l: �S��(0-63)�A
+;      ������BD SD CYM HH TOM RIM(0-31)�B
 ;
 ; [EN] Each pattern below is a macro of one bar. The grid under each name
 ;      shows the 16 sixteenth notes of the bar: B bass drum, S snare,
 ;      T cymbal, H hi-hat, M tom, R rim shot. Copy the #* line you like
 ;      into your song and call it from the rhythm part: [*1]4 = 4 bars.
-; [JA] 下のパターンはそれぞれ1小節のマクロです。名前の下の格子は .
-;      1小節の16分音符16個です: Bバスドラム、Sスネア、Tシンバル、 .
-;      Hハイハット、Mタム、Rリムショット。気に入った#*の行を自分の .
-;      曲にコピーして、リズムパートから呼びます: [*1]4で4小節。 .
-; [KO] 아래 패턴은 각각 한 마디짜리 매크로입니다. 이름 아래 격자는 .
-;      한 마디의 16분음표 16개입니다: B 베이스 드럼, S 스네어, T 심벌,
-;      H 하이햇, M 탐, R 림샷. 마음에 드는 #* 행을 자기 곡에 복사하고 .
-;      리듬 파트에서 부르면 됩니다: [*1]4는 4마디.
+; [JA] ���̃p�^�[���͂��ꂼ��1���߂̃}�N���ł��B���O�̉��̊i�q��
+;      1���߂�16������16�ł�: B�o�X�h�����AS�X�l�A�AT�V���o���A
+;      H�n�C�n�b�g�AM�^���AR�����V���b�g�B�C�ɓ�����#*�̍s��������
+;      �ȂɃR�s�[���āA���Y���p�[�g����Ăт܂�: [*1]4��4���߁B
 
-; *1  Rock 8 beat / ロック 8ビート / 록 8비트 .
+; *1  Rock 8 beat / ���b�N 8�r�[�g
 ;   B  x.......x.x.....
 ;   S  ....x.......x...
 ;   H  x.x.x.x.x.x.x.x.
 #*1{ @9c8 @8c8 @10c8 @8c8 @9c8 @9c8 @10c8 @8c8 }
 
-; *2  Pop 16 beat / ポップ 16ビート / 팝 16비트 .
+; *2  Pop 16 beat / �|�b�v 16�r�[�g
 ;   B  x......x..x.....
 ;   S  ....x.......x...
 ;   H  xxxxxxxxxxxxxxxx
 #*2{ @9c16 @8c16 @8c16 @8c16 @10c16 @8c16 @8c16 @9c16 @8c16 @8c16 @9c16 @8c16 @10c16 @8c16 @8c16 @8c16 }
 
-; *3  Four on the floor (dance) / 4つ打ち(ダンス) / 포 온 더 플로어(댄스)
+; *3  Four on the floor (dance) / 4�ł�(�_���X)
 ;   B  x...x...x...x...
 ;   S  ....x.......x...
 ;   H  ..x...x...x...x.
 #*3{ @1c8 @8c8 @3c8 @8c8 @1c8 @8c8 @3c8 @8c8 }
 
-; *4  Funk 16 beat / ファンク 16ビート / 펑크 16비트 .
+; *4  Funk 16 beat / �t�@���N 16�r�[�g
 ;   B  x..x....x.x....x
 ;   S  ....x..x.x..x...
 ;   H  x.xxx.xxx.xxx.xx
 #*4{ @9c8 @8c16 @9c16 @10c8 @8c16 @10c16 @9c16 @2c16 @9c16 @8c16 @10c8 @8c16 @9c16 }
 
-; *5  Half time / ハーフタイム / 하프 타임 .
+; *5  Half time / �n�[�t�^�C��
 ;   B  x.........x.....
 ;   S  ........x.......
 ;   H  x.x.x.x.x.x.x.x.
 #*5{ @9c8 @8c8 @8c8 @8c8 @10c8 @9c8 @8c8 @8c8 }
 
-; *6  Bossa nova (rim = clave) / ボサノバ(リム = クラーベ) / 보사노바(림 = 클라베)
+; *6  Bossa nova (rim = clave) / �{�T�m�o(���� = �N���[�x)
 ;   B  x..xx..xx..xx..x
 ;   H  x.x.x.x.x.x.x.x.
 #*6{ @9c8 @8c16 @1c16 @9c8 @8c16 @1c16 @9c8 @8c16 @1c16 @9c8 @8c16 @1c16 }
 
-; *7  Reggae one drop / レゲエ ワンドロップ / 레게 원 드롭 .
+; *7  Reggae one drop / ���Q�G �����h���b�v
 ;   B  ........x.......
 ;   H  ..x...x...x...x.
 #*7{ r8 @8c4 @8c8 @1c8 @8c4 @8c8 }
 
-; *8  Metal double bass / メタル ツーバス / 메탈 투베이스 .
+; *8  Metal double bass / ���^�� �c�[�o�X
 ;   B  xxxxxxxxxxxxxxxx
 ;   S  ....x.......x...
 ;   T  x...x...x...x...
 #*8{ @5c16 @1c16 @1c16 @1c16 @7c16 @1c16 @1c16 @1c16 @5c16 @1c16 @1c16 @1c16 @7c16 @1c16 @1c16 @1c16 }
 
-; *9  March / マーチ / 행진곡 .
+; *9  March / �}�[�`
 ;   B  x...x...x...x...
 ;   S  ..x...x.xx..x.x.
 ;   T  x...............
 #*9{ @5c8 @2c8 @1c8 @2c8 @3c16 @2c8. @3c8 @2c8 }
 
-; *10  Fill: snare and toms / フィル: スネアとタム / 필인: 스네어와 탐 .
+; *10  Fill: snare and toms / �t�B��: �X�l�A�ƃ^��
 ;   B  x...............
 ;   S  x.x.x.x.........
 ;   M  ........xxxxxxxx
 #*10{ @3c8 @2c8 @2c8 @2c8 @16c16 @16c16 @16c16 @16c16 @16c16 @16c16 @16c16 @16c16 }
 
-; *11  Waltz (3/4, one bar of 12 sixteenths) / ワルツ(3/4、16分×12で1小節) / 왈츠(3/4, 16분 12개가 한 마디)
+; *11  Waltz (3/4, one bar of 12 sixteenths) / �����c(3/4�A16���~12��1����)
 ;   B  x...........
 ;   S  ....x...x...
 ;   H  x.x.x.x.x.x.
 #*11{ @9c8 @8c8 @10c8 @8c8 @10c8 @8c8 }
 
-; ---- Playing every pattern twice / 全パターンを2回ずつ / 모든 패턴을 두 번씩 ----
+; ---- Playing every pattern twice / �S�p�^�[����2�񂸂� ----
 MSXG T120 v63,31,30,26,24,28,0
 MSXG L [*1]2 [*2]2 [*3]2 [*4]2 [*5]2 [*6]2 [*7]2 [*8]2 [*9]2 *10 [*11]2

@@ -5,71 +5,53 @@
 
 ; ==================================================================
 ;  PSG drum kit: drums from tone and noise
-;  PSGドラムキット: トーンとノイズで作るドラム .
-;  PSG 드럼 키트: 톤과 노이즈로 만드는 드럼 .
+;  PSG�h�����L�b�g: �g�[���ƃm�C�Y�ō��h����
 ; ==================================================================
 ; [EN] No drum chip? The PSG can fake one. Each drum is a macro that
 ;      sets tone or noise, noise pitch and a short envelope, then plays
 ;      one sixteenth. MSXF plays the kit; the same macros work on the
 ;      OPNA SSG parts D E F.
-; [JA] ドラム音源が無くてもPSGで作れます。各ドラムは、トーンかノイズ、 .
-;      ノイズの高さ、短いエンベロープを設定して16分音符を1つ鳴らす .
-;      マクロです。MSXFでキットを鳴らします。同じマクロはOPNAの .
-;      SSGパートD E Fでも使えます。 .
-; [KO] 드럼 음원이 없어도 PSG로 만들 수 있습니다. 드럼마다 톤이나 .
-;      노이즈, 노이즈 높이, 짧은 엔벨로프를 정하고 16분음표 하나를 .
-;      치는 매크로입니다. MSXF로 키트를 연주합니다. 같은 매크로는 .
-;      OPNA의 SSG 파트 D E F에서도 쓸 수 있습니다.
+; [JA] �h���������������Ă�PSG�ō��܂��B�e�h�����́A�g�[�����m�C�Y�A
+;      �m�C�Y�̍����A�Z���G���x���[�v��ݒ肵��16��������1�炷
+;      �}�N���ł��BMSXF�ŃL�b�g��炵�܂��B�����}�N����OPNA��
+;      SSG�p�[�gD E F�ł��g���܂��B
 ;
 ; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
 ;      and keep what you like. Save makes a .muc on your computer.
-; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
-;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
-; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
-;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
-; [EN] This file is UTF-8 because of the Korean comments.
-; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
-; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; [JA] �Đ�(Ctrl+Enter)�Œ����Ă݂܂��傤�B1�����ς��Ă͂܂��Đ����A
+;      �C�ɓ�������c���܂��B�u�ۑ��v�Ńp�\�R����.muc��ۑ��ł��܂��B
 ; ==================================================================
 
 ; [EN] E AL,AR,DR,SR,SL,RR is a software envelope (values 0-255): start
 ;      level, attack rate, decay rate, sustain rate, sustain level,
 ;      release rate. E255,0,0,0,0,255 is a flat, organ-like tone;
 ;      E255,0,40,0,0,255 dies away fast, good for plucks and drums.
-; [JA] E AL,AR,DR,SR,SL,RRはソフトウェアエンベロープ(値0-255): 開始レベル、 .
-;      アタック、ディケイ、サステインレート、サステインレベル、リリース。 .
-;      E255,0,0,0,0,255は平らなオルガン風の音、E255,0,40,0,0,255は .
-;      すぐ消える音で、撥弦音やドラムに向きます。 .
-; [KO] E AL,AR,DR,SR,SL,RR은 소프트웨어 엔벨로프(값 0-255): 시작 레벨,
-;      어택, 디케이, 서스테인 속도, 서스테인 레벨, 릴리스입니다.
-;      E255,0,0,0,0,255는 평평한 오르간 같은 소리, E255,0,40,0,0,255는 .
-;      금방 사라지는 소리로 퉁기는 소리나 드럼에 좋습니다.
+; [JA] E AL,AR,DR,SR,SL,RR�̓\�t�g�E�F�A�G���x���[�v(�l0-255): �J�n���x���A
+;      �A�^�b�N�A�f�B�P�C�A�T�X�e�C�����[�g�A�T�X�e�C�����x���A�����[�X�B
+;      E255,0,0,0,0,255�͕���ȃI���K�����̉��AE255,0,40,0,0,255��
+;      ���������鉹�ŁA��������h�����Ɍ����܂��B
 ;
 ; [EN] P1 tone, P2 noise, P3 tone and noise; w0-31 is the noise pitch
 ;      (small = high and hissy, large = low). Drums on one part: each
 ;      macro below sets its own sound, so they can be mixed freely.
-; [JA] P1トーン、P2ノイズ、P3トーン+ノイズ。w0-31はノイズの高さ .
-;      (小さいほど高くシャー、大きいほど低い)。1パートでドラム:
-;      下のマクロはそれぞれ自分の音を設定するので自由に混ぜられます。 .
-; [KO] P1 톤, P2 노이즈, P3 톤+노이즈. w0-31은 노이즈 높이 .
-;      (작을수록 높고 치익, 클수록 낮음). 파트 하나로 드럼:
-;      아래 매크로는 각자 소리를 설정하므로 자유롭게 섞을 수 있습니다.
+; [JA] P1�g�[���AP2�m�C�Y�AP3�g�[��+�m�C�Y�Bw0-31�̓m�C�Y�̍���
+;      (�������قǍ����V���[�A�傫���قǒႢ)�B1�p�[�g�Ńh����:
+;      ���̃}�N���͂��ꂼ�ꎩ���̉���ݒ肷��̂Ŏ��R�ɍ������܂��B
 
-; *1 kick / キック / 킥 .
+; *1 kick / �L�b�N
 #*1{ P1 E255,0,64,0,0,255 o2 c16 }
-; *2 snare / スネア / 스네어 .
+; *2 snare / �X�l�A
 #*2{ P3 w9 E255,0,36,0,0,255 o4 c16 }
-; *3 closed hi-hat / クローズハイハット / 클로즈 하이햇 .
+; *3 closed hi-hat / �N���[�Y�n�C�n�b�g
 #*3{ P2 w1 E170,0,90,0,0,255 c16 }
-; *4 open hi-hat / オープンハイハット / 오픈 하이햇 .
+; *4 open hi-hat / �I�[�v���n�C�n�b�g
 #*4{ P2 w1 E170,0,14,0,0,255 c16 }
-; *5 tom / タム / 탐 .
+; *5 tom / �^��
 #*5{ P1 E255,0,40,0,0,255 o3 g16 }
 
-; ---- Beats (16 steps per bar) / ビート(1小節16ステップ) / 비트(한 마디 16칸) ----
+; ---- Beats (16 steps per bar) / �r�[�g(1����16�X�e�b�v) ----
 ; [EN] K kick, S snare, h closed hat, o open hat, t tom, . rest
-; [JA] Kキック、Sスネア、hクローズハット、oオープンハット、tタム、.休み .
-; [KO] K 킥, S 스네어, h 클로즈 햇, o 오픈 햇, t 탐, . 쉼 .
+; [JA] K�L�b�N�AS�X�l�A�Ah�N���[�Y�n�b�g�Ao�I�[�v���n�b�g�At�^���A.�x��
 ;   *6  K.h.S.h.K.h.S.h.   rock
 ;   *7  K.h.S.hKK.h.S.o.   with a double kick
 ;   *8  KhhhShhhKhKhShhh   sixteenth hats
@@ -79,7 +61,7 @@
 #*8{ *1 *3 *3 *3 *2 *3 *3 *3 *1 *3 *1 *3 *2 *3 *3 *3 }
 #*9{ *2 r16 *2 r16 *2 *2 *2 r16 *5 *5 *5 *5 *1 *1 *1 *1 }
 
-; ---- MSXF: the drums, MSXD: a bass line to play along / MSXF: ドラム、MSXD: 合わせるベース / MSXF: 드럼, MSXD: 맞춰 연주하는 베이스 ----
+; ---- MSXF: the drums, MSXD: a bass line to play along / MSXF: �h�����AMSXD: ���킹��x�[�X ----
 MSXF T132 v13
 MSXF L [*6]3 *9 [*7]3 *9 [*8]3 *9
 MSXD @0 E255,0,20,0,80,40 v11 o3 l8

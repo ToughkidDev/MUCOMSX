@@ -5,25 +5,17 @@
 
 ; ==================================================================
 ;  Rock 8 beat (MSX): drums, bass and chords ready
-;  ロック 8ビート(MSX): ドラム・ベース・和音入り .
-;  록 8비트(MSX): 드럼, 베이스, 화음 포함 .
+;  ���b�N 8�r�[�g(MSX): �h�����E�x�[�X�E�a������
 ; ==================================================================
 ; [EN] The rock beat on MSX-MUSIC drums, SCC bass and MSX-MUSIC chords.
 ;      Write the melody on SCCA. T130-160.
-; [JA] ロックのビートをMSX-MUSICのドラム、SCCのベース、MSX-MUSICの和音で。 .
-;      メロディはSCCAに書きます。T130-160。 .
-; [KO] 록 비트를 MSX-MUSIC 드럼, SCC 베이스, MSX-MUSIC 화음으로.
-;      멜로디는 SCCA에 씁니다. T130-160.
+; [JA] ���b�N�̃r�[�g��MSX-MUSIC�̃h�����ASCC�̃x�[�X�AMSX-MUSIC�̘a���ŁB
+;      �����f�B��SCCA�ɏ����܂��BT130-160�B
 ;
 ; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
 ;      and keep what you like. Save makes a .muc on your computer.
-; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
-;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
-; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
-;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
-; [EN] This file is UTF-8 because of the Korean comments.
-; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
-; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; [JA] �Đ�(Ctrl+Enter)�Œ����Ă݂܂��傤�B1�����ς��Ă͂܂��Đ����A
+;      �C�ɓ�������c���܂��B�u�ۑ��v�Ńp�\�R����.muc��ۑ��ł��܂��B
 ; ==================================================================
 
 ; [EN] How to use: the drums, bass and chords are ready.
@@ -32,36 +24,26 @@
 ;      2. Keep every part the same length (bars listed below), or the parts
 ;         drift apart when the song loops.
 ;      3. Change the tempo T, the bass or the chords, or delete them.
-; [JA] 使い方: ドラム・ベース・和音はできています。 .
-;      1. 一番下のメロディパートにメロディを書きます。強拍には、その小節の .
-;         コードの音(下に一覧)を使うときれいに響きます。 .
-;      2. 全パートの長さ(小節数は下に記載)をそろえます。ずれると .
-;         ループのたびにパートがずれていきます。 .
-;      3. テンポT、ベース、和音は自由に変えたり消したりできます。 .
-; [KO] 사용법: 드럼, 베이스, 화음은 준비되어 있습니다.
-;      1. 맨 아래 멜로디 파트에 멜로디를 씁니다. 센박에는 그 마디 코드의 .
-;         음(아래 목록)을 쓰면 잘 어울립니다.
-;      2. 모든 파트의 길이(마디 수는 아래에)를 맞춥니다. 어긋나면 .
-;         루프할 때마다 파트가 어긋납니다.
-;      3. 템포 T, 베이스, 화음은 마음대로 바꾸거나 지워도 됩니다.
+; [JA] �g����: �h�����E�x�[�X�E�a���͂ł��Ă��܂��B
+;      1. ��ԉ��̃����f�B�p�[�g�Ƀ����f�B�������܂��B�����ɂ́A���̏��߂�
+;         �R�[�h�̉�(���Ɉꗗ)���g���Ƃ��ꂢ�ɋ����܂��B
+;      2. �S�p�[�g�̒���(���ߐ��͉��ɋL��)�����낦�܂��B������
+;         ���[�v�̂��тɃp�[�g������Ă����܂��B
+;      3. �e���|T�A�x�[�X�A�a���͎��R�ɕς������������ł��܂��B
 ;
 ; [EN] Here the drums are MSX-MUSIC (MSXG), the bass is SCC (SCCD), the
 ;      chords are MSX-MUSIC (MSXA, MSXB) and the melody goes on SCCA.
 ;      MSXC, MSXH-MSXJ, SCCB, SCCC, SCCE and the PSG (MSXD-MSXF) are free.
-; [JA] ここではドラムがMSX-MUSIC(MSXG)、ベースがSCC(SCCD)、和音が .
-;      MSX-MUSIC(MSXA、MSXB)、メロディはSCCAです。MSXC、MSXH-MSXJ、 .
-;      SCCB、SCCC、SCCE、PSG(MSXD-MSXF)は空いています。 .
-; [KO] 여기서는 드럼이 MSX-MUSIC(MSXG), 베이스가 SCC(SCCD), 화음이 .
-;      MSX-MUSIC(MSXA, MSXB), 멜로디는 SCCA입니다. MSXC, MSXH-MSXJ,
-;      SCCB, SCCC, SCCE, PSG(MSXD-MSXF)는 비어 있습니다.
+; [JA] �����ł̓h������MSX-MUSIC(MSXG)�A�x�[�X��SCC(SCCD)�A�a����
+;      MSX-MUSIC(MSXA�AMSXB)�A�����f�B��SCCA�ł��BMSXC�AMSXH-MSXJ�A
+;      SCCB�ASCCC�ASCCE�APSG(MSXD-MSXF)�͋󂢂Ă��܂��B
 
 ; Tempo T144 | 4/4 | 8 bars
 ; Chords: | Em | C | D | Em | Em | C | D | B |
 ; Chord tones: Em(e g b), C(c e g), D(d f+ a), B(b d+ f+)
 
 ; @1 organ: ALG 7, four carriers at 1x/2x/4x/1x
-;    オルガン: ALG 7、4つのキャリア(1倍/2倍/4倍/1倍)
-;    오르간: ALG 7, 캐리어 4개(1배/2배/4배/1배)
+;    �I���K��: ALG 7�A4�̃L�����A(1�{/2�{/4�{/1�{)
   @1
    0,7
    31,0,0,7,0,0,0,1,0
@@ -73,22 +55,17 @@
   @W1:{ -128,-120,-112,-104,-96,-88,-80,-72,-64,-56,-48,-40,-32,-24,-16,-8,0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120 }
   @W2:{ -127,-111,-95,-79,-63,-47,-31,-15,1,17,33,49,65,81,97,113,127,111,95,79,63,47,31,15,-1,-17,-33,-49,-65,-81,-97,-113 }
 
-; ---- Drums / ドラム / 드럼 ----
+; ---- Drums / �h���� ----
 ; [EN] Rhythm part: each note plays the drums chosen with @. Add the
 ;      numbers to hit several at once: 1 bass drum, 2 snare, 4 cymbal,
 ;      8 hi-hat, 16 tom, 32 rim shot (@9 = bass drum + hi-hat). The note
 ;      name does not matter; its length is the time to the next hit.
 ;      v takes 7 values: total (0-63), then BD SD CYM HH TOM RIM (0-31).
-; [JA] リズムパート: 各音符で@で選んだ楽器が鳴ります。数を足すと同時に .
-;      鳴らせます: 1バスドラム、2スネア、4シンバル、8ハイハット、16タム、 .
-;      32リムショット(@9 = バスドラム+ハイハット)。音名は何でもよく、 .
-;      音長は次の打音までの時間です。vは7つの値: 全体(0-63)、 .
-;      続いてBD SD CYM HH TOM RIM(0-31)。 .
-; [KO] 리듬 파트: 음표마다 @로 고른 악기가 울립니다. 숫자를 더하면 .
-;      동시에 칩니다: 1 베이스 드럼, 2 스네어, 4 심벌, 8 하이햇, 16 탐,
-;      32 림샷(@9 = 베이스 드럼+하이햇). 음 이름은 상관없고, 길이는 .
-;      다음 타격까지의 시간입니다. v는 값 7개: 전체(0-63),
-;      이어서 BD SD CYM HH TOM RIM(0-31).
+; [JA] ���Y���p�[�g: �e������@�őI�񂾊y�킪��܂��B���𑫂��Ɠ�����
+;      �点�܂�: 1�o�X�h�����A2�X�l�A�A4�V���o���A8�n�C�n�b�g�A16�^���A
+;      32�����V���b�g(@9 = �o�X�h����+�n�C�n�b�g)�B�����͉��ł��悭�A
+;      �����͎��̑ŉ��܂ł̎��Ԃł��Bv��7�̒l: �S��(0-63)�A
+;      ������BD SD CYM HH TOM RIM(0-31)�B
 ; *1 rock beat
 ;   B  x.......x.x.....
 ;   S  ....x.......x...
@@ -102,23 +79,21 @@
 MSXG T144 v63,31,30,26,24,28,0
 MSXG L [*1]3 *2 [*1]3 *2
 
-; ---- Bass / ベース / 베이스 ----
+; ---- Bass / �x�[�X ----
 SCCD @1 E255,0,10,2,180,80 v8 o2 l8
 SCCD L e e e e e e e e | c c c c c c c c | d d d d d d d d | e e e e e e e e
 SCCD   e e e e e e e e | c c c c c c c c | d d d d d d d d | b b b b b b b b
 
-; ---- Chords (two notes) / 和音(2音) / 화음(두 음) ----
+; ---- Chords (two notes) / �a��(2��) ----
 MSXA @1 v12 o4 l1
 MSXA L b g a b b g a f+
 MSXB @1 v12 o4 l1
 MSXB L g e f+ g g e f+ d+
 
-; ---- Melody: write yours here / メロディ: ここに書く / 멜로디: 여기에 쓰기 ----
+; ---- Melody: write yours here / �����f�B: �����ɏ��� ----
 ; [EN] Replace the rests with your melody (8 bars). For example:
 ;      SCCA L e4 g4 a4 g4 | ...
-; [JA] 休符をメロディに置き換えます(8小節)。例:
-;      SCCA L e4 g4 a4 g4 | ...
-; [KO] 쉼표를 멜로디로 바꿉니다(8마디). 예:
+; [JA] �x���������f�B�ɒu�������܂�(8����)�B��:
 ;      SCCA L e4 g4 a4 g4 | ...
 SCCA @0 E255,0,0,0,0,255 v9 o5 l8
 SCCA L [r1]8

@@ -2,7 +2,7 @@
 
 [English](#english) · [日本語](#日本語) · [한국어](#한국어)
 
-Starting points for writing a MUC (MUCOM88 MML) song. Every template plays as it is and explains itself in comments in English, Japanese and Korean.
+Starting points for writing a MUC (MUCOM88 MML) song. Every template plays as it is and explains itself in comments in English and Japanese.
 
 | Folder | What is inside |
 |---|---|
@@ -33,11 +33,9 @@ A genre template plays drums, bass and chords. Write your melody in the part at 
 - Portamento: the length goes after the first note, `{c4 e}` (or leave it out to use `l`). `{ce}4` is an error.
 - `T` gives an approximate tempo, because it is converted to a Timer-B value.
 
-### About the text encoding
+### Text encoding
 
-The files are UTF-8, because Shift-JIS has no Korean letters. Programs that read MUC as Shift-JIS, such as MDPlayer4Mac and the MSX, can take the last byte of a line as the first half of a double-byte character and swallow the line break. That would hide the next line. So every comment line that ends in Japanese or Korean ends with ` .`. Keep that ending when you edit such a line, or end it with any other ASCII character.
-
-MUCPlayground saves a song as Shift-JIS, unless it contains Korean letters. Then it saves as UTF-8.
+The files are Shift-JIS, like every MUC for the MSX. The comments are in English and Japanese.
 
 All templates compile without errors or warnings. In MDPlayer4Mac v0.2.3 they produce the same MUB and the same audio as in MUCPlayground.
 
@@ -62,11 +60,9 @@ All templates compile without errors or warnings. In MDPlayer4Mac v0.2.3 they pr
 - ポルタメントの音長は最初の音の後ろに書きます: `{c4 e}`(省略するとlの音長)。`{ce}4`はエラーになります。
 - `T`はTimer-Bの値に変換されるので、テンポはおおよその値になります。
 
-### 文字コードについて
+### 文字コード
 
-韓国語の文字がShift-JISに無いため、ファイルはUTF-8です。MDPlayer4MacやMSXのようにMUCをShift-JISとして読むプログラムでは、行の最後のバイトが2バイト文字の前半と解釈され、改行まで飲み込まれることがあります。そうなると次の行が消えてしまいます。そのため、日本語や韓国語で終わるコメント行は、すべて` .`で終わらせています。そのような行を直すときは、この終わり方を残すか、他のASCII文字で終わらせてください。
-
-MUCPlaygroundは曲をShift-JISで保存します。韓国語の文字を含む場合だけUTF-8で保存します。
+MSX用のMUCと同じく、ファイルはShift-JISです。コメントは英語と日本語です。
 
 すべてのテンプレートは、エラーも警告も無くコンパイルできます。MDPlayer4Mac v0.2.3でも、MUCPlaygroundと同じMUBと同じ音声になります。
 
@@ -93,8 +89,6 @@ MUCPlaygroundは曲をShift-JISで保存します。韓国語の文字を含む�
 
 ### 문자 인코딩
 
-Shift-JIS에는 한글이 없어서 파일은 UTF-8입니다. MDPlayer4Mac이나 MSX처럼 MUC를 Shift-JIS로 읽는 프로그램은, 줄의 마지막 바이트를 2바이트 문자의 앞부분으로 보고 줄바꿈까지 삼킬 수 있습니다. 그러면 다음 줄이 사라집니다. 그래서 일본어나 한국어로 끝나는 주석 줄은 모두 ` .`로 끝납니다. 그런 줄을 고칠 때는 이 끝을 남기거나, 다른 ASCII 문자로 끝내 주세요.
-
-MUCPlayground는 곡을 Shift-JIS로 저장하고, 한글이 들어 있을 때만 UTF-8로 저장합니다.
+MSX용 MUC와 마찬가지로 파일은 Shift-JIS입니다. 주석은 영어와 일본어입니다.
 
 모든 템플릿은 오류나 경고 없이 컴파일됩니다. MDPlayer4Mac v0.2.3에서도 MUCPlayground와 똑같은 MUB와 똑같은 소리가 나옵니다.

@@ -5,39 +5,27 @@
 
 ; ==================================================================
 ;  MSX-MUSIC (YM2413 / OPLL): six melodic parts and drums
-;  MSX-MUSIC(YM2413/OPLL): ãƒ¡ãƒ­ãƒ‡ã‚£6ãƒ‘ãƒ¼ãƒˆã¨ãƒ‰ãƒ©ãƒ  .
-;  MSX-MUSIC(YM2413/OPLL): ë©œë¡œë”” íŒŒíŠ¸ 6ê°œì™€ ë“œëŸ¼ .
+;  MSX-MUSIC(YM2413/OPLL): ƒƒƒfƒB6ƒp[ƒg‚Æƒhƒ‰ƒ€
 ; ==================================================================
 ; [EN] MSXA MSXB MSXC MSXH MSXI MSXJ are the six melodic channels of
 ;      MSX-MUSIC, MSXG its drums. Voices are written like OPNA voices;
 ;      when compiled, each becomes the nearest of the 15 built-in OPLL
 ;      instruments, so try different voices to pick another one.
 ;      Playing on an MSX needs MSX-MUSIC (and MUCOMSX's MAKOTO).
-; [JA] MSXA MSXB MSXC MSXH MSXI MSXJãŒMSX-MUSICã®ãƒ¡ãƒ­ãƒ‡ã‚£6ãƒãƒ£ãƒ³ãƒãƒ«ã€ .
-;      MSXGãŒãƒ‰ãƒ©ãƒ ã§ã™ã€‚éŸ³è‰²ã¯OPNAã¨åŒã˜æ›¸ãæ–¹ã§ã€ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«æ™‚ã« .
-;      OPLLå†…è”µã®15éŸ³è‰²ã®ã†ã¡æœ€ã‚‚è¿‘ã„ã‚‚ã®ã«ãªã‚Šã¾ã™ã€‚åˆ¥ã®æ¥½å™¨ã«ã—ãŸã„ .
-;      ã¨ãã¯éŸ³è‰²ã‚’å¤‰ãˆã¦ã¿ã¾ã—ã‚‡ã†ã€‚MSXå®Ÿæ©Ÿã§ã¯MSX-MUSIC
-;      (ã¨MUCOMSXã®MAKOTO)ãŒå¿…è¦ã§ã™ã€‚ .
-; [KO] MSXA MSXB MSXC MSXH MSXI MSXJê°€ MSX-MUSICì˜ ë©œë¡œë”” 6ì±„ë„,
-;      MSXGê°€ ë“œëŸ¼ìž…ë‹ˆë‹¤. ìŒìƒ‰ì€ OPNAì™€ ê°™ì€ ë°©ì‹ìœ¼ë¡œ ì“°ê³ , ì»´íŒŒì¼í•  ë•Œ .
-;      OPLL ë‚´ìž¥ ìŒìƒ‰ 15ê°œ ì¤‘ ê°€ìž¥ ê°€ê¹Œìš´ ê²ƒìœ¼ë¡œ ë°”ë€ë‹ˆë‹¤. ë‹¤ë¥¸ ì•…ê¸°ë¥¼ .
-;      ì›í•˜ë©´ ìŒìƒ‰ì„ ë°”ê¿” ë³´ì„¸ìš”. MSX ì‹¤ê¸°ì—ì„œëŠ” MSX-MUSIC
-;      (ê³¼ MUCOMSXì˜ MAKOTO)ê°€ í•„ìš”í•©ë‹ˆë‹¤.
+; [JA] MSXA MSXB MSXC MSXH MSXI MSXJ‚ªMSX-MUSIC‚ÌƒƒƒfƒB6ƒ`ƒƒƒ“ƒlƒ‹A
+;      MSXG‚ªƒhƒ‰ƒ€‚Å‚·B‰¹F‚ÍOPNA‚Æ“¯‚¶‘‚«•û‚ÅAƒRƒ“ƒpƒCƒ‹Žž‚É
+;      OPLL“à‘ ‚Ì15‰¹F‚Ì‚¤‚¿Å‚à‹ß‚¢‚à‚Ì‚É‚È‚è‚Ü‚·B•Ê‚ÌŠyŠí‚É‚µ‚½‚¢
+;      ‚Æ‚«‚Í‰¹F‚ð•Ï‚¦‚Ä‚Ý‚Ü‚µ‚å‚¤BMSXŽÀ‹@‚Å‚ÍMSX-MUSIC
+;      (‚ÆMUCOMSX‚ÌMAKOTO)‚ª•K—v‚Å‚·B
 ;
 ; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
 ;      and keep what you like. Save makes a .muc on your computer.
-; [JA] å†ç”Ÿ(Ctrl+Enter)ã§è´ã„ã¦ã¿ã¾ã—ã‚‡ã†ã€‚1ã‹æ‰€å¤‰ãˆã¦ã¯ã¾ãŸå†ç”Ÿã—ã€ .
-;      æ°—ã«å…¥ã£ãŸã‚‰æ®‹ã—ã¾ã™ã€‚ã€Œä¿å­˜ã€ã§ãƒ‘ã‚½ã‚³ãƒ³ã«.mucã‚’ä¿å­˜ã§ãã¾ã™ã€‚ .
-; [KO] ìž¬ìƒ(Ctrl+Enter)ìœ¼ë¡œ ë“¤ì–´ ë³´ì„¸ìš”. í•œ êµ°ë°ë¥¼ ê³ ì¹˜ê³  ë‹¤ì‹œ ìž¬ìƒí•´ì„œ .
-;      ë§ˆìŒì— ë“¤ë©´ ë‚¨ê¸°ë©´ ë©ë‹ˆë‹¤. "ì €ìž¥"ì„ ëˆ„ë¥´ë©´ ì»´í“¨í„°ì— .mucë¡œ ì €ìž¥ë©ë‹ˆë‹¤.
-; [EN] This file is UTF-8 because of the Korean comments.
-; [JA] éŸ“å›½èªžã®ã‚³ãƒ¡ãƒ³ãƒˆãŒã‚ã‚‹ãŸã‚ã€ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã¯UTF-8ã§ã™ã€‚ .
-; [KO] í•œêµ­ì–´ ì£¼ì„ì´ ìžˆì–´ì„œ ì´ íŒŒì¼ì€ UTF-8ìž…ë‹ˆë‹¤.
+; [JA] Ä¶(Ctrl+Enter)‚Å’®‚¢‚Ä‚Ý‚Ü‚µ‚å‚¤B1‚©Š•Ï‚¦‚Ä‚Í‚Ü‚½Ä¶‚µA
+;      ‹C‚É“ü‚Á‚½‚çŽc‚µ‚Ü‚·Bu•Û‘¶v‚Åƒpƒ\ƒRƒ“‚É.muc‚ð•Û‘¶‚Å‚«‚Ü‚·B
 ; ==================================================================
 
 ; @1 lead: ALG 5, OP1 modulates three carriers
-;    ãƒªãƒ¼ãƒ‰: ALG 5ã€OP1ãŒ3ã¤ã®ã‚­ãƒ£ãƒªã‚¢ã‚’å¤‰èª¿ .
-;    ë¦¬ë“œ: ALG 5, OP1ì´ ìºë¦¬ì–´ 3ê°œë¥¼ ë³€ì¡° .
+;    ƒŠ[ƒh: ALG 5AOP1‚ª3‚Â‚ÌƒLƒƒƒŠƒA‚ð•Ï’²
   @1
    6,5
    31,12,0,7,3,28,0,1,3
@@ -46,8 +34,7 @@
    31,6,3,7,3,0,0,1,0
 
 ; @2 bass: ALG 0, four operators in series
-;    ãƒ™ãƒ¼ã‚¹: ALG 0ã€4ã¤ã®ã‚ªãƒšãƒ¬ãƒ¼ã‚¿ã‚’ç›´åˆ—ã« .
-;    ë² ì´ìŠ¤: ALG 0, ì˜¤í¼ë ˆì´í„° 4ê°œë¥¼ ì§ë ¬ë¡œ .
+;    ƒx[ƒX: ALG 0A4‚Â‚ÌƒIƒyƒŒ[ƒ^‚ð’¼—ñ‚É
   @2
    5,0
    31,14,0,8,2,30,0,0,0
@@ -56,8 +43,7 @@
    31,8,4,8,2,0,0,1,0
 
 ; @3 organ: ALG 7, four carriers at 1x/2x/4x/1x
-;    ã‚ªãƒ«ã‚¬ãƒ³: ALG 7ã€4ã¤ã®ã‚­ãƒ£ãƒªã‚¢(1å€/2å€/4å€/1å€)
-;    ì˜¤ë¥´ê°„: ALG 7, ìºë¦¬ì–´ 4ê°œ(1ë°°/2ë°°/4ë°°/1ë°°)
+;    ƒIƒ‹ƒKƒ“: ALG 7A4‚Â‚ÌƒLƒƒƒŠƒA(1”{/2”{/4”{/1”{)
   @3
    0,7
    31,0,0,7,0,0,0,1,0
@@ -66,8 +52,7 @@
    31,0,0,7,0,0,0,1,3
 
 ; @4 brass: ALG 2 with a slower attack
-;    ãƒ–ãƒ©ã‚¹: ã‚¢ã‚¿ãƒƒã‚¯ãŒå°‘ã—é…ã„ALG 2
-;    ë¸Œë¼ìŠ¤: ì–´íƒì´ ì¡°ê¸ˆ ëŠë¦° ALG 2
+;    ƒuƒ‰ƒX: ƒAƒ^ƒbƒN‚ª­‚µ’x‚¢ALG 2
   @4
    5,2
    22,8,0,7,2,26,0,1,0
@@ -76,10 +61,9 @@
    18,4,2,7,2,0,0,1,0
 
 ; [EN] Chords: | Dm | Bb | C | Dm | Dm | Bb | C | A |
-; [JA] ã‚³ãƒ¼ãƒ‰: | Dm | Bb | C | Dm | Dm | Bb | C | A |
-; [KO] ì½”ë“œ: | Dm | Bb | C | Dm | Dm | Bb | C | A |
+; [JA] ƒR[ƒh: | Dm | Bb | C | Dm | Dm | Bb | C | A |
 
-; ---- MSXA: melody, MSXI: its echo / MSXA: ãƒ¡ãƒ­ãƒ‡ã‚£ã€MSXI: ãã®ã‚¨ã‚³ãƒ¼ / MSXA: ë©œë¡œë””, MSXI: ê·¸ ì—ì½” ----
+; ---- MSXA: melody, MSXI: its echo / MSXA: ƒƒƒfƒBAMSXI: ‚»‚ÌƒGƒR[ ----
 MSXA T120 @1 v15 o5 l8
 MSXA L a4 f4 d4 f4 | b-2 a4 g4 | g4 e4 c4 e4 | f2. r4
 MSXA   a4 >d4< a4 f4 | b-4 a4 g4 f4 | e4 g4 c4 e4 | c+2 e2
@@ -87,7 +71,7 @@ MSXI @1 v10 o5 l8
 MSXI L r a4 f4 d4 f4 | b-2 a4 g4 | g4 e4 c4 e4 | f2. r4
 MSXI   a4 >d4< a4 f4 | b-4 a4 g4 f4 | e4 g4 c4 e4 | c+2 e4.
 
-; ---- MSXB MSXC: chord, MSXH: bass / MSXB MSXC: å’ŒéŸ³ã€MSXH: ãƒ™ãƒ¼ã‚¹ / MSXB MSXC: í™”ìŒ, MSXH: ë² ì´ìŠ¤ ----
+; ---- MSXB MSXC: chord, MSXH: bass / MSXB MSXC: ˜a‰¹AMSXH: ƒx[ƒX ----
 MSXB @3 v12 o4 l1
 MSXB L a f g a a f g e
 MSXC @3 v12 o4 l1
@@ -96,29 +80,23 @@ MSXH @2 v15 o2 l8
 MSXH L d d >d< d d d >d< d | b- b- >b-< b- b- b- >b-< b- | c c >c< c c c >c< c | d d >d< d d d >d< d
 MSXH   d d >d< d d d >d< d | b- b- >b-< b- b- b- >b-< b- | c c >c< c c c >c< c | a a >a< a a a >a< a
 
-; ---- MSXJ: brass hits / MSXJ: ãƒ–ãƒ©ã‚¹ã®ã‚¢ã‚¯ã‚»ãƒ³ãƒˆ / MSXJ: ë¸Œë¼ìŠ¤ ì•…ì„¼íŠ¸ ----
+; ---- MSXJ: brass hits / MSXJ: ƒuƒ‰ƒX‚ÌƒAƒNƒZƒ“ƒg ----
 MSXJ @4 v12 o4 l8
 MSXJ L r1 r1 r1 r4 a a a4 r4 | r1 r1 r1 r4 a a a4 r4
 
-; ---- MSXG: drums / MSXG: ãƒ‰ãƒ©ãƒ  / MSXG: ë“œëŸ¼ ----
+; ---- MSXG: drums / MSXG: ƒhƒ‰ƒ€ ----
 ; [EN] Rhythm part: each note plays the drums chosen with @. Add the
 ;      numbers to hit several at once: 1 bass drum, 2 snare, 4 cymbal,
 ;      8 hi-hat, 16 tom, 32 rim shot (@9 = bass drum + hi-hat). The note
 ;      name does not matter; its length is the time to the next hit.
 ;      v takes 7 values: total (0-63), then BD SD CYM HH TOM RIM (0-31).
-; [JA] ãƒªã‚ºãƒ ãƒ‘ãƒ¼ãƒˆ: å„éŸ³ç¬¦ã§@ã§é¸ã‚“ã æ¥½å™¨ãŒé³´ã‚Šã¾ã™ã€‚æ•°ã‚’è¶³ã™ã¨åŒæ™‚ã« .
-;      é³´ã‚‰ã›ã¾ã™: 1ãƒã‚¹ãƒ‰ãƒ©ãƒ ã€2ã‚¹ãƒã‚¢ã€4ã‚·ãƒ³ãƒãƒ«ã€8ãƒã‚¤ãƒãƒƒãƒˆã€16ã‚¿ãƒ ã€ .
-;      32ãƒªãƒ ã‚·ãƒ§ãƒƒãƒˆ(@9 = ãƒã‚¹ãƒ‰ãƒ©ãƒ +ãƒã‚¤ãƒãƒƒãƒˆ)ã€‚éŸ³åã¯ä½•ã§ã‚‚ã‚ˆãã€ .
-;      éŸ³é•·ã¯æ¬¡ã®æ‰“éŸ³ã¾ã§ã®æ™‚é–“ã§ã™ã€‚vã¯7ã¤ã®å€¤: å…¨ä½“(0-63)ã€ .
-;      ç¶šã„ã¦BD SD CYM HH TOM RIM(0-31)ã€‚ .
-; [KO] ë¦¬ë“¬ íŒŒíŠ¸: ìŒí‘œë§ˆë‹¤ @ë¡œ ê³ ë¥¸ ì•…ê¸°ê°€ ìš¸ë¦½ë‹ˆë‹¤. ìˆ«ìžë¥¼ ë”í•˜ë©´ .
-;      ë™ì‹œì— ì¹©ë‹ˆë‹¤: 1 ë² ì´ìŠ¤ ë“œëŸ¼, 2 ìŠ¤ë„¤ì–´, 4 ì‹¬ë²Œ, 8 í•˜ì´í–‡, 16 íƒ,
-;      32 ë¦¼ìƒ·(@9 = ë² ì´ìŠ¤ ë“œëŸ¼+í•˜ì´í–‡). ìŒ ì´ë¦„ì€ ìƒê´€ì—†ê³ , ê¸¸ì´ëŠ” .
-;      ë‹¤ìŒ íƒ€ê²©ê¹Œì§€ì˜ ì‹œê°„ìž…ë‹ˆë‹¤. vëŠ” ê°’ 7ê°œ: ì „ì²´(0-63),
-;      ì´ì–´ì„œ BD SD CYM HH TOM RIM(0-31).
+; [JA] ƒŠƒYƒ€ƒp[ƒg: Še‰¹•„‚Å@‚Å‘I‚ñ‚¾ŠyŠí‚ª–Â‚è‚Ü‚·B”‚ð‘«‚·‚Æ“¯Žž‚É
+;      –Â‚ç‚¹‚Ü‚·: 1ƒoƒXƒhƒ‰ƒ€A2ƒXƒlƒAA4ƒVƒ“ƒoƒ‹A8ƒnƒCƒnƒbƒgA16ƒ^ƒ€A
+;      32ƒŠƒ€ƒVƒ‡ƒbƒg(@9 = ƒoƒXƒhƒ‰ƒ€+ƒnƒCƒnƒbƒg)B‰¹–¼‚Í‰½‚Å‚à‚æ‚­A
+;      ‰¹’·‚ÍŽŸ‚Ì‘Å‰¹‚Ü‚Å‚ÌŽžŠÔ‚Å‚·Bv‚Í7‚Â‚Ì’l: ‘S‘Ì(0-63)A
+;      ‘±‚¢‚ÄBD SD CYM HH TOM RIM(0-31)B
 ; [EN] MSX-MUSIC has no rim shot (32); the other drums work the same.
-; [JA] MSX-MUSICã«ãƒªãƒ ã‚·ãƒ§ãƒƒãƒˆ(32)ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚ä»–ã®ãƒ‰ãƒ©ãƒ ã¯åŒã˜ã§ã™ã€‚ .
-; [KO] MSX-MUSICì—ëŠ” ë¦¼ìƒ·(32)ì´ ì—†ìŠµë‹ˆë‹¤. ë‚˜ë¨¸ì§€ ë“œëŸ¼ì€ ê°™ìŠµë‹ˆë‹¤.
+; [JA] MSX-MUSIC‚ÉƒŠƒ€ƒVƒ‡ƒbƒg(32)‚Í‚ ‚è‚Ü‚¹‚ñB‘¼‚Ìƒhƒ‰ƒ€‚Í“¯‚¶‚Å‚·B
 #*1{ @9c8 @8c8 @10c8 @8c8 @9c8 @9c8 @10c8 @8c8 }
 #*2{ @9c8 @8c8 @10c4 @3c8 @2c16 @2c16 @2c16 @2c16 @2c16 @2c16 }
 MSXG v63,31,30,26,24,28,0
