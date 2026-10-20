@@ -12,6 +12,7 @@ const STORE_SONG = 'mucplayground.song';      // { name, current }: what the edi
 const STORE_LANG = 'mucplayground.lang';
 const STORE_VOLUME = 'mucplayground.volume';
 const STORE_FONT = 'mucplayground.fontSize';
+const STORE_UI = 'mucplayground.uiSize';
 const STORE_SPLIT = 'mucplayground.split';
 
 const T = {
@@ -44,7 +45,8 @@ const T = {
     audioFailed: 'Audio could not start: ', bytes: (n) => `${n.toLocaleString()} bytes`,
     saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
-    followPart: (p) => `Follow part ${p}`, hintSuggest: 'suggestions', fontSize: 'Text',
+    followPart: (p) => `Follow part ${p}`, hintSuggest: 'suggestions', fontSize: 'Text', fontSizeTip: 'Editor text size',
+    uiSize: 'Menus', uiSizeTip: 'Size of the menus, buttons and panels (100–200%; a narrow window allows less)',
     browse: 'Samples…', samplesTitle: 'Samples on GitHub', refresh: 'Refresh', search: 'Search songs…',
     liveSource: (time) => `Live from github.com/ToughkidDev/MUCOMSX (Samples, main branch) · read at ${time}. New files appear as soon as they are committed.`,
     bundledSource: 'GitHub could not be reached, so this is the list built into the page; it may be missing the newest files.',
@@ -90,7 +92,8 @@ const T = {
     audioFailed: '오디오를 시작하지 못했습니다: ', bytes: (n) => `${n.toLocaleString()} 바이트`,
     saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
-    followPart: (p) => `${p} 파트 따라가기`, hintSuggest: '명령 제안', fontSize: '글자',
+    followPart: (p) => `${p} 파트 따라가기`, hintSuggest: '명령 제안', fontSize: '글자', fontSizeTip: '에디터 글자 크기',
+    uiSize: '메뉴', uiSizeTip: '메뉴, 버튼, 패널의 크기 (100–200%, 좁은 창에서는 덜 커짐)',
     browse: '샘플…', samplesTitle: 'GitHub의 샘플', refresh: '새로 고침', search: '곡 검색…',
     liveSource: (time) => `github.com/ToughkidDev/MUCOMSX의 Samples 폴더(main)를 ${time}에 직접 읽었습니다. 새 파일은 커밋하는 즉시 나타납니다.`,
     bundledSource: 'GitHub에 접속하지 못해 페이지에 들어 있는 목록을 보여 줍니다. 최신 파일이 빠져 있을 수 있습니다.',
@@ -136,7 +139,8 @@ const T = {
     audioFailed: 'オーディオを開始できませんでした: ', bytes: (n) => `${n.toLocaleString()}バイト`,
     saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
-    followPart: (p) => `${p}パートを追う`, hintSuggest: 'コマンド候補', fontSize: '文字',
+    followPart: (p) => `${p}パートを追う`, hintSuggest: 'コマンド候補', fontSize: '文字', fontSizeTip: 'エディタの文字サイズ',
+    uiSize: 'メニュー', uiSizeTip: 'メニュー・ボタン・パネルの大きさ（100–200%、狭いウィンドウでは控えめ）',
     browse: 'サンプル…', samplesTitle: 'GitHubのサンプル', refresh: '再読み込み', search: '曲を検索…',
     liveSource: (time) => `github.com/ToughkidDev/MUCOMSXのSamplesフォルダー（main）を${time}に直接読み込みました。新しいファイルはコミットするとすぐ表示されます。`,
     bundledSource: 'GitHubに接続できないため、ページ内蔵の一覧を表示しています。最新のファイルがない場合があります。',
@@ -991,6 +995,32 @@ function setFontSize(value) {
 }
 $('fontSize').addEventListener('input', (e) => setFontSize(e.target.value));
 
+// Menus size: scales the header, toolbar, side panel, editor footer, footer and the
+// samples dialog (CSS --ui). Applied when the slider is released, so the slider does not
+// move away from under the pointer while it is dragged.
+// A narrow window gets less, so the panels still fit: 100% per 640 px of width (a phone
+// stays at 100%, 1280 px and wider allow 200%). The output shows what is applied.
+let uiSize = 100;
+function applyUiSize() {
+  const fits = Math.max(100, Math.floor(window.innerWidth / 640 * 10) * 10);
+  const pct = Math.min(uiSize, fits);
+  if (document.documentElement.style.getPropertyValue('--ui') !== String(pct / 100)) {
+    document.documentElement.style.setProperty('--ui', String(pct / 100));
+    // The editor and the channel view get a different width: let them measure again.
+    window.dispatchEvent(new Event('resize'));
+  }
+  $('uiSizeOut').textContent = `${pct}%`;
+}
+function setUiSize(value) {
+  uiSize = Math.min(200, Math.max(100, Math.round((Number(value) || 100) / 10) * 10));
+  $('uiSize').value = uiSize;
+  store.set(STORE_UI, String(uiSize));
+  applyUiSize();
+}
+$('uiSize').addEventListener('input', (e) => { $('uiSizeOut').textContent = `${e.target.value}%`; });
+$('uiSize').addEventListener('change', (e) => setUiSize(e.target.value));
+window.addEventListener('resize', applyUiSize);
+
 async function play() {
   unlockAudio();   // in the tap itself, even while the engine is still loading
   if (!engineReady) { pendingPlay = true; setStatus(t('loading')); return; }
@@ -1605,6 +1635,8 @@ function startChannelView(m, source) {
   if (savedVolume !== null) $('volume').value = savedVolume;
   const savedFont = store.get(STORE_FONT);
   if (savedFont !== null) setFontSize(savedFont);
+  const savedUi = store.get(STORE_UI);
+  if (savedUi !== null) setUiSize(savedUi);
   setZoom(DEFAULT_SCALE);
   // Restore your text synchronously so nothing loaded later can overwrite what you type.
   // An empty editor stays empty (New); only a first visit gets the demo.

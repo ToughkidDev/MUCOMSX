@@ -30,6 +30,10 @@
   }
 }
 *{box-sizing:border-box}
+/* --ui: the Menus slider. It enlarges everything but the editor text and the channel view,
+   which have their own size controls. */
+:root{--ui:1}
+header.top,.toolbar,.side,.editor-foot,footer,dialog.samples{zoom:var(--ui)}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;
      display:flex;flex-direction:column;min-height:100vh}
@@ -77,7 +81,7 @@ select{border:1px solid var(--line);background:var(--bg);border-radius:8px;paddi
 .status.err{color:var(--accent)}
 
 /* ---------- layout ---------- */
-.layout{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 340px;grid-template-rows:minmax(0,1fr);min-height:0}
+.layout{flex:1;display:grid;grid-template-columns:minmax(0,1fr) calc(340px * var(--ui));grid-template-rows:minmax(0,1fr);min-height:0}
 .editor-wrap{display:flex;flex-direction:column;min-width:0;min-height:420px;border-right:1px solid var(--line)}
 .panes{position:relative;flex:1;display:flex;min-height:0;--split:50%;
        --lh:20px;font-family:var(--mono);font-size:13.5px;line-height:var(--lh)}
@@ -201,7 +205,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .links{font-size:.82rem;margin:10px 0 0}
 footer{padding:10px 20px;border-top:1px solid var(--line);font-size:.76rem;color:var(--muted)}
 footer p{margin:2px 0}
-.samples{width:min(760px,calc(100vw - 32px));max-height:min(80vh,720px);max-height:min(80dvh,720px);padding:0;border:1px solid var(--line);
+.samples{width:min(760px,calc((100vw - 32px) / var(--ui)));max-height:min(80vh / var(--ui),720px);max-height:min(80dvh / var(--ui),720px);padding:0;border:1px solid var(--line);
          border-radius:12px;background:var(--panel);color:var(--ink);display:none;flex-direction:column}
 .samples[open]{display:flex}
 .samples::backdrop{background:rgba(20,18,14,.45)}
@@ -265,7 +269,8 @@ footer p{margin:2px 0}
   <span class="clock" id="clock" aria-live="off">0:00.0</span>
   <button class="btn" id="viewToggle" type="button" aria-pressed="false" data-i18n-title="channelViewTip"><span data-i18n="channelView">▦ Channels</span></button>
   <label class="vol"><span data-i18n="volume">Volume</span> <input id="volume" type="range" min="0" max="100" value="70"></label>
-  <label class="vol"><span data-i18n="fontSize" title="Editor text size">Text</span> <input id="fontSize" title="Editor text size" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
+  <label class="vol"><span data-i18n="fontSize" data-i18n-title="fontSizeTip">Text</span> <input id="fontSize" data-i18n-title="fontSizeTip" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
+  <label class="vol"><span data-i18n="uiSize" data-i18n-title="uiSizeTip">Menus</span> <input id="uiSize" data-i18n-title="uiSizeTip" type="range" min="100" max="200" step="10" value="100"> <output id="uiSizeOut" for="uiSize">100%</output></label>
   <span class="spacer"></span>
   <label class="sr-only" for="examples" data-i18n="examples">Examples</label>
   <select id="examples"></select>
