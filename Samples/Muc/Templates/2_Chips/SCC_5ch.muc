@@ -1,0 +1,98 @@
+#mucom88 1.7
+#title SCC 5ch
+#composer
+#comment Template: the five SCC/SCC+ wave parts SCCA-SCCE (msPb0102)
+
+; ==================================================================
+;  SCC / SCC+: five channels with your own waveforms
+;  SCC / SCC+: 自分で作る波形の5チャンネル .
+;  SCC / SCC+: 직접 만든 파형으로 5채널 .
+; ==================================================================
+; [EN] SCCA-SCCE are the five channels of Konami's SCC/SCC+ sound
+;      cartridge. Each plays a 32-step waveform that you draw with
+;      numbers. Volume v0-15 is linear. Use an envelope (E) as on the
+;      SSG. There is no noise. Needs MUCOMSX with the msPb0102 format.
+; [JA] SCCA-SCCEはコナミのSCC/SCC+音源カートリッジの5チャンネルです。 .
+;      それぞれ数字で描いた32ステップの波形を鳴らします。音量v0-15は .
+;      直線的です。SSGと同じくエンベロープ(E)を使います。ノイズは .
+;      ありません。msPb0102形式のMUCOMSXが必要です。 .
+; [KO] SCCA-SCCE는 코나미 SCC/SCC+ 음원 카트리지의 5채널입니다.
+;      각 채널은 숫자로 그린 32단계 파형을 연주합니다. 음량 v0-15는 .
+;      직선적입니다. SSG처럼 엔벨로프(E)를 씁니다. 노이즈는 .
+;      없습니다. msPb0102 형식의 MUCOMSX가 필요합니다.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; ---- Waves: @Wn:{ 32 numbers, -128..127 } / 波形: @Wn:{ 32個の数、-128..127 } / 파형: @Wn:{ 숫자 32개, -128..127 } ----
+; [EN] Two spaces, @W, the number, a colon and 32 values in braces.
+;      Write them before the music lines. In a part, @n picks wave n.
+;      #sccvoice FILE.DAT could load a wave bank file instead.
+; [JA] 空白2つ、@W、番号、コロン、かっこの中に32個の値。 .
+;      演奏の行より前に書きます。パートの中では@nで波形nを選びます。 .
+;      代わりに#sccvoice FILE.DATで波形バンクファイルも読めます。 .
+; [KO] 공백 2개, @W, 번호, 콜론, 중괄호 안에 값 32개.
+;      연주 행보다 앞에 씁니다. 파트 안에서는 @n으로 파형 n을 고릅니다.
+;      대신 #sccvoice FILE.DAT로 파형 뱅크 파일을 읽을 수도 있습니다.
+; @W0 sine / @W1 sawtooth / @W2 square / @W3 pulse 25% / @W4 triangle / @W5 organ
+  @W0:{ 0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-127,-125,-117,-106,-90,-71,-49,-25 }
+  @W1:{ -128,-120,-112,-104,-96,-88,-80,-72,-64,-56,-48,-40,-32,-24,-16,-8,0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120 }
+  @W2:{ 96,96,96,96,96,96,96,96,96,96,96,96,96,96,96,96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96 }
+  @W3:{ 96,96,96,96,96,96,96,96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96 }
+  @W4:{ -127,-111,-95,-79,-63,-47,-31,-15,1,17,33,49,65,81,97,113,127,111,95,79,63,47,31,15,-1,-17,-33,-49,-65,-81,-97,-113 }
+  @W5:{ 0,45,76,88,82,69,59,56,60,61,52,31,2,-21,-30,-21,0,21,30,21,-2,-31,-52,-61,-60,-56,-59,-69,-82,-88,-76,-45 }
+
+; [EN] E AL,AR,DR,SR,SL,RR is a software envelope (values 0-255): start
+;      level, attack rate, decay rate, sustain rate, sustain level,
+;      release rate. E255,0,0,0,0,255 is a flat, organ-like tone;
+;      E255,0,40,0,0,255 dies away fast, good for plucks and drums.
+; [JA] E AL,AR,DR,SR,SL,RRはソフトウェアエンベロープ(値0-255): 開始レベル、 .
+;      アタック、ディケイ、サステインレート、サステインレベル、リリース。 .
+;      E255,0,0,0,0,255は平らなオルガン風の音、E255,0,40,0,0,255は .
+;      すぐ消える音で、撥弦音やドラムに向きます。 .
+; [KO] E AL,AR,DR,SR,SL,RR은 소프트웨어 엔벨로프(값 0-255): 시작 레벨,
+;      어택, 디케이, 서스테인 속도, 서스테인 레벨, 릴리스입니다.
+;      E255,0,0,0,0,255는 평평한 오르간 같은 소리, E255,0,40,0,0,255는 .
+;      금방 사라지는 소리로 퉁기는 소리나 드럼에 좋습니다.
+
+; [EN] Chords: | Em | C | D | B7 | Em | C | Am B7 | Em |
+; [JA] コード: | Em | C | D | B7 | Em | C | Am B7 | Em |
+; [KO] 코드: | Em | C | D | B7 | Em | C | Am B7 | Em |
+
+; ---- SCCA: melody (pulse) / SCCA: メロディ(パルス) / SCCA: 멜로디(펄스) ----
+SCCA T140 @3 E255,0,0,0,0,255 v11 o5 l8
+SCCA L e4 g4 b4 >e4< | e4. d c2 | d4 f+4 a4 >d4< | d+2 <b2>
+SCCA   e4 g4 b4 >e4< | g4. f+ e2 | e4 c4 <b4 a4 > | <b2 > e2
+
+; ---- SCCB: harmony (triangle) / SCCB: ハーモニー(三角波) / SCCB: 화음(삼각파) ----
+SCCB @4 E255,0,0,0,0,255 v9 o4 l2
+SCCB L b b g g a a f+ f+ b b >c c< a f+ g g
+
+; ---- SCCC: arpeggio with a decaying envelope (square) / SCCC: 減衰するアルペジオ(矩形波) / SCCC: 감쇠하는 아르페지오(사각파) ----
+SCCC @2 E255,0,30,4,120,60 v7 o4 l16
+SCCC L [eg b>e<]4 [ce g>c<]4 [df+a>d<]4 [d+f+b>d+<]4
+SCCC   [eg b>e<]4 [ce g>c<]4 [ce a>c<]2 [d+f+b>d+<]2 [eg b>e<]4
+
+; ---- SCCD: bass (sawtooth) / SCCD: ベース(のこぎり波) / SCCD: 베이스(톱니파) ----
+SCCD @1 E255,0,10,2,180,80 v12 o2 l8
+SCCD L e e >e< e e e >e< e | c c >c< c c c >c< c | d d >d< d d d >d< d | <b b >b< b b b >b< b>
+SCCD   e e >e< e e e >e< e | c c >c< c c c >c< c | a a >a< a <b b >b< b> | e e >e< e e4 r4
+
+; ---- SCCE: pad (organ wave), quiet / SCCE: パッド(オルガン波形)、小さめ / SCCE: 패드(오르간 파형), 작게 ----
+SCCE @5 E255,0,0,0,0,255 v6 o4 l1
+SCCE L g g f+ f+ g g e g
+;
+; [EN] Try: draw your own wave: change some of the 32 numbers of @W3
+;      and listen to the melody change.
+; [JA] 試してみよう: 自分で波形を描く。@W3の32個の数字をいくつか変えて、 .
+;      メロディの音色の変化を聴いてみましょう。 .
+; [KO] 해 보세요: 파형을 직접 그리기. @W3의 숫자 32개 중 몇 개를 바꿔 .
+;      멜로디 음색이 어떻게 바뀌는지 들어 보세요.

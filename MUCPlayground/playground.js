@@ -34,6 +34,7 @@ const T = {
     demo: 'Demo (FM + SSG + rhythm)', template: 'Template (OPNA + MSX chips)', yourSong: 'Your song (autosaved)', samples: 'Samples',
     loadingSample: (n) => `Loading ${n}…`, sampleFailed: 'Could not load the sample: ',
     underrun: 'Playback is catching up; this device renders slowly.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
+    savedUtf8: 'Saved as UTF-8: Shift-JIS has no Korean letters.',
     confirmReplace: 'Replace the editor contents? Your current text is lost unless you saved it.',
     newSong: 'New', newSongTip: 'Start a new MUC from the template (OPNA + MSX chips)', newStarted: 'New song from the template: OPNA and every MSX chip, with comments on each part. Save it as .muc when you are done.',
     confirmNew: 'Start a new song from the template? Your current text and attached files are removed unless you saved them.',
@@ -77,6 +78,7 @@ const T = {
     demo: '데모 (FM + SSG + 리듬)', template: '템플릿 (OPNA + MSX 칩)', yourSong: '내 곡 (자동 저장)', samples: '샘플',
     loadingSample: (n) => `${n} 불러오는 중…`, sampleFailed: '샘플을 불러오지 못했습니다: ',
     underrun: '렌더링이 재생을 따라잡는 중입니다. 이 기기에서는 느릴 수 있습니다.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
+    savedUtf8: '한글은 Shift-JIS로 쓸 수 없어서 UTF-8로 저장했습니다.',
     confirmReplace: '에디터 내용을 바꿀까요? 저장하지 않은 현재 내용은 사라집니다.',
     newSong: '새로', newSongTip: '템플릿(OPNA + MSX 칩)으로 새 MUC 작성 시작', newStarted: '템플릿으로 새 곡을 시작했습니다. OPNA와 MSX 칩을 모두 쓰고 파트마다 설명이 있습니다. 다 쓰면 .muc로 저장하세요.',
     confirmNew: '템플릿으로 새 곡을 시작할까요? 저장하지 않은 현재 내용과 첨부 파일은 사라집니다.',
@@ -120,6 +122,7 @@ const T = {
     demo: 'デモ（FM + SSG + リズム）', template: 'テンプレート（OPNA + MSXチップ）', yourSong: '自分の曲（自動保存）', samples: 'サンプル曲',
     loadingSample: (n) => `${n}を読み込み中…`, sampleFailed: 'サンプルを読み込めませんでした: ',
     underrun: 'レンダリングが再生に追いつこうとしています。この端末では遅い場合があります。', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
+    savedUtf8: 'Shift-JISには韓国語の文字が無いため、UTF-8で保存しました。',
     confirmReplace: 'エディタの内容を置き換えますか？保存していない現在の内容は失われます。',
     newSong: '新規', newSongTip: 'テンプレート（OPNA + MSXチップ）で新しいMUCを書き始める', newStarted: 'テンプレートで新しい曲を始めました。OPNAと全MSXチップを使い、パートごとに説明があります。書き終えたら.mucで保存してください。',
     confirmNew: 'テンプレートで新しい曲を始めますか？保存していない現在の内容と添付ファイルは失われます。',
@@ -721,9 +724,16 @@ function openMuc(name, buffer) {
 
 let encodeId = 0;
 const pendingEncodes = new Map();
+// Hangul (and anything outside the BMP) has no Shift-JIS form; such a song is saved as
+// UTF-8 so its comments survive. MUCPlayground, MUCEdit and MDPlayer4Mac read either.
+const NOT_SJIS = /[\u1100-\u11ff\u3130-\u318f\ua960-\ua97f\uac00-\ud7af\ud7b0-\ud7ff]|[\ud800-\udfff]/;
 function saveMuc() {
   const text = code.value.replace(/\r?\n/g, '\r\n');
-  if (!engineReady) { download(sourceName, new TextEncoder().encode(text), 'text/plain'); return; }
+  if (!engineReady || NOT_SJIS.test(text)) {
+    download(sourceName, new TextEncoder().encode(text), 'text/plain');
+    if (engineReady) setStatus(t('savedUtf8'));
+    return;
+  }
   const id = ++encodeId;
   pendingEncodes.set(id, (bytes) => download(sourceName, bytes, 'application/octet-stream'));
   worker.postMessage({ type: 'encode', id, text });
@@ -1389,7 +1399,9 @@ function renderSampleList() {
     groups.get(dir).push(path);
   }
   if (!groups.size) { list.innerHTML = `<p class="s-empty">${t('noMatch')}</p>`; return; }
-  for (const dir of [...groups.keys()].sort()) {
+  // Templates come first: they are where a new song usually starts.
+  const order = (d) => (d.startsWith('Muc/Templates') ? '0' : '1') + d;
+  for (const dir of [...groups.keys()].sort((a, b) => order(a).localeCompare(order(b)))) {
     const d = document.createElement('details');
     d.open = !!query || groups.size <= 3;
     d.innerHTML = '<summary></summary><ul></ul>';

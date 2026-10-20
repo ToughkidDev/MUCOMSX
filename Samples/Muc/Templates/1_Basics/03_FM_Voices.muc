@@ -1,0 +1,150 @@
+#mucom88 1.7
+#title FM Voices
+#composer
+#comment Template: defining FM voices inline and trying them
+
+; ==================================================================
+;  FM voices: making a sound with four operators
+;  FM音色: 4つのオペレータで音を作る .
+;  FM 음색: 오퍼레이터 4개로 소리 만들기 .
+; ==================================================================
+; [EN] The FM parts (A B C H I J) need a voice. A voice can be written
+;      in the song itself, so no voice file is needed. The same phrase
+;      is played with four voices so you can compare them.
+; [JA] FMパート(A B C H I J)には音色が必要です。音色は曲の中に .
+;      直接書けるので、音色ファイルは要りません。同じフレーズを .
+;      4つの音色で演奏するので聴き比べてみましょう。 .
+; [KO] FM 파트(A B C H I J)는 음색이 필요합니다. 음색은 곡 안에 .
+;      직접 쓸 수 있어서 음색 파일이 필요 없습니다. 같은 프레이즈를 .
+;      음색 4개로 연주하니 들어 보고 비교해 보세요.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; ---- How a voice is written / 音色の書き方 / 음색 쓰는 법 ----
+; [EN]   @n            two spaces, @ and the voice number
+;         FB,ALG        feedback (0-7) and algorithm (0-7)
+;         4 lines       OP1, OP2, OP3, OP4, each:
+;                       AR,D1R,D2R,RR,D1L,TL,KS,ML,DT
+;      AR attack 0-31 (31 = instant), D1R first decay 0-31, D2R second
+;      decay 0-31, RR release 0-15, D1L level where the first decay
+;      stops 0-15, TL output level 0-127 (0 = loudest), KS key scaling
+;      0-3, ML frequency multiple 0-15 (0 = half), DT detune 0-7.
+;      The algorithm decides which operators are heard (carriers) and
+;      which only colour the others (modulators). A carrier's TL is
+;      its loudness: keep it 0 and set the loudness with v. A
+;      modulator's TL is brightness: lower = brighter.
+; [JA]   @n            空白2つ、@と音色番号 .
+;         FB,ALG        フィードバック(0-7)とアルゴリズム(0-7)
+;         4行           OP1・OP2・OP3・OP4、それぞれ:
+;                       AR,D1R,D2R,RR,D1L,TL,KS,ML,DT
+;      ARアタック0-31(31で即時)、D1R第1減衰0-31、D2R第2減衰0-31、 .
+;      RRリリース0-15、D1L第1減衰が止まるレベル0-15、TL出力レベル .
+;      0-127(0が最大)、KSキースケール0-3、ML倍率0-15(0は半分)、 .
+;      DTデチューン0-7。アルゴリズムで、聞こえるオペレータ(キャリア)と .
+;      他を変調するだけのもの(モジュレータ)が決まります。キャリアの .
+;      TLは音量なので0にして、音量はvで決めます。モジュレータのTLは .
+;      明るさで、小さいほど明るい音になります。 .
+; [KO]   @n            공백 2개, @와 음색 번호 .
+;         FB,ALG        피드백(0-7)과 알고리즘(0-7)
+;         4줄           OP1, OP2, OP3, OP4 각각:
+;                       AR,D1R,D2R,RR,D1L,TL,KS,ML,DT
+;      AR 어택 0-31(31이면 즉시), D1R 1차 감쇠 0-31, D2R 2차 감쇠 0-31,
+;      RR 릴리스 0-15, D1L 1차 감쇠가 멈추는 레벨 0-15, TL 출력 레벨 .
+;      0-127(0이 최대), KS 키 스케일 0-3, ML 배수 0-15(0은 절반),
+;      DT 디튠 0-7. 알고리즘에 따라 들리는 오퍼레이터(캐리어)와 .
+;      다른 것을 변조만 하는 오퍼레이터(모듈레이터)가 정해집니다.
+;      캐리어의 TL은 음량이니 0으로 두고 음량은 v로 정합니다.
+;      모듈레이터의 TL은 밝기로, 작을수록 밝은 소리가 됩니다.
+;
+; [EN] Carriers: ALG 0-3 OP4 | ALG 4 OP2, OP4 | ALG 5-6 OP2, OP3, OP4 |
+;      ALG 7 all four.
+; [JA] キャリア: ALG 0-3はOP4 | ALG 4はOP2とOP4 | ALG 5-6はOP2・OP3・OP4 |
+;      ALG 7は4つすべて。 .
+; [KO] 캐리어: ALG 0-3은 OP4 | ALG 4는 OP2, OP4 | ALG 5-6은 OP2, OP3, OP4 |
+;      ALG 7은 4개 모두.
+
+; @1 organ: ALG 7, four carriers at 1x/2x/4x/1x
+;    オルガン: ALG 7、4つのキャリア(1倍/2倍/4倍/1倍)
+;    오르간: ALG 7, 캐리어 4개(1배/2배/4배/1배)
+  @1
+   0,7
+   31,0,0,7,0,0,0,1,0
+   31,0,0,7,0,0,0,2,0
+   31,0,0,7,0,0,0,4,0
+   31,0,0,7,0,0,0,1,3
+
+; @2 lead: ALG 5, OP1 modulates three carriers
+;    リード: ALG 5、OP1が3つのキャリアを変調 .
+;    리드: ALG 5, OP1이 캐리어 3개를 변조 .
+  @2
+   6,5
+   31,12,0,7,3,28,0,1,3
+   31,6,3,7,3,0,0,1,3
+   31,6,3,7,3,0,0,2,7
+   31,6,3,7,3,0,0,1,0
+
+; @3 pluck / e.piano: ALG 4 with fast decay
+;    プラック / エレピ: 速く減衰するALG 4
+;    플럭 / 일렉피아노: 빨리 감쇠하는 ALG 4
+  @3
+   3,4
+   31,14,6,7,6,36,1,3,0
+   31,10,5,7,5,0,1,1,3
+   31,14,6,7,6,40,1,7,7
+   31,10,5,7,5,0,1,1,0
+
+; @4 brass: ALG 2 with a slower attack
+;    ブラス: アタックが少し遅いALG 2
+;    브라스: 어택이 조금 느린 ALG 2
+  @4
+   5,2
+   22,8,0,7,2,26,0,1,0
+   20,6,0,7,2,34,0,1,3
+   24,8,0,7,2,30,0,2,0
+   18,4,2,7,2,0,0,1,0
+
+; @5 bass: ALG 0, four operators in series
+;    ベース: ALG 0、4つのオペレータを直列に .
+;    베이스: ALG 0, 오퍼레이터 4개를 직렬로 .
+  @5
+   5,0
+   31,14,0,8,2,30,0,0,0
+   31,14,0,8,2,40,0,1,3
+   31,12,0,8,2,36,0,1,7
+   31,8,4,8,2,0,0,1,0
+
+; ---- A: one phrase, four voices / A: 1つのフレーズを4つの音色で / A: 프레이즈 하나를 음색 4개로 ----
+; [EN] @n inside a part selects a voice. The phrase is played with @1,
+;      @2, @3 and @4 in turn (2 bars each). q2 cuts each note a little
+;      early so the notes are separated.
+; [JA] パートの中の@nで音色を選びます。フレーズを@1・@2・@3・@4の .
+;      順に演奏します(各2小節)。q2で音符の終わりを少し早く切って、 .
+;      音と音の間を空けています。 .
+; [KO] 파트 안의 @n으로 음색을 고릅니다. 프레이즈를 @1, @2, @3, @4
+;      순서로 연주합니다(각 2마디). q2는 음 끝을 조금 일찍 끊어서 .
+;      음과 음 사이를 띄웁니다.
+A T110 v12 o4 l8 q2
+A L @1 c e g >c< b g e g a4 f4 g2
+A   @2 c e g >c< b g e g a4 f4 g2
+A   @3 c e g >c< b g e g a4 f4 g2
+A   @4 c e g >c< b g e g a4 f4 g2
+
+; ---- B: bass with @5 / B: @5でベース / B: @5로 베이스 ----
+B @5 v13 o2 l4
+B L [c c a a f f g g]4
+;
+; [EN] Try: in @2, change OP1's TL from 28 to 15 (brighter) or 45
+;      (duller); change FB from 6 to 0 or 7; change OP2's ML from 1 to 2.
+; [JA] 試してみよう: @2のOP1のTLを28から15(明るく)や45(こもる)に、 .
+;      FBを6から0や7に、OP2のMLを1から2に変えてみましょう。 .
+; [KO] 해 보세요: @2의 OP1 TL을 28에서 15(밝게)나 45(먹먹하게)로,
+;      FB를 6에서 0이나 7로, OP2의 ML을 1에서 2로 바꿔 보세요.

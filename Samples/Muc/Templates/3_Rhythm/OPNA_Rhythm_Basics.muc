@@ -1,0 +1,79 @@
+#mucom88 1.7
+#title OPNA Rhythm Basics
+#composer
+#comment Template: the YM2608 rhythm part G, one drum at a time
+
+; ==================================================================
+;  OPNA rhythm part G: the six drums
+;  OPNAリズムパートG: 6つのドラム .
+;  OPNA 리듬 파트 G: 드럼 6개 .
+; ==================================================================
+; [EN] The YM2608 has six built-in drum sounds, played by part G.
+;      First each drum alone, then several at once, then a beat.
+; [JA] YM2608には6つのドラム音が内蔵され、パートGで鳴らします。 .
+;      まず1つずつ、次に同時に、最後にビートを鳴らします。 .
+; [KO] YM2608에는 드럼 소리 6개가 내장되어 있고 파트 G로 연주합니다.
+;      먼저 하나씩, 다음엔 동시에, 마지막으로 비트를 칩니다.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; [EN] Rhythm part: each note plays the drums chosen with @. Add the
+;      numbers to hit several at once: 1 bass drum, 2 snare, 4 cymbal,
+;      8 hi-hat, 16 tom, 32 rim shot (@9 = bass drum + hi-hat). The note
+;      name does not matter; its length is the time to the next hit.
+;      v takes 7 values: total (0-63), then BD SD CYM HH TOM RIM (0-31).
+; [JA] リズムパート: 各音符で@で選んだ楽器が鳴ります。数を足すと同時に .
+;      鳴らせます: 1バスドラム、2スネア、4シンバル、8ハイハット、16タム、 .
+;      32リムショット(@9 = バスドラム+ハイハット)。音名は何でもよく、 .
+;      音長は次の打音までの時間です。vは7つの値: 全体(0-63)、 .
+;      続いてBD SD CYM HH TOM RIM(0-31)。 .
+; [KO] 리듬 파트: 음표마다 @로 고른 악기가 울립니다. 숫자를 더하면 .
+;      동시에 칩니다: 1 베이스 드럼, 2 스네어, 4 심벌, 8 하이햇, 16 탐,
+;      32 림샷(@9 = 베이스 드럼+하이햇). 음 이름은 상관없고, 길이는 .
+;      다음 타격까지의 시간입니다. v는 값 7개: 전체(0-63),
+;      이어서 BD SD CYM HH TOM RIM(0-31).
+
+; ---- 1. one drum at a time (each 4 times) / 1. 1つずつ(各4回) / 1. 하나씩(각 4번) ----
+; [EN] @1 bass drum, @2 snare, @4 cymbal, @8 hi-hat, @16 tom, @32 rim shot
+; [JA] @1バスドラム、@2スネア、@4シンバル、@8ハイハット、@16タム、@32リムショット .
+; [KO] @1 베이스 드럼, @2 스네어, @4 심벌, @8 하이햇, @16 탐, @32 림샷 .
+G T110 v60,28,26,22,18,24,24 l4
+G @1 c c c c @2 c c c c @4 c c c c @8 c c c c @16 c c c c @32 c c c c
+
+; ---- 2. several at once: add the numbers / 2. 同時に: 数を足す / 2. 동시에: 숫자를 더하기 ----
+; [EN] @9 = 1+8 bass drum and hi-hat, @10 = 2+8 snare and hi-hat, @5 = 1+4
+; [JA] @9 = 1+8 バスドラム+ハイハット、@10 = 2+8 スネア+ハイハット、@5 = 1+4
+; [KO] @9 = 1+8 베이스 드럼+하이햇, @10 = 2+8 스네어+하이햇, @5 = 1+4
+G @9 c @10 c @9 c @10 c @5 c @10 c @9 c @18 c
+
+; ---- 3. per-drum volume / 3. ドラムごとの音量 / 3. 드럼별 음량 ----
+; [EN] v total,BD,SD,CYM,HH,TOM,RIM. Here the hi-hat is turned down (8)
+;      and the snare up (31).
+; [JA] v 全体,BD,SD,CYM,HH,TOM,RIM。ここではハイハットを下げ(8)、 .
+;      スネアを上げて(31)います。 .
+; [KO] v 전체,BD,SD,CYM,HH,TOM,RIM. 여기서는 하이햇을 낮추고(8)
+;      스네어를 올렸습니다(31).
+G v60,28,31,22,8,24,24 l8
+G [@9 c @8 c @10 c @8 c]4
+
+; ---- 4. a beat on sixteenth notes, looped / 4. 16分音符のビート(ループ) / 4. 16분음표 비트(루프) ----
+; [EN] Write the beat on a grid of 16 steps per bar. A drum hit lasts until
+;      the next one, so rests are only needed before the first hit.
+; [JA] 1小節16ステップの格子でビートを書きます。打音は次の打音まで .
+;      続くので、休符が要るのは最初の打音の前だけです。 .
+; [KO] 한 마디 16칸 격자로 비트를 씁니다. 타격은 다음 타격까지 .
+;      이어지므로 쉼표는 첫 타격 앞에만 필요합니다.
+;   B  x.......x.x.....
+;   S  ....x.......x...
+;   H  x.x.x.x.x.x.x.x.
+G v60,28,26,22,18,24,24
+G L [@9c8 @8c8 @10c8 @8c8 @9c8 @9c8 @10c8 @8c8]4

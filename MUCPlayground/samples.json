@@ -162,6 +162,71 @@
   ]
  },
  {
+  "name": "1_Basics",
+  "dir": "../Samples/Muc/Templates/1_Basics/",
+  "songs": [
+   "01_First_Notes.muc",
+   "02_Three_Parts.muc",
+   "03_FM_Voices.muc",
+   "04_Repeats_Loops_Macros.muc",
+   "05_Expression.muc"
+  ]
+ },
+ {
+  "name": "2_Chips",
+  "dir": "../Samples/Muc/Templates/2_Chips/",
+  "songs": [
+   "MSX_All_Chips.muc",
+   "MSX_MUSIC_OPLL.muc",
+   "MSX_PSG.muc",
+   "OPNA_Band.muc",
+   "OPNA_FM_6ch.muc",
+   "OPNA_SSG.muc",
+   "OPNA_and_MSX_All.muc",
+   "SCC_5ch.muc"
+  ]
+ },
+ {
+  "name": "3_Rhythm",
+  "dir": "../Samples/Muc/Templates/3_Rhythm/",
+  "songs": [
+   "MSX_MUSIC_Rhythm_Patterns.muc",
+   "OPNA_Rhythm_Basics.muc",
+   "OPNA_Rhythm_Patterns.muc",
+   "PSG_Drum_Kit.muc"
+  ]
+ },
+ {
+  "name": "4_Genres",
+  "dir": "../Samples/Muc/Templates/4_Genres/",
+  "songs": [
+   "Ballad.muc",
+   "Bossa_Nova.muc",
+   "Dance_4OnTheFloor.muc",
+   "Funk_16Beat.muc",
+   "Game_Action.muc",
+   "HipHop_BoomBap.muc",
+   "Jazz_Swing.muc",
+   "March.muc",
+   "Metal_DoubleBass.muc",
+   "Pop_16Beat.muc",
+   "Reggae_OneDrop.muc",
+   "Rock_8Beat.muc",
+   "Shuffle_Blues.muc",
+   "Waltz_3-4.muc"
+  ]
+ },
+ {
+  "name": "5_Genres_MSX",
+  "dir": "../Samples/Muc/Templates/5_Genres_MSX/",
+  "songs": [
+   "Ballad_MSX.muc",
+   "Dance_MSX.muc",
+   "Game_Action_MSX.muc",
+   "Rock_8Beat_MSX.muc"
+  ]
+ },
+ {
   "name": "ACTRAISER_MML",
   "dir": "../Samples/Muc/YuzoKoshiro/ACTRAISER_MML/",
   "songs": [

@@ -30,7 +30,8 @@ A T140 @2 v12 o2 l8 L [aa>a<a]2 [ff>f<f]2 [gg>g<g]2 [ee>e<e]2
 B @1 v11 o5 l8 L e4a4ge de c4.de2 f4a4>c4<a4 g4.fe2
 B d4g4b4ag f4gab2 >c4<b4a4g4 e1
 
-D v9 o4 l16 L [a>cea<]8 [fa>cf<]8 [gb>dg<]8 [egb>e<]8
-E v7 o5 l1 L c c c c d d e e
+; SSG parts need a preset (@0) or an envelope (E), or they stay silent
+D @0 v9 o4 l16 L [a>cea<]8 [fa>cf<]8 [gb>dg<]8 [egb>e<]8
+E @0 v7 o5 l1 L c c c c d d e e
 
 G v60,28,26,22,18,24,24 l8 L [@9c@8c@10c@8c@9c@8c@10c@8c]8

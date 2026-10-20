@@ -1,0 +1,86 @@
+#mucom88 1.7
+#title First Notes
+#composer
+#comment Template: notes, lengths, octaves and tempo on one SSG part
+
+; ==================================================================
+;  First notes: one part, the basic commands
+;  はじめての音符: 1パートで基本のコマンド .
+;  첫 음표: 파트 하나로 배우는 기본 명령 .
+; ==================================================================
+; [EN] The smallest song: one SSG (square wave) part playing
+;      "Twinkle Twinkle Little Star". It shows notes, rests, lengths,
+;      octaves, volume and tempo. No voice file is needed.
+; [JA] いちばん小さな曲です。SSG(矩形波)1パートで「きらきら星」を .
+;      演奏します。音符・休符・音長・オクターブ・音量・テンポを .
+;      確かめられます。音色ファイルは要りません。 .
+; [KO] 가장 작은 곡입니다. SSG(사각파) 파트 하나로 "작은 별"을 .
+;      연주합니다. 음표, 쉼표, 길이, 옥타브, 음량, 템포를 .
+;      확인할 수 있습니다. 음색 파일은 필요 없습니다.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; ---- A part line / パートの行 / 파트 행 ----
+; [EN] A line starts with the part letter at the very left, then a space.
+;      D, E, F are the three SSG parts. Several lines of the same part
+;      simply continue one another.
+; [JA] 行の先頭(左端)にパート名を書き、空白を1つ入れます。 .
+;      D・E・FはSSGの3パートです。同じパートの行が続くと、 .
+;      そのまま続きとして演奏されます。 .
+; [KO] 행의 맨 왼쪽에 파트 이름을 쓰고 공백을 하나 넣습니다.
+;      D, E, F는 SSG 파트 3개입니다. 같은 파트의 행이 여러 개면 .
+;      그대로 이어서 연주됩니다.
+;
+; ---- The commands on the first line / 最初の行のコマンド / 첫 행의 명령 ----
+; [EN] T120  tempo, about 120 beats per minute
+;      @0    SSG preset 0, a plain steady tone. An SSG part needs a
+;            preset (@) or an envelope (E), or it stays silent
+;      v12   volume, 0 (silent) to 15 (loudest)
+;      o4    octave 4. > goes one octave up, < one down
+;      l4    notes without a length are quarter notes
+; [JA] T120  テンポ。1分間に約120拍 .
+;      @0    SSGプリセット0、平らな持続音。SSGパートにはプリセット(@)
+;            かエンベロープ(E)が必要です。無いと音が出ません .
+;      v12   音量。0(無音)~15(最大)
+;      o4    オクターブ4。>で1オクターブ上、<で下 .
+;      l4    音長を書かない音符は4分音符 .
+; [KO] T120  템포. 1분에 약 120박 .
+;      @0    SSG 프리셋 0, 평평하게 지속되는 소리. SSG 파트는 프리셋(@)이나 .
+;            엔벨로프(E)가 있어야 합니다. 없으면 소리가 나지 않습니다 .
+;      v12   음량. 0(무음)~15(최대)
+;      o4    옥타브 4. >는 한 옥타브 위, <는 아래 .
+;      l4    길이를 안 쓴 음표는 4분음표 .
+D T120 @0 v12 o4 l4
+
+; ---- Notes and lengths / 音符と音長 / 음표와 길이 ----
+; [EN] c d e f g a b are the notes. c+ is C sharp, d- is D flat, r is a rest.
+;      A number after a note is its length: c2 half, c4 quarter, c8 eighth.
+;      A dot adds half: c4. is a dotted quarter. L marks where the song
+;      loops back to when it reaches the end.
+; [JA] c d e f g a bが音符です。c+はド#、d-はレ♭、rは休符です。 .
+;      音符の後の数字は音長: c2は2分、c4は4分、c8は8分音符。 .
+;      付点(.)で半分足します: c4.は付点4分音符。Lは曲の最後まで .
+;      来たときに戻る場所(ループ位置)です。 .
+; [KO] c d e f g a b가 음표입니다. c+는 도#, d-는 레♭, r은 쉼표입니다.
+;      음표 뒤의 숫자는 길이: c2는 2분, c4는 4분, c8은 8분음표.
+;      점(.)을 붙이면 절반을 더합니다: c4.은 점4분음표. L은 곡 끝에 .
+;      도달했을 때 돌아갈 위치(루프 지점)입니다.
+D L c c g g a a g2 | f f e e d d c2
+D   g g f f e e d2 | g g f f e e d2
+D   c c g g a a g2 | f f e e d d c2
+;
+; [EN] | is only a bar line for your eyes; it does nothing.
+;      Try: change v12 to v8, o4 to o5, T120 to T160, or @0 to @3.
+; [JA] | は見やすくするための小節線で、演奏には影響しません。 .
+;      試してみよう: v12をv8に、o4をo5に、T120をT160に、@0を@3に。 .
+; [KO] | 는 보기 쉽게 하는 마디선일 뿐, 연주에는 영향이 없습니다.
+;      해 보세요: v12를 v8로, o4를 o5로, T120을 T160으로, @0을 @3으로.

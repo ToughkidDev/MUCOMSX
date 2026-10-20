@@ -3,30 +3,54 @@
 #composer
 #comment OPNA + MSX (msPb0102) template. Edit anything, then press Play (Ctrl+Enter).
 
-; ================================================================
-;  MUCPlayground template: OPNA and MSX chips in one song
+; ==================================================================
+;  OPNA and every MSX chip in one song
+;  OPNAと全MSXチップを1曲で .
+;  OPNA와 모든 MSX 칩을 한 곡에 .
+; ==================================================================
+; [EN] One 8-bar song using every sound chip MUCOMSX knows. This is what
+;      MUCPlayground's New button opens.
+;      OPNA (YM2608):  A B C H I J FM, D E F SSG, G rhythm, K ADPCM
+;      MSX-MUSIC:      MSXA-C, MSXH-J melodic, MSXG drums (YM2413)
+;      MSX PSG:        MSXD-F (AY-3-8910)
+;      SCC / SCC+:     SCCA-SCCE (K052539, msPb0102)
+; [JA] MUCOMSXが扱えるすべての音源を使った8小節の曲です。 .
+;      MUCPlaygroundの「新規」ボタンで開く曲です。 .
+;      OPNA(YM2608):  A B C H I J がFM、D E F がSSG、Gリズム、K ADPCM
+;      MSX-MUSIC:      MSXA-C、MSXH-J メロディ、MSXG ドラム(YM2413)
+;      MSX PSG:        MSXD-F(AY-3-8910)
+;      SCC / SCC+:     SCCA-SCCE(K052539、msPb0102)
+; [KO] MUCOMSX가 다룰 수 있는 모든 음원을 쓴 8마디 곡입니다.
+;      MUCPlayground의 "새로" 버튼으로 열리는 곡입니다.
+;      OPNA(YM2608):  A B C H I J는 FM, D E F는 SSG, G 리듬, K ADPCM
+;      MSX-MUSIC:      MSXA-C, MSXH-J 멜로디, MSXG 드럼(YM2413)
+;      MSX PSG:        MSXD-F(AY-3-8910)
+;      SCC / SCC+:     SCCA-SCCE(K052539, msPb0102)
 ;
-;  OPNA (YM2608), the original MUCOM88 parts
-;   A B C H I J   FM 1-6
-;   D E F         SSG 1-3
-;   G             rhythm
-;   K             ADPCM
-;  MSX targets (msPb format), each its own chip
-;   MSXA-C,H-J    MSX-MUSIC melodic 1-6     (YM2413 / OPLL)
-;   MSXG          MSX-MUSIC rhythm          (OPLL drums)
-;   MSXD-F        MSX internal PSG 1-3      (AY-3-8910)
-;   SCCA-SCCE     SCC/SCC+ wave channels 1-5 (K052539)
-;
-;  Lines starting with ; are comments. Write comments in English
-;  or Japanese: the file is saved as Shift-JIS.
-; ================================================================
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
 
-; ---- FM voices: @n / FB,ALG / one line per operator ----
-;      AR,D1R,D2R,RR,D1L,TL,KS,ML,DT
-; OPNA parts play them as written. MSX-MUSIC parts use the
-; nearest of the 15 OPLL ROM instruments instead.
-
-; @1 lead: ALG 5, one modulator into three carriers
+; ---- FM voices / FM音色 / FM 음색 ----
+; [EN] @n / FB,ALG / one line per operator (AR,D1R,D2R,RR,D1L,TL,KS,ML,DT).
+;      OPNA parts play them as written; MSX-MUSIC parts use the nearest
+;      of the 15 OPLL instruments instead.
+; [JA] @n / FB,ALG / オペレータごとに1行(AR,D1R,D2R,RR,D1L,TL,KS,ML,DT)。 .
+;      OPNAパートはそのまま、MSX-MUSICパートはOPLL内蔵15音色のうち .
+;      最も近いものを使います。 .
+; [KO] @n / FB,ALG / 오퍼레이터마다 한 줄(AR,D1R,D2R,RR,D1L,TL,KS,ML,DT).
+;      OPNA 파트는 그대로, MSX-MUSIC 파트는 OPLL 내장 15음색 중 .
+;      가장 가까운 것을 씁니다.
+; @1 lead: ALG 5, OP1 modulates three carriers
+;    リード: ALG 5、OP1が3つのキャリアを変調 .
+;    리드: ALG 5, OP1이 캐리어 3개를 변조 .
   @1
    6,5
    31,12,0,7,3,28,0,1,3
@@ -35,6 +59,8 @@
    31,6,3,7,3,0,0,1,0
 
 ; @2 bass: ALG 0, four operators in series
+;    ベース: ALG 0、4つのオペレータを直列に .
+;    베이스: ALG 0, 오퍼레이터 4개를 직렬로 .
   @2
    5,0
    31,14,0,8,2,30,0,0,0
@@ -42,7 +68,9 @@
    31,12,0,8,2,36,0,1,7
    31,8,4,8,2,0,0,1,0
 
-; @3 soft pad: ALG 4, two operator pairs
+; @3 soft pad: ALG 4, two modulator-carrier pairs
+;    ソフトパッド: ALG 4、モジュレータとキャリアの2組 .
+;    소프트 패드: ALG 4, 모듈레이터-캐리어 2쌍 .
   @3
    4,4
    20,4,2,6,2,30,0,2,0
@@ -50,80 +78,77 @@
    20,4,2,6,2,30,0,2,7
    18,3,2,6,2,4,0,1,0
 
-; ---- SCC waves: @Wn:{ 32 signed samples, -128..127 } ----
-; Put them before the music rows; pick one with @n in an SCC part.
-; (#sccvoice FILE.DAT loads a SCWD wave bank instead.)
+; ---- SCC waves / SCC波形 / SCC 파형 ----
+; [EN] @Wn:{ 32 signed samples, -128..127 }, before the music rows.
+;      @W0 sine, @W1 sawtooth, @W2 square, @W3 pulse, @W4 triangle.
+; [JA] @Wn:{ 符号付き32サンプル、-128..127 }、演奏の行より前に書きます。 .
+;      @W0 サイン、@W1 のこぎり、@W2 矩形、@W3 パルス、@W4 三角。 .
+; [KO] @Wn:{ 부호 있는 32샘플, -128..127 }, 연주 행보다 앞에 씁니다.
+;      @W0 사인, @W1 톱니, @W2 사각, @W3 펄스, @W4 삼각.
   @W0:{ 0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-127,-125,-117,-106,-90,-71,-49,-25 }
   @W1:{ -128,-120,-112,-104,-96,-88,-80,-72,-64,-56,-48,-40,-32,-24,-16,-8,0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120 }
   @W2:{ 96,96,96,96,96,96,96,96,96,96,96,96,96,96,96,96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96 }
   @W3:{ 96,96,96,96,96,96,96,96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96 }
   @W4:{ -127,-111,-95,-79,-63,-47,-31,-15,1,17,33,49,65,81,97,113,127,111,95,79,63,47,31,15,-1,-17,-33,-49,-65,-81,-97,-113 }
 
-; ---- Macros: #*n{ ... }, used as *n inside a part ----
-; Arpeggios for the SCC: C, F, G and Am
+; ---- Macros (arpeggios for C, F, G, Am) / マクロ(C・F・G・Amのアルペジオ) / 매크로(C, F, G, Am 아르페지오) ----
 #*1{ ceg>c<gece }
 #*2{ cfa>c<afcf }
 #*3{ dgb>d<bgdg }
 #*4{ cea>c<aece }
 
-; ================================================================
-;  Common commands
-;   T tempo   o octave   > < octave up/down   l default length
-;   v volume  @ voice/wave   q gate   & tie   r rest
-;   [ ... ]n repeat n times   / leaves the repeat on the last pass
-;   L loop point: the song repeats from here
-;  SSG, PSG and SCC parts: E = software envelope
-;   E AL,AR,DR,SR,SL,RR (start level, attack, decay, sustain rate,
-;   sustain level, release; 0-255). SCC volume v0-15 is linear.
-;
-;  The song is 8 bars: | C | C | F | G | C | Am | G | C |
-; ================================================================
+; [EN] 8 bars: | C | C | F | G | C | Am | G | C |
+; [JA] 8小節: | C | C | F | G | C | Am | G | C |
+; [KO] 8마디: | C | C | F | G | C | Am | G | C |
 
-; ---------------- OPNA ----------------
-; FM 1: melody
+; ---- OPNA / OPNA / OPNA ----
+; [EN] A melody (T sets the tempo), B bass, C pad, G drums.
+; [JA] Aメロディ(Tでテンポ)、Bベース、Cパッド、Gドラム。 .
+; [KO] A 멜로디(T로 템포), B 베이스, C 패드, G 드럼.
 A T128 @1 v10 o5 l8 q7
 A L e4.d c4 e4 g4.a g2 a4.g f4 e4 d2 r2
 A   e4.d c4 e4 g4.a >c2< a4 g4 f4 d4 c2 r2
-
-; FM 2: bass
 B @2 v10 o2 l8
 B L [c c >c< c]4 [f f >f< f]2 [g g >g< g]2
 B   [c c >c< c]2 [a a >a< a]2 [g g >g< g]2 [c c >c< c]2
-
-; FM 3: pad, one whole note per bar
 C @3 v6 o4 l1 L e e f d e e d e
-
-; Rhythm: @mask picks drums (1 bass, 2 snare, 8 hi-hat; add them)
+; [EN] @mask picks the drums: 1 bass, 2 snare, 8 hi-hat (add them).
+; [JA] @maskでドラムを選ぶ: 1バス、2スネア、8ハイハット(足して同時)。 .
+; [KO] @mask로 드럼을 고름: 1 베이스, 2 스네어, 8 하이햇(더하면 동시).
 G v44,24,22,18,14,20,20 l8 L [@9c@8c@10c@8c@9c@9c@10c@8c]8
 
-; ---------------- MSX ----------------
-; MSX-MUSIC: off-beat chord stabs on the OPLL
+; ---- MSX-MUSIC / MSX-MUSIC / MSX-MUSIC ----
+; [EN] MSXA, MSXB off-beat chord stabs; MSXG hi-hats on the off 16ths.
+; [JA] MSXA・MSXB 裏拍の和音、MSXG 16分裏のハイハット。 .
+; [KO] MSXA, MSXB 엇박 화음, MSXG 16분 뒷박 하이햇.
 MSXA @1 v15 o4 l8 L [rg]8 [ra]4 [rb]4 [rg]4 [ra]4 [rb]4 [rg]4
 MSXB @1 v15 o4 l8 L [re]8 [rf]4 [rd]4 [re]4 [re]4 [rd]4 [re]4
-
-; MSX-MUSIC rhythm: extra hi-hats on the off 16ths
 MSXG v63,31,31,31,31,31,31 @8 l16 L [rc]64
 
-; MSX PSG: short bell notes on beats 2 and 4
+; ---- MSX PSG / MSX PSG / MSX PSG ----
+; [EN] Short bell notes on beats 2 and 4. E = software envelope.
+; [JA] 2・4拍の短いベル音。E = ソフトウェアエンベロープ。 .
+; [KO] 2·4박의 짧은 벨 소리. E = 소프트웨어 엔벨로프.
 MSXD @0 E255,0,12,0,0,255 v15 o6 l8
 MSXD L [r4 c r]4 [r4 f r]2 [r4 g r]2 [r4 c r]2 [r4 a r]2 [r4 g r]2 [r4 c r]2
 
-; SCC 1: arpeggio with a decaying envelope (pulse wave), macros *1-*4
+; ---- SCC / SCC / SCC ----
+; [EN] SCCA arpeggio (macros), SCCB harmony, SCCC echo one 16th late,
+;      SCCD sub bass, SCCE long notes with a / alternative ending.
+;      SCC volume v0-15 is linear.
+; [JA] SCCAアルペジオ(マクロ)、SCCBハーモニー、SCCC 16分遅れのエコー、 .
+;      SCCDサブベース、SCCE /で終わり方を変える長い音。 .
+;      SCCの音量v0-15は直線的です。 .
+; [KO] SCCA 아르페지오(매크로), SCCB 화음, SCCC 16분 늦은 에코,
+;      SCCD 서브 베이스, SCCE /로 끝을 바꾸는 긴 음.
+;      SCC 음량 v0-15는 직선적입니다.
 SCCA @3 E255,0,24,4,128,64 v6 o4 l16
 SCCA L [*1]4 [*2]2 [*3]2 [*1]2 [*4]2 [*3]2 [*1]2
-
-; SCC 2: harmony a third below the melody (triangle wave)
 SCCB @4 E255,0,0,0,0,255 v5 o5 l8 q7
 SCCB L c4.<b g4 >c4 e4.f e2 f4.e d4 c4 <b2 r2
 SCCB  >c4.<b g4 >c4 e4.f a2 f4 e4 d4 <b4 >c2 r2
-
-; SCC 3: echo of the melody, one 16th late (sine wave)
 SCCC @0 E255,0,0,0,0,255 v3 o5 l8 q7
 SCCC L r16 e4.d c4 e4 g4.a g2 a4.g f4 e4 d2 r4. r16
 SCCC   r16 e4.d c4 e4 g4.a >c2< a4 g4 f4 d4 c2 r4. r16
-
-; SCC 4: sub bass under the FM bass (sawtooth)
 SCCD @1 E255,0,8,2,192,96 v6 o2 l2 L c c c c f f g g c c a a g g c c
-
-; SCC 5: long notes, using a repeat with an alternative ending
 SCCE @2 E255,0,16,2,96,64 v4 o5 l2 L [g e g e / a a b b]2 b >d c1<

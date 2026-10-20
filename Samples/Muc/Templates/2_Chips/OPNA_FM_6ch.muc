@@ -1,0 +1,106 @@
+#mucom88 1.7
+#title OPNA FM 6ch
+#composer
+#comment Template: all six FM parts of the YM2608 with inline voices
+
+; ==================================================================
+;  OPNA FM: the six FM parts
+;  OPNA FM: 6つのFMパート .
+;  OPNA FM: FM 파트 6개 .
+; ==================================================================
+; [EN] The YM2608 (OPNA) has six FM channels: parts A B C H I J
+;      (D E F are SSG, not FM). Here: A melody, B bass, C H I a
+;      three-note chord, J off-beat stabs. Pan (p1 right, p2 left,
+;      p3 both) spreads them out.
+; [JA] YM2608(OPNA)のFMは6チャンネル、パートA B C H I Jです .
+;      (D E FはFMではなくSSG)。ここではAメロディ、Bベース、 .
+;      C H Iで3音の和音、J裏拍のバッキング。パン(p1右、p2左、 .
+;      p3両方)で左右に広げています。 .
+; [KO] YM2608(OPNA)의 FM은 6채널, 파트 A B C H I J입니다 .
+;      (D E F는 FM이 아니라 SSG). 여기서는 A 멜로디, B 베이스,
+;      C H I 세 음 화음, J 엇박 반주입니다. 팬(p1 오른쪽, p2 왼쪽,
+;      p3 양쪽)으로 좌우에 펼쳤습니다.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; @1 lead: ALG 5, OP1 modulates three carriers
+;    リード: ALG 5、OP1が3つのキャリアを変調 .
+;    리드: ALG 5, OP1이 캐리어 3개를 변조 .
+  @1
+   6,5
+   31,12,0,7,3,28,0,1,3
+   31,6,3,7,3,0,0,1,3
+   31,6,3,7,3,0,0,2,7
+   31,6,3,7,3,0,0,1,0
+
+; @2 bass: ALG 0, four operators in series
+;    ベース: ALG 0、4つのオペレータを直列に .
+;    베이스: ALG 0, 오퍼레이터 4개를 직렬로 .
+  @2
+   5,0
+   31,14,0,8,2,30,0,0,0
+   31,14,0,8,2,40,0,1,3
+   31,12,0,8,2,36,0,1,7
+   31,8,4,8,2,0,0,1,0
+
+; @3 soft pad: ALG 4, two modulator-carrier pairs
+;    ソフトパッド: ALG 4、モジュレータとキャリアの2組 .
+;    소프트 패드: ALG 4, 모듈레이터-캐리어 2쌍 .
+  @3
+   4,4
+   18,4,2,6,2,32,0,2,0
+   16,3,2,6,2,0,0,1,3
+   18,4,2,6,2,34,0,2,7
+   16,3,2,6,2,0,0,1,0
+
+; @4 pluck / e.piano: ALG 4 with fast decay
+;    プラック / エレピ: 速く減衰するALG 4
+;    플럭 / 일렉피아노: 빨리 감쇠하는 ALG 4
+  @4
+   3,4
+   31,14,6,7,6,36,1,3,0
+   31,10,5,7,5,0,1,1,3
+   31,14,6,7,6,40,1,7,7
+   31,10,5,7,5,0,1,1,0
+
+; [EN] Chords, one per bar: | C | Am | F | G | C | Am | Dm | G |
+; [JA] コード(1小節に1つ): | C | Am | F | G | C | Am | Dm | G |
+; [KO] 코드(한 마디에 하나): | C | Am | F | G | C | Am | Dm | G |
+
+; ---- A: melody / A: メロディ / A: 멜로디 ----
+A T120 @1 v12 o5 l8 p3
+A L e4. d c4 g4 | a4. g e2 | f4 a4 >c4< a4 | g2. r4
+A   e4. d c4 e4 | a4 >c4< b4 a4 | f4. e d4 f4 | g2 r2
+
+; ---- B: bass / B: ベース / B: 베이스 ----
+B @2 v12 o2 l8 p3
+B L c c >c< c c c >c< c | a a >a< a a a >a< a | f f >f< f f f >f< f | g g >g< g g g >g< g
+B   c c >c< c c c >c< c | a a >a< a a a >a< a | d d >d< d d d >d< d | g g >g< g g g >g< g
+
+; ---- C H I: the chord, one note each / C H I: 和音を1音ずつ / C H I: 화음을 한 음씩 ----
+; [EN] An FM part plays one note at a time, so a chord takes several parts.
+; [JA] FMパートは1度に1音なので、和音には複数のパートを使います。 .
+; [KO] FM 파트는 한 번에 한 음이라 화음에는 여러 파트를 씁니다.
+C @3 v8 o4 l1 p2
+C L e e f d e e d d
+H @3 v8 o4 l1 p3
+H L g a a g g a f g
+I @3 v8 o5 l1 p1
+I L c c c <b> c c <a b>
+
+; ---- J: off-beat stabs / J: 裏拍のバッキング / J: 엇박 반주 ----
+J @4 v9 o5 l8 p1
+J L [r g]4 [r a]4 [r a]4 [r b]4 [r g]4 [r a]4 [r a]4 [r b]4
+;
+; [EN] Try: swap the voices, e.g. A @4 or J @1, or move C H I an octave up.
+; [JA] 試してみよう: 音色を入れ替える(A @4、J @1など)、C H Iを1オクターブ上げる。 .
+; [KO] 해 보세요: 음색을 바꾸기(A @4, J @1 등), C H I를 한 옥타브 올리기.

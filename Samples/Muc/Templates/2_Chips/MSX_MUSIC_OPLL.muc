@@ -1,0 +1,125 @@
+#mucom88 1.7
+#title MSX-MUSIC OPLL
+#composer
+#comment Template: MSX-MUSIC (YM2413) melodic parts and drums
+
+; ==================================================================
+;  MSX-MUSIC (YM2413 / OPLL): six melodic parts and drums
+;  MSX-MUSIC(YM2413/OPLL): メロディ6パートとドラム .
+;  MSX-MUSIC(YM2413/OPLL): 멜로디 파트 6개와 드럼 .
+; ==================================================================
+; [EN] MSXA MSXB MSXC MSXH MSXI MSXJ are the six melodic channels of
+;      MSX-MUSIC, MSXG its drums. Voices are written like OPNA voices;
+;      when compiled, each becomes the nearest of the 15 built-in OPLL
+;      instruments, so try different voices to pick another one.
+;      Playing on an MSX needs MSX-MUSIC (and MUCOMSX's MAKOTO).
+; [JA] MSXA MSXB MSXC MSXH MSXI MSXJがMSX-MUSICのメロディ6チャンネル、 .
+;      MSXGがドラムです。音色はOPNAと同じ書き方で、コンパイル時に .
+;      OPLL内蔵の15音色のうち最も近いものになります。別の楽器にしたい .
+;      ときは音色を変えてみましょう。MSX実機ではMSX-MUSIC
+;      (とMUCOMSXのMAKOTO)が必要です。 .
+; [KO] MSXA MSXB MSXC MSXH MSXI MSXJ가 MSX-MUSIC의 멜로디 6채널,
+;      MSXG가 드럼입니다. 음색은 OPNA와 같은 방식으로 쓰고, 컴파일할 때 .
+;      OPLL 내장 음색 15개 중 가장 가까운 것으로 바뀝니다. 다른 악기를 .
+;      원하면 음색을 바꿔 보세요. MSX 실기에서는 MSX-MUSIC
+;      (과 MUCOMSX의 MAKOTO)가 필요합니다.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; @1 lead: ALG 5, OP1 modulates three carriers
+;    リード: ALG 5、OP1が3つのキャリアを変調 .
+;    리드: ALG 5, OP1이 캐리어 3개를 변조 .
+  @1
+   6,5
+   31,12,0,7,3,28,0,1,3
+   31,6,3,7,3,0,0,1,3
+   31,6,3,7,3,0,0,2,7
+   31,6,3,7,3,0,0,1,0
+
+; @2 bass: ALG 0, four operators in series
+;    ベース: ALG 0、4つのオペレータを直列に .
+;    베이스: ALG 0, 오퍼레이터 4개를 직렬로 .
+  @2
+   5,0
+   31,14,0,8,2,30,0,0,0
+   31,14,0,8,2,40,0,1,3
+   31,12,0,8,2,36,0,1,7
+   31,8,4,8,2,0,0,1,0
+
+; @3 organ: ALG 7, four carriers at 1x/2x/4x/1x
+;    オルガン: ALG 7、4つのキャリア(1倍/2倍/4倍/1倍)
+;    오르간: ALG 7, 캐리어 4개(1배/2배/4배/1배)
+  @3
+   0,7
+   31,0,0,7,0,0,0,1,0
+   31,0,0,7,0,0,0,2,0
+   31,0,0,7,0,0,0,4,0
+   31,0,0,7,0,0,0,1,3
+
+; @4 brass: ALG 2 with a slower attack
+;    ブラス: アタックが少し遅いALG 2
+;    브라스: 어택이 조금 느린 ALG 2
+  @4
+   5,2
+   22,8,0,7,2,26,0,1,0
+   20,6,0,7,2,34,0,1,3
+   24,8,0,7,2,30,0,2,0
+   18,4,2,7,2,0,0,1,0
+
+; [EN] Chords: | Dm | Bb | C | Dm | Dm | Bb | C | A |
+; [JA] コード: | Dm | Bb | C | Dm | Dm | Bb | C | A |
+; [KO] 코드: | Dm | Bb | C | Dm | Dm | Bb | C | A |
+
+; ---- MSXA: melody, MSXI: its echo / MSXA: メロディ、MSXI: そのエコー / MSXA: 멜로디, MSXI: 그 에코 ----
+MSXA T120 @1 v15 o5 l8
+MSXA L a4 f4 d4 f4 | b-2 a4 g4 | g4 e4 c4 e4 | f2. r4
+MSXA   a4 >d4< a4 f4 | b-4 a4 g4 f4 | e4 g4 c4 e4 | c+2 e2
+MSXI @1 v10 o5 l8
+MSXI L r a4 f4 d4 f4 | b-2 a4 g4 | g4 e4 c4 e4 | f2. r4
+MSXI   a4 >d4< a4 f4 | b-4 a4 g4 f4 | e4 g4 c4 e4 | c+2 e4.
+
+; ---- MSXB MSXC: chord, MSXH: bass / MSXB MSXC: 和音、MSXH: ベース / MSXB MSXC: 화음, MSXH: 베이스 ----
+MSXB @3 v12 o4 l1
+MSXB L a f g a a f g e
+MSXC @3 v12 o4 l1
+MSXC L f d e f f d e c+
+MSXH @2 v15 o2 l8
+MSXH L d d >d< d d d >d< d | b- b- >b-< b- b- b- >b-< b- | c c >c< c c c >c< c | d d >d< d d d >d< d
+MSXH   d d >d< d d d >d< d | b- b- >b-< b- b- b- >b-< b- | c c >c< c c c >c< c | a a >a< a a a >a< a
+
+; ---- MSXJ: brass hits / MSXJ: ブラスのアクセント / MSXJ: 브라스 악센트 ----
+MSXJ @4 v12 o4 l8
+MSXJ L r1 r1 r1 r4 a a a4 r4 | r1 r1 r1 r4 a a a4 r4
+
+; ---- MSXG: drums / MSXG: ドラム / MSXG: 드럼 ----
+; [EN] Rhythm part: each note plays the drums chosen with @. Add the
+;      numbers to hit several at once: 1 bass drum, 2 snare, 4 cymbal,
+;      8 hi-hat, 16 tom, 32 rim shot (@9 = bass drum + hi-hat). The note
+;      name does not matter; its length is the time to the next hit.
+;      v takes 7 values: total (0-63), then BD SD CYM HH TOM RIM (0-31).
+; [JA] リズムパート: 各音符で@で選んだ楽器が鳴ります。数を足すと同時に .
+;      鳴らせます: 1バスドラム、2スネア、4シンバル、8ハイハット、16タム、 .
+;      32リムショット(@9 = バスドラム+ハイハット)。音名は何でもよく、 .
+;      音長は次の打音までの時間です。vは7つの値: 全体(0-63)、 .
+;      続いてBD SD CYM HH TOM RIM(0-31)。 .
+; [KO] 리듬 파트: 음표마다 @로 고른 악기가 울립니다. 숫자를 더하면 .
+;      동시에 칩니다: 1 베이스 드럼, 2 스네어, 4 심벌, 8 하이햇, 16 탐,
+;      32 림샷(@9 = 베이스 드럼+하이햇). 음 이름은 상관없고, 길이는 .
+;      다음 타격까지의 시간입니다. v는 값 7개: 전체(0-63),
+;      이어서 BD SD CYM HH TOM RIM(0-31).
+; [EN] MSX-MUSIC has no rim shot (32); the other drums work the same.
+; [JA] MSX-MUSICにリムショット(32)はありません。他のドラムは同じです。 .
+; [KO] MSX-MUSIC에는 림샷(32)이 없습니다. 나머지 드럼은 같습니다.
+#*1{ @9c8 @8c8 @10c8 @8c8 @9c8 @9c8 @10c8 @8c8 }
+#*2{ @9c8 @8c8 @10c4 @3c8 @2c16 @2c16 @2c16 @2c16 @2c16 @2c16 }
+MSXG v63,31,30,26,24,28,0
+MSXG L [*1]3 *2 [*1]3 *2

@@ -1,0 +1,130 @@
+#mucom88 1.7
+#title Reggae One Drop
+#composer
+#comment Genre template: Reggae one drop. Drums, bass and chords are ready; add a melody.
+
+; ==================================================================
+;  Reggae one drop: drums, bass and chords ready
+;  レゲエ ワンドロップ: ドラム・ベース・和音入り .
+;  레게 원 드롭: 드럼, 베이스, 화음 포함 .
+; ==================================================================
+; [EN] Laid back: the kick and rim fall together on beat 3 only, the
+;      chords are short off-beat "skanks" on 2 and 4. T70-90.
+; [JA] ゆったり: キックとリムは3拍目だけで一緒に鳴り、和音は2・4拍の .
+;      裏で短く刻む「スカンク」。T70-90。 .
+; [KO] 여유롭게: 킥과 림이 3박에만 함께 울리고, 화음은 2·4박 뒤에서 .
+;      짧게 끊는 "스캥크"입니다. T70-90.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; [EN] How to use: the drums, bass and chords are ready.
+;      1. Write your melody in the melody part at the bottom. Notes of the
+;         bar's chord (listed below) sound good on the strong beats.
+;      2. Keep every part the same length (bars listed below), or the parts
+;         drift apart when the song loops.
+;      3. Change the tempo T, the bass or the chords, or delete them.
+; [JA] 使い方: ドラム・ベース・和音はできています。 .
+;      1. 一番下のメロディパートにメロディを書きます。強拍には、その小節の .
+;         コードの音(下に一覧)を使うときれいに響きます。 .
+;      2. 全パートの長さ(小節数は下に記載)をそろえます。ずれると .
+;         ループのたびにパートがずれていきます。 .
+;      3. テンポT、ベース、和音は自由に変えたり消したりできます。 .
+; [KO] 사용법: 드럼, 베이스, 화음은 준비되어 있습니다.
+;      1. 맨 아래 멜로디 파트에 멜로디를 씁니다. 센박에는 그 마디 코드의 .
+;         음(아래 목록)을 쓰면 잘 어울립니다.
+;      2. 모든 파트의 길이(마디 수는 아래에)를 맞춥니다. 어긋나면 .
+;         루프할 때마다 파트가 어긋납니다.
+;      3. 템포 T, 베이스, 화음은 마음대로 바꾸거나 지워도 됩니다.
+
+; Tempo T78 | 4/4 | 8 bars
+; Chords: | Am | D | Am | D | Am | D | Em | Am |
+; Chord tones: Am(a c e), D(d f+ a), Em(e g b)
+
+; @1 lead: ALG 5, OP1 modulates three carriers
+;    リード: ALG 5、OP1が3つのキャリアを変調 .
+;    리드: ALG 5, OP1이 캐리어 3개를 변조 .
+  @1
+   6,5
+   31,12,0,7,3,28,0,1,3
+   31,6,3,7,3,0,0,1,3
+   31,6,3,7,3,0,0,2,7
+   31,6,3,7,3,0,0,1,0
+
+; @2 bass: ALG 0, four operators in series
+;    ベース: ALG 0、4つのオペレータを直列に .
+;    베이스: ALG 0, 오퍼레이터 4개를 직렬로 .
+  @2
+   5,0
+   31,14,0,8,2,30,0,0,0
+   31,14,0,8,2,40,0,1,3
+   31,12,0,8,2,36,0,1,7
+   31,8,4,8,2,0,0,1,0
+
+; @3 pluck / e.piano: ALG 4 with fast decay
+;    プラック / エレピ: 速く減衰するALG 4
+;    플럭 / 일렉피아노: 빨리 감쇠하는 ALG 4
+  @3
+   3,4
+   31,14,6,7,6,36,1,3,0
+   31,10,5,7,5,0,1,1,3
+   31,14,6,7,6,40,1,7,7
+   31,10,5,7,5,0,1,1,0
+
+; ---- Drums / ドラム / 드럼 ----
+; [EN] Rhythm part: each note plays the drums chosen with @. Add the
+;      numbers to hit several at once: 1 bass drum, 2 snare, 4 cymbal,
+;      8 hi-hat, 16 tom, 32 rim shot (@9 = bass drum + hi-hat). The note
+;      name does not matter; its length is the time to the next hit.
+;      v takes 7 values: total (0-63), then BD SD CYM HH TOM RIM (0-31).
+; [JA] リズムパート: 各音符で@で選んだ楽器が鳴ります。数を足すと同時に .
+;      鳴らせます: 1バスドラム、2スネア、4シンバル、8ハイハット、16タム、 .
+;      32リムショット(@9 = バスドラム+ハイハット)。音名は何でもよく、 .
+;      音長は次の打音までの時間です。vは7つの値: 全体(0-63)、 .
+;      続いてBD SD CYM HH TOM RIM(0-31)。 .
+; [KO] 리듬 파트: 음표마다 @로 고른 악기가 울립니다. 숫자를 더하면 .
+;      동시에 칩니다: 1 베이스 드럼, 2 스네어, 4 심벌, 8 하이햇, 16 탐,
+;      32 림샷(@9 = 베이스 드럼+하이햇). 음 이름은 상관없고, 길이는 .
+;      다음 타격까지의 시간입니다. v는 값 7개: 전체(0-63),
+;      이어서 BD SD CYM HH TOM RIM(0-31).
+; *1 one drop
+;   B  ........x.......
+;   R  ........x.......
+;   H  ..x...x...x...x.
+#*1{ r8 @8c4 @8c8 @33c8 @8c4 @8c8 }
+; *2 fill
+;   B  ........x.......
+;   R  ........x.......
+;   M  ............xxxx
+#*2{ r2 @33c4 @16c16 @16c16 @16c16 @16c16 }
+G T78 v56,28,26,20,16,22,24
+G L [*1]3 *2 [*1]3 *2
+
+; ---- Bass / ベース / 베이스 ----
+B @2 v13 o2 l8
+B L a4 r8 a8 >e4< r8 a8 | d4 r8 d8 a4 r8 d8 | a4 r8 a8 >e4< r8 a8 | d4 r8 d8 a4 r8 d8
+B   a4 r8 a8 >e4< r8 a8 | d4 r8 d8 a4 r8 d8 | e4 r8 e8 b4 r8 e8 | a4 r8 a8 >e4< r8 a8
+
+; ---- Chords (two notes) / 和音(2音) / 화음(두 음) ----
+C @3 v11 o4 l8 p1
+C L r4 e r r4 e r | r4 a r r4 a r | r4 e r r4 e r | r4 a r r4 a r | r4 e r r4 e r | r4 a r r4 a r | r4 b r r4 b r | r4 e r r4 e r
+H @3 v11 o4 l8 p2
+H L r4 c r r4 c r | r4 f+ r r4 f+ r | r4 c r r4 c r | r4 f+ r r4 f+ r | r4 c r r4 c r | r4 f+ r r4 f+ r | r4 g r r4 g r | r4 c r r4 c r
+
+; ---- Melody: write yours here / メロディ: ここに書く / 멜로디: 여기에 쓰기 ----
+; [EN] Replace the rests with your melody (8 bars). For example:
+;      A L e4 g4 a4 g4 | ...
+; [JA] 休符をメロディに置き換えます(8小節)。例:
+;      A L e4 g4 a4 g4 | ...
+; [KO] 쉼표를 멜로디로 바꿉니다(8마디). 예:
+;      A L e4 g4 a4 g4 | ...
+A @1 v12 o5 l8 p3
+A L [r1]8

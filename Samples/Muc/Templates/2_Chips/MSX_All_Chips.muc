@@ -1,0 +1,81 @@
+#mucom88 1.7
+#title MSX All Chips
+#composer
+#comment Template: MSX-MUSIC, PSG and SCC together (an MSX with an SCC cartridge)
+
+; ==================================================================
+;  A full MSX: MSX-MUSIC + PSG + SCC
+;  MSXフル構成: MSX-MUSIC + PSG + SCC
+;  MSX 풀 구성: MSX-MUSIC + PSG + SCC
+; ==================================================================
+; [EN] An MSX with MSX-MUSIC and an SCC cartridge can play all of these
+;      at once. Here: SCC lead and harmony, MSX-MUSIC chords, bass and
+;      drums, and the PSG for hi-hats.
+; [JA] MSX-MUSICとSCCカートリッジのあるMSXなら、これらを同時に .
+;      鳴らせます。ここではSCCのリードとハーモニー、MSX-MUSICの和音・ .
+;      ベース・ドラム、PSGのハイハット。 .
+; [KO] MSX-MUSIC와 SCC 카트리지가 있는 MSX라면 이것들을 동시에 .
+;      울릴 수 있습니다. 여기서는 SCC 리드와 화음, MSX-MUSIC의 화음,
+;      베이스, 드럼, PSG 하이햇입니다.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; @1 organ: ALG 7, four carriers at 1x/2x/4x/1x
+;    オルガン: ALG 7、4つのキャリア(1倍/2倍/4倍/1倍)
+;    오르간: ALG 7, 캐리어 4개(1배/2배/4배/1배)
+  @1
+   0,7
+   31,0,0,7,0,0,0,1,0
+   31,0,0,7,0,0,0,2,0
+   31,0,0,7,0,0,0,4,0
+   31,0,0,7,0,0,0,1,3
+
+; @2 bass: ALG 0, four operators in series
+;    ベース: ALG 0、4つのオペレータを直列に .
+;    베이스: ALG 0, 오퍼레이터 4개를 직렬로 .
+  @2
+   5,0
+   31,14,0,8,2,30,0,0,0
+   31,14,0,8,2,40,0,1,3
+   31,12,0,8,2,36,0,1,7
+   31,8,4,8,2,0,0,1,0
+
+  @W0:{ 96,96,96,96,96,96,96,96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96,-96 }
+  @W1:{ -127,-111,-95,-79,-63,-47,-31,-15,1,17,33,49,65,81,97,113,127,111,95,79,63,47,31,15,-1,-17,-33,-49,-65,-81,-97,-113 }
+
+; [EN] Chords: | F | G | Em | Am | F | G | C | C |
+; [JA] コード: | F | G | Em | Am | F | G | C | C |
+; [KO] 코드: | F | G | Em | Am | F | G | C | C |
+
+; ---- SCC: lead and harmony / SCC: リードとハーモニー / SCC: 리드와 화음 ----
+SCCA T144 @0 E255,0,0,0,0,255 v7 o5 l8
+SCCA L a4 >c4< a4 f4 | g4. a b4 >d4< | e4 g4 b4 g4 | a2. r4
+SCCA   a4 >c4< a4 f4 | g4 a4 b4 >d4 | e2 d4 e4 | c2 r2<
+SCCB @1 E255,0,0,0,0,255 v5 o5 l8
+SCCB L f4 a4 f4 c4 | d4. f g4 b4 | c4 e4 g4 e4 | e2. r4
+SCCB   f4 a4 f4 c4 | d4 f4 g4 b4 | >c2 <b4 >c4 | <g2 r2
+
+; ---- MSX-MUSIC: chords, bass, drums / MSX-MUSIC: 和音・ベース・ドラム / MSX-MUSIC: 화음, 베이스, 드럼 ----
+MSXA @1 v12 o4 l8
+MSXA L [r a]4 [r b]4 [r g]4 [r a]4 [r a]4 [r b]4 [r g]4 [r g]4
+MSXB @1 v12 o4 l8
+MSXB L [r f]4 [r g]4 [r e]4 [r e]4 [r f]4 [r g]4 [r e]4 [r e]4
+MSXH @2 v15 o2 l8
+MSXH L f4. f >f4< f4 | g4. g >g4< g4 | e4. e >e4< e4 | a4. a >a4< a4
+MSXH   f4. f >f4< f4 | g4. g >g4< g4 | c4. c >c4< c4 | c4. c >c4< c4
+#*1{ @1c4 @2c4 @1c8 @1c8 @2c4 }
+MSXG v63,31,30,26,24,28,0
+MSXG L [*1]8
+
+; ---- PSG: hi-hat on 16ths / PSG: 16分のハイハット / PSG: 16분 하이햇 ----
+MSXD @0 P2 w1 E150,0,90,0,0,255 v12 l16
+MSXD L [c c c c]32

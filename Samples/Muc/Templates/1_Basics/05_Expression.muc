@@ -1,0 +1,90 @@
+#mucom88 1.7
+#title Expression
+#composer
+#comment Template: gate, ties, volume moves, vibrato, portamento, pan
+
+; ==================================================================
+;  Expression: making notes sing
+;  表情付け: 音を歌わせる .
+;  표현: 음을 노래하게 만들기 .
+; ==================================================================
+; [EN] The same melody, first plain and then with expression added
+;      one command at a time.
+; [JA] 同じメロディを、まず素のまま、次に表情のコマンドを1つずつ .
+;      足して演奏します。 .
+; [KO] 같은 멜로디를 처음엔 그대로, 다음엔 표현 명령을 하나씩 .
+;      더해서 연주합니다.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; @1 lead: ALG 5, OP1 modulates three carriers
+;    リード: ALG 5、OP1が3つのキャリアを変調 .
+;    리드: ALG 5, OP1이 캐리어 3개를 변조 .
+  @1
+   6,5
+   31,12,0,7,3,28,0,1,3
+   31,6,3,7,3,0,0,1,3
+   31,6,3,7,3,0,0,2,7
+   31,6,3,7,3,0,0,1,0
+
+; @2 soft pad: ALG 4, two modulator-carrier pairs
+;    ソフトパッド: ALG 4、モジュレータとキャリアの2組 .
+;    소프트 패드: ALG 4, 모듈레이터-캐리어 2쌍 .
+  @2
+   4,4
+   18,4,2,6,2,32,0,2,0
+   16,3,2,6,2,0,0,1,3
+   18,4,2,6,2,34,0,2,7
+   16,3,2,6,2,0,0,1,0
+
+; ---- The commands / コマンド / 명령 ----
+; [EN] q4      cut each note 4 clocks early (q0 = hold to the end)
+;      c4&c8   tie: one note lasting a quarter plus an eighth
+;      v13 (   volume; ( lowers by one step, ) raises by one
+;      M24,1,2,4   vibrato (software LFO): delay,speed,step,depth
+;      MF0     vibrato off again
+;      l4 {ce} portamento: slide from c to e over one default length
+;              (write the length with l first: {ce}4 is not accepted)
+;      p1 p2 p3   pan right, left, both (FM and ADPCM only)
+; [JA] q4      音符の終わりを4クロック早く切る(q0は最後まで伸ばす)
+;      c4&c8   タイ: 4分+8分の長さの1つの音 .
+;      v13 (   音量。(で1段下げ、)で1段上げる .
+;      M24,1,2,4   ビブラート(ソフトLFO): ディレイ,速さ,幅の刻み,深さ .
+;      MF0     ビブラートを止める .
+;      l4 {ce} ポルタメント: 基本音長1つの間にcからeへすべる .
+;              (長さは先にlで指定: {ce}4の書き方は通りません)
+;      p1 p2 p3   パン 右・左・両方(FMとADPCMのみ)
+; [KO] q4      음 끝을 4클록 일찍 끊음(q0은 끝까지 유지)
+;      c4&c8   타이: 4분+8분 길이의 한 음 .
+;      v13 (   음량. (는 한 단계 내리고 )는 올림 .
+;      M24,1,2,4   비브라토(소프트 LFO): 딜레이,속도,깊이 단계,깊이 .
+;      MF0     비브라토 끄기 .
+;      l4 {ce} 포르타멘토: 기본 길이 한 개 동안 c에서 e로 미끄러짐 .
+;              (길이는 먼저 l로 지정: {ce}4처럼 쓰면 오류가 납니다)
+;      p1 p2 p3   팬 오른쪽, 왼쪽, 양쪽(FM과 ADPCM만)
+
+; ---- A: plain, then expressive / A: そのまま、次に表情付き / A: 그대로, 다음엔 표현을 넣어서 ----
+A T96 @1 v12 o5 l8 q0 p3
+A L e4 d c d4 e4 | g2 e4 r4 | a4 g e d4 c4 | d1
+A   q4 e4 d c d4 e4 | q0 g4&g8 e8 e4 r4 | M24,1,2,4 a4 g e d4 c4 | d2&d4 MF0 r4
+A   q2 e4 d c ( d4 ( e4 | ) ) l4 {dg} g4 e4 r4 l8 | a4 g e d4 c4 | M24,1,2,4 c2&c4 MF0 r4
+
+; ---- B: pad, panned left / B: 左に置いたパッド / B: 왼쪽에 둔 패드 ----
+B @2 v9 o4 l1 p2
+B L c e f g | c e f g | c e f c
+
+; ---- C: same pad, panned right, a little detuned / C: 同じパッドを右に、少しデチューン / C: 같은 패드를 오른쪽에, 약간 디튠 ----
+; [EN] D3 detunes slightly; with B it makes a wide chorus.
+; [JA] D3で少しずらすと、Bと合わせて広がりのあるコーラスになります。 .
+; [KO] D3으로 살짝 어긋나게 하면 B와 합쳐 넓게 퍼지는 코러스가 됩니다.
+C @2 v9 o4 l1 p1 D3
+C L g >c c< b | g >c c< b | g >c c< g

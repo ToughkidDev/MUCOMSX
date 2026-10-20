@@ -1,0 +1,68 @@
+#mucom88 1.7
+#title Three Parts
+#composer
+#comment Template: melody, harmony and bass on the three SSG parts
+
+; ==================================================================
+;  Three parts at once: melody, harmony, bass
+;  3パート同時に: メロディ・ハーモニー・ベース .
+;  파트 3개를 동시에: 멜로디, 화음, 베이스 .
+; ==================================================================
+; [EN] The same tune on all three SSG parts. Every part plays at the
+;      same time, so each part must add up to the same length
+;      (here 12 bars of 4/4). If one part is longer, they drift apart
+;      when the song loops.
+; [JA] 同じ曲をSSGの3パートで演奏します。全パートは同時に進むので、 .
+;      各パートの長さの合計をそろえる必要があります(ここでは4/4で .
+;      12小節)。1つだけ長いと、ループのたびにずれていきます。 .
+; [KO] 같은 곡을 SSG 파트 3개로 연주합니다. 모든 파트가 동시에 .
+;      진행되므로 각 파트의 길이 합계를 맞춰야 합니다(여기서는 4/4로 .
+;      12마디). 한 파트만 길면 루프할 때마다 어긋납니다.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; ---- D: melody / D: メロディ / D: 멜로디 ----
+; [EN] Tempo (T) is written once, in the first part.
+; [JA] テンポ(T)は最初のパートに1回だけ書きます。 .
+; [KO] 템포(T)는 첫 파트에 한 번만 씁니다.
+D T120 @0 v12 o5 l4
+D L c c g g a a g2 | f f e e d d c2
+D   g g f f e e d2 | g g f f e e d2
+D   c c g g a a g2 | f f e e d d c2
+
+; ---- E: harmony, half notes / E: ハーモニー(2分音符) / E: 화음(2분음표) ----
+; [EN] Two notes per bar, from the chords C, F and G.
+;      A lower volume keeps the melody in front.
+; [JA] 1小節に2音。コードC・F・Gの構成音です。 .
+;      音量を下げるとメロディが前に出ます。 .
+; [KO] 한 마디에 두 음. C, F, G 코드의 구성음입니다.
+;      음량을 낮추면 멜로디가 앞에 들립니다.
+E @0 v9 o4 l2
+E L e e f e | f e d e
+E   e f e d | e f e d
+E   e e f e | f e d e
+
+; ---- F: bass / F: ベース / F: 베이스 ----
+; [EN] The chord roots, one octave lower (o3).
+; [JA] コードのルート音を1オクターブ下(o3)で。 .
+; [KO] 코드의 근음을 한 옥타브 아래(o3)로.
+F @0 v11 o3 l2
+F L c c f c | f c g c
+F   c f c g | c f c g
+F   c c f c | f c g c
+;
+; [EN] Try: give E a different preset (@2), or make F play quarter notes:
+;      F L c4 c4 c4 c4 ... (keep 12 bars in total).
+; [JA] 試してみよう: Eのプリセットを変える(@2)、Fを4分音符で刻む:
+;      F L c4 c4 c4 c4 …(合計12小節を守ること)。 .
+; [KO] 해 보세요: E의 프리셋을 바꾸기(@2), F를 4분음표로 치기:
+;      F L c4 c4 c4 c4 …(전체 12마디를 지킬 것).

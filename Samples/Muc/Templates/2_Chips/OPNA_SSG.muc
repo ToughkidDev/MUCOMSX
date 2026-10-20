@@ -1,0 +1,78 @@
+#mucom88 1.7
+#title OPNA SSG
+#composer
+#comment Template: the three SSG parts with envelopes and noise drums
+
+; ==================================================================
+;  OPNA SSG: square waves, envelopes and noise
+;  OPNA SSG: 矩形波・エンベロープ・ノイズ .
+;  OPNA SSG: 사각파, 엔벨로프, 노이즈 .
+; ==================================================================
+; [EN] The SSG of the YM2608 is three square-wave parts, D E F, with
+;      a noise generator. Here: D melody, E arpeggio, F drums made
+;      of tone and noise. An SSG part is silent until it gets a
+;      preset (@0-@15) or an envelope (E).
+; [JA] YM2608のSSGは矩形波3パート(D E F)とノイズです。ここでは .
+;      Dメロディ、Eアルペジオ、Fはトーンとノイズのドラム。SSGパートは .
+;      プリセット(@0-@15)かエンベロープ(E)を指定するまで無音です。 .
+; [KO] YM2608의 SSG는 사각파 파트 3개(D E F)와 노이즈입니다. 여기서는 .
+;      D 멜로디, E 아르페지오, F는 톤과 노이즈로 만든 드럼입니다.
+;      SSG 파트는 프리셋(@0-@15)이나 엔벨로프(E)를 정해야 소리가 납니다.
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、 .
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。 .
+; [KO] 재생(Ctrl+Enter)으로 들어 보세요. 한 군데를 고치고 다시 재생해서 .
+;      마음에 들면 남기면 됩니다. "저장"을 누르면 컴퓨터에 .muc로 저장됩니다.
+; [EN] This file is UTF-8 because of the Korean comments.
+; [JA] 韓国語のコメントがあるため、このファイルはUTF-8です。 .
+; [KO] 한국어 주석이 있어서 이 파일은 UTF-8입니다.
+; ==================================================================
+
+; [EN] E AL,AR,DR,SR,SL,RR is a software envelope (values 0-255): start
+;      level, attack rate, decay rate, sustain rate, sustain level,
+;      release rate. E255,0,0,0,0,255 is a flat, organ-like tone;
+;      E255,0,40,0,0,255 dies away fast, good for plucks and drums.
+; [JA] E AL,AR,DR,SR,SL,RRはソフトウェアエンベロープ(値0-255): 開始レベル、 .
+;      アタック、ディケイ、サステインレート、サステインレベル、リリース。 .
+;      E255,0,0,0,0,255は平らなオルガン風の音、E255,0,40,0,0,255は .
+;      すぐ消える音で、撥弦音やドラムに向きます。 .
+; [KO] E AL,AR,DR,SR,SL,RR은 소프트웨어 엔벨로프(값 0-255): 시작 레벨,
+;      어택, 디케이, 서스테인 속도, 서스테인 레벨, 릴리스입니다.
+;      E255,0,0,0,0,255는 평평한 오르간 같은 소리, E255,0,40,0,0,255는 .
+;      금방 사라지는 소리로 퉁기는 소리나 드럼에 좋습니다.
+;
+; [EN] P1 tone, P2 noise, P3 tone and noise; w0-31 is the noise pitch
+;      (small = high and hissy, large = low). Drums on one part: each
+;      macro below sets its own sound, so they can be mixed freely.
+; [JA] P1トーン、P2ノイズ、P3トーン+ノイズ。w0-31はノイズの高さ .
+;      (小さいほど高くシャー、大きいほど低い)。1パートでドラム:
+;      下のマクロはそれぞれ自分の音を設定するので自由に混ぜられます。 .
+; [KO] P1 톤, P2 노이즈, P3 톤+노이즈. w0-31은 노이즈 높이 .
+;      (작을수록 높고 치익, 클수록 낮음). 파트 하나로 드럼:
+;      아래 매크로는 각자 소리를 설정하므로 자유롭게 섞을 수 있습니다.
+; [EN] *1 kick (low tone), *2 snare (noise), *3 hi-hat (high noise), one 16th each
+; [JA] *1 キック(低いトーン)、*2 スネア(ノイズ)、*3 ハイハット(高いノイズ)、各16分音符 .
+; [KO] *1 킥(낮은 톤), *2 스네어(노이즈), *3 하이햇(높은 노이즈), 각 16분음표 .
+#*1{ P1 E255,0,64,0,0,255 o2 c16 }
+#*2{ P2 w9 E255,0,36,0,0,255 c16 }
+#*3{ P2 w1 E170,0,90,0,0,255 c16 }
+
+; [EN] Chords: | Am | F | G | E | Am | F | G | E |
+; [JA] コード: | Am | F | G | E | Am | F | G | E |
+; [KO] 코드: | Am | F | G | E | Am | F | G | E |
+
+; ---- D: melody with a slowly fading envelope / D: ゆっくり減衰するメロディ / D: 천천히 줄어드는 멜로디 ----
+D T132 E255,0,6,1,170,40 v13 o5 l8
+D L e4 a4 >c4< b4 | a4. g f4 e4 | d4 g4 b4 >d4< | e4 <b4 g+2 >
+D   e4 a4 >c4< b4 | a4. g f4 a4 | g4. f e4 d4 | e1
+
+; ---- E: arpeggio, preset @0 / E: アルペジオ(プリセット@0) / E: 아르페지오(프리셋 @0) ----
+E @0 v8 o4 l8
+E L [a>cec<]2 [fa>c<a]2 [gb>d<b]2 [g+b>e<b]2
+E   [a>cec<]2 [fa>c<a]2 [gb>d<b]2 [g+b>e<b]2
+
+; ---- F: drums / F: ドラム / F: 드럼 ----
+F v12
+F L [*1 r16 *3 r16 *2 r16 *3 r16 *1 *1 *3 r16 *2 r16 *3 r16]8
