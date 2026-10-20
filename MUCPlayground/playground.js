@@ -8,6 +8,7 @@ import { waveAt, drawWave } from './wave-preview.js';
 import { voiceAt, drawVoice, OP_COLORS } from './fm-preview.js';
 import { WaveEditor } from './wave-editor.js';
 import { FmEditor, formatVoice } from './fm-editor.js';
+import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 
 const SAMPLE_RATE = 44100;
@@ -42,6 +43,8 @@ const T = {
     waveInfo: (n, e, lo, hi) => `${n}/${e} samples · min ${lo} · max ${hi}`, wave64: ' · played as 32 (averaged)',
     waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
     waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
+    linePlay: 'Play this line (Ctrl+Shift+Enter); with several lines selected, those lines', lineStop: 'Stop',
+    playingLines: (a, b) => (a === b ? `Playing line ${a}` : `Playing lines ${a}–${b}`),
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · carriers ${car}`, fmLegend: 'solid: carrier (heard) · dashed: modulator · envelopes include TL',
     fmCount: (w, n, need) => `${w}: ${need} values are needed; this has ${n}.`, fmRange: (w, f, v, max) => `${w} ${f} ${v} is outside 0–${max}.`,
     noMessages: 'No messages.', loop: (n) => `loop ${n}`, missing: 'not attached', remove: 'Remove',
@@ -94,6 +97,8 @@ const T = {
     waveInfo: (n, e, lo, hi) => `샘플 ${n}/${e} · 최소 ${lo} · 최대 ${hi}`, wave64: ' · 평균 내어 32개로 연주',
     waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
     waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
+    linePlay: '이 행 듣기 (Ctrl+Shift+Enter). 여러 행을 선택하면 그 행들', lineStop: '정지',
+    playingLines: (a, b) => (a === b ? `${a}행 재생 중` : `${a}–${b}행 재생 중`),
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · 캐리어 ${car}`, fmLegend: '실선: 캐리어(들리는 음) · 점선: 모듈레이터 · 엔벨로프는 TL 포함',
     fmCount: (w, n, need) => `${w}: 값이 ${need}개 필요한데 ${n}개입니다.`, fmRange: (w, f, v, max) => `${w} ${f} ${v}: 0–${max} 범위를 벗어났습니다.`,
     noMessages: '메시지 없음.', loop: (n) => `루프 ${n}`, missing: '첨부 안 됨', remove: '제거',
@@ -146,6 +151,8 @@ const T = {
     waveInfo: (n, e, lo, hi) => `サンプル ${n}/${e} · 最小 ${lo} · 最大 ${hi}`, wave64: ' · 平均して32個で演奏',
     waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
     waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
+    linePlay: 'この行を試聴（Ctrl+Shift+Enter）。複数行を選ぶとその行', lineStop: '停止',
+    playingLines: (a, b) => (a === b ? `${a}行目を再生中` : `${a}–${b}行目を再生中`),
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · キャリア ${car}`, fmLegend: '実線: キャリア（聞こえる音）・点線: モジュレータ・エンベロープはTL込み',
     fmCount: (w, n, need) => `${w}: 値が${need}個必要ですが、${n}個です。`, fmRange: (w, f, v, max) => `${w} ${f} ${v}は0–${max}の範囲外です。`,
     noMessages: 'メッセージなし。', loop: (n) => `ループ ${n}`, missing: '未添付', remove: '削除',
@@ -264,6 +271,8 @@ let splitMode = 'off';
 let markRows = new Map();   // row -> 'err' | 'warn'
 let markSpots = [];         // { row, col, kind } for the wavy underline
 let pickedMark = null;      // { row, kind }: the message last clicked, drawn as a red / yellow line
+let playingRows = null;     // [from, to] while only those rows play (line-play.js)
+let waveEdit = null;        // { row, fm } of the definition open in the wave / FM editor
 
 function lineCount() { let n = 1; for (let i = 0; i < code.value.length; i++) if (code.value.charCodeAt(i) === 10) n++; return n; }
 
@@ -341,6 +350,7 @@ function updateWave(row) {
   const box = $('wave');
   const code = pane.code;
   if (row === undefined) row = code.value.slice(0, code.selectionStart).split('\n').length;
+  updateLinePlay(row);
   const active = document.activeElement === code && !suggest.open && viewMode !== 'channels';
   const def = active ? waveAt(lines, row, code.value) || voiceAt(lines, row) : null;
   if (!def) { hideWave(); return; }
@@ -924,8 +934,8 @@ function onEngineMessage(m, source) {
       if (pendingFile) { const f = pendingFile; pendingFile = null; playFile(f.name, f.data); }
       break;
     case 'compiled':
-      lastResult = m.result;
-      renderMessages(m.result);
+      // A line being played is checked as part of the whole song; keep its messages.
+      if (!(playingRows && m.result.ok)) { lastResult = m.result; renderMessages(m.result); }
       if (!m.result.ok) {
         setStatus(t('compileFailedN', m.result.errors.length), true);
         $('nowTitle').textContent = '—';
@@ -941,11 +951,13 @@ function onEngineMessage(m, source) {
       if (source !== active) break;
       $('nowTitle').textContent = m.info.title || playingName || sourceName;
       $('nowMeta').textContent = [m.info.composer, (m.info.chips || '').replace(/=\d+Hz/g, ''), playingName].filter(Boolean).join(' · ');
-      if (!playingName) setStatus(`${t('playing')} · ${statusEl.textContent}`);
+      if (!playingName) setStatus(`${playingRows ? t('playingLines', ...playingRows) : t('playing')} · ${statusEl.textContent}`);
       if (ctx && ctx.state !== 'running') waitForClick();
       playing = true;
+      updateLinePlay();
       loopCount = 0;
       traceSession = m.session;
+      traceMsx = !!m.info.msx;
       traceEvents = [];
       traceIndex = 0;
       traceStale = false;
@@ -1057,10 +1069,12 @@ function onAudioMessage(m, source) {
     } else if (m.type === 'ended') {
       showClock(m.frames);
       playing = false;
+      playingRows = null;
       clearTrace();
       channelView.stop();
       silentAudio?.pause();
       setStatus(t('ended'));
+      updateLinePlay();
     }
   }
 }
@@ -1120,7 +1134,9 @@ $('uiSize').addEventListener('input', (e) => { $('uiSizeOut').textContent = `${e
 $('uiSize').addEventListener('change', (e) => setUiSize(e.target.value));
 window.addEventListener('resize', applyUiSize);
 
-async function play() {
+// rows: [from, to] to play only those rows of the song (see line-play.js).
+async function play(rows = null) {
+  if (!Array.isArray(rows)) rows = null;   // a click event when bound to the button
   unlockAudio();   // in the tap itself, even while the engine is still loading
   writeEdit();   // hear what is being edited
   if (!engineReady) { pendingPlay = true; setStatus(t('loading')); return; }
@@ -1140,8 +1156,53 @@ async function play() {
   loopCount = 0;
   showClock(0);
   setStatus(t('compiling'));
-  worker.postMessage({ type: 'compile', text: code.value, play: true });
+  playingRows = rows;
+  updateLinePlay();
+  worker.postMessage({ type: 'compile', text: rows ? lineSnippet(code.value, rows[0], rows[1]) : code.value, play: true });
 }
+
+// ---------- playing a line ----------
+// A ▶ at the end of the part line the caret is on plays that line, or the selected lines,
+// with the settings the part has there (line-play.js); while it plays it stops instead.
+function caretRows() {
+  const c = pane.code;
+  const from = c.value.slice(0, c.selectionStart).split('\n').length;
+  let end = c.selectionEnd;
+  // A selection that ends at the start of a line does not include that line.
+  if (end > c.selectionStart && c.value[end - 1] === '\n') end--;
+  return [from, Math.max(from, c.value.slice(0, end).split('\n').length)];
+}
+function playLines() {
+  const [from, to] = caretRows();
+  if (!lines.slice(from - 1, to).some(playsSomething)) return;
+  play([from, to]);
+}
+function updateLinePlay(row) {
+  const btn = $('linePlay');
+  const code = pane.code;
+  if (row === undefined) row = code.value.slice(0, code.selectionStart).split('\n').length;
+  const focused = document.activeElement === code || btn.matches(':hover') || document.activeElement === btn;
+  const show = focused && viewMode !== 'channels' && !waveEdit && playsSomething(lines[row - 1]);
+  if (!show) { btn.hidden = true; return; }
+  if (btn.parentElement !== pane.area) pane.area.appendChild(btn);
+  const stop = playing && !!playingRows;
+  btn.textContent = stop ? '■' : '▶';
+  btn.title = stop ? t('lineStop') : t('linePlay');
+  btn.setAttribute('aria-label', btn.title);
+  btn.classList.toggle('stop', stop);
+  const area = btn.parentElement;
+  const pt = textPoint(row, (lines[row - 1] || '').length);
+  btn.hidden = false;
+  if (pt.y + pt.lh < 0 || pt.y > area.clientHeight) { btn.hidden = true; return; }
+  btn.style.left = `${Math.max(4, Math.min(pt.x + 10, area.clientWidth - btn.offsetWidth - 6))}px`;
+  btn.style.top = `${pt.y + (pt.lh - btn.offsetHeight) / 2}px`;
+}
+$('linePlay').addEventListener('pointerdown', (e) => e.preventDefault());   // keep the caret in the text
+$('linePlay').addEventListener('mousedown', (e) => e.preventDefault());
+$('linePlay').addEventListener('click', () => {
+  if (playing && playingRows) stopByUser();
+  else playLines();
+});
 
 function stop() {
   pendingPlay = false;
@@ -1152,9 +1213,11 @@ function stop() {
   worker.postMessage({ type: 'stop' });
   if (playing) setStatus(t('stopped'));
   playing = false;
+  playingRows = null;
   clearTrace();
   channelView.stop();
   cvSession = -1;
+  updateLinePlay();
 }
 
 // ---------- playing .mub / .vgm files ----------
@@ -1341,11 +1404,12 @@ function onEditorKey(e) {
 }
 for (const p of panes) {
   p.code.addEventListener('keydown', onEditorKey);
-  p.code.addEventListener('blur', () => { closeSuggest(); if (!$('wave').matches(':hover')) hideWave(); });
+  p.code.addEventListener('blur', () => { closeSuggest(); if (!$('wave').matches(':hover')) hideWave(); updateLinePlay(); });
   p.code.addEventListener('click', closeSuggest);
 }
 document.addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); play(); }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'Enter') { e.preventDefault(); playLines(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); play(); }
   else if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveMuc(); }
   else if (e.key === 'Escape' && !$('samplesDlg').open) { stopByUser(); }
 });
@@ -1378,7 +1442,7 @@ function drawScope() {
 // The engine reports, per part, which command in the source it is playing and at which
 // audio frame. Those are applied when that frame is actually heard.
 let lines = [];
-let traceSession = -1, traceEvents = [], traceIndex = 0, traceStale = false, traceDirty = false;
+let traceSession = -1, traceEvents = [], traceIndex = 0, traceStale = false, traceDirty = false, traceMsx = false;
 let clockFrames = 0, clockAt = 0;
 const positions = new Map();     // channel key -> { row, col, len }
 let followKey = null;
@@ -1387,8 +1451,10 @@ const measure = document.createElement('canvas').getContext('2d');
 function partInfo(key) {
   const chip = Math.floor(key / 1000), ch = key % 1000, part = Math.floor(ch / 10), page = ch % 10;
   const letter = PART_LETTERS[part] || '?';
+  // A MUCOMSX song plays its second chip's parts on MSX-MUSIC / PSG and its third's on SCC.
+  const prefix = !chip ? '' : traceMsx ? (chip === 1 ? 'MSX' : 'SCC') : `${chip + 1}`;
   return {
-    label: (chip ? `${chip + 1}` : '') + letter + (page ? page : ''),
+    label: prefix + letter + (page ? page : ''),
     color: PART_COLORS[(part + chip * 4) % PART_COLORS.length],
   };
 }
@@ -1437,10 +1503,12 @@ function updateTrace() {
   const now = playedFrame();
   const changed = [];
   while (traceIndex + 4 < traceEvents.length && traceEvents[traceIndex] <= now) {
-    const key = traceEvents[traceIndex + 1];
-    positions.set(key, { row: traceEvents[traceIndex + 2], col: traceEvents[traceIndex + 3], len: traceEvents[traceIndex + 4] });
-    changed.push(key);
+    const key = traceEvents[traceIndex + 1], row = traceEvents[traceIndex + 2];
     traceIndex += 5;
+    // Playing some lines: the other part rows only set things up, so they are not shown.
+    if (playingRows && (row < playingRows[0] || row > playingRows[1]) && partLine(lines[row - 1])) continue;
+    positions.set(key, { row, col: traceEvents[traceIndex - 2], len: traceEvents[traceIndex - 1] });
+    changed.push(key);
   }
   if (traceIndex > 50000) { traceEvents = traceEvents.slice(traceIndex); traceIndex = 0; }
   if (changed.length) { follow(changed); renderParts(); traceDirty = true; }
@@ -1689,7 +1757,6 @@ let vgmForView = null;             // the (decompressed) VGM that is playing, re
 // Open in place of the text; Apply / Done write the definition back (as one @Wn:{…}
 // line, or @Wn and four rows for a 64-sample #SSGExtend wave; the five value lines of an
 // FM voice).
-let waveEdit = null;   // { row, fm } of the definition being edited
 const waveEditor = new WaveEditor($('waveEditor'), {
   lang: () => lang,
   onApply: (values) => writeWave(values),

@@ -19,8 +19,9 @@ public sealed record CompileMessage(int Row, int Col, string Text, string Code =
 public sealed class CompileResult
 {
     public byte[] Mub;
-    // The compiler's own output, which still carries each byte's source position.
-    // Null for MUCOMSX native MSX songs, whose container is rebuilt from bytes.
+    // The compiler's own output, which still carries each byte's source position. For
+    // MUCOMSX native MSX songs (an msPb container) it is rebuilt by MsxTrace when asked
+    // for, and null when the positions could not be recovered.
     internal MmlDatum[] Data;
     public List<CompileMessage> Errors = new();
     public List<CompileMessage> Warnings = new();
@@ -110,7 +111,7 @@ public static class MucEngine
     }
 
     // Same framing and normalization as MDPlayer4Mac's MucomDotNET.CompileMuc.
-    public static CompileResult Compile(byte[] source, Func<string, Stream> openFile)
+    public static CompileResult Compile(byte[] source, Func<string, Stream> openFile, bool traceMsx = false)
     {
         Initialize();
         CompileResult result = new();
@@ -133,6 +134,7 @@ public static class MucEngine
             {
                 result.Mub = MsxMucCompiler.Compile(source, "song.muc", openFile);
                 if (result.Mub == null) result.Errors.Add(new(-1, -1, "MUCOMSX native MSX compilation failed."));
+                else if (traceMsx) result.Data = MsxTrace.Build(source, result.Mub, openFile);
                 return result;
             }
 
@@ -254,6 +256,8 @@ public sealed class MucPlayer
     readonly List<(int Command, int Id)> visChips = new();
 
     public bool Stopped { get; private set; }
+    // A MUCOMSX song (msPb): its second chip's parts are MSXA.., the third's SCCA..
+    public bool Msx => msx != null;
     public string Error { get; private set; } = "";
     public string Chips { get; private set; } = "";
     // The chips in VGM terms for the channel view: "type:id:clock" joined by ';'.
@@ -390,9 +394,12 @@ public sealed class MucPlayer
                 new Action(v => { Track(v); if (Ok(v)) Opnb(1, v.port, v.address, v.data); }, (d, t) => Adpcm(1, d, t)),
                 new Action(v => { Track(v); if (v != null && v.address >= 0 && v.data >= 0) Opm(v.address, v.data); }, null),
             };
-            MmlDatum[] source = msx == null && traced != null && traced.Length == mub.Length
-                ? traced
-                : data.Select(b => new MmlDatum(b)).ToArray();
+            MmlDatum[] source = data.Select(b => new MmlDatum(b)).ToArray();
+            // The traced data where its bytes are the ones played (an msPb container's
+            // sequencer copy differs from it in a few header bytes).
+            if (traced != null && traced.Length == data.Length)
+                for (int i = 0; i < data.Length; i++)
+                    if (traced[i] != null && (byte)traced[i].dat == data[i]) source[i] = traced[i];
             driver.Init(actions, source, openFile, new object[] { false, true, false, "song.muc" });
             driver.StartRendering((int)MucEngine.SampleRate, new[]
             {
@@ -404,7 +411,11 @@ public sealed class MucPlayer
             });
             if (msx != null)
             {
-                driver.ConfigureMsx(msx.Capabilities, mapper.Upload, msx.RawFlags.HasValue, mapper.WriteSccNative);
+                driver.ConfigureMsx(msx.Capabilities, mapper.Upload, msx.RawFlags.HasValue, (ch, address, value) =>
+                {
+                    if (traced != null) TrackScc();
+                    mapper.WriteSccNative(ch, address, value);
+                });
                 mapper.Start(msx.NativeGroup, msx.SccSsg, msx.RawFlags, msx.DedicatedScc);
             }
             driver.MusicSTART(0);
@@ -500,9 +511,24 @@ public sealed class MucPlayer
 
     static bool Ok(ChipDatum v) => v != null && v.port >= 0 && v.address >= 0 && v.data >= 0;
 
+    // Dedicated SCC parts (msPb0102) write through a callback without the command being
+    // played, so read it from the driver's work area.
+    static readonly System.Reflection.FieldInfo DriverWork = typeof(mucomDotNET.Driver.Driver)
+        .GetField("work", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+    void TrackScc()
+    {
+        if (DriverWork?.GetValue(driver) is mucomDotNET.Driver.Work w && w.crntMmlDatum is MmlDatum m) Track(m);
+    }
+
     void Track(ChipDatum v)
     {
-        if (v?.addtionalData is not MmlDatum m || m.linePos == null) return;
+        if (v?.addtionalData is MmlDatum m) Track(m);
+    }
+
+    void Track(MmlDatum m)
+    {
+        if (m.linePos == null) return;
         LinePos lp = m.linePos;
         if (lp.row <= 0) return;
         int key = lp.chipNumber * 1000 + lp.ch;

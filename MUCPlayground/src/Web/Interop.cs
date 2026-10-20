@@ -41,7 +41,7 @@ public static partial class Interop
     {
         player?.Stop();
         player = null;
-        CompileResult r = MucEngine.Compile(MucEngine.ShiftJis.GetBytes(text ?? ""), Open);
+        CompileResult r = MucEngine.Compile(MucEngine.ShiftJis.GetBytes(text ?? ""), Open, traceMsx: true);
         compiled = r.Ok ? r : null;
         return Describe(r, text);
     }
@@ -92,6 +92,7 @@ public static partial class Interop
             w.WriteString("error", ok ? "" : player.Error);
             w.WriteString("chips", player.Chips);
             w.WriteString("chipList", player.ChipList);
+            w.WriteBoolean("msx", player.Msx);
             w.WriteString("title", player.Title);
             w.WriteString("composer", player.Composer);
         });
@@ -108,6 +109,7 @@ public static partial class Interop
             w.WriteString("error", compiled == null ? "Nothing compiled." : player.Error);
             w.WriteString("chips", player.Chips);
             w.WriteString("chipList", player.ChipList);
+            w.WriteBoolean("msx", player.Msx);
             w.WriteString("title", player.Title);
             w.WriteString("composer", player.Composer);
         });

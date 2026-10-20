@@ -12,7 +12,7 @@ Stream Open(string name)
 }
 
 var sw = Stopwatch.StartNew();
-CompileResult r = MucEngine.Compile(File.ReadAllBytes(path), Open);
+CompileResult r = MucEngine.Compile(File.ReadAllBytes(path), Open, traceMsx: true);
 Console.WriteLine($"compile {sw.ElapsedMilliseconds} ms, ok={r.Ok}, mub={r.Mub?.Length}");
 foreach (var e in r.Errors) Console.WriteLine($"  error [{e.Code}] {e.Row}:{e.Col} {e.Text}");
 foreach (var w in r.Warnings) Console.WriteLine($"  warn  [{w.Code}] {w.Row}:{w.Col} {w.Text}");

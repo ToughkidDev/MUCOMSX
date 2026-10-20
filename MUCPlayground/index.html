@@ -150,6 +150,11 @@ textarea::selection{background:var(--sel);color:transparent}
 .wave .fm-legend i{font-style:normal;font-family:var(--mono);font-weight:700}
 .wave .wave-note:empty{display:none}
 .wave .wave-edit{pointer-events:auto;float:right;margin:-2px 0 0 8px;padding:2px 8px}
+/* ▶ at the end of the caret's part line: plays that line */
+.line-play{position:absolute;z-index:4;width:22px;height:20px;padding:0;border:1px solid var(--accent2);border-radius:5px;background:var(--panel);color:var(--accent2);font-size:11px;line-height:1;cursor:pointer;opacity:.85}
+.line-play:hover{opacity:1;background:var(--accent2);color:#fff}
+.line-play.stop{border-color:var(--accent);color:var(--accent);opacity:1}
+.line-play.stop:hover{background:var(--accent);color:#fff}
 /* SCC wave editor (wave-editor.js); the FM voice editor (fm-editor.js) shares its frame */
 .wavedit{flex:1;display:flex;flex-direction:column;min-height:0;overflow:auto;background:var(--panel)}
 .wavedit[hidden]{display:none!important}
@@ -393,6 +398,7 @@ footer p{margin:2px 0}
           <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="MUC source"></textarea>
           <div class="ac" id="ac" hidden><ul role="listbox" aria-label="Suggestions"></ul><p></p></div>
           <div class="wave" id="wave" hidden aria-live="polite"><p class="wave-head"></p><canvas width="320" height="128"></canvas><p class="wave-note"></p></div>
+          <button type="button" class="line-play" id="linePlay" hidden>▶</button>
         </div>
       </div>
       <div class="splitter" id="splitter" role="separator" hidden></div>
