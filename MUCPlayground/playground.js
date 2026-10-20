@@ -15,6 +15,7 @@ import { mucVoices, voiceLines, writeDat as writeDatSlot, newDat as newDatBytes,
 import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, importWaves } from './scc-bank.js';
 import { readPcmBank, putPcm, mucPcms, pcmLine, mucSamples, pcmKey, importPcm, encodeAdpcm, decodeAdpcm, resample, readWav, writeWav, wavFitsCompiler, NATIVE_RATE, SLOTS as PCM_SLOTS, RAM_SIZE } from './pcm-bank.js';
 import { PcmEditor } from './pcm-editor.js';
+import { applyTips, bankTip } from './tooltips.js';
 import { timeline } from './mml-timeline.js';
 import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
@@ -65,11 +66,16 @@ const T = {
     bankRenameTip: 'Rename the selected voice (six characters, voice file only)', bankToDatTip: 'Move the selected MUC voice into the voice file (same number)', bankToMucTip: 'Copy the selected voice-file voice into the MUC as a definition',
     bankImportTip: 'Take voices from .dat, .muc, .mub, .vgm / .vgz files and add them after the ones there are', bankLoadTip: 'Use a .dat voice file for this song (#voice)', bankSaveTip: 'Download the voice file (made from the MUC\'s voices if there is none)', bankUndoTip: 'Undo the last change to the voice file',
     bankFile_fm: (name, n) => `${name} · ${n} voices`, bankFile_scc: (name, n) => `${name} · ${n} waves`, bankFileMissing: (name) => `${name}: not attached`, bankNoFile_fm: 'no voice file', bankNoFile_scc: 'no wave file',
-    bankEmpty_fm: 'No FM voices yet: Add one, Import from a file, or Load a voice file.', bankEmpty_scc: 'No SCC waves yet: Add one, Import from a file (.dat, .muc, .vgm, Furnace), or Load a wave file (SCWD).', bankHint: 'Click a voice to hear it, double-click to write @n at the caret',
+    bankEmpty_fm: 'No FM voices yet: Add one, Import from a file, or Load a voice file.', bankEmpty_scc: 'No SCC waves yet: Add one, Import from a file (.dat, .muc, .vgm, Furnace), or Load a wave file (SCWD).', bankHint: 'Click an entry to hear it · Ctrl/⌘+click or Shift+click picks several · double-click (or @) writes @n at the caret · ? lists the keys',
     bankSrc_dat: 'DAT', bankSrc_muc: 'MUC', bankSrc_over: 'MUC▸DAT', bankOverTip: 'defined in the MUC too, which wins over the voice file', bankInline: '(in the MUC)',
     bankInMuc: (row) => `defined in the MUC, line ${row}`, bankInDat: (name) => `in ${name}`, bankUses: (n) => `${n} notes use it`, bankUnused: 'not used in the song',
     bankFull: (n) => `All ${n} numbers are taken`, bankAdded: (n, to) => `${n} added to the ${to}`, bankDelUsed: (n, k) => `${n} is used by ${k} notes. Delete it anyway?`,
     bankDeleted: (n) => `${n} deleted`, bankDelMucKeepDat: (n) => `${n}'s MUC definition deleted; the voice file's ${n} is used again`,
+    bankPicked: (n, list, used) => `${n} picked: ${list}` + (used ? ` · ${used} of them used in the song` : '') + ' · Delete removes them, D / M move them',
+    bankDelMany: (n, list, used) => `Delete these ${n}?\n${list}` + (used ? `\n${used} of them are used in the song.` : ''),
+    bankDeletedN: (n) => `${n} deleted`, bankKeptDat: (n, file) => `${n} of them still in the ${file} (only the MUC definitions went)`,
+    bankMovedN: (n, name) => `${n} moved into ${name}`, bankCopiedN: (n) => `${n} copied into the MUC`, bankTargetNow: (to) => `New entries now go to the ${to}`,
+    bankKeys: (file) => `Keys: ↑↓ move · Shift+↑↓ / Shift+click pick a range · Ctrl/⌘+click pick more · Ctrl/⌘+A all · Esc one again · Space/P listen · Enter/E edit · Insert/N add · Delete del · F2/R name · D →${file} · M →MUC · I import · L load · S save · U or Ctrl/⌘+Z undo · T To · B empty slots · @ write @n in the text · 1 2 3 tabs · F6 text ⇄ bank`,
     bankFormText: 'This voice is written in the @% form: edit it in the text', bankRenameDatOnly: 'Only voice-file voices have names', bankRenamePrompt: 'Name (up to six letters or digits)',
     bankToDatNeedsMuc: 'Pick a voice defined in the MUC', bankToMucNeedsDat: 'Pick a voice from the voice file', bankAlreadyMuc: 'The MUC already defines this number',
     bankMovedToDat: (n, name) => `${n} moved into ${name}`, bankCopiedToMuc: (n) => `${n} copied into the MUC`, bankNotDat_fm: (name) => `${name} is not a voice file`, bankNotDat_scc: (name) => `${name} is not an SCC wave file (SCWD)`,
@@ -92,11 +98,11 @@ const T = {
     keysHintOff: 'Click the keys to play them from the computer keyboard',
     keysAuto: (what) => `Caret's part (${what})`, keysSsg: 'SSG / PSG (square)', keysSine: 'Sine', keysNoise: 'Noise (rhythm)',
     keysFm: (n) => `FM voice @${n}`, keysScc: (n) => `SCC wave @W${n}`, keysDefault: 'default FM voice',
-    linePlay: 'Play this line (Ctrl+Shift+Enter); with several lines selected, those lines', lineStop: 'Stop',
+    linePlay: 'Hear only this line (the parts before it are set up as the song has them, the rest is quiet); with several lines selected, those lines. Key: Ctrl+Shift+Enter', lineStop: 'Stop hearing the line (Esc)',
     playingLines: (a, b) => (a === b ? `Playing line ${a}` : `Playing lines ${a}–${b}`),
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · carriers ${car}`, fmLegend: 'solid: carrier (heard) · dashed: modulator · envelopes include TL',
     fmCount: (w, n, need) => `${w}: ${need} values are needed; this has ${n}.`, fmRange: (w, f, v, max) => `${w} ${f} ${v} is outside 0–${max}.`,
-    noMessages: 'No messages.', loop: (n) => `loop ${n}`, missing: 'not attached', remove: 'Remove',
+    noMessages: 'No messages.', loop: (n) => `loop ${n}`, missing: 'not attached', remove: 'Remove this file from the song\'s attached files (and from this browser)',
     demo: 'Demo (FM + SSG + rhythm)', template: 'Template (OPNA + MSX chips)', yourSong: 'Your song (autosaved)', samples: 'Samples',
     loadingSample: (n) => `Loading ${n}…`, sampleFailed: 'Could not load the sample: ',
     underrun: 'Playback is catching up; this device renders slowly.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
@@ -106,7 +112,7 @@ const T = {
     audioFailed: 'Audio could not start: ', bytes: (n) => `${n.toLocaleString()} bytes`,
     saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
-    followPart: (p) => `Follow part ${p}`, hintSuggest: 'suggestions', fontSize: 'Text', fontSizeTip: 'Editor text size',
+    followPart: (p) => `Part ${p} and what it plays now. Click: while playing, the text follows this part; click again to follow every part`, hintSuggest: 'suggestions', fontSize: 'Text', fontSizeTip: 'Editor text size',
     uiSize: 'Menus', uiSizeTip: 'Size of the menus, buttons and panels (100–200%; a narrow window allows less)',
     browse: 'Samples…', samplesTitle: 'Samples on GitHub', refresh: 'Refresh', search: 'Search songs…',
     liveSource: (time) => `Live from github.com/ToughkidDev/MUCOMSX (Samples, main branch) · read at ${time}. New files appear as soon as they are committed.`,
@@ -159,11 +165,16 @@ const T = {
     bankRenameTip: '선택한 음색 이름 바꾸기 (6자, 음색 파일만)', bankToDatTip: '선택한 MUC 음색을 음색 파일로 옮기기 (같은 번호)', bankToMucTip: '선택한 음색 파일의 음색을 MUC 정의로 복사',
     bankImportTip: '.dat, .muc, .mub, .vgm / .vgz 파일에서 음색을 가져와 뒤에 추가', bankLoadTip: '이 곡에 .dat 음색 파일 사용 (#voice)', bankSaveTip: '음색 파일 내려받기 (없으면 MUC 음색으로 만들어서)', bankUndoTip: '음색 파일의 마지막 변경 되돌리기',
     bankFile_fm: (name, n) => `${name} · 음색 ${n}개`, bankFile_scc: (name, n) => `${name} · 파형 ${n}개`, bankFileMissing: (name) => `${name}: 첨부 안 됨`, bankNoFile_fm: '음색 파일 없음', bankNoFile_scc: '파형 파일 없음',
-    bankEmpty_fm: '아직 FM 음색이 없습니다. 추가하거나, 파일에서 가져오거나, 음색 파일을 로드하세요.', bankEmpty_scc: '아직 SCC 파형이 없습니다. 추가하거나, 파일(.dat, .muc, .vgm, Furnace)에서 가져오거나, 파형 파일(SCWD)을 로드하세요.', bankHint: '음색을 클릭하면 들리고, 더블클릭하면 커서 위치에 @n을 씁니다',
+    bankEmpty_fm: '아직 FM 음색이 없습니다. 추가하거나, 파일에서 가져오거나, 음색 파일을 로드하세요.', bankEmpty_scc: '아직 SCC 파형이 없습니다. 추가하거나, 파일(.dat, .muc, .vgm, Furnace)에서 가져오거나, 파형 파일(SCWD)을 로드하세요.', bankHint: '항목을 클릭하면 들립니다 · Ctrl/⌘+클릭이나 Shift+클릭으로 여러 개 선택 · 더블클릭(또는 @)하면 커서 위치에 @n을 씀 · ? 키로 단축키 목록',
     bankSrc_dat: 'DAT', bankSrc_muc: 'MUC', bankSrc_over: 'MUC▸DAT', bankOverTip: 'MUC에도 정의되어 있어 음색 파일보다 우선합니다', bankInline: '(MUC 정의)',
     bankInMuc: (row) => `MUC ${row}행에 정의`, bankInDat: (name) => `${name}에 있음`, bankUses: (n) => `음표 ${n}개가 사용`, bankUnused: '곡에서 사용 안 함',
     bankFull: (n) => `${n}개 번호를 모두 쓰고 있습니다`, bankAdded: (n, to) => `${n}을 ${to}에 추가`, bankDelUsed: (n, k) => `${n}은 음표 ${k}개가 사용합니다. 그래도 삭제할까요?`,
     bankDeleted: (n) => `${n} 삭제`, bankDelMucKeepDat: (n) => `${n}의 MUC 정의를 삭제했습니다. 이제 음색 파일의 ${n}이 쓰입니다`,
+    bankPicked: (n, list, used) => `${n}개 선택: ${list}` + (used ? ` · 그중 ${used}개는 곡에서 사용 중` : '') + ' · Delete로 한꺼번에 삭제, D / M으로 옮기기',
+    bankDelMany: (n, list, used) => `이 ${n}개를 삭제할까요?\n${list}` + (used ? `\n그중 ${used}개는 곡에서 사용 중입니다.` : ''),
+    bankDeletedN: (n) => `${n}개 삭제`, bankKeptDat: (n, file) => `그중 ${n}개는 ${file}에 남아 있음 (MUC 정의만 삭제)`,
+    bankMovedN: (n, name) => `${n}개를 ${name}로 옮김`, bankCopiedN: (n) => `${n}개를 MUC로 복사`, bankTargetNow: (to) => `이제 새 항목은 ${to}에 들어갑니다`,
+    bankKeys: (file) => `단축키: ↑↓ 이동 · Shift+↑↓ / Shift+클릭 범위 선택 · Ctrl/⌘+클릭 추가 선택 · Ctrl/⌘+A 전체 · Esc 하나만 · Space/P 듣기 · Enter/E 편집 · Insert/N 추가 · Delete 삭제 · F2/R 이름 · D →${file} · M →MUC · I 가져오기 · L 로드 · S 저장 · U 또는 Ctrl/⌘+Z 되돌리기 · T 대상 전환 · B 빈 칸 · @ 텍스트에 @n 쓰기 · 1 2 3 탭 · F6 텍스트 ⇄ 뱅크`,
     bankFormText: '이 음색은 @% 형식이라 텍스트에서 편집하세요', bankRenameDatOnly: '이름은 음색 파일의 음색에만 있습니다', bankRenamePrompt: '이름 (영문·숫자 6자까지)',
     bankToDatNeedsMuc: 'MUC에 정의된 음색을 고르세요', bankToMucNeedsDat: '음색 파일의 음색을 고르세요', bankAlreadyMuc: 'MUC에 이미 이 번호가 정의되어 있습니다',
     bankMovedToDat: (n, name) => `${n}을 ${name}로 옮김`, bankCopiedToMuc: (n) => `${n}을 MUC로 복사`, bankNotDat_fm: (name) => `${name}은 음색 파일이 아닙니다`, bankNotDat_scc: (name) => `${name}은 SCC 파형 파일(SCWD)이 아닙니다`,
@@ -186,11 +197,11 @@ const T = {
     keysHintOff: '건반을 클릭하면 키보드로 연주할 수 있습니다',
     keysAuto: (what) => `커서 위치 파트 (${what})`, keysSsg: 'SSG / PSG (사각파)', keysSine: '사인파', keysNoise: '노이즈 (리듬)',
     keysFm: (n) => `FM 음색 @${n}`, keysScc: (n) => `SCC 파형 @W${n}`, keysDefault: '기본 FM 음색',
-    linePlay: '이 행 듣기 (Ctrl+Shift+Enter). 여러 행을 선택하면 그 행들', lineStop: '정지',
+    linePlay: '이 행만 들어 봅니다 (앞부분의 설정은 곡 그대로 적용하고 나머지는 조용히). 여러 행을 선택하면 그 행들을 듣습니다. 단축키: Ctrl+Shift+Enter', lineStop: '행 듣기 멈춤 (Esc)',
     playingLines: (a, b) => (a === b ? `${a}행 재생 중` : `${a}–${b}행 재생 중`),
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · 캐리어 ${car}`, fmLegend: '실선: 캐리어(들리는 음) · 점선: 모듈레이터 · 엔벨로프는 TL 포함',
     fmCount: (w, n, need) => `${w}: 값이 ${need}개 필요한데 ${n}개입니다.`, fmRange: (w, f, v, max) => `${w} ${f} ${v}: 0–${max} 범위를 벗어났습니다.`,
-    noMessages: '메시지 없음.', loop: (n) => `루프 ${n}`, missing: '첨부 안 됨', remove: '제거',
+    noMessages: '메시지 없음.', loop: (n) => `루프 ${n}`, missing: '첨부 안 됨', remove: '이 파일을 곡의 첨부 파일에서 뺍니다 (이 브라우저에서도 지워짐)',
     demo: '데모 (FM + SSG + 리듬)', template: '템플릿 (OPNA + MSX 칩)', yourSong: '내 곡 (자동 저장)', samples: '샘플',
     loadingSample: (n) => `${n} 불러오는 중…`, sampleFailed: '샘플을 불러오지 못했습니다: ',
     underrun: '렌더링이 재생을 따라잡는 중입니다. 이 기기에서는 느릴 수 있습니다.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
@@ -200,7 +211,7 @@ const T = {
     audioFailed: '오디오를 시작하지 못했습니다: ', bytes: (n) => `${n.toLocaleString()} 바이트`,
     saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
-    followPart: (p) => `${p} 파트 따라가기`, hintSuggest: '명령 제안', fontSize: '글자', fontSizeTip: '에디터 글자 크기',
+    followPart: (p) => `${p} 파트와 지금 연주하는 내용. 클릭하면 재생 중 텍스트가 이 파트를 따라가고, 다시 클릭하면 모든 파트를 따라갑니다`, hintSuggest: '명령 제안', fontSize: '글자', fontSizeTip: '에디터 글자 크기',
     uiSize: '메뉴', uiSizeTip: '메뉴, 버튼, 패널의 크기 (100–200%, 좁은 창에서는 덜 커짐)',
     browse: '샘플…', samplesTitle: 'GitHub의 샘플', refresh: '새로 고침', search: '곡 검색…',
     liveSource: (time) => `github.com/ToughkidDev/MUCOMSX의 Samples 폴더(main)를 ${time}에 직접 읽었습니다. 새 파일은 커밋하는 즉시 나타납니다.`,
@@ -253,11 +264,16 @@ const T = {
     bankRenameTip: '選んだ音色の名前を変える（6文字、音色ファイルのみ）', bankToDatTip: '選んだMUCの音色を音色ファイルへ移す（同じ番号）', bankToMucTip: '選んだ音色ファイルの音色をMUCの定義としてコピー',
     bankImportTip: '.dat, .muc, .mub, .vgm / .vgz から音色を取り込み、後ろに追加', bankLoadTip: 'この曲に .dat 音色ファイルを使う（#voice）', bankSaveTip: '音色ファイルをダウンロード（なければMUCの音色から作成）', bankUndoTip: '音色ファイルの最後の変更を元に戻す',
     bankFile_fm: (name, n) => `${name} · ${n}音色`, bankFile_scc: (name, n) => `${name} · ${n}波形`, bankFileMissing: (name) => `${name}: 未添付`, bankNoFile_fm: '音色ファイルなし', bankNoFile_scc: '波形ファイルなし',
-    bankEmpty_fm: 'FM音色がまだありません。追加、ファイルからインポート、または音色ファイルをロードしてください。', bankEmpty_scc: 'SCC波形がまだありません。追加、ファイル（.dat, .muc, .vgm, Furnace）からインポート、または波形ファイル（SCWD）をロードしてください。', bankHint: '音色をクリックで試聴、ダブルクリックでカーソル位置に@nを書きます',
+    bankEmpty_fm: 'FM音色がまだありません。追加、ファイルからインポート、または音色ファイルをロードしてください。', bankEmpty_scc: 'SCC波形がまだありません。追加、ファイル（.dat, .muc, .vgm, Furnace）からインポート、または波形ファイル（SCWD）をロードしてください。', bankHint: '項目をクリックで試聴 · Ctrl/⌘+クリックやShift+クリックで複数選択 · ダブルクリック（または@）でカーソル位置に@nを書く · ?でキー一覧',
     bankSrc_dat: 'DAT', bankSrc_muc: 'MUC', bankSrc_over: 'MUC▸DAT', bankOverTip: 'MUCにも定義があり、音色ファイルより優先されます', bankInline: '（MUC定義）',
     bankInMuc: (row) => `MUC ${row}行目で定義`, bankInDat: (name) => `${name}内`, bankUses: (n) => `${n}音符が使用`, bankUnused: '曲では未使用',
     bankFull: (n) => `${n}個の番号がすべて使われています`, bankAdded: (n, to) => `${n}を${to}に追加`, bankDelUsed: (n, k) => `${n}は${k}音符が使っています。削除しますか？`,
     bankDeleted: (n) => `${n}を削除`, bankDelMucKeepDat: (n) => `${n}のMUC定義を削除しました。音色ファイルの${n}が使われます`,
+    bankPicked: (n, list, used) => `${n}個を選択: ${list}` + (used ? ` · うち${used}個は曲で使用中` : '') + ' · Deleteでまとめて削除、D / Mで移動',
+    bankDelMany: (n, list, used) => `この${n}個を削除しますか？\n${list}` + (used ? `\nうち${used}個は曲で使われています。` : ''),
+    bankDeletedN: (n) => `${n}個を削除`, bankKeptDat: (n, file) => `うち${n}個は${file}に残っています（MUCの定義だけ削除）`,
+    bankMovedN: (n, name) => `${n}個を${name}へ移動`, bankCopiedN: (n) => `${n}個をMUCへコピー`, bankTargetNow: (to) => `新しい項目は${to}に入ります`,
+    bankKeys: (file) => `キー: ↑↓ 移動 · Shift+↑↓ / Shift+クリック 範囲選択 · Ctrl/⌘+クリック 追加選択 · Ctrl/⌘+A 全部 · Esc 1つに戻す · Space/P 試聴 · Enter/E 編集 · Insert/N 追加 · Delete 削除 · F2/R 名前 · D →${file} · M →MUC · I インポート · L ロード · S 保存 · U または Ctrl/⌘+Z 元に戻す · T 追加先切替 · B 空き番号 · @ テキストに@nを書く · 1 2 3 タブ · F6 テキスト ⇄ バンク`,
     bankFormText: 'この音色は@%形式なのでテキストで編集してください', bankRenameDatOnly: '名前は音色ファイルの音色にだけあります', bankRenamePrompt: '名前（英数字6文字まで）',
     bankToDatNeedsMuc: 'MUCで定義された音色を選んでください', bankToMucNeedsDat: '音色ファイルの音色を選んでください', bankAlreadyMuc: 'MUCにすでにこの番号の定義があります',
     bankMovedToDat: (n, name) => `${n}を${name}へ移動`, bankCopiedToMuc: (n) => `${n}をMUCへコピー`, bankNotDat_fm: (name) => `${name}は音色ファイルではありません`, bankNotDat_scc: (name) => `${name}はSCC波形ファイル（SCWD）ではありません`,
@@ -280,11 +296,11 @@ const T = {
     keysHintOff: '鍵盤をクリックするとキーボードで演奏できます',
     keysAuto: (what) => `カーソル位置のパート（${what}）`, keysSsg: 'SSG / PSG（矩形波）', keysSine: 'サイン波', keysNoise: 'ノイズ（リズム）',
     keysFm: (n) => `FM音色 @${n}`, keysScc: (n) => `SCC波形 @W${n}`, keysDefault: '既定のFM音色',
-    linePlay: 'この行を試聴（Ctrl+Shift+Enter）。複数行を選ぶとその行', lineStop: '停止',
+    linePlay: 'この行だけを試聴します（前の部分の設定は曲どおり、他は鳴らさない）。複数行を選ぶとその行を試聴します。キー: Ctrl+Shift+Enter', lineStop: '行の試聴を停止（Esc）',
     playingLines: (a, b) => (a === b ? `${a}行目を再生中` : `${a}–${b}行目を再生中`),
     fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · キャリア ${car}`, fmLegend: '実線: キャリア（聞こえる音）・点線: モジュレータ・エンベロープはTL込み',
     fmCount: (w, n, need) => `${w}: 値が${need}個必要ですが、${n}個です。`, fmRange: (w, f, v, max) => `${w} ${f} ${v}は0–${max}の範囲外です。`,
-    noMessages: 'メッセージなし。', loop: (n) => `ループ ${n}`, missing: '未添付', remove: '削除',
+    noMessages: 'メッセージなし。', loop: (n) => `ループ ${n}`, missing: '未添付', remove: 'このファイルを曲の添付ファイルから外します（このブラウザからも消える）',
     demo: 'デモ（FM + SSG + リズム）', template: 'テンプレート（OPNA + MSXチップ）', yourSong: '自分の曲（自動保存）', samples: 'サンプル曲',
     loadingSample: (n) => `${n}を読み込み中…`, sampleFailed: 'サンプルを読み込めませんでした: ',
     underrun: 'レンダリングが再生に追いつこうとしています。この端末では遅い場合があります。', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
@@ -294,7 +310,7 @@ const T = {
     audioFailed: 'オーディオを開始できませんでした: ', bytes: (n) => `${n.toLocaleString()}バイト`,
     saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
-    followPart: (p) => `${p}パートを追う`, hintSuggest: 'コマンド候補', fontSize: '文字', fontSizeTip: 'エディタの文字サイズ',
+    followPart: (p) => `${p}パートと今演奏している内容。クリックすると再生中テキストがこのパートを追い、もう一度クリックで全パートを追います`, hintSuggest: 'コマンド候補', fontSize: '文字', fontSizeTip: 'エディタの文字サイズ',
     uiSize: 'メニュー', uiSizeTip: 'メニュー・ボタン・パネルの大きさ（100–200%、狭いウィンドウでは控えめ）',
     browse: 'サンプル…', samplesTitle: 'GitHubのサンプル', refresh: '再読み込み', search: '曲を検索…',
     liveSource: (time) => `github.com/ToughkidDev/MUCOMSXのSamplesフォルダー（main）を${time}に直接読み込みました。新しいファイルはコミットするとすぐ表示されます。`,
@@ -355,7 +371,8 @@ function download(name, bytes, type) {
 // ---------- language ----------
 function applyLanguage() {
   document.documentElement.lang = lang;
-  if (typeof waveEditor !== 'undefined') for (const ed of [waveEditor, fmEditor]) if (ed.isOpen) { ed.build(); ed.render(); }
+  if (typeof waveEditor !== 'undefined') for (const ed of [waveEditor, fmEditor, pcmEditor]) if (ed.isOpen) { ed.build(); ed.render(); }
+  if (bankReady) { bank.build(); if (bank.isOpen) bank.refresh(); }
   if (typeof keyboard !== 'undefined') { keyboard.build(); refreshKeySources(); }
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
@@ -367,6 +384,12 @@ function applyLanguage() {
   buildExamples();
   renderFiles();
   if (lastResult) renderMessages(lastResult);
+  applyTips(document, lang);
+}
+// The editors, the tracker and the keys build their controls when they open: those get
+// their tooltips then.
+for (const id of ['waveEditor', 'fmEditor', 'pcmEditor', 'tracker', 'keys']) {
+  new MutationObserver(() => applyTips($(id), lang)).observe($(id), { childList: true });
 }
 document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => {
   lang = b.dataset.lang;
@@ -1550,6 +1573,11 @@ document.addEventListener('keydown', (e) => {
   else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); play(); }
   else if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveMuc(); }
   else if (e.key === 'Escape' && !$('samplesDlg').open) { stopByUser(); }
+  else if (e.key === 'F6' && splitMode === 'bank' && bankReady) {
+    // F6: between the text and the bank.
+    e.preventDefault();
+    if (bank.root.contains(document.activeElement)) pane.code.focus(); else bank.focus();
+  }
 });
 
 function drawScope() {
@@ -2555,6 +2583,7 @@ const bank = new BankView($('bank'), {
   },
   download: (name, bytes) => download(name, bytes, 'application/octet-stream'),
   onKind: () => markBankButtons(),
+  tip: (what, kind) => bankTip(lang, what, kind),
   kinds: {
     fm: {
       id: 'fm', label: 'FM', first: 1, mark: '@', hasNames: true, defaultFile: 'VOICE.DAT', accept: '.dat,.muc,.mub,.vgm,.vgz,.txt',
@@ -2758,6 +2787,7 @@ for (const id of ['bankToggle', 'sccBankToggle', 'pcmBankToggle']) {
     bank.kind = kind;
     if (splitMode !== 'bank') setSplit('bank'); else bank.refresh();
     markBankButtons();
+    bank.focus();   // so the bank's keys work at once
   });
 }
 for (const p of panes) p.code.addEventListener('input', scheduleBank);

@@ -3,7 +3,8 @@
 // VOICE.DAT, SCC: #sccvoice / SCCVOICE.DAT, PCM: #pcm / mucompcm.bin) and what the MUC
 // defines itself; where both have a number, the MUC's wins, as in the compilers (PCM: any
 // #@pcm line and the compiler ignores the whole #pcm file). The buttons work on the selected
-// entry; new ones go to the file (DAT) or into the MUC text, whichever "To" says.
+// entries (Ctrl / ⌘ + click adds one, Shift + click a range); new ones go to the file (DAT)
+// or into the MUC text, whichever "To" says. Every button has a key (see KEYS).
 //
 // What differs between the kinds lives in a kind (made by the page):
 //   id, label; first / last number; mark ('@' / '@W'); hasNames; defaultFile; accept
@@ -16,16 +17,25 @@
 //   preview(data); initData(); removeMuc(entry); addMuc(n, data, name); editMuc(entry);
 //   editFile(n, data, name); importFile(name, bytes) -> [{ data, name? }]
 
+// Keys in the bank (focus in the list or on its buttons): key -> button.
+const KEYS = {
+  insert: 'add', n: 'add', delete: 'del', backspace: 'del', enter: 'edit', e: 'edit', f2: 'rename', r: 'rename',
+  d: 'toDat', m: 'toMuc', i: 'import', l: 'load', s: 'save', u: 'undo', ' ': 'listen', p: 'listen',
+  '@': 'write', t: 'target', b: 'empty', '?': 'keys', 1: 'tab1', 2: 'tab2', 3: 'tab3',
+};
+
 export class BankView {
-  // opts: t; kinds: { fm, scc }; insertAt(text); download(name, bytes); onKind(id) (a tab
-  // was picked).
+  // opts: t; kinds: { fm, scc, pcm }; insertAt(text); download(name, bytes); onKind(id) (a
+  // tab was picked); tip(what, kindId) -> tooltip text for a button / control.
   constructor(root, opts) {
     this.root = root;
     this.o = opts;
     this.kind = 'fm';
     this.state = {};
-    for (const k of Object.keys(opts.kinds)) this.state[k] = { entries: [], selected: null, target: 'dat', targetChosen: false, history: [], message: null };
+    for (const k of Object.keys(opts.kinds)) this.state[k] = { entries: [], selected: null, picked: new Set(), anchor: null, target: 'dat', targetChosen: false, history: [], message: null };
     this.showEmpty = false;
+    // On the root, not in build(): build() runs again when the language changes.
+    root.addEventListener('keydown', (e) => this.key(e));
     this.build();
   }
 
@@ -37,22 +47,22 @@ export class BankView {
 
   build() {
     const T = this.o.t;
-    const btn = (act, label, tip) => `<button type="button" class="btn small" data-act="${act}" title="${tip}">${label}</button>`;
+    const btn = (act, label) => `<button type="button" class="btn small" data-act="${act}">${label}</button>`;
     this.root.innerHTML = `
       <div class="bank-bar">
         <b>🎛 ${T('bankTitle')}</b>
         <span class="tool-group bank-tabs" role="tablist">${Object.values(this.o.kinds).map((k) => `<button type="button" class="btn small" role="tab" data-kind="${k.id}">${k.label}</button>`).join('')}</span>
         <span class="bank-file"></span>
-        <label>${T('bankTo')} <select class="bank-target"><option value="dat">DAT</option><option value="muc">MUC</option></select></label>
+        <label class="bank-to">${T('bankTo')} <select class="bank-target"><option value="dat">DAT</option><option value="muc">MUC</option></select></label>
         <label class="bank-empty"><input type="checkbox"> ${T('bankShowEmpty')}</label>
       </div>
       <div class="bank-tools">
-        <span class="tool-group">${btn('add', T('bankAdd'), T('bankAddTip'))}${btn('del', T('bankDel'), T('bankDelTip'))}${btn('edit', T('bankEdit'), T('bankEditTip'))}${btn('rename', T('bankRename'), T('bankRenameTip'))}</span>
-        <span class="tool-group">${btn('toDat', '→DAT', T('bankToDatTip'))}${btn('toMuc', '→MUC', T('bankToMucTip'))}</span>
-        <span class="tool-group">${btn('import', T('bankImport'), T('bankImportTip'))}${btn('load', T('bankLoad'), T('bankLoadTip'))}${btn('save', T('bankSave'), T('bankSaveTip'))}</span>
-        ${btn('undo', '↶', T('bankUndoTip'))}
+        <span class="tool-group">${btn('add', T('bankAdd'))}${btn('del', T('bankDel'))}${btn('edit', T('bankEdit'))}${btn('rename', T('bankRename'))}</span>
+        <span class="tool-group">${btn('toDat', '→DAT')}${btn('toMuc', '→MUC')}</span>
+        <span class="tool-group">${btn('import', T('bankImport'))}${btn('load', T('bankLoad'))}${btn('save', T('bankSave'))}</span>
+        <span class="tool-group">${btn('undo', '↶')}<button type="button" class="btn small bank-help" data-act="keys">?</button></span>
       </div>
-      <div class="bank-list" tabindex="0" role="listbox" aria-label="${T('bankTitle')}"></div>
+      <div class="bank-list" tabindex="0" role="listbox" aria-multiselectable="true" aria-label="${T('bankTitle')}"></div>
       <p class="bank-info"></p>
       <input type="file" class="bank-pick" hidden multiple>`;
     const q = (s) => this.root.querySelector(s);
@@ -62,19 +72,43 @@ export class BankView {
     this.root.querySelectorAll('[data-kind]').forEach((b) => { b.onclick = () => this.setKind(b.dataset.kind); });
     this.root.querySelectorAll('[data-act]').forEach((b) => { b.onclick = () => this.act(b.dataset.act); });
     const list = q('.bank-list');
-    list.addEventListener('click', (e) => { const r = e.target.closest('.bank-row'); if (r) this.select(+r.dataset.n, true); });
-    list.addEventListener('dblclick', (e) => { const r = e.target.closest('.bank-row'); if (r && this.entry(+r.dataset.n)) this.o.insertAt(`@${r.dataset.n}`); });
-    list.addEventListener('keydown', (e) => {
-      const shown = this.shown();
-      const i = shown.findIndex((x) => x.n === this.selected);
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        const next = shown[Math.max(0, Math.min(shown.length - 1, i + (e.key === 'ArrowDown' ? 1 : -1)))];
-        if (next) this.select(next.n, true);
-      } else if (e.key === 'Enter') { e.preventDefault(); this.act('edit'); }
-      else if (e.key === 'Delete') { e.preventDefault(); this.act('del'); }
+    list.addEventListener('click', (e) => {
+      const r = e.target.closest('.bank-row');
+      if (!r) return;
+      const range = e.shiftKey, add = (e.ctrlKey || e.metaKey) && !range;
+      this.select(+r.dataset.n, { preview: !range && !add, add, range });
     });
+    list.addEventListener('dblclick', (e) => { const r = e.target.closest('.bank-row'); if (r && this.entry(+r.dataset.n)) this.o.insertAt(`@${r.dataset.n}`); });
     this.pick = q('.bank-pick');
+  }
+
+  focus() { this.root.querySelector('.bank-list')?.focus({ preventScroll: true }); }
+
+  // ---------- keys ----------
+  key(e) {
+    const el = e.target;
+    if (e.altKey || el.matches('select, input:not([type=checkbox])')) return;
+    const shown = this.shown();
+    const i = shown.findIndex((x) => x.n === this.selected);
+    const mod = e.ctrlKey || e.metaKey;
+    const go = (to) => {
+      const next = shown[Math.max(0, Math.min(shown.length - 1, to))];
+      if (next) this.select(next.n, { preview: !e.shiftKey, range: e.shiftKey });
+    };
+    const done = () => { e.preventDefault(); e.stopPropagation(); };
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { done(); go(i < 0 ? 0 : i + (e.key === 'ArrowDown' ? 1 : -1)); return; }
+    if (e.key === 'PageDown' || e.key === 'PageUp') { done(); go(i + (e.key === 'PageDown' ? 10 : -10)); return; }
+    if (e.key === 'Home' || e.key === 'End') { done(); go(e.key === 'Home' ? 0 : shown.length - 1); return; }
+    if (mod && e.key.toLowerCase() === 'a') { done(); this.selectAll(); return; }
+    if (mod && e.key.toLowerCase() === 'z') { done(); this.act('undo'); return; }
+    if (e.key === 'Escape' && this.s.picked.size > 1) { done(); this.select(this.selected); return; }
+    if (mod) return;
+    // Space and Enter on a button press the button.
+    if ((el.tagName === 'BUTTON' || el.type === 'checkbox') && (e.key === ' ' || e.key === 'Enter')) return;
+    const what = KEYS[e.key.length === 1 ? e.key.toLowerCase() : e.key.toLowerCase()] ?? KEYS[e.key];
+    if (!what) return;
+    done();
+    this.act(what);
   }
 
   setKind(id) {
@@ -108,6 +142,8 @@ export class BankView {
       e.uses = (usage.get(e.n) || 0) + (e.name ? usage.get(e.name) || 0 : 0);
     }
     s.entries = [...byN.values()].sort((a, b) => a.n - b.n);
+    for (const n of [...s.picked]) if (!byN.has(n)) s.picked.delete(n);
+    if (s.selected !== null && byN.has(s.selected)) s.picked.add(s.selected);
     // To: the file when the song has one, else the MUC, until chosen by hand.
     if (!s.targetChosen) s.target = file.bytes && !s.fileIgnored ? 'dat' : 'muc';
     this.render();
@@ -122,14 +158,34 @@ export class BankView {
     return Array.from({ length: this.last + 1 - first }, (_, i) => this.entry(i + first) || { n: i + first, empty: true });
   }
 
+  // The entries the buttons work on: the picked ones, in number order.
+  pickedEntries() {
+    const s = this.s;
+    const ns = s.picked.size ? [...s.picked] : s.selected !== null ? [s.selected] : [];
+    return ns.map((n) => this.entry(n)).filter(Boolean).sort((a, b) => a.n - b.n);
+  }
+
+  tips() {
+    const tip = this.o.tip;
+    if (!tip) return;
+    const id = this.kind;
+    this.root.querySelectorAll('[data-act]').forEach((b) => { b.title = tip(b.dataset.act, id); });
+    this.root.querySelectorAll('[data-kind]').forEach((b) => { b.title = tip('tab', b.dataset.kind); });
+    this.root.querySelector('.bank-to').title = tip('target', id);
+    this.root.querySelector('.bank-empty').title = tip('empty', id);
+    this.root.querySelector('.bank-list').title = tip('list', id);
+  }
+
   render() {
     if (!this.isOpen) return;
     const T = this.o.t, k = this.k, s = this.s;
     this.root.querySelectorAll('[data-kind]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.kind === this.kind)));
     this.root.querySelector('.bank-target option[value="dat"]').textContent = k.fileLabel || 'DAT';
     this.root.querySelector('.bank-target').value = s.target;
+    this.root.querySelector('.bank-empty input').checked = this.showEmpty;
     this.root.querySelector('[data-act="rename"]').hidden = !k.hasNames;
     this.root.querySelector('[data-act="toDat"]').textContent = '→' + (k.fileLabel || 'DAT');
+    this.tips();
     const file = this.root.querySelector('.bank-file');
     const count = this.entries.filter((e) => e.file).length;
     file.textContent = s.fileIgnored ? T('bankFileIgnored', s.fileName) : s.fileBytes ? T('bankFile_' + k.id, s.fileName, count) + (k.fileNote?.(s.fileBytes) || '') : s.fileName ? T('bankFileMissing', s.fileName) : T('bankNoFile_' + k.id);
@@ -147,10 +203,9 @@ export class BankView {
     const frag = document.createDocumentFragment();
     for (const e of shown) {
       const row = document.createElement('div');
-      row.className = 'bank-row' + (e.empty ? ' empty' : '') + (e.n === this.selected ? ' sel' : '');
+      row.className = 'bank-row' + (e.empty ? ' empty' : '');
       row.dataset.n = e.n;
       row.setAttribute('role', 'option');
-      row.setAttribute('aria-selected', String(e.n === this.selected));
       if (e.empty) {
         row.innerHTML = `<span class="n">${k.mark}${e.n}</span><span class="name">—</span>`;
       } else {
@@ -167,7 +222,19 @@ export class BankView {
     list.appendChild(frag);
     list.scrollTop = keep;
     list.querySelectorAll('.bank-row:not(.empty) canvas.alg').forEach((c) => k.drawMini(c, this.entry(+c.parentElement.dataset.n).data));
+    this.markPicked(false);
     this.info();
+  }
+
+  markPicked(scroll = true) {
+    const s = this.s;
+    for (const r of this.root.querySelectorAll('.bank-row')) {
+      const n = +r.dataset.n, on = s.picked.has(n) || n === s.selected;
+      r.classList.toggle('sel', on);
+      r.classList.toggle('cur', n === s.selected);
+      r.setAttribute('aria-selected', String(on));
+      if (scroll && n === s.selected) r.scrollIntoView({ block: 'nearest' });
+    }
   }
 
   // A message stays until another entry is picked (the list is redrawn when the file or the
@@ -176,9 +243,14 @@ export class BankView {
     const p = this.root.querySelector('.bank-info');
     if (message) this.s.message = message;
     if (this.s.message) { p.textContent = this.s.message; return; }
-    const e = this.entry(this.selected);
-    if (!e) { p.textContent = this.o.t('bankHint'); return; }
     const T = this.o.t;
+    const list = this.pickedEntries();
+    if (list.length > 1) {
+      p.textContent = T('bankPicked', list.length, list.map((x) => this.k.mark + x.n).join(' '), list.filter((x) => x.uses).length);
+      return;
+    }
+    const e = this.entry(this.selected);
+    if (!e) { p.textContent = T('bankHint'); return; }
     p.textContent = [
       `${this.k.mark}${e.n}` + (e.name ? ` "${e.name}"` : ''),
       e.muc && e.file ? T('bankOverTip') : e.muc ? T('bankInMuc', e.muc.row) : T('bankInDat', this.s.fileName),
@@ -186,18 +258,37 @@ export class BankView {
     ].join(' · ');
   }
 
-  select(n, preview = false) {
-    this.s.selected = n;
-    this.s.message = null;
-    for (const r of this.root.querySelectorAll('.bank-row')) {
-      const on = +r.dataset.n === n;
-      r.classList.toggle('sel', on);
-      r.setAttribute('aria-selected', String(on));
-      if (on) r.scrollIntoView({ block: 'nearest' });
+  // Picks n: alone, added to / taken from the picked ones (add), or the range from the last
+  // one picked alone (range).
+  select(n, { preview = false, add = false, range = false } = {}) {
+    const s = this.s;
+    if (range && s.anchor !== null) {
+      const shown = this.shown().map((x) => x.n);
+      const a = shown.indexOf(s.anchor), b = shown.indexOf(n);
+      if (a >= 0 && b >= 0) s.picked = new Set(shown.slice(Math.min(a, b), Math.max(a, b) + 1).filter((x) => this.entry(x)));
+    } else if (add) {
+      if (s.selected !== null && this.entry(s.selected)) s.picked.add(s.selected);
+      if (s.picked.has(n) && s.picked.size > 1) s.picked.delete(n); else s.picked.add(n);
+      s.anchor = n;
+    } else {
+      s.picked = new Set(this.entry(n) ? [n] : []);
+      s.anchor = n;
     }
+    s.selected = n;
+    s.message = null;
+    this.markPicked();
     this.info();
     const e = this.entry(n);
     if (preview && e) this.k.preview(e.data);
+  }
+
+  selectAll() {
+    const s = this.s;
+    s.picked = new Set(this.entries.map((x) => x.n));
+    if (s.selected === null && this.entries.length) s.selected = this.entries[0].n;
+    s.message = null;
+    this.markPicked(false);
+    this.info();
   }
 
   // ---------- changing the file ----------
@@ -229,10 +320,25 @@ export class BankView {
     return list.length;
   }
 
+  // Moves MUC entries into the file under their numbers: the file is written first (it can
+  // refuse an entry), then the definitions go, bottom up so the rows above stay put.
+  moveToFile(list) {
+    const k = this.k, s = this.s;
+    let bytes = s.fileIgnored ? null : s.fileBytes;
+    const link = !s.fileBytes;
+    try { for (const x of list) bytes = k.put(bytes, x.n, x.muc.data, x.name || `muc${x.n}`.slice(0, 6)); }
+    catch (err) { this.info(String(err.message || err)); return false; }
+    for (const x of [...list].sort((a, b) => b.muc.row - a.muc.row)) k.removeMuc(x.muc);
+    this.writeFile(bytes, link);
+    return true;
+  }
+
   // ---------- the buttons ----------
   async act(what) {
     const T = this.o.t, k = this.k, s = this.s;
     const e = this.entry(this.selected);
+    const list = this.pickedEntries();
+    const marks = (xs) => xs.map((x) => k.mark + x.n).join(' ');
     switch (what) {
       case 'add': {
         const n = this.freeNumber(new Set(this.entries.map((x) => x.n)));
@@ -241,16 +347,32 @@ export class BankView {
         if (s.target === 'dat') this.put(n, k.initData(), `new${n}`.slice(0, 6));
         else { copied = this.keepFileInMuc(); k.addMuc(n, k.initData(), `new${n}`.slice(0, 6)); }
         s.selected = n;
+        s.picked = new Set([n]);
+        s.anchor = n;
         this.refresh();
+        this.markPicked();
         this.info(T('bankAdded', k.mark + n, s.target === 'dat' ? k.fileLabel || 'DAT' : 'MUC') + (copied ? ' · ' + T('bankCopiedAll', copied) : ''));
         return;
       }
       case 'del': {
-        if (!e) return;
-        if (e.uses && !confirm(T('bankDelUsed', k.mark + e.n, e.uses))) return;
-        if (e.muc) { k.removeMuc(e.muc); this.info(T(e.file ? 'bankDelMucKeepDat' : 'bankDeleted', k.mark + e.n)); }
-        else { this.put(e.n, null); this.info(T('bankDeleted', k.mark + e.n)); }
+        if (!list.length) return;
+        const used = list.filter((x) => x.uses);
+        if (list.length > 1 ? !confirm(T('bankDelMany', list.length, marks(list), used.length)) : used.length && !confirm(T('bankDelUsed', k.mark + list[0].n, list[0].uses))) return;
+        // Definitions first (bottom up), then the file in one change (one undo step).
+        const muc = list.filter((x) => x.muc).sort((a, b) => b.muc.row - a.muc.row);
+        for (const x of muc) k.removeMuc(x.muc);
+        const fileOnly = list.filter((x) => !x.muc && x.file);
+        if (fileOnly.length) {
+          let bytes = s.fileBytes;
+          try { for (const x of fileOnly) bytes = k.put(bytes, x.n, null); }
+          catch (err) { this.info(String(err.message || err)); return; }
+          this.writeFile(bytes);
+        }
+        s.picked = new Set();
         this.refresh();
+        const kept = muc.filter((x) => x.file).length;
+        this.info(list.length > 1 ? T('bankDeletedN', list.length) + (kept ? ' · ' + T('bankKeptDat', kept, k.fileLabel || 'DAT') : '')
+          : T(list[0].muc && list[0].file ? 'bankDelMucKeepDat' : 'bankDeleted', k.mark + list[0].n));
         return;
       }
       case 'edit':
@@ -261,6 +383,7 @@ export class BankView {
         } else k.editFile(e.n, e.data, e.name);
         return;
       case 'rename': {
+        if (!k.hasNames) return;
         if (!e || !e.file) { this.info(T('bankRenameDatOnly')); return; }
         const name = prompt(T('bankRenamePrompt'), e.name);
         if (name === null) return;
@@ -269,44 +392,29 @@ export class BankView {
         return;
       }
       case 'toDat': {
-        if (!e || !e.muc) { this.info(T('bankToDatNeedsMuc')); return; }
-        if (k.whole) {
-          // All of them: one left in the MUC would keep the file unused.
-          const list = this.entries.filter((x) => x.muc).sort((a, b) => b.muc.row - a.muc.row);
-          let bytes = s.fileIgnored ? null : s.fileBytes;
-          const link = !s.fileBytes;
-          // The file first (it can refuse an entry), then the definitions go, bottom up.
-          try { for (const x of list) bytes = k.put(bytes, x.n, x.muc.data, x.name); }
-          catch (err) { this.info(String(err.message || err)); return; }
-          for (const x of list) k.removeMuc(x.muc);
-          this.writeFile(bytes, link);
-          this.refresh();
-          this.info(T('bankMovedAllToDat', list.length, s.fileName || k.defaultFile));
-          return;
-        }
-        // The definition goes first: writing a new file adds a tag line, which moves the rows.
-        let bytes;
-        try { bytes = k.put(s.fileBytes, e.n, e.muc.data, e.name || `muc${e.n}`.slice(0, 6)); }
-        catch (err) { this.info(String(err.message || err)); return; }
-        const link = !s.fileBytes;
-        k.removeMuc(e.muc);
-        this.writeFile(bytes, link);
+        // Every MUC entry for a kind whose MUC entries replace the file (one left behind would
+        // keep the file unused), else the picked ones.
+        const moving = k.whole ? this.entries.filter((x) => x.muc) : list.filter((x) => x.muc);
+        if (!moving.length) { this.info(T('bankToDatNeedsMuc')); return; }
+        if (!this.moveToFile(moving)) return;
         this.refresh();
-        this.info(T('bankMovedToDat', k.mark + e.n, s.fileName || k.defaultFile));
+        const name = s.fileName || k.defaultFile;
+        this.info(k.whole ? T('bankMovedAllToDat', moving.length, name) : moving.length > 1 ? T('bankMovedN', moving.length, name) : T('bankMovedToDat', k.mark + moving[0].n, name));
         return;
       }
       case 'toMuc': {
-        if (!e || !e.file) { this.info(T('bankToMucNeedsDat')); return; }
-        if (e.muc) { this.info(T('bankAlreadyMuc')); return; }
         if (k.whole) {
+          if (!this.entries.some((x) => x.file)) { this.info(T('bankToMucNeedsDat')); return; }
           const copied = this.keepFileInMuc();
           this.refresh();
-          this.info(T('bankCopiedAll', copied));
+          this.info(copied ? T('bankCopiedAll', copied) : T('bankAlreadyMuc'));
           return;
         }
-        k.addMuc(e.n, e.file.data, e.name);
+        const copying = list.filter((x) => x.file && !x.muc);
+        if (!copying.length) { this.info(T(list.some((x) => x.file) ? 'bankAlreadyMuc' : 'bankToMucNeedsDat')); return; }
+        for (const x of copying) k.addMuc(x.n, x.file.data, x.name);
         this.refresh();
-        this.info(T('bankCopiedToMuc', k.mark + e.n));
+        this.info(copying.length > 1 ? T('bankCopiedN', copying.length) : T('bankCopiedToMuc', k.mark + copying[0].n));
         return;
       }
       case 'import': {
@@ -347,6 +455,23 @@ export class BankView {
         this.refresh();
         return;
       }
+      // Key-only actions.
+      case 'listen': if (e) k.preview(e.data); return;
+      case 'write': if (e) { this.o.insertAt(`@${e.n}`); this.focus(); } return;
+      case 'target': {
+        s.target = s.target === 'dat' ? 'muc' : 'dat';
+        s.targetChosen = true;
+        this.root.querySelector('.bank-target').value = s.target;
+        this.info(T('bankTargetNow', s.target === 'dat' ? k.fileLabel || 'DAT' : 'MUC'));
+        return;
+      }
+      case 'empty': this.showEmpty = !this.showEmpty; this.render(); return;
+      case 'keys': this.info(T('bankKeys', k.fileLabel || 'DAT')); return;
+      case 'tab1': case 'tab2': case 'tab3': {
+        const id = Object.keys(this.o.kinds)[+what.slice(3) - 1];
+        if (id) { this.setKind(id); this.focus(); }
+        return;
+      }
     }
   }
 
@@ -373,6 +498,7 @@ export class BankView {
     const link = !bytes;
     const toMuc = [];
     const copied = s.target === 'muc' ? this.keepFileInMuc() : 0;
+    const fresh = [];
     for (const file of fileList) {
       let found;
       try { found = await k.importFile(file.name, new Uint8Array(await file.arrayBuffer())); }
@@ -383,18 +509,22 @@ export class BankView {
         if (have.has(key)) { same++; continue; }
         const n = this.freeNumber(taken);
         if (n < 0) { noRoom++; continue; }
-        have.add(key);
-        taken.add(n);
-        added++;
         if (s.target === 'dat') {
           try { bytes = k.put(bytes, n, v.data, v.name); }
-          catch (err) { added--; noRoom++; this.info(String(err.message || err)); continue; }
+          catch (err) { noRoom++; this.info(String(err.message || err)); continue; }
         } else toMuc.push([n, v.data, v.name]);
+        have.add(key);
+        taken.add(n);
+        fresh.push(n);
+        added++;
       }
     }
     if (s.target === 'dat' && added) this.writeFile(bytes, link);
     for (const [n, data, name] of toMuc) k.addMuc(n, data, name);
+    // The new ones come out picked, so they can be moved or removed together.
+    if (fresh.length) { s.picked = new Set(fresh); s.selected = fresh[0]; s.anchor = fresh[0]; }
     this.refresh();
+    if (fresh.length) this.markPicked();
     this.info([T('bankImported_' + k.id, added, s.target === 'dat' ? k.fileLabel || 'DAT' : 'MUC'), copied ? T('bankCopiedAll', copied) : '', same ? T('bankImportSame', same) : '', noRoom ? T('bankImportFull', noRoom) : '', none.length ? T('bankImportNone_' + k.id, none.join(', ')) : ''].filter(Boolean).join(' · '));
   }
 }
