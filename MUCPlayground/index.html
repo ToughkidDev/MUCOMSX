@@ -137,6 +137,14 @@ textarea::selection{background:var(--sel);color:transparent}
 .squiggle{position:absolute;height:4px;pointer-events:none;
           background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='4'%3E%3Cpath d='M0 3 L1.5 1 L3 3 L4.5 1 L6 3' fill='none' stroke='%23c0392b' stroke-width='1'/%3E%3C/svg%3E") repeat-x}
 .squiggle.warn{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='4'%3E%3Cpath d='M0 3 L1.5 1 L3 3 L4.5 1 L6 3' fill='none' stroke='%23b8860b' stroke-width='1'/%3E%3C/svg%3E")}
+/* SCC wave preview (wave-preview.js) */
+.wave{position:absolute;z-index:4;width:340px;max-width:calc(100% - 8px);background:var(--panel);border:1px solid var(--line);
+      border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);padding:6px 10px 8px;font-family:var(--sans);font-size:.78rem;pointer-events:none}
+.wave p{margin:0;color:var(--muted)}
+.wave .wave-head b{font-family:var(--mono);color:var(--t-mac);margin-right:6px}
+.wave canvas{display:block;width:100%;height:128px;margin:4px 0 2px;background:var(--code-bg);border-radius:4px}
+.wave .wave-note{color:var(--accent)}
+.wave .wave-note:empty{display:none}
 /* Suggestions */
 .ac{position:absolute;z-index:5;width:min(440px,calc(100% - 8px));background:var(--panel);border:1px solid var(--line);
     border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.18);font-family:var(--sans);font-size:.82rem;overflow:hidden}
@@ -299,6 +307,7 @@ footer p{margin:2px 0}
           <pre class="hl" aria-hidden="true"><code></code></pre>
           <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="MUC source"></textarea>
           <div class="ac" id="ac" hidden><ul role="listbox" aria-label="Suggestions"></ul><p></p></div>
+          <div class="wave" id="wave" hidden aria-live="polite"><p class="wave-head"></p><canvas width="320" height="128"></canvas><p class="wave-note"></p></div>
         </div>
       </div>
       <div class="splitter" id="splitter" role="separator" hidden></div>

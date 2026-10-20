@@ -4,6 +4,7 @@
 import { Highlighter, suggestionsAt, PART_LETTERS, PART_COLORS } from './editor-assist.js';
 import { explain, readableText } from './diagnostics.js';
 import { silentParts } from './silence-check.js';
+import { waveAt, drawWave } from './wave-preview.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 
 const SAMPLE_RATE = 44100;
@@ -35,6 +36,9 @@ const T = {
     silentEnv: (p) => `Part ${p} has no @ or E before its first note, so it makes no sound.`,
     silentVol: (p) => `Part ${p} has no v before its first note, so it makes no sound.`,
     sjisLoss: (chars, n) => `${n} kind(s) of character cannot be written in Shift-JIS and will be saved as "?": ${chars}\nMUC files for the MSX can hold English and Japanese only. Save anyway?`,
+    waveInfo: (n, e, lo, hi) => `${n}/${e} samples · min ${lo} · max ${hi}`, wave64: ' · played as 32 (averaged)',
+    waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
+    waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.',
     noMessages: 'No messages.', loop: (n) => `loop ${n}`, missing: 'not attached', remove: 'Remove',
     demo: 'Demo (FM + SSG + rhythm)', template: 'Template (OPNA + MSX chips)', yourSong: 'Your song (autosaved)', samples: 'Samples',
     loadingSample: (n) => `Loading ${n}…`, sampleFailed: 'Could not load the sample: ',
@@ -82,6 +86,9 @@ const T = {
     silentEnv: (p) => `${p} 파트는 첫 음표 앞에 @나 E가 없어서 소리가 나지 않습니다.`,
     silentVol: (p) => `${p} 파트는 첫 음표 앞에 v가 없어서 소리가 나지 않습니다.`,
     sjisLoss: (chars, n) => `Shift-JIS로 쓸 수 없는 문자 ${n}종류가 "?"로 저장됩니다: ${chars}\nMSX용 MUC에는 영어와 일본어만 쓸 수 있습니다. 그래도 저장할까요?`,
+    waveInfo: (n, e, lo, hi) => `샘플 ${n}/${e} · 최소 ${lo} · 최대 ${hi}`, wave64: ' · 평균 내어 32개로 연주',
+    waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
+    waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.',
     noMessages: '메시지 없음.', loop: (n) => `루프 ${n}`, missing: '첨부 안 됨', remove: '제거',
     demo: '데모 (FM + SSG + 리듬)', template: '템플릿 (OPNA + MSX 칩)', yourSong: '내 곡 (자동 저장)', samples: '샘플',
     loadingSample: (n) => `${n} 불러오는 중…`, sampleFailed: '샘플을 불러오지 못했습니다: ',
@@ -129,6 +136,9 @@ const T = {
     silentEnv: (p) => `${p}パートは最初の音符の前に@もEも無いため、鳴りません。`,
     silentVol: (p) => `${p}パートは最初の音符の前にvが無いため、鳴りません。`,
     sjisLoss: (chars, n) => `Shift-JISで書けない文字${n}種類が「?」として保存されます: ${chars}\nMSX用のMUCに使えるのは英語と日本語だけです。それでも保存しますか？`,
+    waveInfo: (n, e, lo, hi) => `サンプル ${n}/${e} · 最小 ${lo} · 最大 ${hi}`, wave64: ' · 平均して32個で演奏',
+    waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
+    waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。',
     noMessages: 'メッセージなし。', loop: (n) => `ループ ${n}`, missing: '未添付', remove: '削除',
     demo: 'デモ（FM + SSG + リズム）', template: 'テンプレート（OPNA + MSXチップ）', yourSong: '自分の曲（自動保存）', samples: 'サンプル曲',
     loadingSample: (n) => `${n}を読み込み中…`, sampleFailed: 'サンプルを読み込めませんでした: ',
@@ -304,6 +314,53 @@ function updateCursor() {
   const row = before.split('\n').length;
   const col = before.length - before.lastIndexOf('\n');
   $('cursor').textContent = `Ln ${row}, Col ${col}`;
+  updateWave(row);
+}
+
+// SCC wave preview: with the caret on a wave definition (@Wn), the wave is drawn under it.
+function cssColor(name, alpha = 1) {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const m = /^#([0-9a-f]{6})$/i.exec(v);
+  if (!m || alpha === 1) return v;
+  const n = parseInt(m[1], 16);
+  return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${alpha})`;
+}
+function hideWave() { $('wave').hidden = true; }
+function updateWave(row) {
+  const box = $('wave');
+  const code = pane.code;
+  if (row === undefined) row = code.value.slice(0, code.selectionStart).split('\n').length;
+  const def = document.activeElement === code && !suggest.open && viewMode !== 'channels'
+    ? waveAt(lines, row, code.value) : null;
+  if (!def) { hideWave(); return; }
+  if (box.parentElement !== pane.area) pane.area.appendChild(box);
+  const nums = def.values.filter(Number.isFinite);
+  const head = box.querySelector('.wave-head');
+  head.innerHTML = '<b></b><span></span>';
+  head.querySelector('b').textContent = `@W${def.id}`;
+  head.querySelector('span').textContent = t('waveInfo', def.values.length, def.expected,
+    nums.length ? Math.min(...nums) : '-', nums.length ? Math.max(...nums) : '-') + (def.expected === 64 ? t('wave64') : '');
+  const notes = [];
+  if (def.values.length !== def.expected) notes.push(t('waveCount', def.values.length, def.expected));
+  if (def.values.some((v) => !Number.isFinite(v))) notes.push(t('waveBad'));
+  if (nums.some((v) => v < -128 || v > 127)) notes.push(t('waveRange'));
+  if (def.expected === 32 && !def.closed && def.values.length <= 32 && /\{/.test(lines[def.row - 1])) notes.push(t('waveOpen'));
+  box.querySelector('.wave-note').textContent = notes.join(' ');
+  box.hidden = false;
+  drawWave(box.querySelector('canvas'), def.values, def.expected, {
+    line: cssColor('--accent2'), fill: cssColor('--accent2', 0.22), axis: cssColor('--muted'), grid: cssColor('--line'),
+    bad: cssColor('--err-line'), badFill: cssColor('--err-line', 0.25),
+  });
+  // Under the definition, or above it when there is no room below; hidden while the
+  // definition is scrolled out of view.
+  const area = box.parentElement;
+  const first = textPoint(def.row, 0), last = textPoint(def.endRow, 0);
+  if (last.y + last.lh < 0 || first.y > area.clientHeight) { hideWave(); return; }
+  const below = last.y + last.lh + 4;
+  const above = first.y - box.offsetHeight - 4;
+  const x = textPoint(def.row, def.col).x;
+  box.style.left = `${Math.max(4, Math.min(x, area.clientWidth - box.offsetWidth - 4))}px`;
+  box.style.top = `${below + box.offsetHeight > area.clientHeight && above >= 4 ? above : below}px`;
 }
 
 function updateBytes() { $('bytes').textContent = t('bytes', new Blob([code.value]).size); }
@@ -341,6 +398,7 @@ function onInput(p, e) {
   lines = code.value.split('\n');
   scheduleHighlight();
   scheduleCheck();
+  updateWave();
   if (!suppressSuggest) {
     if (suggest.open) refreshSuggest(false);
     else if (e.inputType === 'insertText' && /^[A-Za-z@*#]$/.test(e.data || '')) refreshSuggest(false);
@@ -363,7 +421,7 @@ for (const p of panes) {
     renderMarks();
     traceDirty = true;
     p.highlighter.scroll(p.code.scrollLeft, p.code.scrollTop);
-    if (p === pane) closeSuggest();
+    if (p === pane) { closeSuggest(); updateWave(); }
   });
   ['wheel', 'keydown', 'pointerdown'].forEach((ev) => p.code.addEventListener(ev, () => holdFollow(p)));
   ['keyup', 'click', 'select'].forEach((ev) => p.code.addEventListener(ev, updateCursor));
@@ -1187,6 +1245,7 @@ function renderSuggest() {
     list.appendChild(li);
   });
   box.querySelector('p').textContent = suggest.items[suggest.index].desc || '';
+  hideWave();
   // Under the caret, or above it when there is no room below.
   const before = code.value.slice(0, code.selectionStart);
   const row = before.split('\n').length;
@@ -1240,7 +1299,7 @@ function onEditorKey(e) {
 }
 for (const p of panes) {
   p.code.addEventListener('keydown', onEditorKey);
-  p.code.addEventListener('blur', closeSuggest);
+  p.code.addEventListener('blur', () => { closeSuggest(); hideWave(); });
   p.code.addEventListener('click', closeSuggest);
 }
 document.addEventListener('keydown', (e) => {
