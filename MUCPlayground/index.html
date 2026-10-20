@@ -256,6 +256,33 @@ textarea::selection{background:var(--sel);color:transparent}
 .trk-spacer{position:absolute;top:0;left:0;pointer-events:none}
 .tlink{position:absolute;z-index:3;border:2px solid #5aa0ff;border-radius:3px;pointer-events:none;box-sizing:border-box}
 @media (max-width:900px){.panes.split-tracker{flex-direction:column}.panes.split-tracker .splitter{cursor:row-resize}}
+/* Voice bank (bank-view.js): right of the text, like the tracker */
+.bank{flex:1 1 0;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel);font-size:.82rem}
+.bank[hidden]{display:none}
+.bank-bar,.bank-tools{display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;padding:6px 10px;border-bottom:1px solid var(--line)}
+.bank-bar b{font-size:.88rem}
+.bank-file{font-family:var(--mono);color:var(--muted);font-size:.78rem}
+.bank-file.missing{color:var(--accent)}
+.bank-bar label{display:inline-flex;align-items:center;gap:5px;color:var(--muted)}
+.bank-bar select{padding:2px 4px}
+.bank-tools .btn{padding:2px 8px;font-size:.78rem}
+.bank-list{flex:1;min-height:0;overflow:auto;outline:none;padding:4px 0;font-family:var(--mono);font-size:.8rem}
+.bank-list:focus-visible{box-shadow:inset 0 0 0 2px var(--accent2)}
+.bank-row{display:grid;grid-template-columns:3.6em 6.6em 5.4em 46px 7.6em 1fr;align-items:center;gap:6px;padding:2px 10px;cursor:pointer;border-left:3px solid transparent}
+.bank-row:hover{background:var(--sel)}
+.bank-row.sel{background:color-mix(in srgb,var(--accent2) 18%,transparent);border-left-color:var(--accent2)}
+.bank-row.empty{color:var(--muted);opacity:.6}
+.bank-row .n{color:var(--accent)}
+.bank-row .name{white-space:pre;overflow:hidden;text-overflow:ellipsis}
+.bank-row .src{font-family:var(--sans,system-ui),sans-serif;font-size:.7rem;text-align:center;border-radius:4px;padding:0 4px;border:1px solid var(--line)}
+.bank-row .src.dat{color:#2a9d8f;border-color:#2a9d8f}
+.bank-row .src.muc{color:#e09f3e;border-color:#e09f3e}
+.bank-row .src.over{color:#d1495b;border-color:#d1495b}
+.bank-row canvas.alg{width:44px;height:20px}
+.bank-row .fa,.bank-row .uses{color:var(--muted);font-size:.74rem}
+.bank-none{margin:14px;color:var(--muted);font-family:var(--sans,system-ui),sans-serif}
+@media (max-width:640px){.bank-row{grid-template-columns:3.2em 6em 4.8em 46px 1fr}.bank-row .fa{display:none}}
+.bank-info{margin:0;padding:6px 10px;border-top:1px solid var(--line);color:var(--muted);font-size:.78rem;min-height:1.4em}
 /* Keys mode (keyboard.js): a piano under the editor */
 .keys{flex:none;display:flex;flex-direction:column;gap:6px;padding:6px 12px 10px;border-top:1px solid var(--line);background:var(--panel)}
 .keys[hidden]{display:none}
@@ -457,6 +484,7 @@ footer p{margin:2px 0}
         </div>
       </div>
       <div class="tracker" id="tracker" hidden></div>
+      <div class="bank" id="bank" hidden></div>
     </div>
     <div class="keys" id="keys" hidden></div>
     <div class="chview" id="chview" hidden></div>
@@ -470,6 +498,7 @@ footer p{margin:2px 0}
           <button type="button" data-split="stack" aria-pressed="false" data-i18n-title="splitStack">⊟</button>
         </span></span>
       <button type="button" class="btn small ed keys-toggle" id="trackerToggle" aria-pressed="false" data-i18n-title="trkTip"><span aria-hidden="true">🎼</span> <span data-i18n="trkTitle">Tracker</span></button>
+      <button type="button" class="btn small ed keys-toggle" id="bankToggle" aria-pressed="false" data-i18n-title="bankTip"><span aria-hidden="true">🎛</span> <span data-i18n="bankTitle">Voice bank</span></button>
       <button type="button" class="btn small ed keys-toggle" id="keysToggle" aria-pressed="false" data-i18n-title="keysTip"><span aria-hidden="true">🎹</span> <span data-i18n="keysMode">Keys</span></button>
       <span class="ed" id="cursor">Ln 1, Col 1</span><span class="ed" id="bytes"></span>
       <span class="ed"><kbd>Ctrl+Space</kbd> <span data-i18n="hintSuggest">suggestions</span></span>

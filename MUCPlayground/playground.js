@@ -10,6 +10,9 @@ import { WaveEditor } from './wave-editor.js';
 import { FmEditor, formatVoice, INIT as INIT_VOICE } from './fm-editor.js';
 import { Keyboard } from './keyboard.js';
 import { Tracker } from './tracker.js';
+import { BankView } from './bank-view.js';
+import { mucVoices, voiceLines, writeDat as writeDatSlot, newDat as newDatBytes } from './voice-bank.js';
+import { timeline } from './mml-timeline.js';
 import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 
@@ -46,6 +49,22 @@ const T = {
     waveInfo: (n, e, lo, hi) => `${n}/${e} samples · min ${lo} · max ${hi}`, wave64: ' · played as 32 (averaged)',
     waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
     waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
+    bankTitle: 'Voice bank', bankTip: 'Voice bank: the song\'s FM voices (voice file and MUC) next to the text', bankTo: 'To',
+    bankShowEmpty: 'empty slots', bankAdd: 'Add', bankDel: 'Del', bankEdit: 'Edit', bankRename: 'Name', bankImport: 'Import', bankLoad: 'Load', bankSave: 'Save',
+    bankAddTip: 'Add a voice (Furnace\'s default) at the first free number, to the voice file or the MUC (To)', bankDelTip: 'Delete the selected voice (Delete)', bankEditTip: 'Edit the selected voice in the FM voice editor (Enter)',
+    bankRenameTip: 'Rename the selected voice (six characters, voice file only)', bankToDatTip: 'Move the selected MUC voice into the voice file (same number)', bankToMucTip: 'Copy the selected voice-file voice into the MUC as a definition',
+    bankImportTip: 'Take voices from .dat, .muc, .mub, .vgm / .vgz files and add them after the ones there are', bankLoadTip: 'Use a .dat voice file for this song (#voice)', bankSaveTip: 'Download the voice file (made from the MUC\'s voices if there is none)', bankUndoTip: 'Undo the last change to the voice file',
+    bankFile: (name, n) => `${name} · ${n} voices`, bankFileMissing: (name) => `${name}: not attached`, bankNoFile: 'no voice file',
+    bankEmpty: 'No FM voices yet: Add one, Import from a file, or Load a voice file.', bankHint: 'Click a voice to hear it, double-click to write @n at the caret',
+    bankSrc_dat: 'DAT', bankSrc_muc: 'MUC', bankSrc_over: 'MUC▸DAT', bankOverTip: 'defined in the MUC too, which wins over the voice file', bankInline: '(in the MUC)',
+    bankInMuc: (row) => `defined in the MUC, line ${row}`, bankInDat: (name) => `in ${name}`, bankUses: (n) => `${n} notes use it`, bankUnused: 'not used in the song',
+    bankFull: 'All 255 numbers are taken', bankAdded: (n, to) => `@${n} added to the ${to}`, bankDelUsed: (n, k) => `@${n} is used by ${k} notes. Delete it anyway?`,
+    bankDeleted: (n) => `@${n} deleted`, bankDelMucKeepDat: (n) => `@${n}'s MUC definition deleted; the voice file's @${n} is used again`,
+    bankFormText: 'This voice is written in the @% form: edit it in the text', bankRenameDatOnly: 'Only voice-file voices have names', bankRenamePrompt: 'Name (up to six letters or digits)',
+    bankToDatNeedsMuc: 'Pick a voice defined in the MUC', bankToMucNeedsDat: 'Pick a voice from the voice file', bankAlreadyMuc: 'The MUC already defines this number',
+    bankMovedToDat: (n, name) => `@${n} moved into ${name}`, bankCopiedToMuc: (n) => `@${n} copied into the MUC`, bankNotDat: (name) => `${name} is not a voice file`,
+    bankLoaded: (name, n) => `${name}: ${n} voices`, bankSavedFromMuc: 'Saved a voice file made from the MUC\'s voices', bankNothingToUndo: 'Nothing to undo',
+    bankImported: (n, to) => `${n} voices added to the ${to}`, bankImportSame: (n) => `${n} already in the bank`, bankImportFull: (n) => `${n} left out: no free numbers`, bankImportNone: (names) => `no FM voices in ${names}`,
     trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
     trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave',
     trkInput: 'Input', trkInputDisplay: 'As shown (C#4, OFF, 0F)', trkInputTracker: 'Quick keys (Z S X / Q 2 W)',
@@ -117,6 +136,22 @@ const T = {
     waveInfo: (n, e, lo, hi) => `샘플 ${n}/${e} · 최소 ${lo} · 최대 ${hi}`, wave64: ' · 평균 내어 32개로 연주',
     waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
     waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
+    bankTitle: '음색 뱅크', bankTip: '음색 뱅크: 곡의 FM 음색(음색 파일과 MUC)을 텍스트 옆에 표시', bankTo: '대상',
+    bankShowEmpty: '빈 칸', bankAdd: '추가', bankDel: '삭제', bankEdit: '편집', bankRename: '이름', bankImport: '가져오기', bankLoad: '로드', bankSave: '저장',
+    bankAddTip: '첫 빈 번호에 음색 추가 (Furnace 기본 음색). 대상: 음색 파일 또는 MUC', bankDelTip: '선택한 음색 삭제 (Delete)', bankEditTip: '선택한 음색을 FM 음색 편집기에서 편집 (Enter)',
+    bankRenameTip: '선택한 음색 이름 바꾸기 (6자, 음색 파일만)', bankToDatTip: '선택한 MUC 음색을 음색 파일로 옮기기 (같은 번호)', bankToMucTip: '선택한 음색 파일의 음색을 MUC 정의로 복사',
+    bankImportTip: '.dat, .muc, .mub, .vgm / .vgz 파일에서 음색을 가져와 뒤에 추가', bankLoadTip: '이 곡에 .dat 음색 파일 사용 (#voice)', bankSaveTip: '음색 파일 내려받기 (없으면 MUC 음색으로 만들어서)', bankUndoTip: '음색 파일의 마지막 변경 되돌리기',
+    bankFile: (name, n) => `${name} · 음색 ${n}개`, bankFileMissing: (name) => `${name}: 첨부 안 됨`, bankNoFile: '음색 파일 없음',
+    bankEmpty: '아직 FM 음색이 없습니다. 추가하거나, 파일에서 가져오거나, 음색 파일을 로드하세요.', bankHint: '음색을 클릭하면 들리고, 더블클릭하면 커서 위치에 @n을 씁니다',
+    bankSrc_dat: 'DAT', bankSrc_muc: 'MUC', bankSrc_over: 'MUC▸DAT', bankOverTip: 'MUC에도 정의되어 있어 음색 파일보다 우선합니다', bankInline: '(MUC 정의)',
+    bankInMuc: (row) => `MUC ${row}행에 정의`, bankInDat: (name) => `${name}에 있음`, bankUses: (n) => `음표 ${n}개가 사용`, bankUnused: '곡에서 사용 안 함',
+    bankFull: '255개 번호를 모두 쓰고 있습니다', bankAdded: (n, to) => `@${n}을 ${to}에 추가`, bankDelUsed: (n, k) => `@${n}은 음표 ${k}개가 사용합니다. 그래도 삭제할까요?`,
+    bankDeleted: (n) => `@${n} 삭제`, bankDelMucKeepDat: (n) => `@${n}의 MUC 정의를 삭제했습니다. 이제 음색 파일의 @${n}이 쓰입니다`,
+    bankFormText: '이 음색은 @% 형식이라 텍스트에서 편집하세요', bankRenameDatOnly: '이름은 음색 파일의 음색에만 있습니다', bankRenamePrompt: '이름 (영문·숫자 6자까지)',
+    bankToDatNeedsMuc: 'MUC에 정의된 음색을 고르세요', bankToMucNeedsDat: '음색 파일의 음색을 고르세요', bankAlreadyMuc: 'MUC에 이미 이 번호가 정의되어 있습니다',
+    bankMovedToDat: (n, name) => `@${n}을 ${name}로 옮김`, bankCopiedToMuc: (n) => `@${n}을 MUC로 복사`, bankNotDat: (name) => `${name}은 음색 파일이 아닙니다`,
+    bankLoaded: (name, n) => `${name}: 음색 ${n}개`, bankSavedFromMuc: 'MUC 음색으로 만든 음색 파일을 저장했습니다', bankNothingToUndo: '되돌릴 것이 없습니다',
+    bankImported: (n, to) => `${to}에 음색 ${n}개 추가`, bankImportSame: (n) => `${n}개는 이미 있음`, bankImportFull: (n) => `${n}개는 빈 번호가 없어 제외`, bankImportNone: (names) => `${names}에 FM 음색 없음`,
     trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
     trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브',
     trkInput: '입력', trkInputDisplay: '표시 형식대로 (C#4, OFF, 0F)', trkInputTracker: '빠른 키 (Z S X / Q 2 W)',
@@ -188,6 +223,22 @@ const T = {
     waveInfo: (n, e, lo, hi) => `サンプル ${n}/${e} · 最小 ${lo} · 最大 ${hi}`, wave64: ' · 平均して32個で演奏',
     waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
     waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
+    bankTitle: '音色バンク', bankTip: '音色バンク: 曲のFM音色（音色ファイルとMUC）をテキストの横に表示', bankTo: '追加先',
+    bankShowEmpty: '空き', bankAdd: '追加', bankDel: '削除', bankEdit: '編集', bankRename: '名前', bankImport: 'インポート', bankLoad: 'ロード', bankSave: '保存',
+    bankAddTip: '最初の空き番号に音色を追加（Furnaceの初期音色）。追加先: 音色ファイルかMUC', bankDelTip: '選んだ音色を削除（Delete）', bankEditTip: '選んだ音色をFM音色エディタで編集（Enter）',
+    bankRenameTip: '選んだ音色の名前を変える（6文字、音色ファイルのみ）', bankToDatTip: '選んだMUCの音色を音色ファイルへ移す（同じ番号）', bankToMucTip: '選んだ音色ファイルの音色をMUCの定義としてコピー',
+    bankImportTip: '.dat, .muc, .mub, .vgm / .vgz から音色を取り込み、後ろに追加', bankLoadTip: 'この曲に .dat 音色ファイルを使う（#voice）', bankSaveTip: '音色ファイルをダウンロード（なければMUCの音色から作成）', bankUndoTip: '音色ファイルの最後の変更を元に戻す',
+    bankFile: (name, n) => `${name} · ${n}音色`, bankFileMissing: (name) => `${name}: 未添付`, bankNoFile: '音色ファイルなし',
+    bankEmpty: 'FM音色がまだありません。追加、ファイルからインポート、または音色ファイルをロードしてください。', bankHint: '音色をクリックで試聴、ダブルクリックでカーソル位置に@nを書きます',
+    bankSrc_dat: 'DAT', bankSrc_muc: 'MUC', bankSrc_over: 'MUC▸DAT', bankOverTip: 'MUCにも定義があり、音色ファイルより優先されます', bankInline: '（MUC定義）',
+    bankInMuc: (row) => `MUC ${row}行目で定義`, bankInDat: (name) => `${name}内`, bankUses: (n) => `${n}音符が使用`, bankUnused: '曲では未使用',
+    bankFull: '255番まで埋まっています', bankAdded: (n, to) => `@${n}を${to}に追加`, bankDelUsed: (n, k) => `@${n}は${k}音符が使っています。削除しますか？`,
+    bankDeleted: (n) => `@${n}を削除`, bankDelMucKeepDat: (n) => `@${n}のMUC定義を削除しました。音色ファイルの@${n}が使われます`,
+    bankFormText: 'この音色は@%形式なのでテキストで編集してください', bankRenameDatOnly: '名前は音色ファイルの音色にだけあります', bankRenamePrompt: '名前（英数字6文字まで）',
+    bankToDatNeedsMuc: 'MUCで定義された音色を選んでください', bankToMucNeedsDat: '音色ファイルの音色を選んでください', bankAlreadyMuc: 'MUCにすでにこの番号の定義があります',
+    bankMovedToDat: (n, name) => `@${n}を${name}へ移動`, bankCopiedToMuc: (n) => `@${n}をMUCへコピー`, bankNotDat: (name) => `${name}は音色ファイルではありません`,
+    bankLoaded: (name, n) => `${name}: ${n}音色`, bankSavedFromMuc: 'MUCの音色から作った音色ファイルを保存しました', bankNothingToUndo: '元に戻すものがありません',
+    bankImported: (n, to) => `${to}に${n}音色を追加`, bankImportSame: (n) => `${n}個はすでにあり`, bankImportFull: (n) => `${n}個は空き番号がなく除外`, bankImportNone: (names) => `${names}にFM音色なし`,
     trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
     trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ',
     trkInput: '入力', trkInputDisplay: '表示どおり (C#4, OFF, 0F)', trkInputTracker: 'クイックキー (Z S X / Q 2 W)',
@@ -327,6 +378,7 @@ let markRows = new Map();   // row -> 'err' | 'warn'
 let markSpots = [];         // { row, col, kind } for the wavy underline
 let pickedMark = null;      // { row, kind }: the message last clicked, drawn as a red / yellow line
 let playingRows = null;     // [from, to] while only those rows play (line-play.js)
+let bankReady = false;      // the voice bank view exists (it is made further down)
 let waveEdit = null;        // { row, fm } of the definition open in the wave / FM editor
 
 function lineCount() { let n = 1; for (let i = 0; i < code.value.length; i++) if (code.value.charCodeAt(i) === 10) n++; return n; }
@@ -779,6 +831,7 @@ async function recoverMissingFiles() {
 }
 
 function renderFiles() {
+  if (bankReady) scheduleBank();
   const list = $('files');
   list.innerHTML = '';
   const shown = new Set();
@@ -1765,16 +1818,21 @@ async function loadRepoFile(path) {
 
 // ---------- split editor ----------
 function setSplit(mode) {
-  splitMode = ['side', 'stack', 'tracker'].includes(mode) ? mode : 'off';
+  splitMode = ['side', 'stack', 'tracker', 'bank'].includes(mode) ? mode : 'off';
   const box = $('panes');
-  box.classList.toggle('split-side', splitMode === 'side' || splitMode === 'tracker');
+  const right = splitMode === 'tracker' || splitMode === 'bank';
+  box.classList.toggle('split-side', splitMode === 'side' || right);
   box.classList.toggle('split-stack', splitMode === 'stack');
-  box.classList.toggle('split-tracker', splitMode === 'tracker');
-  // Tracker mode: the text on the left, the tracker (tracker.js) on the right.
-  panes[1].root.hidden = splitMode === 'off' || splitMode === 'tracker';
+  box.classList.toggle('split-tracker', right);
+  // Tracker / voice bank: the text on the left, the tracker (tracker.js) or the voice bank
+  // (bank-view.js) on the right.
+  panes[1].root.hidden = splitMode === 'off' || right;
   $('tracker').hidden = splitMode !== 'tracker';
+  $('bank').hidden = splitMode !== 'bank';
   $('trackerToggle').setAttribute('aria-pressed', String(splitMode === 'tracker'));
+  $('bankToggle').setAttribute('aria-pressed', String(splitMode === 'bank'));
   if (splitMode === 'tracker') { tracker.setText(code.value); tracker.layout(); }
+  if (splitMode === 'bank') bank.refresh();
   $('splitter').hidden = splitMode === 'off';
   $('splitter').setAttribute('aria-orientation', splitMode === 'stack' ? 'horizontal' : 'vertical');
   $('splitModes').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.split === splitMode)));
@@ -1873,6 +1931,7 @@ function writeEdit() {
 
 function writeVoice(voice) {
   if (!waveEdit) return;
+  if (waveEdit.dat) { bankWriteVoice(waveEdit.dat, voice, waveEdit.name); return; }
   const def = voiceAt(lines, waveEdit.row);
   if (!def || def.row !== waveEdit.row) return;
   const old = lines.slice(def.row, def.row + 5);
@@ -1913,7 +1972,7 @@ function writeWave(values) {
 
 function closeWaveEditor() {
   if (!waveEdit) return;
-  const row = waveEdit.row;
+  const row = waveEdit.row, wasDat = !!waveEdit.dat;
   waveEdit = null;
   if (waveEditor.isOpen) waveEditor.close();
   if (fmEditor.isOpen) fmEditor.close();
@@ -1922,6 +1981,7 @@ function closeWaveEditor() {
   renderGutter();
   renderHighlight();
   traceDirty = true;
+  if (wasDat) { bank.refresh(); bank.root.querySelector('.bank-list').focus(); return; }
   if (viewMode !== 'channels') {
     const at = lines.slice(0, row - 1).reduce((n, l) => n + l.length + 1, 0);
     code.focus();
@@ -2242,6 +2302,115 @@ for (const p of panes) {
   p.code.addEventListener('input', scheduleTracker);
   p.code.addEventListener('focus', () => { if (tracker.armed) { tracker.armed = false; tracker.draw(); } });
 }
+
+// ---------- voice bank ----------
+// The song's FM voices next to the text (bank-view.js): the voice file (#voice, VOICE.DAT
+// by default) and the MUC's own definitions; changes go to the attached file or the text.
+const VOICE_TAG = /^#voice[ \t]+([^\s;]+)/im;
+const bank = new BankView($('bank'), {
+  t,
+  text: () => code.value,
+  dat: () => {
+    const tag = VOICE_TAG.exec(code.value)?.[1].replace(/^"|"$/g, '');
+    const name = (tag || 'voice.dat').split(/[\\/]/).pop();
+    const f = files.get(name.toLowerCase());
+    return { name: tag ? name : f ? f.name : '', bytes: f ? new Uint8Array(f.data) : null };
+  },
+  setDat: (bytes, { name, link }) => {
+    attach(name, bytes.slice().buffer);
+    if (link) setVoiceTag(name);
+    scheduleCheck();
+  },
+  removeMuc: (entry) => replaceRows(entry.row, entry.endRow, null),
+  addMuc: (n, voice, name) => addVoiceText(voiceLines(n, voice, name)),
+  editMuc: (entry) => { const def = voiceAt(lines, entry.row); if (def) openFmEditor(def); },
+  editDat: (n, voice, name) => {
+    startEdit({ row: 0 }, true);
+    waveEdit.dat = n;
+    waveEdit.name = name;
+    fmEditor.open({ id: n, fb: voice.fb, alg: voice.alg, ops: voice.ops, row: 0, endRow: 0, col: 0, focus: -1, problems: [], oldLines: [] });
+  },
+  insertAt: (text) => {
+    const c = pane.code;
+    c.focus();
+    c.setRangeText(text, c.selectionStart, c.selectionEnd, 'end');
+    c.dispatchEvent(new Event('input'));
+  },
+  preview: async (voice) => {
+    await ensureKeysAudio();
+    if (!keysNode) return;
+    keysCtx.resume().catch(() => {});
+    keysNode.port.postMessage({ type: 'on', id: 2000, freq: 261.63, inst: { kind: 'fm', voice } });
+    setTimeout(() => keysNode.port.postMessage({ type: 'off', id: 2000 }), 450);
+  },
+  usage: () => {
+    // Notes per voice in the OPNA FM parts (A B C H I J, and L.. of a second chip).
+    const count = new Map();
+    try {
+      for (const tr of timeline(code.value)) {
+        if (!/^[ABCHIJLMNQRS][0-9]?$/.test(tr.name)) continue;
+        for (const ev of tr.events) if (ev.kind === 'note' && ev.inst !== null && ev.inst !== undefined) count.set(ev.inst, (count.get(ev.inst) || 0) + 1);
+      }
+    } catch { /* a song the reading cannot follow: no counts */ }
+    return count;
+  },
+  download: (name, bytes) => download(name, bytes, 'application/octet-stream'),
+  initVoice: INIT_VOICE,
+  colors: () => ({ muted: cssColor('--muted'), panel: cssColor('--panel') }),
+});
+bankReady = true;
+let bankTimer = 0;
+function scheduleBank() {
+  if (splitMode !== 'bank') return;
+  clearTimeout(bankTimer);
+  bankTimer = setTimeout(() => bank.refresh(), 200);
+}
+function bankWriteVoice(n, voice, name) {
+  const dat = bank.o.dat();
+  bank.writeDat(writeDatSlot(dat.bytes || newDatBytes(), n, voice, name));
+  bank.refresh();
+}
+// Replaces rows from..to (1-based) of the text with `rows` (null: removes them).
+function replaceRows(from, to, rows) {
+  const starts = [0];
+  for (let i = 0; i < lines.length; i++) starts.push(starts[i] + lines[i].length + 1);
+  const a = starts[from - 1];
+  let b = to < lines.length ? starts[to] : code.value.length;
+  let text = rows ? rows.join('\n') + '\n' : '';
+  // Removing a definition takes the blank line after it too.
+  if (!rows && lines[to] === '' && to < lines.length) b = starts[to + 1] ?? code.value.length;
+  code.setRangeText(text, a, b, 'preserve');
+  code.dispatchEvent(new Event('input'));
+}
+// A new voice definition: after the last one the MUC has, or at the end.
+function addVoiceText(rows) {
+  const defs = mucVoices(code.value);
+  const after = defs.length ? defs[defs.length - 1].endRow : lines.length;
+  const starts = [0];
+  for (let i = 0; i < lines.length; i++) starts.push(starts[i] + lines[i].length + 1);
+  const at = after < lines.length ? starts[after] : code.value.length;
+  const text = (at === code.value.length && !code.value.endsWith('\n') ? '\n' : '') + '\n' + rows.join('\n') + (at < code.value.length ? '\n' : '\n');
+  code.setRangeText(text, at, at, 'preserve');
+  code.dispatchEvent(new Event('input'));
+}
+// #voice: the existing tag gets the new name, or one is added after the first header tags.
+function setVoiceTag(name) {
+  const m = VOICE_TAG.exec(code.value);
+  if (m) {
+    const at = m.index + m[0].length - m[1].length;
+    if (m[1] !== name) { code.setRangeText(name, at, at + m[1].length, 'preserve'); code.dispatchEvent(new Event('input')); }
+    return;
+  }
+  let row = 0;
+  while (row < lines.length && /^#/.test(lines[row]) && !/^#\s*\*/.test(lines[row])) row++;
+  const starts = [0];
+  for (let i = 0; i < lines.length; i++) starts.push(starts[i] + lines[i].length + 1);
+  const at = row < lines.length ? starts[row] : code.value.length;
+  code.setRangeText(`#voice ${name}\n`, at, at, 'preserve');
+  code.dispatchEvent(new Event('input'));
+}
+$('bankToggle').addEventListener('click', () => setSplit(splitMode === 'bank' ? 'off' : 'bank'));
+for (const p of panes) p.code.addEventListener('input', scheduleBank);
 
 // ---------- start ----------
 {
