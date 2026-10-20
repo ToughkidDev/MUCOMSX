@@ -9,6 +9,7 @@ import { voiceAt, drawVoice, OP_COLORS } from './fm-preview.js';
 import { WaveEditor } from './wave-editor.js';
 import { FmEditor, formatVoice, INIT as INIT_VOICE } from './fm-editor.js';
 import { Keyboard } from './keyboard.js';
+import { Tracker } from './tracker.js';
 import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 
@@ -45,6 +46,11 @@ const T = {
     waveInfo: (n, e, lo, hi) => `${n}/${e} samples · min ${lo} · max ${hi}`, wave64: ' · played as 32 (averaged)',
     waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
     waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
+    trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
+    trkHint: 'Click a cell; Z S X … / Q 2 W … enter notes, Delete makes a rest, 1 a note off, ↑↓←→ PgUp PgDn move, numpad / * octave',
+    trkWhere: (row, tick, len) => `line ${row} · clock ${tick} · length ${len}`, trkShared: 'written once for every repeat / macro use: edits change all of them',
+    trkMacro: 'in a macro', trkPastEnd: 'After the end of this part: write more MML there first', trkCannot: 'Tied, portamento and echo notes are edited in the text',
+    trkEmpty: 'no parts',
     keysMode: 'Keys', keysTip: 'Keys mode: a piano under the editor, played with the mouse or the computer keyboard',
     keysSource: 'Sound', keysOctave: 'Octave', keysOctDown: 'Octave down (↓)', keysOctUp: 'Octave up (↑)', keysClose: 'Close keys mode',
     keysHintOn: 'Playing from the keyboard: Z S X D C … (lower), Q 2 W 3 E … (upper), ↑↓ octave',
@@ -105,6 +111,11 @@ const T = {
     waveInfo: (n, e, lo, hi) => `샘플 ${n}/${e} · 최소 ${lo} · 최대 ${hi}`, wave64: ' · 평균 내어 32개로 연주',
     waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
     waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
+    trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
+    trkHint: '셀을 클릭하세요. Z S X … / Q 2 W …로 음 입력, Delete는 쉼표, 1은 노트 오프, ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브',
+    trkWhere: (row, tick, len) => `${row}행 · ${tick}클록 · 길이 ${len}`, trkShared: '반복/매크로에서 한 번 쓴 음: 고치면 모든 반복에 적용됩니다',
+    trkMacro: '매크로 안', trkPastEnd: '이 파트가 끝난 뒤입니다. 먼저 텍스트에 MML을 더 써 주세요', trkCannot: '타이, 포르타멘토, 에코 음은 텍스트에서 고쳐 주세요',
+    trkEmpty: '파트 없음',
     keysMode: '건반', keysTip: '건반 모드: 에디터 아래에 건반을 표시하고 마우스나 키보드로 연주',
     keysSource: '음원', keysOctave: '옥타브', keysOctDown: '옥타브 내림 (↓)', keysOctUp: '옥타브 올림 (↑)', keysClose: '건반 모드 닫기',
     keysHintOn: '키보드로 연주 중: Z S X D C … (아래), Q 2 W 3 E … (위), ↑↓ 옥타브',
@@ -165,6 +176,11 @@ const T = {
     waveInfo: (n, e, lo, hi) => `サンプル ${n}/${e} · 最小 ${lo} · 最大 ${hi}`, wave64: ' · 平均して32個で演奏',
     waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
     waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
+    trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
+    trkHint: 'セルをクリック。Z S X … / Q 2 W … で音を入力、Deleteで休符、1でノートオフ、↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ',
+    trkWhere: (row, tick, len) => `${row}行目 · ${tick}クロック · 長さ ${len}`, trkShared: '繰り返し/マクロで一度だけ書かれた音: 直すとすべての繰り返しに反映されます',
+    trkMacro: 'マクロ内', trkPastEnd: 'このパートの終わりより後です。先にテキストにMMLを書いてください', trkCannot: 'タイ、ポルタメント、エコーの音はテキストで直してください',
+    trkEmpty: 'パートなし',
     keysMode: '鍵盤', keysTip: '鍵盤モード: エディタの下に鍵盤を出し、マウスやキーボードで演奏',
     keysSource: '音源', keysOctave: 'オクターブ', keysOctDown: 'オクターブ下げ (↓)', keysOctUp: 'オクターブ上げ (↑)', keysClose: '鍵盤モードを閉じる',
     keysHintOn: 'キーボードで演奏中: Z S X D C …（下）、Q 2 W 3 E …（上）、↑↓ オクターブ',
@@ -356,6 +372,7 @@ function updateCursor() {
   $('cursor').textContent = `Ln ${row}, Col ${col}`;
   updateWave(row);
   if (keysOpen) refreshKeySources();
+  if (splitMode === 'tracker' && document.activeElement === code) tracker.caretAt(row, col - 1);
 }
 
 // Definition previews: with the caret on an SCC wave (@Wn) the wave is drawn under it;
@@ -500,7 +517,7 @@ for (const p of panes) {
   p.code.addEventListener('focus', () => {
     if (pane !== p) closeSuggest();
     pane = p;
-    for (const o of panes) o.root.classList.toggle('focused', o === p && splitMode !== 'off');
+    for (const o of panes) o.root.classList.toggle('focused', o === p && !panes[1].root.hidden);
     updateCursor();
   });
 }
@@ -523,6 +540,7 @@ function setSource(text) {
   renderHighlight();
   markSpots = [];
   scheduleCheck();
+  scheduleTracker();
   markRows = new Map();
   renderGutter();
   updateBytes();
@@ -980,6 +998,7 @@ function onEngineMessage(m, source) {
       loopCount = 0;
       traceSession = m.session;
       traceMsx = !!m.info.msx;
+      trkPlay.clear();
       traceEvents = [];
       traceIndex = 0;
       traceStale = false;
@@ -1455,6 +1474,7 @@ function drawScope() {
     }
     g.stroke();
     updateTrace();
+    if (splitMode === 'tracker') updateTrackerPlayhead();
     if (viewMode === 'channels') channelView.update(playedFrame());
     requestAnimationFrame(frame);
   };
@@ -1531,6 +1551,7 @@ function updateTrace() {
     // Playing some lines: the other part rows only set things up, so they are not shown.
     if (playingRows && (row < playingRows[0] || row > playingRows[1]) && partLine(lines[row - 1])) continue;
     positions.set(key, { row, col: traceEvents[traceIndex - 2], len: traceEvents[traceIndex - 1] });
+    if (splitMode === 'tracker') trackerTrace(key, row, traceEvents[traceIndex - 2], traceEvents[traceIndex - 5] / SAMPLE_RATE);
     changed.push(key);
   }
   if (traceIndex > 50000) { traceEvents = traceEvents.slice(traceIndex); traceIndex = 0; }
@@ -1544,7 +1565,7 @@ function follow(changed) {
   const key = followKey !== null && positions.has(followKey) ? followKey : Math.min(...positions.keys());
   if (!changed.includes(key)) return;
   const now = performance.now();
-  for (const p of splitMode === 'off' ? [panes[0]] : panes.filter((o) => o !== pane)) {
+  for (const p of panes[1].root.hidden ? [panes[0]] : panes.filter((o) => o !== pane)) {
     if (now < p.holdUntil) continue;
     const code = p.code;
     const lh = parseFloat(getComputedStyle(code).lineHeight) || 20;
@@ -1726,16 +1747,21 @@ async function loadRepoFile(path) {
 
 // ---------- split editor ----------
 function setSplit(mode) {
-  splitMode = ['side', 'stack'].includes(mode) ? mode : 'off';
+  splitMode = ['side', 'stack', 'tracker'].includes(mode) ? mode : 'off';
   const box = $('panes');
-  box.classList.toggle('split-side', splitMode === 'side');
+  box.classList.toggle('split-side', splitMode === 'side' || splitMode === 'tracker');
   box.classList.toggle('split-stack', splitMode === 'stack');
-  panes[1].root.hidden = splitMode === 'off';
+  box.classList.toggle('split-tracker', splitMode === 'tracker');
+  // Tracker mode: the text on the left, the tracker (tracker.js) on the right.
+  panes[1].root.hidden = splitMode === 'off' || splitMode === 'tracker';
+  $('tracker').hidden = splitMode !== 'tracker';
+  $('trackerToggle').setAttribute('aria-pressed', String(splitMode === 'tracker'));
+  if (splitMode === 'tracker') { tracker.setText(code.value); tracker.layout(); }
   $('splitter').hidden = splitMode === 'off';
   $('splitter').setAttribute('aria-orientation', splitMode === 'stack' ? 'horizontal' : 'vertical');
   $('splitModes').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.split === splitMode)));
-  if (splitMode === 'off' && pane === panes[1]) { closeSuggest(); pane = panes[0]; }
-  for (const o of panes) o.root.classList.toggle('focused', o === pane && splitMode !== 'off');
+  if (panes[1].root.hidden && pane === panes[1]) { closeSuggest(); pane = panes[0]; }
+  for (const o of panes) o.root.classList.toggle('focused', o === pane && !panes[1].root.hidden);
   if (panes[1].code.value !== code.value) panes[1].code.value = code.value;
   renderGutter();
   renderHighlight();
@@ -1752,7 +1778,8 @@ $('splitter').addEventListener('pointerdown', (e) => {
   bar.classList.add('drag');
   const box = $('panes').getBoundingClientRect();
   const move = (ev) => {
-    const f = splitMode === 'side' ? (ev.clientX - box.left) / box.width : (ev.clientY - box.top) / box.height;
+    const across = getComputedStyle($('panes')).flexDirection !== 'column';
+    const f = across ? (ev.clientX - box.left) / box.width : (ev.clientY - box.top) / box.height;
     $('panes').style.setProperty('--split', `${Math.round(Math.min(0.85, Math.max(0.15, f)) * 1000) / 10}%`);
     renderMarks();
     traceDirty = true;
@@ -2027,9 +2054,11 @@ function caretInstrument(voices, waves) {
   let p = null;
   for (; row >= 1 && !p; row--) p = partLine(lines[row - 1]);
   if (!p) return { inst: { kind: 'fm', voice: INIT_VOICE }, label: t('keysDefault') };
-  const token = partTokens(p.name)[0];
-  const at = row + 1;
-  // The last @n this part used up to the caret's line.
+  return partInstrument(partTokens(p.name)[0], row + 1, voices, waves);
+}
+
+// What a part (token: 'A', 'MSXD', 'SCCB' …) sounds like at a row: { inst, label }.
+function partInstrument(token, at, voices, waves) {  // The last @n this part used up to the caret's line.
   let id = null;
   for (let r = 1; r <= at; r++) {
     const q = partLine(lines[r - 1]);
@@ -2080,6 +2109,104 @@ function keyNote(on, midi) {
   // Reopened without a tap: the audio starts on the first key.
   if (saved.open) { keysOpen = true; $('keysToggle').setAttribute('aria-pressed', 'true'); $('keys').hidden = viewMode === 'channels'; refreshKeySources(); }
 }
+
+// ---------- tracker mode ----------
+// The text on the left, the song as a tracker pattern on the right (tracker.js); an edit on
+// either side shows on the other, and while a song plays the rows follow it.
+const TRACK_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV';
+const tracker = new Tracker($('tracker'), {
+  t,
+  colors: (name) => {
+    const prefix = name.startsWith('SCC') ? 2 : name.startsWith('MSX') ? 1 : 0;
+    return PART_COLORS[(TRACK_LETTERS.indexOf(name[prefix ? 3 : 0]) + prefix * 4) % PART_COLORS.length];
+  },
+  sourceText: (row, col, len) => (lines[row - 1] || '').slice(col, col + len),
+  edit: (edits) => {
+    // Right to left, so earlier positions stay valid.
+    edits.sort((a, b) => b.row - a.row || b.col - a.col);
+    const starts = [0];
+    for (let i = 0; i < lines.length; i++) starts.push(starts[i] + lines[i].length + 1);
+    for (const e of edits) {
+      const at = starts[e.row - 1] + e.col;
+      code.setRangeText(e.text, at, at + e.len, 'end');
+    }
+    code.dispatchEvent(new Event('input'));
+    tracker.setText(code.value);
+    const first = edits[edits.length - 1];
+    if (first) revealSource({ row: first.row, col: first.col, len: first.text.length });
+  },
+  reveal: (src) => revealSource(src),
+  preview: (on, midi, name) => {
+    ensureKeysAudio();
+    if (!keysNode) return;
+    if (!on) { keysNode.port.postMessage({ type: 'off', id: 1000 + midi }); return; }
+    keysCtx.resume().catch(() => {});
+    const token = name ? name.replace(/[0-9]/g, '') : 'A';
+    const row = tracker.tracks[tracker.cursor.track]?.events[0]?.src.row || 1;
+    const inst = partInstrument(token, Math.max(row, linkRow || row), inlineVoices(), songWaves()).inst;
+    keysNode.port.postMessage({ type: 'on', id: 1000 + midi, freq: 440 * 2 ** ((midi - 69) / 12), inst });
+  },
+});
+let trackerTimer = 0, linkRow = 0;
+function scheduleTracker() {
+  if (splitMode !== 'tracker') return;
+  clearTimeout(trackerTimer);
+  trackerTimer = setTimeout(() => tracker.setText(code.value), 150);
+}
+// Shows where a tracker cell is written in the text: the row scrolled into view and the
+// token marked, without taking the focus from the tracker.
+function revealSource(src) {
+  const p = panes[0];
+  p.root.querySelector('.tlink')?.remove();
+  if (!src) return;
+  linkRow = src.row;
+  const lh = parseFloat(getComputedStyle(p.code).lineHeight) || 20;
+  const y = (src.row - 1) * lh;
+  if (y < p.code.scrollTop || y > p.code.scrollTop + p.code.clientHeight - lh * 2) {
+    p.code.scrollTop = Math.max(0, y - p.code.clientHeight / 3);
+    p.code.dispatchEvent(new Event('scroll'));
+  }
+  const line = lines[src.row - 1] || '';
+  const a = textPoint(src.row, src.col, p), b = textPoint(src.row, Math.min(line.length, src.col + Math.max(1, src.len)), p);
+  const mark = document.createElement('div');
+  mark.className = 'tlink';
+  mark.style.cssText = `left:${a.x - 1}px;top:${a.y}px;width:${Math.max(6, b.x - a.x) + 2}px;height:${a.lh}px`;
+  p.root.querySelector('.code-area').appendChild(mark);
+  p.code.addEventListener('scroll', () => mark.remove(), { once: true });
+}
+// Where each playing part is in the tracker, from the engine's trace: the event with that
+// source (the next one after the last, for repeats), and how fast clocks go by.
+const trkPlay = new Map();   // trace key -> { track, index, tick, len, at }
+let trkRate = 0;             // clocks per second
+function trackerTrace(key, row, col, at) {
+  const list = tracker.bySource?.get(`${row}:${col}`);
+  if (!list) return;
+  const prev = trkPlay.get(key);
+  let pick = null;
+  if (prev) pick = list.find(([k, i]) => k === prev.track && i > prev.index) || list.find(([k]) => k === prev.track);
+  if (!pick) pick = list[0];
+  const ev = tracker.tracks[pick[0]].events[pick[1]];
+  if (prev && pick[0] === prev.track && ev.tick > prev.tick && at > prev.at) {
+    const rate = (ev.tick - prev.tick) / (at - prev.at);
+    trkRate = trkRate ? trkRate * 0.8 + rate * 0.2 : rate;
+  }
+  trkPlay.set(key, { track: pick[0], index: pick[1], tick: ev.tick, len: ev.len, at });
+}
+let trkShown = null;
+function updateTrackerPlayhead() {
+  let tick = null;
+  if (playing && !traceStale && trkPlay.size) {
+    const now = playedFrame() / SAMPLE_RATE;
+    for (const p of trkPlay.values()) {
+      const at = Math.min(p.tick + p.len, p.tick + Math.max(0, now - p.at) * trkRate);
+      tick = tick === null ? at : Math.max(tick, at);
+    }
+  }
+  if (!playing && trkPlay.size) { trkPlay.clear(); trkRate = 0; }
+  if (tick !== trkShown) { trkShown = tick; tracker.setPlayhead(tick); }
+}
+$('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'tracker' ? 'off' : 'tracker'));
+for (const p of panes) p.code.addEventListener('input', scheduleTracker);
 
 // ---------- start ----------
 {
