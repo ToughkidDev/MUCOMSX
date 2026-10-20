@@ -30,7 +30,7 @@ A genre template plays drums, bass and chords. Write your melody in the part at 
 - FM voices are written in the song. Their four operator lines are OP1–OP4; keep a carrier's TL at 0 and set loudness with `v`.
 - MSX-MUSIC parts reuse the same FM voices: each becomes the nearest of the 15 built-in OPLL instruments.
 - Templates that use `SCCA`–`SCCE` need the msPb0102 format of MUCOMSX (MDPlayer4Mac v0.2.3 or later).
-- Portamento takes the default length: write `l4 {ce}`, not `{ce}4`.
+- Portamento: the length goes after the first note, `{c4 e}` (or leave it out to use `l`). `{ce}4` is an error.
 - `T` gives an approximate tempo, because it is converted to a Timer-B value.
 
 ### About the text encoding
@@ -59,7 +59,7 @@ All templates compile without errors or warnings. In MDPlayer4Mac v0.2.3 they pr
 - FM音色は曲の中に書きます。4行のオペレータはOP1~OP4の順です。キャリアのTLは0にして、音量は`v`で決めます。
 - MSX-MUSICのパートも同じFM音色を使います。それぞれOPLL内蔵の15音色のうち最も近いものになります。
 - `SCCA`~`SCCE`を使うテンプレートには、MUCOMSXのmsPb0102形式(MDPlayer4Mac v0.2.3以降)が必要です。
-- ポルタメントの長さは基本音長です。`{ce}4`ではなく`l4 {ce}`と書きます。
+- ポルタメントの音長は最初の音の後ろに書きます: `{c4 e}`(省略するとlの音長)。`{ce}4`はエラーになります。
 - `T`はTimer-Bの値に変換されるので、テンポはおおよその値になります。
 
 ### 文字コードについて
@@ -88,7 +88,7 @@ MUCPlaygroundは曲をShift-JISで保存します。韓国語の文字を含む�
 - FM 음색은 곡 안에 씁니다. 오퍼레이터 네 줄은 OP1~OP4 순서입니다. 캐리어의 TL은 0으로 두고, 음량은 `v`로 정합니다.
 - MSX-MUSIC 파트도 같은 FM 음색을 씁니다. 각각 OPLL 내장 15음색 중 가장 가까운 것으로 바뀝니다.
 - `SCCA`~`SCCE`를 쓰는 템플릿은 MUCOMSX의 msPb0102 형식(MDPlayer4Mac v0.2.3 이상)이 필요합니다.
-- 포르타멘토는 기본 길이를 씁니다. `{ce}4`가 아니라 `l4 {ce}`로 씁니다.
+- 포르타멘토의 길이는 첫 음 뒤에 씁니다: `{c4 e}`(생략하면 l의 길이). `{ce}4`는 오류가 납니다.
 - `T`는 Timer-B 값으로 바뀌기 때문에 템포가 대략적인 값입니다.
 
 ### 문자 인코딩

@@ -52,31 +52,31 @@
 ;      v13 (   volume; ( lowers by one step, ) raises by one
 ;      M24,1,2,4   vibrato (software LFO): delay,speed,step,depth
 ;      MF0     vibrato off again
-;      l4 {ce} portamento: slide from c to e over one default length
-;              (write the length with l first: {ce}4 is not accepted)
+;      {c4 e}  portamento: slide from c to e over a quarter note
+;              (the length goes after the first note; {ce}4 is an error)
 ;      p1 p2 p3   pan right, left, both (FM and ADPCM only)
 ; [JA] q4      音符の終わりを4クロック早く切る(q0は最後まで伸ばす)
 ;      c4&c8   タイ: 4分+8分の長さの1つの音 .
 ;      v13 (   音量。(で1段下げ、)で1段上げる .
 ;      M24,1,2,4   ビブラート(ソフトLFO): ディレイ,速さ,幅の刻み,深さ .
 ;      MF0     ビブラートを止める .
-;      l4 {ce} ポルタメント: 基本音長1つの間にcからeへすべる .
-;              (長さは先にlで指定: {ce}4の書き方は通りません)
+;      {c4 e}  ポルタメント: 4分音符の間にcからeへすべる .
+;              (音長は最初の音の後ろ。{ce}4はエラー)
 ;      p1 p2 p3   パン 右・左・両方(FMとADPCMのみ)
 ; [KO] q4      음 끝을 4클록 일찍 끊음(q0은 끝까지 유지)
 ;      c4&c8   타이: 4분+8분 길이의 한 음 .
 ;      v13 (   음량. (는 한 단계 내리고 )는 올림 .
 ;      M24,1,2,4   비브라토(소프트 LFO): 딜레이,속도,깊이 단계,깊이 .
 ;      MF0     비브라토 끄기 .
-;      l4 {ce} 포르타멘토: 기본 길이 한 개 동안 c에서 e로 미끄러짐 .
-;              (길이는 먼저 l로 지정: {ce}4처럼 쓰면 오류가 납니다)
+;      {c4 e}  포르타멘토: 4분음표 동안 c에서 e로 미끄러짐 .
+;              (길이는 첫 음 뒤에. {ce}4는 오류)
 ;      p1 p2 p3   팬 오른쪽, 왼쪽, 양쪽(FM과 ADPCM만)
 
 ; ---- A: plain, then expressive / A: そのまま、次に表情付き / A: 그대로, 다음엔 표현을 넣어서 ----
 A T96 @1 v12 o5 l8 q0 p3
 A L e4 d c d4 e4 | g2 e4 r4 | a4 g e d4 c4 | d1
 A   q4 e4 d c d4 e4 | q0 g4&g8 e8 e4 r4 | M24,1,2,4 a4 g e d4 c4 | d2&d4 MF0 r4
-A   q2 e4 d c ( d4 ( e4 | ) ) l4 {dg} g4 e4 r4 l8 | a4 g e d4 c4 | M24,1,2,4 c2&c4 MF0 r4
+A   q2 e4 d c ( d4 ( e4 | ) ) {d4 g} g4 e4 r4 | a4 g e d4 c4 | M24,1,2,4 c2&c4 MF0 r4
 
 ; ---- B: pad, panned left / B: 左に置いたパッド / B: 왼쪽에 둔 패드 ----
 B @2 v9 o4 l1 p2

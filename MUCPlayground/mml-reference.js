@@ -71,7 +71,7 @@ export const COMMANDS = [
   { label: 'K', sig: 'Kn', en: 'Transpose (absolute)', ko: '조옮김 (절대)', ja: '移調（絶対）' },
   { label: 'k', sig: 'kn', en: 'Transpose (relative)', ko: '조옮김 (상대)', ja: '移調（相対）' },
   { label: 's', sig: 'sn', en: 'Shuffle: alternating note-length adjustment', ko: '셔플: 음 길이를 번갈아 조정', ja: 'シャッフル：音長を交互に調整' },
-  { label: '{', insert: '{$0}', sig: '{c>c}4', on: ['fm', 'ssg', 'pcm'], en: 'Portamento: slide between the notes in braces', ko: '포르타멘토: 중괄호 안의 음 사이를 미끄러지듯', ja: 'ポルタメント：括弧内の音の間をなめらかに' },
+  { label: '{', insert: '{$0}', sig: '{c4>c}', on: ['fm', 'ssg', 'pcm'], en: 'Portamento: slide between the notes in braces; the length goes after the first note ({c>c}4 is an error)', ko: '포르타멘토: 중괄호 안의 음 사이를 미끄러지듯. 길이는 첫 음 뒤에 ({c>c}4는 오류)', ja: 'ポルタメント：括弧内の音の間をなめらかに。音長は最初の音の後ろ（{c>c}4はエラー）' },
   // LFO and effects
   { label: 'M', insert: 'M$0,,,', sig: 'Mdelay,speed,depth-step,depth', en: 'Software LFO (four numbers)', ko: '소프트웨어 LFO (숫자 4개)', ja: 'ソフトウェアLFO（4つの数）' },
   { label: 'MF', sig: 'MF0 / MF1', en: 'Software LFO off / on', ko: '소프트웨어 LFO 끔 / 켬', ja: 'ソフトウェアLFOオフ / オン' },
