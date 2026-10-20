@@ -5,14 +5,18 @@
 //             there (C#4), its voice (@) and volume (v) in hex, OFF where a rest follows a
 //             note, and a line while a note is held. Notes from repeats or macros are dimmed:
 //             they come from the same text as the first time
-//   editing   typing a note (Z S X … / Q 2 W …, as on the keys), Delete (rest) or 1 (note
-//             off) in a cell rewrites the MML token behind it: a new pitch, or the token cut
-//             in two where the cell lies inside a note or rest. The text changes, and the
-//             tracker is redrawn from the text
+//   editing   a note typed in a cell (tracker keys Z S X … / Q 2 W …, or the note names
+//             c d e f g a b with Shift for a sharp, as chosen under Keys; or the keys mode
+//             piano), Delete (rest) or note off rewrites the MML token behind it: a new pitch,
+//             or the token cut in two where the cell lies inside a note or rest. Below a
+//             part's last note, the note is added to the part's text (the note before it
+//             held up to there). Hex digits in the @ and v columns set the voice / volume
+//             (an @n / vn written before the note). The text changes, and the tracker is
+//             redrawn from the text
 //   playing   the page passes the playing position (from the engine's trace); the rows scroll
 //             with it, the playing row in the middle
 
-import { timeline, lengthText, noteText } from './mml-timeline.js';
+import { timeline, lengthText, noteText, tokenText } from './mml-timeline.js';
 import { KEY_MAP } from './keyboard.js';
 
 const NAMES = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-'];
@@ -34,7 +38,10 @@ export class Tracker {
     this.o = opts;
     this.tracks = [];
     this.perWhole = 16;
-    this.cursor = { track: 0, row: 0 };
+    this.cursor = { track: 0, row: 0, col: 0 };   // col: 0 note, 1 voice (@), 2 volume (v)
+    this.input = 'tracker';   // 'tracker' (Z S X … / Q 2 W …) or 'names' (c d e …)
+    try { this.input = localStorage.getItem('mucplayground.trackerInput') === 'names' ? 'names' : 'tracker'; } catch { /* default */ }
+    this.armed = false;       // the tracker was the last place written in (the piano writes here then)
     this.octave = 4;
     this.playTick = null;
     this.follow = true;
@@ -52,6 +59,8 @@ export class Tracker {
         <b>🎼 ${T('trkTitle')}</b>
         <label>${T('trkRow')} <select class="trk-res">${RESOLUTIONS.map((r) => `<option value="${r}"${r === this.perWhole ? ' selected' : ''}>1/${r}</option>`).join('')}</select></label>
         <span class="tool-group" role="group" aria-label="${T('keysOctave')}"><button type="button" class="btn small" data-oct="-1">−</button><output class="trk-oct"></output><button type="button" class="btn small" data-oct="1">+</button></span>
+        <label>${T('trkInput')} <select class="trk-input"><option value="tracker">${T('trkInputTracker')}</option><option value="names">${T('trkInputNames')}</option></select></label>
+        <span class="tool-group trk-tools" role="group"><button type="button" class="btn small" data-act="rest" title="${T('trkRestTip')}">${T('trkRest')}</button><button type="button" class="btn small" data-act="off" title="${T('trkOffTip')}">OFF</button><button type="button" class="btn small" data-act="keys" title="${T('trkKeysTip')}">🎹</button></span>
         <span class="trk-info"></span>
       </div>
       <div class="trk-scroll" tabindex="0" aria-label="${T('trkTitle')}"><canvas class="trk-canvas"></canvas><div class="trk-spacer"></div></div>`;
@@ -60,16 +69,20 @@ export class Tracker {
     this.canvas = q('.trk-canvas');
     this.spacer = q('.trk-spacer');
     q('.trk-res').onchange = (e) => { const tick = this.cursor.row * this.rowTicks; this.perWhole = +e.target.value; this.cursor.row = Math.floor(tick / this.rowTicks); this.layout(); this.scrollToCursor(); };
-    this.root.querySelectorAll('[data-oct]').forEach((b) => {
-      b.addEventListener('pointerdown', (e) => e.preventDefault());
-      b.onclick = () => this.setOctave(this.octave + +b.dataset.oct);
+    this.root.querySelectorAll('[data-oct], [data-act]').forEach((b) => b.addEventListener('pointerdown', (e) => e.preventDefault()));
+    this.root.querySelectorAll('[data-oct]').forEach((b) => { b.onclick = () => this.setOctave(this.octave + +b.dataset.oct); });
+    this.root.querySelectorAll('[data-act]').forEach((b) => {
+      b.onclick = () => (b.dataset.act === 'keys' ? this.o.keys() : this.edit(b.dataset.act));
     });
+    const input = q('.trk-input');
+    input.value = this.input;
+    input.onchange = () => { this.input = input.value; try { localStorage.setItem('mucplayground.trackerInput', this.input); } catch { /* ignore */ } this.showInfo(null); this.scroller.focus(); };
     // Scrolling by hand while a song plays stops the rows following it for a moment.
     this.scroller.addEventListener('scroll', () => { if (performance.now() - this.autoAt > 80) this.holdUntil = performance.now() + 2500; this.draw(); });
     this.scroller.addEventListener('pointerdown', (e) => this.click(e));
     this.scroller.addEventListener('keydown', (e) => this.key(e));
     this.scroller.addEventListener('keyup', (e) => { if (this.held === e.code) { this.o.preview(false, this.heldMidi); this.held = null; } });
-    this.scroller.addEventListener('focus', () => this.draw());
+    this.scroller.addEventListener('focus', () => { this.armed = true; this.draw(); });
     this.scroller.addEventListener('blur', () => this.draw());
     new ResizeObserver(() => this.layout()).observe(this.scroller);
     this.setOctave(this.octave);
@@ -105,8 +118,9 @@ export class Tracker {
   }
 
   get rows() {
+    // One more pattern after the longest part, to write new notes into.
     const end = Math.max(0, ...this.tracks.map((t) => t.end));
-    return Math.ceil(end / this.rowTicks) + 1;
+    return Math.ceil(end / this.rowTicks) + 64;
   }
 
   layout() {
@@ -124,6 +138,13 @@ export class Tracker {
     this.canvas.width = Math.round(w * dpr);
     this.canvas.height = Math.round(h * dpr);
     this.draw();
+  }
+
+  // x offset and width of a cell's note (0), @ (1) and v (2) fields.
+  subColumn(col) {
+    const cw = this.m.cw, gap = cw * 0.6;
+    const at = [6, 6 + cw * 3 + gap, 6 + cw * 5 + gap * 2][col];
+    return [at, col === 0 ? cw * 3 : cw * 2];
   }
 
   rowY(row) { return this.m.headH + this.pad + row * this.m.rowH - this.scroller.scrollTop; }
@@ -216,10 +237,12 @@ export class Tracker {
         }
         // more than one event in this row: a dot in the corner
         if (starts.length > 1) { g.fillStyle = C.num16; g.fillRect(x + m.colW - 6, y + 3, 3, 3); }
-        if (focused && k === this.cursor.track && r === this.cursor.row) {
+        if ((focused || this.armed) && k === this.cursor.track && r === this.cursor.row) {
+          const [cx, cw] = this.subColumn(this.cursor.col);
           g.strokeStyle = C.cursor; g.lineWidth = 1.5;
-          g.strokeRect(x + 2.5, y + 1.5, m.cw * 3 + 8, m.rowH - 3);
-          g.lineWidth = 1;
+          g.globalAlpha = focused ? 1 : 0.5;
+          g.strokeRect(x + cx - 3.5, y + 1.5, cw + 7, m.rowH - 3);
+          g.globalAlpha = 1; g.lineWidth = 1;
         }
       }
     }
@@ -301,9 +324,9 @@ export class Tracker {
   showInfo(ev, message) {
     const info = this.root.querySelector('.trk-info');
     if (message) { info.textContent = message; return; }
-    if (!ev) { info.textContent = this.o.t('trkHint'); return; }
+    if (!ev) { info.textContent = this.o.t(this.input === 'names' ? 'trkHintNames' : 'trkHint'); return; }
     const where = this.o.t('trkWhere', ev.src.row, ev.tick, ev.len);
-    info.textContent = where + (ev.shared ? ' · ' + this.o.t('trkShared') : '') + (ev.src.macro ? ' · ' + this.o.t('trkMacro') : '');
+    info.textContent = where + (ev.shared ? ' · ' + this.o.t('trkShared') : '') + (ev.src.macro ? ' · ' + this.o.t('trkMacro') : '') + (ev.src.alone ? '' : ' · ' + this.o.t('trkMulti'));
   }
 
   click(e) {
@@ -314,6 +337,8 @@ export class Tracker {
     const track = Math.floor((x + this.scroller.scrollLeft - this.m.numW) / this.m.colW);
     const row = Math.floor((y + this.scroller.scrollTop - this.m.headH - this.pad) / this.m.rowH);
     if (track < 0 || track >= this.tracks.length || row < 0) return;
+    const inCell = x + this.scroller.scrollLeft - this.m.numW - track * this.m.colW;
+    this.cursor.col = inCell < this.subColumn(1)[0] - 2 ? 0 : inCell < this.subColumn(2)[0] - 2 ? 1 : 2;
     this.scroller.focus({ preventScroll: true });
     this.moveTo(track, row);
   }
@@ -321,21 +346,82 @@ export class Tracker {
   key(e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const { track, row } = this.cursor;
-    const move = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0], PageUp: [0, -16], PageDown: [0, 16] }[e.code];
-    if (move) { e.preventDefault(); this.moveTo(track + move[0], row + move[1]); return; }
+    if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+      // across the note / @ / v fields, then to the next part
+      e.preventDefault();
+      let col = this.cursor.col + (e.code === 'ArrowRight' ? 1 : -1), t = track;
+      if (col > 2) { col = 0; t++; } else if (col < 0) { col = 2; t--; }
+      if (t < 0 || t >= this.tracks.length) return;
+      this.cursor.col = col;
+      this.moveTo(t, row);
+      return;
+    }
+    const move = { ArrowUp: -1, ArrowDown: 1, PageUp: -16, PageDown: 16 }[e.code];
+    if (move) { e.preventDefault(); this.moveTo(track, row + move); return; }
+    if (this.cursor.col > 0) {
+      // @ / v fields: hex digits, two make the value
+      if (/^[0-9a-f]$/i.test(e.key)) {
+        e.preventDefault();
+        const d = parseInt(e.key, 16);
+        const fresh = this.pending?.track !== track || this.pending?.row !== row || this.pending?.col !== this.cursor.col;
+        const value = fresh ? d : (this.pending.value * 16 + d) & 255;
+        this.pending = fresh ? { track, row, col: this.cursor.col, value } : null;
+        this.setParam(this.cursor.col === 1 ? '@' : 'v', value, !fresh);
+        return;
+      }
+      if (e.code === 'Delete' || e.code === 'Backspace') { e.preventDefault(); return; }
+    }
     if (e.code === 'Home') { e.preventDefault(); this.moveTo(track, 0); return; }
     if (e.code === 'End') { e.preventDefault(); this.moveTo(track, this.rows - 1); return; }
     if (e.code === 'NumpadDivide' || e.code === 'NumpadMultiply') { e.preventDefault(); this.setOctave(this.octave + (e.code === 'NumpadMultiply' ? 1 : -1)); return; }
     if (e.code === 'Delete' || e.code === 'Backspace') { e.preventDefault(); this.edit('rest'); return; }
-    if (e.code === 'Digit1' || e.code === 'Backquote') { e.preventDefault(); this.edit('off'); return; }
-    const semi = KEY_MAP[e.code];
-    if (semi === undefined) return;
+    let midi = null;
+    if (this.input === 'names') {
+      // MML-like: c d e f g a b (Shift: sharp), r a rest / note off, < > the octave
+      if (e.key === '<' || e.key === '>') { e.preventDefault(); this.setOctave(this.octave + (e.key === '>' ? 1 : -1)); return; }
+      if (e.key === 'r' || e.key === 'R') { e.preventDefault(); this.edit('off'); return; }
+      const name = /^Key([A-G])$/.exec(e.code);
+      if (!name) return;
+      midi = 12 * (this.octave + 1) + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[name[1]] + (e.shiftKey ? 1 : 0);
+    } else {
+      if (e.code === 'Digit1' || e.code === 'Backquote') { e.preventDefault(); this.edit('off'); return; }
+      const semi = KEY_MAP[e.code];
+      if (semi === undefined) return;
+      midi = 12 * (this.octave + 1) + semi;
+    }
     e.preventDefault();
     if (e.repeat) return;
-    const midi = 12 * (this.octave + 1) + semi;
     this.o.preview(true, midi, this.tracks[track]?.name);
     this.held = e.code; this.heldMidi = midi;
     this.edit('note', midi);
+  }
+
+  // A note from the keys mode piano.
+  enterNote(midi) {
+    this.cursor.col = 0;
+    this.edit('note', midi);
+  }
+
+  // Sets the voice (@) or volume (v) of the note starting in the cursor's row: an @n / vn
+  // just before it is changed, or one is written there. again: the second hex digit, which
+  // completes the value typed with the first.
+  setParam(kind, value, again) {
+    const { track, row } = this.cursor;
+    const ev = this.startsIn(track, row).find((e) => e.kind === 'note');
+    if (!ev) { this.showInfo(null, this.o.t('trkParamNote')); return; }
+    if (ev.tied || ev.porta || ev.echo) { this.showInfo(null, this.o.t('trkCannot')); return; }
+    const src = ev.src;
+    const before = this.o.sourceText(src.row, 0, src.col);
+    const m = new RegExp(`(${kind === '@' ? '@' : 'v'})(\\d+)\\s*$`).exec(before);
+    if (m && !(kind === '@' && /@W$/.test(before.slice(0, m.index + 2)))) {
+      const at = m.index + 1;
+      this.o.edit([{ row: src.row, col: at, len: m[2].length, text: String(value) }]);
+    } else {
+      this.o.edit([{ row: src.row, col: src.col, len: 0, text: `${kind}${value} ` }]);
+    }
+    this.cursor.row = row;
+    if (ev.shared) this.showInfo(null, this.o.t('trkShared'));
+    else this.showInfo(null, this.o.t(again ? 'trkParamSet' : 'trkParamNext', kind, value));
   }
 
   // ---------- editing ----------
@@ -346,9 +432,14 @@ export class Tracker {
     const tick = row * this.rowTicks;
     const tr = this.tracks[track];
     if (!tr) return;
+    this.armed = true;
     const starts = this.startsIn(track, row);
     const hit = starts.length ? { ev: starts[0] } : this.eventAt(track, tick);
-    if (!hit) { this.showInfo(null, this.o.t('trkPastEnd')); return; }
+    if (!hit) {
+      if (tick >= tr.end) this.append(tr, tick, action, midi);
+      else this.showInfo(null, this.o.t('trkPastEnd'));
+      return;
+    }
     const ev = hit.ev;
     if (ev.tied || ev.porta || ev.echo) { this.showInfo(null, this.o.t('trkCannot')); return; }
     const src = ev.src;
@@ -374,7 +465,36 @@ export class Tracker {
     }
     this.o.edit(edits);
     if (ev.shared) this.showInfo(null, this.o.t('trkShared'));
+    else if (!src.alone) this.showInfo(null, this.o.t('trkMulti'));
     this.cursor.row = Math.min(this.rows - 1, row + 1);
+  }
+
+  // A note (or a note off) below the part's last note: the part's text gets the note, and
+  // what was sounding before it (the last note or rest) is held up to it.
+  append(tr, tick, action, midi) {
+    if (tr.tail.ended) { this.showInfo(null, this.o.t('trkEnded')); return; }
+    const clock = tr.clock || 128, len = this.rowTicks;
+    const gap = tick - tr.end;
+    const edits = [];
+    let text = '';
+    const last = tr.events[tr.events.length - 1];
+    if (gap > 0) {
+      const plain = last && !last.shared && !last.tied && !last.porta && !last.echo && !last.src.macro && last.src.alone;
+      if (plain) {
+        // longer last note / rest instead of a gap
+        const letters = this.o.sourceText(last.src.row, last.src.col, last.src.letterLen);
+        edits.push({ row: last.src.row, col: last.src.col, len: last.src.len, text: tokenText(letters, last.len + gap, clock) });
+      } else text += tokenText('r', gap, clock) + ' ';
+    }
+    if (action === 'note') {
+      const [pre, name, post] = splitOctave(noteText(midi, tr.tail.oct));
+      text += pre + tokenText(name, len, clock) + post;
+    } else text += tokenText('r', len, clock);
+    const t = tr.tail;
+    if (t.alone) edits.push({ row: t.row, col: t.col, len: 0, text: ' ' + text });
+    else edits.push({ row: t.row, col: this.o.sourceText(t.row, 0, 1e9).length, len: 0, text: `\n${tr.name} ${text}` });
+    this.o.edit(edits);
+    this.cursor.row = Math.min(this.rows - 1, Math.floor(tick / this.rowTicks) + 1);
   }
 
   // ---------- playing ----------

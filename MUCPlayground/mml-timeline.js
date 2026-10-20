@@ -42,7 +42,7 @@ function streamOf(segments, macros = new Map(), depth = 0) {
         i += m[0].length - 1;
         continue;
       }
-      s.push({ ch: text[i], row: seg.row, col: seg.col + i, macro: seg.macro });
+      s.push({ ch: text[i], row: seg.row, col: seg.col + i, macro: seg.macro, alone: seg.alone !== false });
     }
     s.push({ ch: ' ', row: 0, col: 0 });   // lines do not run into each other
   }
@@ -249,9 +249,11 @@ export function timeline(text) {
     let body = line.slice(m[0].length);
     const semicolon = body.indexOf(';');
     if (semicolon >= 0) body = body.slice(0, semicolon);
-    for (const track of partTracks(m[2])) {
+    const tracksHere = partTracks(m[2]);
+    for (const track of tracksHere) {
       if (!segments.has(track)) segments.set(track, []);
-      segments.get(track).push({ text: body, row: k + 1, col: m[0].length });
+      // alone: the line writes only to this track, so notes can be added at its end.
+      segments.get(track).push({ text: body, row: k + 1, col: m[0].length, alone: tracksHere.length === 1, end: m[0].length + body.trimEnd().length });
     }
   });
   // Rests take every dot under the mucomDotNET driver, which MUCOMSX songs are compiled for.
@@ -265,12 +267,18 @@ export function timeline(text) {
     const seen = new Map();
     for (const ev of events) {
       const at = ev.src.at;
-      ev.src = { row: at.row, col: at.col, len: ev.src.len, letterLen: ev.src.letterLen, macro: !!at.macro };
+      // alone: false when the line is written by several parts (AB c d e): editing it changes them all.
+      ev.src = { row: at.row, col: at.col, len: ev.src.len, letterLen: ev.src.letterLen, macro: !!at.macro, alone: at.alone !== false };
       const key = `${at.row}:${at.col}`;
       seen.set(key, (seen.get(key) || 0) + 1);
     }
     for (const ev of events) ev.shared = seen.get(`${ev.src.row}:${ev.src.col}`) > 1;
-    if (events.length) tracks.push({ name, events, end: st.tick, loopTick: st.loopTick, clock: st.clock });
+    // Where more notes for this track can be written: after its last line's MML (or on a
+    // new line after it), at the octave the track ends on.
+    const lastSeg = segs[segs.length - 1];
+    const tail = { row: lastSeg.row, col: lastSeg.end, alone: lastSeg.alone, oct: st.oct, ended: st.ended };
+    // A part with no notes yet still gets a column, to start writing it from the tracker.
+    tracks.push({ name, events, end: st.tick, loopTick: st.loopTick, clock: st.clock, tail });
   }
   tracks.sort((a, b) => trackOrder(a.name) - trackOrder(b.name));
   return tracks;
@@ -292,6 +300,15 @@ export function lengthText(ticks, clock = 128) {
     }
   }
   return `%${ticks}`;
+}
+
+// A whole note or rest of any length: pieces of at most a whole note (each length is a
+// byte), tied with ^ for a note, separate rests for a rest. letters: 'c+', 'r' …
+export function tokenText(letters, ticks, clock = 128) {
+  const pieces = [];
+  for (let left = ticks; left > 0; left -= Math.min(left, clock)) pieces.push(lengthText(Math.min(left, clock), clock));
+  if (!pieces.length) return '';
+  return letters === 'r' ? pieces.map((l) => 'r' + l).join(' ') : letters + pieces.join('^');
 }
 
 // A note at `midi` written where the octave is `oct`: c+, >d<, <<a>> …

@@ -47,7 +47,12 @@ const T = {
     waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
     waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
     trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
-    trkHint: 'Click a cell; Z S X … / Q 2 W … enter notes, Delete makes a rest, 1 a note off, ↑↓←→ PgUp PgDn move, numpad / * octave',
+    trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave',
+    trkHintNames: 'Click a cell and type: c d e f g a b (Shift: sharp), r a rest / note off, < > octave, Delete a rest; hex digits in @ and v',
+    trkInput: 'Keys', trkInputTracker: 'Tracker (Z S X / Q 2 W)', trkInputNames: 'Note names (c d e …)',
+    trkRest: 'Rest', trkRestTip: 'Make the note in this cell a rest (Delete)', trkOffTip: 'Note off: a rest from this row on', trkKeysTip: 'Open the keys mode piano: its keys write notes here',
+    trkParamNote: 'Voice and volume go on a cell where a note starts', trkParamSet: (k, v) => `${k}${v} set`, trkParamNext: (k, v) => `${k}${v}: type a second hex digit for a two-digit value`,
+    trkEnded: 'This part ends with : here; write after it in the text', trkMulti: 'this line is written by several parts (e.g. BC): an edit changes all of them',
     trkWhere: (row, tick, len) => `line ${row} · clock ${tick} · length ${len}`, trkShared: 'written once for every repeat / macro use: edits change all of them',
     trkMacro: 'in a macro', trkPastEnd: 'After the end of this part: write more MML there first', trkCannot: 'Tied, portamento and echo notes are edited in the text',
     trkEmpty: 'no parts',
@@ -112,7 +117,12 @@ const T = {
     waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
     waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
     trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
-    trkHint: '셀을 클릭하세요. Z S X … / Q 2 W …로 음 입력, Delete는 쉼표, 1은 노트 오프, ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브',
+    trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브',
+    trkHintNames: '셀을 클릭하고 입력: c d e f g a b (Shift는 샵), r은 쉼표/노트 오프, < > 옥타브, Delete는 쉼표. @·v 칸은 16진 숫자',
+    trkInput: '입력 키', trkInputTracker: '트래커 (Z S X / Q 2 W)', trkInputNames: '음이름 (c d e …)',
+    trkRest: '쉼표', trkRestTip: '이 칸의 음을 쉼표로 (Delete)', trkOffTip: '노트 오프: 이 행부터 쉼표', trkKeysTip: '건반 모드 열기: 건반을 누르면 여기에 음이 입력됩니다',
+    trkParamNote: '음색과 볼륨은 음이 시작하는 칸에 넣습니다', trkParamSet: (k, v) => `${k}${v} 설정`, trkParamNext: (k, v) => `${k}${v}: 두 자리 값이면 16진 숫자를 하나 더 입력하세요`,
+    trkEnded: '이 파트는 여기서 :로 끝납니다. 텍스트에서 그 뒤에 써 주세요', trkMulti: '여러 파트(예: BC)가 함께 쓰는 줄입니다. 고치면 모두 바뀝니다',
     trkWhere: (row, tick, len) => `${row}행 · ${tick}클록 · 길이 ${len}`, trkShared: '반복/매크로에서 한 번 쓴 음: 고치면 모든 반복에 적용됩니다',
     trkMacro: '매크로 안', trkPastEnd: '이 파트가 끝난 뒤입니다. 먼저 텍스트에 MML을 더 써 주세요', trkCannot: '타이, 포르타멘토, 에코 음은 텍스트에서 고쳐 주세요',
     trkEmpty: '파트 없음',
@@ -177,7 +187,12 @@ const T = {
     waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
     waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
     trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
-    trkHint: 'セルをクリック。Z S X … / Q 2 W … で音を入力、Deleteで休符、1でノートオフ、↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ',
+    trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ',
+    trkHintNames: 'セルをクリックして入力: c d e f g a b（Shiftでシャープ）、rで休符/ノートオフ、< > でオクターブ、Deleteで休符。@・v欄は16進数字',
+    trkInput: '入力キー', trkInputTracker: 'トラッカー (Z S X / Q 2 W)', trkInputNames: '音名 (c d e …)',
+    trkRest: '休符', trkRestTip: 'このセルの音を休符に（Delete）', trkOffTip: 'ノートオフ: この行から休符', trkKeysTip: '鍵盤モードを開く: 鍵盤を押すとここに音が入ります',
+    trkParamNote: '音色と音量は音が始まるセルに入れます', trkParamSet: (k, v) => `${k}${v} を設定`, trkParamNext: (k, v) => `${k}${v}: 2桁の値ならもう1つ16進数字を入力`,
+    trkEnded: 'このパートはここで : で終わります。テキストでその後に書いてください', trkMulti: '複数のパート（例: BC）が共有する行です。直すとすべて変わります',
     trkWhere: (row, tick, len) => `${row}行目 · ${tick}クロック · 長さ ${len}`, trkShared: '繰り返し/マクロで一度だけ書かれた音: 直すとすべての繰り返しに反映されます',
     trkMacro: 'マクロ内', trkPastEnd: 'このパートの終わりより後です。先にテキストにMMLを書いてください', trkCannot: 'タイ、ポルタメント、エコーの音はテキストで直してください',
     trkEmpty: 'パートなし',
@@ -2093,6 +2108,8 @@ function refreshKeySources() {
 }
 
 function keyNote(on, midi) {
+  // With the tracker the last place written in, the piano writes notes there too.
+  if (on && splitMode === 'tracker' && tracker.armed) tracker.enterNote(midi);
   if (!keysNode) { ensureKeysAudio(); return; }
   if (keysCtx.state !== 'running') keysCtx.resume().catch(() => {});
   if (!on) { keysNode.port.postMessage({ type: 'off', id: midi }); return; }
@@ -2136,6 +2153,7 @@ const tracker = new Tracker($('tracker'), {
     if (first) revealSource({ row: first.row, col: first.col, len: first.text.length });
   },
   reveal: (src) => revealSource(src),
+  keys: () => setKeys(true),
   preview: (on, midi, name) => {
     ensureKeysAudio();
     if (!keysNode) return;
@@ -2206,7 +2224,10 @@ function updateTrackerPlayhead() {
   if (tick !== trkShown) { trkShown = tick; tracker.setPlayhead(tick); }
 }
 $('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'tracker' ? 'off' : 'tracker'));
-for (const p of panes) p.code.addEventListener('input', scheduleTracker);
+for (const p of panes) {
+  p.code.addEventListener('input', scheduleTracker);
+  p.code.addEventListener('focus', () => { if (tracker.armed) { tracker.armed = false; tracker.draw(); } });
+}
 
 // ---------- start ----------
 {
