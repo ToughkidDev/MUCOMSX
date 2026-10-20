@@ -5,6 +5,7 @@ import { Highlighter, suggestionsAt, PART_LETTERS, PART_COLORS } from './editor-
 import { explain, readableText } from './diagnostics.js';
 import { silentParts } from './silence-check.js';
 import { waveAt, drawWave } from './wave-preview.js';
+import { voiceAt, drawVoice, OP_COLORS } from './fm-preview.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 
 const SAMPLE_RATE = 44100;
@@ -39,6 +40,8 @@ const T = {
     waveInfo: (n, e, lo, hi) => `${n}/${e} samples · min ${lo} · max ${hi}`, wave64: ' · played as 32 (averaged)',
     waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
     waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.',
+    fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · carriers ${car}`, fmLegend: 'solid: carrier (heard) · dashed: modulator · envelopes include TL',
+    fmCount: (w, n, need) => `${w}: ${need} values are needed; this has ${n}.`, fmRange: (w, f, v, max) => `${w} ${f} ${v} is outside 0–${max}.`,
     noMessages: 'No messages.', loop: (n) => `loop ${n}`, missing: 'not attached', remove: 'Remove',
     demo: 'Demo (FM + SSG + rhythm)', template: 'Template (OPNA + MSX chips)', yourSong: 'Your song (autosaved)', samples: 'Samples',
     loadingSample: (n) => `Loading ${n}…`, sampleFailed: 'Could not load the sample: ',
@@ -89,6 +92,8 @@ const T = {
     waveInfo: (n, e, lo, hi) => `샘플 ${n}/${e} · 최소 ${lo} · 최대 ${hi}`, wave64: ' · 평균 내어 32개로 연주',
     waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
     waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.',
+    fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · 캐리어 ${car}`, fmLegend: '실선: 캐리어(들리는 음) · 점선: 모듈레이터 · 엔벨로프는 TL 포함',
+    fmCount: (w, n, need) => `${w}: 값이 ${need}개 필요한데 ${n}개입니다.`, fmRange: (w, f, v, max) => `${w} ${f} ${v}: 0–${max} 범위를 벗어났습니다.`,
     noMessages: '메시지 없음.', loop: (n) => `루프 ${n}`, missing: '첨부 안 됨', remove: '제거',
     demo: '데모 (FM + SSG + 리듬)', template: '템플릿 (OPNA + MSX 칩)', yourSong: '내 곡 (자동 저장)', samples: '샘플',
     loadingSample: (n) => `${n} 불러오는 중…`, sampleFailed: '샘플을 불러오지 못했습니다: ',
@@ -139,6 +144,8 @@ const T = {
     waveInfo: (n, e, lo, hi) => `サンプル ${n}/${e} · 最小 ${lo} · 最大 ${hi}`, wave64: ' · 平均して32個で演奏',
     waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
     waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。',
+    fmInfo: (alg, fb, car) => `ALG ${alg} · FB ${fb} · キャリア ${car}`, fmLegend: '実線: キャリア（聞こえる音）・点線: モジュレータ・エンベロープはTL込み',
+    fmCount: (w, n, need) => `${w}: 値が${need}個必要ですが、${n}個です。`, fmRange: (w, f, v, max) => `${w} ${f} ${v}は0–${max}の範囲外です。`,
     noMessages: 'メッセージなし。', loop: (n) => `ループ ${n}`, missing: '未添付', remove: '削除',
     demo: 'デモ（FM + SSG + リズム）', template: 'テンプレート（OPNA + MSXチップ）', yourSong: '自分の曲（自動保存）', samples: 'サンプル曲',
     loadingSample: (n) => `${n}を読み込み中…`, sampleFailed: 'サンプルを読み込めませんでした: ',
@@ -317,7 +324,8 @@ function updateCursor() {
   updateWave(row);
 }
 
-// SCC wave preview: with the caret on a wave definition (@Wn), the wave is drawn under it.
+// Definition previews: with the caret on an SCC wave (@Wn) the wave is drawn under it;
+// on an FM voice (@n and its five lines) the algorithm, output wave and envelopes.
 function cssColor(name, alpha = 1) {
   const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   const m = /^#([0-9a-f]{6})$/i.exec(v);
@@ -330,27 +338,46 @@ function updateWave(row) {
   const box = $('wave');
   const code = pane.code;
   if (row === undefined) row = code.value.slice(0, code.selectionStart).split('\n').length;
-  const def = document.activeElement === code && !suggest.open && viewMode !== 'channels'
-    ? waveAt(lines, row, code.value) : null;
+  const active = document.activeElement === code && !suggest.open && viewMode !== 'channels';
+  const def = active ? waveAt(lines, row, code.value) || voiceAt(lines, row) : null;
   if (!def) { hideWave(); return; }
   if (box.parentElement !== pane.area) pane.area.appendChild(box);
-  const nums = def.values.filter(Number.isFinite);
+  const fm = def.ops !== undefined;
+  box.classList.toggle('fm', fm);
   const head = box.querySelector('.wave-head');
   head.innerHTML = '<b></b><span></span>';
-  head.querySelector('b').textContent = `@W${def.id}`;
-  head.querySelector('span').textContent = t('waveInfo', def.values.length, def.expected,
-    nums.length ? Math.min(...nums) : '-', nums.length ? Math.max(...nums) : '-') + (def.expected === 64 ? t('wave64') : '');
   const notes = [];
-  if (def.values.length !== def.expected) notes.push(t('waveCount', def.values.length, def.expected));
-  if (def.values.some((v) => !Number.isFinite(v))) notes.push(t('waveBad'));
-  if (nums.some((v) => v < -128 || v > 127)) notes.push(t('waveRange'));
-  if (def.expected === 32 && !def.closed && def.values.length <= 32 && /\{/.test(lines[def.row - 1])) notes.push(t('waveOpen'));
+  const colors = {
+    line: cssColor('--accent2'), fill: cssColor('--accent2', 0.22), axis: cssColor('--muted'), grid: cssColor('--line'),
+    bad: cssColor('--err-line'), badFill: cssColor('--err-line', 0.25), muted: cssColor('--muted'), panel: cssColor('--panel'), bg: cssColor('--code-bg'),
+  };
+  if (fm) {
+    const carriers = { 0: '4', 1: '4', 2: '4', 3: '4', 4: '2, 4', 5: '2, 3, 4', 6: '2, 3, 4', 7: '1, 2, 3, 4' }[def.alg] ?? '?';
+    head.querySelector('b').textContent = `@${def.id}`;
+    head.querySelector('span').textContent = t('fmInfo', def.alg ?? '?', def.fb ?? '?', carriers);
+    const legend = document.createElement('span');
+    legend.className = 'fm-legend';
+    legend.innerHTML = OP_COLORS.map((c, k) => `<i style="color:${c}">OP${k + 1}</i>`).join(' ') + ' · ';
+    legend.append(t('fmLegend'));
+    head.appendChild(legend);
+    for (const p of def.problems) {
+      const where = p.op < 0 ? 'FB,ALG' : `OP${p.op + 1}`;
+      notes.push(p.count !== undefined ? t('fmCount', where, p.count, p.need) : t('fmRange', where, p.field, p.value, p.max ?? 7));
+    }
+  } else {
+    const nums = def.values.filter(Number.isFinite);
+    head.querySelector('b').textContent = `@W${def.id}`;
+    head.querySelector('span').textContent = t('waveInfo', def.values.length, def.expected,
+      nums.length ? Math.min(...nums) : '-', nums.length ? Math.max(...nums) : '-') + (def.expected === 64 ? t('wave64') : '');
+    if (def.values.length !== def.expected) notes.push(t('waveCount', def.values.length, def.expected));
+    if (def.values.some((v) => !Number.isFinite(v))) notes.push(t('waveBad'));
+    if (nums.some((v) => v < -128 || v > 127)) notes.push(t('waveRange'));
+    if (def.expected === 32 && !def.closed && def.values.length <= 32 && /\{/.test(lines[def.row - 1])) notes.push(t('waveOpen'));
+  }
   box.querySelector('.wave-note').textContent = notes.join(' ');
   box.hidden = false;
-  drawWave(box.querySelector('canvas'), def.values, def.expected, {
-    line: cssColor('--accent2'), fill: cssColor('--accent2', 0.22), axis: cssColor('--muted'), grid: cssColor('--line'),
-    bad: cssColor('--err-line'), badFill: cssColor('--err-line', 0.25),
-  });
+  if (fm) drawVoice(box.querySelector('canvas'), def, colors);
+  else drawWave(box.querySelector('canvas'), def.values, def.expected, colors);
   // Under the definition, or above it when there is no room below; hidden while the
   // definition is scrolled out of view.
   const area = box.parentElement;
