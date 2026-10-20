@@ -14,7 +14,8 @@
 //   editFile(n, data, name); importFile(name, bytes) -> [{ data, name? }]
 
 export class BankView {
-  // opts: t; kinds: { fm, scc }; insertAt(text); download(name, bytes).
+  // opts: t; kinds: { fm, scc }; insertAt(text); download(name, bytes); onKind(id) (a tab
+  // was picked).
   constructor(root, opts) {
     this.root = root;
     this.o = opts;
@@ -77,6 +78,7 @@ export class BankView {
     if (!this.o.kinds[id]) return;
     this.kind = id;
     this.refresh();
+    this.o.onKind?.(id);
   }
 
   // ---------- the list ----------

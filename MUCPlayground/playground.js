@@ -32,7 +32,7 @@ const T = {
     back: '← MUCOMSX', tagline: 'Write MUCOM88 MML, hear it right away',
     play: '▶ Play', stop: '■ Stop', volume: 'Volume', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
-    files: 'Voice / PCM files', filesHint: 'Files named by #voice or #pcm. Add them with the button, or drop them on the page.',
+    files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice or #pcm. Add them with the button, or drop them on the page. FM bank / SCC bank show and edit their voices and waves.',
     reference: 'Quick reference', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'Rhythm (v needs 7 values)',
     refPcm: 'ADPCM (needs #pcm)', refScc: 'SCC 1–5, waves @W0:{…}', refTempo: 'Tempo in BPM / raw Timer-B', refOctave: 'Octave, up, down',
     refLength: 'Default length, length, clocks', refVoice: 'Volume, voice', refLoop: 'Repeat, song loop point',
@@ -50,7 +50,8 @@ const T = {
     waveInfo: (n, e, lo, hi) => `${n}/${e} samples · min ${lo} · max ${hi}`, wave64: ' · played as 32 (averaged)',
     waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
     waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
-    bankTitle: 'Voice bank', bankTip: 'Voice bank: the song\'s FM voices (voice file and MUC) next to the text', bankTo: 'To',
+    bankTitle: 'Voice bank', bankTip: 'FM voice bank: the song\'s FM voices (voice file and MUC) next to the text', bankTo: 'To',
+    bankFmButton: 'FM bank', bankSccButton: 'SCC bank', bankSccTip: 'SCC wave bank: the song\'s SCC waves (wave file and MUC) next to the text',
     bankShowEmpty: 'empty slots', bankAdd: 'Add', bankDel: 'Del', bankEdit: 'Edit', bankRename: 'Name', bankImport: 'Import', bankLoad: 'Load', bankSave: 'Save',
     bankAddTip: 'Add a voice (Furnace\'s default) at the first free number, to the voice file or the MUC (To)', bankDelTip: 'Delete the selected voice (Delete)', bankEditTip: 'Edit the selected voice in the FM voice editor (Enter)',
     bankRenameTip: 'Rename the selected voice (six characters, voice file only)', bankToDatTip: 'Move the selected MUC voice into the voice file (same number)', bankToMucTip: 'Copy the selected voice-file voice into the MUC as a definition',
@@ -119,7 +120,7 @@ const T = {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
     play: '▶ 재생', stop: '■ 정지', volume: '음량', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
-    files: '음색 / PCM 파일', filesHint: '#voice, #pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요.',
+    files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM 뱅크 / SCC 뱅크에서 음색과 파형을 보고 편집합니다.',
     reference: '빠른 참조', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: '리듬 (v는 값 7개)',
     refPcm: 'ADPCM (#pcm 필요)', refScc: 'SCC 1–5, 파형 @W0:{…}', refTempo: '템포 BPM / Timer-B 값', refOctave: '옥타브, 올림, 내림',
     refLength: '기본 길이, 길이, 클록', refVoice: '음량, 음색', refLoop: '반복, 곡 루프 지점',
@@ -137,7 +138,8 @@ const T = {
     waveInfo: (n, e, lo, hi) => `샘플 ${n}/${e} · 최소 ${lo} · 최대 ${hi}`, wave64: ' · 평균 내어 32개로 연주',
     waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
     waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
-    bankTitle: '음색 뱅크', bankTip: '음색 뱅크: 곡의 FM 음색(음색 파일과 MUC)을 텍스트 옆에 표시', bankTo: '대상',
+    bankTitle: '음색 뱅크', bankTip: 'FM 음색 뱅크: 곡의 FM 음색(음색 파일과 MUC)을 텍스트 옆에 표시', bankTo: '대상',
+    bankFmButton: 'FM 뱅크', bankSccButton: 'SCC 뱅크', bankSccTip: 'SCC 파형 뱅크: 곡의 SCC 파형(파형 파일과 MUC)을 텍스트 옆에 표시',
     bankShowEmpty: '빈 칸', bankAdd: '추가', bankDel: '삭제', bankEdit: '편집', bankRename: '이름', bankImport: '가져오기', bankLoad: '로드', bankSave: '저장',
     bankAddTip: '첫 빈 번호에 음색 추가 (Furnace 기본 음색). 대상: 음색 파일 또는 MUC', bankDelTip: '선택한 음색 삭제 (Delete)', bankEditTip: '선택한 음색을 FM 음색 편집기에서 편집 (Enter)',
     bankRenameTip: '선택한 음색 이름 바꾸기 (6자, 음색 파일만)', bankToDatTip: '선택한 MUC 음색을 음색 파일로 옮기기 (같은 번호)', bankToMucTip: '선택한 음색 파일의 음색을 MUC 정의로 복사',
@@ -206,7 +208,7 @@ const T = {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
     play: '▶ 再生', stop: '■ 停止', volume: '音量', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
-    files: '音色 / PCMファイル', filesHint: '#voice・#pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。',
+    files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FMバンク / SCCバンクで音色と波形を表示・編集します。',
     reference: 'クイックリファレンス', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'リズム（vは7つの値）',
     refPcm: 'ADPCM（#pcmが必要）', refScc: 'SCC 1–5、波形 @W0:{…}', refTempo: 'テンポ BPM / Timer-B値', refOctave: 'オクターブ、上げ、下げ',
     refLength: '基本音長、音長、クロック', refVoice: '音量、音色', refLoop: '繰り返し、曲のループ位置',
@@ -224,7 +226,8 @@ const T = {
     waveInfo: (n, e, lo, hi) => `サンプル ${n}/${e} · 最小 ${lo} · 最大 ${hi}`, wave64: ' · 平均して32個で演奏',
     waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
     waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
-    bankTitle: '音色バンク', bankTip: '音色バンク: 曲のFM音色（音色ファイルとMUC）をテキストの横に表示', bankTo: '追加先',
+    bankTitle: '音色バンク', bankTip: 'FM音色バンク: 曲のFM音色（音色ファイルとMUC）をテキストの横に表示', bankTo: '追加先',
+    bankFmButton: 'FMバンク', bankSccButton: 'SCCバンク', bankSccTip: 'SCC波形バンク: 曲のSCC波形（波形ファイルとMUC）をテキストの横に表示',
     bankShowEmpty: '空き', bankAdd: '追加', bankDel: '削除', bankEdit: '編集', bankRename: '名前', bankImport: 'インポート', bankLoad: 'ロード', bankSave: '保存',
     bankAddTip: '最初の空き番号に音色を追加（Furnaceの初期音色）。追加先: 音色ファイルかMUC', bankDelTip: '選んだ音色を削除（Delete）', bankEditTip: '選んだ音色をFM音色エディタで編集（Enter）',
     bankRenameTip: '選んだ音色の名前を変える（6文字、音色ファイルのみ）', bankToDatTip: '選んだMUCの音色を音色ファイルへ移す（同じ番号）', bankToMucTip: '選んだ音色ファイルの音色をMUCの定義としてコピー',
@@ -1831,13 +1834,9 @@ function setSplit(mode) {
   $('tracker').hidden = splitMode !== 'tracker';
   $('bank').hidden = splitMode !== 'bank';
   $('trackerToggle').setAttribute('aria-pressed', String(splitMode === 'tracker'));
-  $('bankToggle').setAttribute('aria-pressed', String(splitMode === 'bank'));
+  markBankButtons();
   if (splitMode === 'tracker') { tracker.setText(code.value); tracker.layout(); }
-  if (splitMode === 'bank') {
-    // A song with SCC parts and no FM voices opens on the SCC tab.
-    if (mode === 'bank' && /^[ \t]*SCC[A-E]/m.test(code.value) && !mucVoices(code.value).length && !/^#voice/im.test(code.value)) bank.kind = 'scc';
-    bank.refresh();
-  }
+  if (splitMode === 'bank') bank.refresh();
   $('splitter').hidden = splitMode === 'off';
   $('splitter').setAttribute('aria-orientation', splitMode === 'stack' ? 'horizontal' : 'vertical');
   $('splitModes').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.split === splitMode)));
@@ -2391,6 +2390,7 @@ const bank = new BankView($('bank'), {
     c.dispatchEvent(new Event('input'));
   },
   download: (name, bytes) => download(name, bytes, 'application/octet-stream'),
+  onKind: () => markBankButtons(),
   kinds: {
     fm: {
       id: 'fm', label: 'FM', first: 1, mark: '@', hasNames: true, defaultFile: 'VOICE.DAT', accept: '.dat,.muc,.mub,.vgm,.vgz,.txt',
@@ -2521,11 +2521,21 @@ function removeFileTag(tag) {
   code.setRangeText('', m.index, m.index + m[0].length, 'preserve');
   code.dispatchEvent(new Event('input'));
 }
-// In the voice / PCM files card; opening it from the channel view goes back to the editor.
-$('bankToggle').addEventListener('click', () => {
-  if (splitMode !== 'bank' && viewMode === 'channels') setView('editor');
-  setSplit(splitMode === 'bank' ? 'off' : 'bank');
-});
+// FM bank / SCC bank, in the voice / PCM files card: each opens the bank on its tab (and
+// closes it when that tab is showing); from the channel view it goes back to the editor.
+function markBankButtons() {
+  for (const id of ['bankToggle', 'sccBankToggle']) $(id).setAttribute('aria-pressed', String(splitMode === 'bank' && bank.kind === $(id).dataset.kind));
+}
+for (const id of ['bankToggle', 'sccBankToggle']) {
+  $(id).addEventListener('click', () => {
+    const kind = $(id).dataset.kind;
+    if (splitMode === 'bank' && bank.kind === kind) { setSplit('off'); return; }
+    if (viewMode === 'channels') setView('editor');
+    bank.kind = kind;
+    if (splitMode !== 'bank') setSplit('bank'); else bank.refresh();
+    markBankButtons();
+  });
+}
 for (const p of panes) p.code.addEventListener('input', scheduleBank);
 
 // ---------- start ----------
