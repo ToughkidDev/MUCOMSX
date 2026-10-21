@@ -1,0 +1,317 @@
+#mucom88 1.7
+#title Midnight Pier
+#composer MUCOMSX demo
+#comment City pop demo: OPNA FM, SSG and rhythm, MSX-MUSIC, MSX PSG and SCC in one song.
+
+; ==================================================================
+;  Midnight Pier - a city pop demo for every chip
+;  ミッドナイト・ピア - 全チップで鳴らすシティポップのデモ
+; ==================================================================
+; [EN] An 80s Japanese city pop tune: electric piano chords, a busy
+;      finger bass, sixteenth-note guitar cutting, string pads, brass
+;      hits and a soaring lead. It uses every chip MUCOMSX can play:
+;      OPNA (YM2608):  A lead, B bass, C H I electric piano,
+;                      J string pad, D E F SSG, G rhythm
+;      MSX-MUSIC:      MSXA-C guitar cutting, MSXG drums (YM2413)
+;      MSX PSG:        MSXD MSXF bells, MSXE shaker (AY-3-8910)
+;      SCC / SCC+:     SCCA lead an octave up, SCCB SCCC pads,
+;                      SCCD SCCE brass hits (K052539, msPb0102)
+; [JA] 80年代のシティポップ風の曲です。エレピの和音、よく動く指弾き
+;      ベース、16分のギターカッティング、ストリングスのパッド、
+;      ブラスのヒット、伸びやかなリード。MUCOMSXで鳴らせる全チップを
+;      使います:
+;      OPNA(YM2608):  Aリード、Bベース、C H Iエレピ、
+;                      Jストリングス、D E F はSSG、Gリズム
+;      MSX-MUSIC:      MSXA-C ギターカッティング、MSXG ドラム(YM2413)
+;      MSX PSG:        MSXD MSXF ベル、MSXE シェイカー(AY-3-8910)
+;      SCC / SCC+:     SCCA 1オクターブ上のリード、SCCB SCCC パッド、
+;                      SCCD SCCE ブラスのヒット(K052539、msPb0102)
+;
+; [EN] Form (4/4, T104): intro 4 bars, then the loop (L): verse 8,
+;      pre-chorus 4, chorus 8 bars. Every part is 24 bars long.
+; [JA] 構成(4/4、T104): イントロ4小節、その後のループ(L): Aメロ8、
+;      Bメロ4、サビ8小節。全パートが24小節です。
+;
+; [EN] Try: mute chips in the channel view to hear each layer alone,
+;      or change the tempo T104 of part A.
+; [JA] 試してみよう: チャンネルビューでチップごとにミュートして各パートを
+;      聴いたり、AパートのテンポT104を変えたりしてみましょう。
+; ==================================================================
+
+; [EN] Chords / [JA] コード
+;   intro  | Fmaj7 | E7    | Am7    | Gm7 C7    |
+;   verse  | Dm9   | G13   | Cmaj9  | Am9       |
+;          | Dm9   | G13   | Em7 A7 | Dm7 G7    |
+;   pre    | Bbmaj7| Am7   | Abmaj7 | G7sus4 G7 |
+;   chorus | Fmaj7 | E7    | Am7    | Gm7 C7    |
+;          | Fmaj7 | E7    | Am7 D7 | Dm7 G7    |
+; [EN] Fmaj7 E7 Am7 Gm7-C7 is the city pop progression (IVmaj7 III7
+;      VIm7 Vm7-I7). / [JA] Fmaj7 E7 Am7 Gm7-C7 はシティポップ定番の
+;      進行(IVmaj7 III7 VIm7 Vm7-I7)です。
+
+; ---- FM voices / FM音色 ----
+; [EN] @n / FB,ALG / one line per operator OP1-OP4
+;      (AR,D1R,D2R,RR,D1L,TL,KS,ML,DT).
+; [JA] @n / FB,ALG / オペレータOP1-OP4ごとに1行
+;      (AR,D1R,D2R,RR,D1L,TL,KS,ML,DT)。
+; @1 lead: ALG 4, two detuned pairs for a wide synth brass lead
+;    リード: ALG 4、デチューンした2組で広がるシンセブラス
+  @1
+   5,4
+   24,8,2,6,3,30,0,1,3
+   20,6,1,6,2,0,0,1,3
+   24,10,2,6,3,36,0,2,7
+   20,6,1,6,2,0,0,1,7
+
+; @2 finger bass: ALG 0, the first operator decays fast for the pluck
+;    指弾きベース: ALG 0、最初のオペレータが速く減衰してアタックを作る
+  @2
+   5,0
+   31,18,0,8,2,28,0,0,0
+   31,14,0,8,2,40,0,1,3
+   31,12,0,8,2,36,0,1,7
+   31,8,4,8,2,0,0,1,0
+
+; @3 electric piano: ALG 4, a soft body pair and a bright x14 "tine"
+;    エレピ: ALG 4、柔らかい本体の組と14倍の明るい「ティン」の組
+  @3
+   3,4
+   31,10,4,6,4,30,1,1,0
+   31,6,2,6,3,0,1,1,3
+   31,20,10,6,15,44,1,14,0
+   31,8,3,6,4,0,1,1,7
+
+; @4 string pad: ALG 4, slow attack and release
+;    ストリングス: ALG 4、ゆっくりしたアタックとリリース
+  @4
+   6,4
+   14,2,0,5,1,34,0,1,3
+   12,2,1,5,1,0,0,1,3
+   14,2,0,5,1,38,0,2,7
+   12,2,1,5,1,0,0,1,7
+
+; @5 guitar for MSX-MUSIC: OP3 and OP4 are set so that the nearest
+;    built-in OPLL instrument is the guitar. Not used on OPNA.
+;    MSX-MUSIC用ギター: 内蔵OPLL音色のうちギターが最も近くなるよう
+;    OP3とOP4を設定。OPNAでは使いません。
+  @5
+   7,2
+   31,0,0,7,0,127,0,1,0
+   31,0,0,7,0,127,0,1,0
+   31,16,2,3,2,26,0,3,0
+   31,14,2,3,1,0,0,1,0
+
+; ---- SCC waves / SCC波形 ----
+; [EN] @W0 soft pad (sine + a little 3rd harmonic), @W1 brass (soft
+;      sawtooth), @W2 lead (sine + 2nd and 3rd harmonics).
+; [JA] @W0 柔らかいパッド(サイン+少しの3倍音)、@W1 ブラス(柔らかい
+;      のこぎり波)、@W2 リード(サイン+2倍音と3倍音)。
+  @W0:{ 0,30,55,73,83,87,85,83,82,83,85,87,83,73,55,30,0,-30,-55,-73,-83,-87,-85,-83,-82,-83,-85,-87,-83,-73,-55,-30 }
+  @W1:{ 0,73,109,102,77,63,64,67,59,44,34,33,32,24,11,2,0,-2,-11,-24,-32,-33,-34,-44,-59,-67,-64,-63,-77,-102,-109,-73 }
+  @W2:{ 0,37,69,93,105,107,101,90,78,67,58,52,45,37,27,14,0,-14,-27,-37,-45,-52,-58,-67,-78,-90,-101,-107,-105,-93,-69,-37 }
+
+; ---- Macro / マクロ ----
+; [EN] *1 one bar of shaker: louder on the off-beat eighths.
+; [JA] *1 シェイカー1小節: 裏の8分を強く。
+#*1{ v8c v6c v12c v6c v8c v6c v12c v6c v8c v6c v12c v6c v8c v6c v12c v6c }
+
+; ---- OPNA FM / OPNA FM ----
+; [EN] A lead with vibrato (M), B finger bass, C H I one note each
+;      of the electric piano chord (p pans them), J string pad.
+; [JA] A ビブラート(M)付きリード、B 指弾きベース、C H I エレピ和音の
+;      1音ずつ(pで左右に振る)、J ストリングスのパッド。
+A T104 @1 v13 q1 p3 M18,1,2,5 l8
+A   o5 r e16 g16 a g16 e16 g4 r c16 d16 | e8. d16 <b g+ b4 r4 | r >c16 d16 e d16 c16 d4 e g | f8. e16 d c d e g4
+A L o5 r4 a a16 g16 a >c <a g | e4. d e f16 e16 d4 | r e16 g16 b a16 g16 a8. g16 e d | e2 r4 r c16 d16
+A   e f a >c <a8. g16 f e | d4. e f4 e16 d16 e | g8. f16 e d c+ e g b | a4. g f d <b >d
+A   o4 d f a >c d4. c | e4. d c <a >c4 | e-4. c <g a- >c4 | d4. c16 d16 f4 g4
+A   o5 r e16 g16 a g16 e16 g8. a16 >c <a | b4 a g+ e4. r | r e16 g16 a >c d e8. d16 c | d4 <b- a g e g4
+A   r e16 g16 a g16 e16 g8. a16 >c <a | b4 >d <b g+4 e4 | a8. b16 >c <a f+ a >c d | e4. d <b4 g a16 b16
+B @2 v14 q2 p3 l8
+B   o2 f8. f16 >f <f f8. >c16 f e16 <e-16 | e8. e16 >e <e e8. b16 >e d16 <<g+16 | a8. a16 >a <a a8. >e16 a g16 f+16 | g8. g16 >g d16 <<b16 >c8. c16 >c <g16 c+16
+B L o2 d8. d16 >d <d d8. a16 >d c16 <f+16 | g8. g16 >g <g g8. >d16 g f16 <<b16 | >c8. c16 >c <c c8. g16 >c <b16 <g+16 | a8. a16 >a <a a8. >e16 a g16 c+16
+B   d8. d16 >d <d d8. a16 >d c16 <f+16 | g8. g16 >g <g g8. >d16 g f16 <e-16 | e8. e16 >e <b16 <g+16 a8. a16 >a e16 c+16 | d8. d16 >d <a16 f+16 g8. g16 >g d16 <<a16
+B   o1 b-8. b-16 >b- <b- b-8. >f16 b- a16 <a-16 | a8. a16 >a <a a8. >e16 a g16 g16 | a-8. a-16 >a- <a- a-8. >e-16 a- g16 <g-16 | g8. g16 >g d16 <g-16 g8. g16 >g d16 <e16
+B   o2 f8. f16 >f <f f8. >c16 f e16 <e-16 | e8. e16 >e <e e8. b16 >e d16 <<g+16 | a8. a16 >a <a a8. >e16 a g16 f+16 | g8. g16 >g d16 <<b16 >c8. c16 >c <g16 e16
+B   f8. f16 >f <f f8. >c16 f e16 <e-16 | e8. e16 >e <e e8. b16 >e d16 <<g+16 | a8. a16 >a e16 c+16 d8. d16 >d <a16 c+16 | d8. d16 >d <a16 f+16 g8. g16 >g d16 <c+16
+C @3 v12 q1 p2 l8
+C   o4 e4 r e r e4 r | d4 r d r d4 r | e4 r e r e4 r | d4 r d r e4.
+C L o4 f4 r f r f4 r | f4 r f r f4 r | e4 r e r e4 r | e4 r e r e4 r
+C   f4 r f r f4 r | f4 r f r f4 r | d4 r d r c+4. | c4 r c r <b4.
+C   o4 d4 r d r d4 r | e4 r e r e4 r | c4 r c r c4 r | d4 r d r <b4.
+C   o4 e4 r e r e4 r | d4 r d r d4 r | e4 r e r e4 r | d4 r d r e4.
+C   e4 r e r e4 r | d4 r d r d4 r | e4 r e r c4. | c4 r c r <b4.
+H @3 v12 q1 p3 l8
+H   o4 a4 r a r a4 r | g+4 r g+ r g+4 r | g4 r g r g4 r | f4 r f r g4.
+H L o5 c4 r c r c4 r | <b4 r b r b4 r | b4 r b r b4 r | g4 r g r g4 r
+H   >c4 r c r c4 r | <b4 r b r b4 r | g4 r g r g4. | f4 r f r f4.
+H   o4 f4 r f r f4 r | g4 r g r g4 r | e-4 r e- r e-4 r | f4 r f r f4.
+H   o4 a4 r a r a4 r | g+4 r g+ r g+4 r | g4 r g r g4 r | f4 r f r g4.
+H   a4 r a r a4 r | g+4 r g+ r g+4 r | g4 r g r f+4. | f4 r f r f4.
+I @3 v12 q1 p1 l8
+I   o5 c4 r c r c4 r | <b4 r b r b4 r | >c4 r c r c4 r | <b-4 r b- r b-4.
+I L o5 e4 r e r e4 r | e4 r e r e4 r | d4 r d r d4 r | <b4 r b r b4 r
+I   >e4 r e r e4 r | e4 r e r e4 r | <b4 r b r b4. | a4 r a r a4.
+I   o4 a4 r a r a4 r | >c4 r c r c4 r | <g4 r g r g4 r | >c4 r c r <a4.
+I   o5 c4 r c r c4 r | <b4 r b r b4 r | >c4 r c r c4 r | <b-4 r b- r b-4.
+I   >c4 r c r c4 r | <b4 r b r b4 r | >c4 r c r <a4. | a4 r a r a4.
+J @4 v9 q0 p3 l8
+J   o5 e1 | d1 | c1 | f2 e2
+J L o5 e1 | e1 | e1 | g1
+J   f1 | f1 | g2 g2 | f2 f2
+J   o5 d1 | c1 | c1 | c2 f2
+J   o5 e1 | d1 | c1 | f2 e2
+J   e1 | d1 | c2 c2 | c2 f2
+
+; ---- OPNA SSG / OPNA SSG ----
+; [EN] D sixteenth-note sparkle arpeggio (intro, pre-chorus, chorus),
+;      E an echo of the lead one dotted eighth late, F a harmony
+;      under the lead (intro, chorus).
+; [JA] D 16分のきらめくアルペジオ(イントロ、Bメロ、サビ)、
+;      E 付点8分遅れのリードのエコー、F リードの下のハーモニー
+;      (イントロ、サビ)。
+D @0 E255,0,30,4,64,16 v11 l16
+D   o5 e f g a g f e f g a g f e f g a | d e g+ b g+ e d e g+ b g+ e d e g+ b
+D   e g a b a g e g a b a g e g a b | d f g a g f d f d e g b- g e d e
+D L [r1]8
+D   o5 d f a b- a f d f a b- a f d f a b- | e g a b a g e g a b a g e g a b
+D   e- g a- b- a- g e- g a- b- a- g e- g a- b- | d f g a g f d f d f g a g f d f
+D   o5 e f g a g f e f g a g f e f g a | d e g+ b g+ e d e g+ b g+ e d e g+ b
+D   e g a b a g e g a b a g e g a b | d f g a g f d f d e g b- g e d e
+D   e f g a g f e f g a g f e f g a | d e g+ b g+ e d e g+ b g+ e d e g+ b
+D   e g a b a g e g d f+ a >c <a f+ d f+ | d e f a f e d e d f g a g f d f
+E @0 E255,0,8,1,96,12 v10 l8
+E   o5 r8. r e16 g16 a g16 e16 g4 r16 | r16 c16 d16 e8. d16 <b g+ b4 r16 | r8. r >c16 d16 e d16 c16 d4 e16& | e16 g f8. e16 d c d e g16
+E L o5 g16 a16 b16 r4 a a16 g16 a >c <a16& | a16 g e4. d e f16 e16 d16& | d8. r e16 g16 b a16 g16 a8. g16 e16& | e16 d e2 r4 r16
+E   r16 c16 d16 e f a >c <a8. g16 f16& | f16 e d4. e f4 e16 | d16 e g8. f16 e d c+ e g16& | g16 b a4. g f d <b16
+E   o4 b16 >d <d f a >c d4^16& | d16 c e4. d c <a >c16& | c8. e-4. c <g a- >c16& | c8. d4. c16 d16 f4 g16
+E   o5 g8. r e16 g16 a g16 e16 g8. a16 >c16& | c16 <a b4 a g+ e4^16& | e16 r r e16 g16 a >c d e8. | d16 c d4 <b- a g e g16&
+E   g8. r e16 g16 a g16 e16 g8. a16 >c16& | c16 <a b4 >d <b g+4 e16& | e8. a8. b16 >c <a f+ a >c16& | c16 d e4. d <b4 g16
+F @0 E255,0,6,1,128,12 v12 l8
+F   o5 r c16 e16 f e16 c16 e4 r <a16 a16 | b8. b16 g+ e g+4 r4 | r a16 b16 >c <b16 a16 b4 >c e | d8. <b-16 b- a b- >c e4
+F L [r1]8
+F   [r1]4
+F   o5 r c16 e16 f e16 c16 e8. f16 a f | g+4 e e <b4. r | r >c16 e16 e a b >c8. <b16 a | b-4 g f e c e4
+F   r c16 e16 f e16 c16 e8. f16 a f | g+4 b g+ e4 <b4 | >e8. g16 a e d f+ a a | >c4. <a g4 d f16 g16
+
+; ---- OPNA rhythm / OPNAリズム ----
+; [EN] @ adds drums: 1 bass, 2 snare, 4 cymbal, 8 hi-hat, 16 tom,
+;      32 rim shot. Rim shots in the verse, snare in the chorus,
+;      a tom fill before and after the chorus.
+; [JA] @で楽器を足す: 1バス、2スネア、4シンバル、8ハイハット、
+;      16タム、32リムショット。Aメロはリム、サビはスネア、
+;      サビの前後にタムのフィル。
+G v54,28,24,22,14,22,22
+G   @13c8 @8c8 @10c8 @9c8 @9c8 @8c8 @10c8 @8c8 | @9c8 @8c8 @10c8 @9c8 @9c8 @8c8 @10c8 @8c8
+G   @9c8 @8c8 @10c8 @9c8 @9c8 @8c8 @10c8 @8c8 | @9c8 @8c8 @10c8 @9c8 @9c8 @8c8 @10c8 @8c8
+G L @9c8 @8c8 @40c8 @9c8 @9c8 @8c8 @40c8 @8c8 | @9c8 @8c8 @40c8 @9c8 @9c8 @8c8 @40c8 @8c8
+G   @9c8 @8c8 @40c8 @9c8 @9c8 @8c8 @40c8 @8c8 | @9c8 @8c8 @40c8 @9c8 @9c8 @8c8 @40c8 @8c8
+G   @9c8 @8c8 @40c8 @9c8 @9c8 @8c8 @40c8 @8c8 | @9c8 @8c8 @40c8 @9c8 @9c8 @8c8 @40c8 @8c8
+G   @9c8 @8c8 @40c8 @9c8 @9c8 @8c8 @40c8 @8c8 | @9c8 @8c8 @40c8 @9c8 @9c8 @8c8 @40c8 @8c8
+G   @9c8 @8c8 @10c8 @9c8 @9c8 @8c8 @10c8 @8c8 | @9c8 @8c8 @10c8 @9c8 @9c8 @8c8 @10c8 @8c8
+G   @9c8 @8c8 @10c8 @9c8 @9c8 @8c8 @10c8 @8c8 | @9c8 @8c8 @10c8 @9c8 @3c8 @16c16 @16c16 @2c16 @2c16 @17c16 @2c16
+G   @13c8 @8c8 @10c8 @9c8 @9c8 @8c16 @1c16 @10c8 @8c8 | @9c8 @8c8 @10c8 @9c8 @9c8 @8c16 @1c16 @10c8 @8c8
+G   @9c8 @8c8 @10c8 @9c8 @9c8 @8c16 @1c16 @10c8 @8c8 | @9c8 @8c8 @10c8 @9c8 @9c8 @8c16 @1c16 @10c8 @8c8
+G   @9c8 @8c8 @10c8 @9c8 @9c8 @8c16 @1c16 @10c8 @8c8 | @9c8 @8c8 @10c8 @9c8 @9c8 @8c16 @1c16 @10c8 @8c8
+G   @9c8 @8c8 @10c8 @9c8 @9c8 @8c16 @1c16 @10c8 @8c8 | @9c8 @8c8 @10c8 @9c8 @3c8 @16c16 @16c16 @2c16 @2c16 @17c16 @2c16
+
+; ---- MSX-MUSIC / MSX-MUSIC ----
+; [EN] MSXA-C guitar cutting on the off-beat eighths (one chord note
+;      each), MSXG hi-hats in the verse, snare layer in the chorus.
+; [JA] MSXA-C 裏の8分でギターカッティング(和音の1音ずつ)、
+;      MSXG Aメロはハイハット、サビはスネアを重ねる。
+MSXA @5 v15 l8
+MSXA   o5 r e16 r8. e16 r8. e16 r8. e16 r16 | r d16 r8. d16 r8. d16 r8. d16 r16 | r e16 r8. e16 r8. e16 r8. e16 r16 | r d16 r8. d16 r16 r e16 r8. e16 r16
+MSXA L o5 r f16 r8. f16 r8. f16 r8. f16 r16 | r f16 r8. f16 r8. f16 r8. f16 r16 | r e16 r8. e16 r8. e16 r8. e16 r16 | r e16 r8. e16 r8. e16 r8. e16 r16
+MSXA   r f16 r8. f16 r8. f16 r8. f16 r16 | r f16 r8. f16 r8. f16 r8. f16 r16 | r d16 r8. d16 r16 r c+16 r8. c+16 r16 | r c16 r8. c16 r16 r <b16 r8. b16 r16
+MSXA   o5 r d16 r8. d16 r8. d16 r8. d16 r16 | r e16 r8. e16 r8. e16 r8. e16 r16 | r c16 r8. c16 r8. c16 r8. c16 r16 | r d16 r8. d16 r16 r <b16 r8. b16 r16
+MSXA   o5 r e16 r8. e16 r8. e16 r8. e16 r16 | r d16 r8. d16 r8. d16 r8. d16 r16 | r e16 r8. e16 r8. e16 r8. e16 r16 | r d16 r8. d16 r16 r e16 r8. e16 r16
+MSXA   r e16 r8. e16 r8. e16 r8. e16 r16 | r d16 r8. d16 r8. d16 r8. d16 r16 | r e16 r8. e16 r16 r c16 r8. c16 r16 | r c16 r8. c16 r16 r <b16 r8. b16 r16
+MSXB @5 v15 l8
+MSXB   o5 r a16 r8. a16 r8. a16 r8. a16 r16 | r g+16 r8. g+16 r8. g+16 r8. g+16 r16 | r g16 r8. g16 r8. g16 r8. g16 r16 | r f16 r8. f16 r16 r g16 r8. g16 r16
+MSXB L o6 r c16 r8. c16 r8. c16 r8. c16 r16 | r <b16 r8. b16 r8. b16 r8. b16 r16 | r b16 r8. b16 r8. b16 r8. b16 r16 | r g16 r8. g16 r8. g16 r8. g16 r16
+MSXB   r >c16 r8. c16 r8. c16 r8. c16 r16 | r <b16 r8. b16 r8. b16 r8. b16 r16 | r g16 r8. g16 r16 r g16 r8. g16 r16 | r f16 r8. f16 r16 r f16 r8. f16 r16
+MSXB   o5 r f16 r8. f16 r8. f16 r8. f16 r16 | r g16 r8. g16 r8. g16 r8. g16 r16 | r e-16 r8. e-16 r8. e-16 r8. e-16 r16 | r f16 r8. f16 r16 r f16 r8. f16 r16
+MSXB   o5 r a16 r8. a16 r8. a16 r8. a16 r16 | r g+16 r8. g+16 r8. g+16 r8. g+16 r16 | r g16 r8. g16 r8. g16 r8. g16 r16 | r f16 r8. f16 r16 r g16 r8. g16 r16
+MSXB   r a16 r8. a16 r8. a16 r8. a16 r16 | r g+16 r8. g+16 r8. g+16 r8. g+16 r16 | r g16 r8. g16 r16 r f+16 r8. f+16 r16 | r f16 r8. f16 r16 r f16 r8. f16 r16
+MSXC @5 v15 l8
+MSXC   o6 r c16 r8. c16 r8. c16 r8. c16 r16 | r <b16 r8. b16 r8. b16 r8. b16 r16 | r >c16 r8. c16 r8. c16 r8. c16 r16 | r <b-16 r8. b-16 r16 r b-16 r8. b-16 r16
+MSXC L o6 r e16 r8. e16 r8. e16 r8. e16 r16 | r e16 r8. e16 r8. e16 r8. e16 r16 | r d16 r8. d16 r8. d16 r8. d16 r16 | r <b16 r8. b16 r8. b16 r8. b16 r16
+MSXC   r >e16 r8. e16 r8. e16 r8. e16 r16 | r e16 r8. e16 r8. e16 r8. e16 r16 | r <b16 r8. b16 r16 r b16 r8. b16 r16 | r a16 r8. a16 r16 r a16 r8. a16 r16
+MSXC   o5 r a16 r8. a16 r8. a16 r8. a16 r16 | r >c16 r8. c16 r8. c16 r8. c16 r16 | r <g16 r8. g16 r8. g16 r8. g16 r16 | r >c16 r8. c16 r16 r <a16 r8. a16 r16
+MSXC   o6 r c16 r8. c16 r8. c16 r8. c16 r16 | r <b16 r8. b16 r8. b16 r8. b16 r16 | r >c16 r8. c16 r8. c16 r8. c16 r16 | r <b-16 r8. b-16 r16 r b-16 r8. b-16 r16
+MSXC   r >c16 r8. c16 r8. c16 r8. c16 r16 | r <b16 r8. b16 r8. b16 r8. b16 r16 | r >c16 r8. c16 r16 r <a16 r8. a16 r16 | r a16 r8. a16 r16 r a16 r8. a16 r16
+MSXG v63,31,28,26,22,28,0
+MSXG   @5c4 @8c2 @8c4 | r4 @8c2 @8c4
+MSXG   r4 @8c2 @8c4 | r4 @8c2 @8c4
+MSXG L r8 @8c4 @8c4 @8c4 @8c8 | r8 @8c4 @8c4 @8c4 @8c8
+MSXG   r8 @8c4 @8c4 @8c4 @8c8 | r8 @8c4 @8c4 @8c4 @8c8
+MSXG   r8 @8c4 @8c4 @8c4 @8c8 | r8 @8c4 @8c4 @8c4 @8c8
+MSXG   r8 @8c4 @8c4 @8c4 @8c8 | r8 @8c4 @8c4 @8c4 @8c8
+MSXG   r8 @8c4 @8c4 @8c4 @8c8 | r8 @8c4 @8c4 @8c4 @8c8
+MSXG   r8 @8c4 @8c4 @8c4 @8c8 | r8 @8c4 @8c4 @8c4 @8c8
+MSXG   @5c4 @10c2 @10c4 | r4 @10c2 @10c4
+MSXG   r4 @10c2 @10c4 | r4 @10c2 @10c4
+MSXG   r4 @10c2 @10c4 | r4 @10c2 @10c4
+MSXG   r4 @10c2 @10c4 | r4 @10c2 @10c4
+
+; ---- MSX PSG / MSX PSG ----
+; [EN] MSXD MSXF bell notes in the verse and pre-chorus,
+;      MSXE a noise shaker (P2 noise, w noise pitch) all through.
+; [JA] MSXD MSXF Aメロ・Bメロのベル、
+;      MSXE 全編のノイズのシェイカー(P2ノイズ、wノイズの高さ)。
+MSXD @0 E255,0,14,2,40,10 v13 l8
+MSXD   [r1]4
+MSXD L o6 r e r4. e r4 | r e r4. e r4 | r d r4. d r4 | r <b r4. b r4
+MSXD   r >e r4. e r4 | r e r4. e r4 | r <b r4 r b r4 | r a r4 r a r4
+MSXD   o5 r a r4. a r4 | r >c r4. c r4 | r <g r4. g r4 | r >c r4 r <a r4
+MSXD   [r1]8
+MSXF @0 E255,0,14,2,40,10 v12 l8
+MSXF   [r1]4
+MSXF L o6 r c r4. c r4 | r <b r4. b r4 | r b r4. b r4 | r g r4. g r4
+MSXF   r >c r4. c r4 | r <b r4. b r4 | r g r4 r g r4 | r f r4 r f r4
+MSXF   o5 r f r4. f r4 | r g r4. g r4 | r e- r4. e- r4 | r f r4 r f r4
+MSXF   [r1]8
+MSXE @0 P2 w2 E255,0,72,0,0,255 v12 l16
+MSXE   [*1]4
+MSXE L [*1]8
+MSXE   [*1]4
+MSXE   [*1]8
+
+; ---- SCC / SCC ----
+; [EN] SCCA the lead an octave up (intro, chorus), SCCB SCCC string
+;      pads with a slow attack (E), SCCD SCCE brass hits.
+; [JA] SCCA 1オクターブ上のリード(イントロ、サビ)、SCCB SCCC
+;      アタックの遅いストリングス(E)、SCCD SCCE ブラスのヒット。
+SCCA @2 E255,0,6,1,160,24 v9 q1 M18,1,1,6 l8
+SCCA   o6 r e16 g16 a g16 e16 g4 r c16 d16 | e8. d16 <b g+ b4 r4 | r >c16 d16 e d16 c16 d4 e g | f8. e16 d c d e g4
+SCCA L [r1]8
+SCCA   [r1]4
+SCCA   o6 r e16 g16 a g16 e16 g8. a16 >c <a | b4 a g+ e4. r | r e16 g16 a >c d e8. d16 c | d4 <b- a g e g4
+SCCA   r e16 g16 a g16 e16 g8. a16 >c <a | b4 >d <b g+4 e4 | a8. b16 >c <a f+ a >c d | e4. d <b4 g a16 b16
+SCCB @0 E60,20,0,0,255,10 v6 l8
+SCCB   o4 g1 | g+1 | g1 | f2 e2
+SCCB L o4 e1 | e1 | e1 | g1
+SCCB   f1 | f1 | g2 g2 | f2 f2
+SCCB   o4 a1 | g1 | g1 | f2 f2
+SCCB   o4 e1 | g+1 | g1 | f2 e2
+SCCB   e1 | g+1 | g2 f+2 | f2 f2
+SCCC @0 E60,20,0,0,255,10 v5 l8
+SCCC   o5 e1 | d1 | c1 | <b-2 b-2
+SCCC L o5 c1 | <b1 | b1 | b1
+SCCC   >c1 | <b1 | >d2 c+2 | c2 <b2
+SCCC   o5 c1 | c1 | c1 | c2 <b2
+SCCC   o4 a1 | >d1 | c1 | <b-2 b-2
+SCCC   a1 | >d1 | c2 c2 | c2 <b2
+SCCD @1 E255,0,10,2,140,30 v11 l8
+SCCD   o5 c4. r2 r | r1 | r1 | r2 r2
+SCCD L [r1]8
+SCCD   o5 r1 | r1 | r1 | c r4. <a r a4
+SCCD   o5 c4. r2 r | r1 | c r16 c8. r2 r | r4 <b- b- r4 b-4
+SCCD   >c4. r2 r | r1 | r2 r2 | r4 <a a r4 a4
+SCCE @1 E255,0,10,2,140,30 v10 l8
+SCCE   o4 a4. r2 r | r1 | r1 | r2 r2
+SCCE L [r1]8
+SCCE   o4 r1 | r1 | r1 | f r4. f r f4
+SCCE   o4 a4. r2 r | r1 | g r16 g8. r2 r | r4 f f r4 g4
+SCCE   a4. r2 r | r1 | r2 r2 | r4 f f r4 f4

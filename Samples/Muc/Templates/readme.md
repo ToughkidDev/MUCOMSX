@@ -11,6 +11,7 @@ Starting points for writing a MUC (MUCOM88 MML) song. Every template plays as it
 | `3_Rhythm` | Drums only: the OPNA rhythm part step by step, beat libraries for OPNA and MSX-MUSIC, a drum kit built from PSG noise |
 | `4_Genres` | Drums, bass and chords ready, just add the melody: rock, pop, ballad, dance, funk, shuffle blues, jazz swing, bossa nova, reggae, hip-hop, metal, waltz, march, game action |
 | `5_Genres_MSX` | The same idea on MSX chips (MSX-MUSIC drums and chords, SCC bass, melody on SCC): rock, dance, game action, ballad |
+| `6_Demos` | Finished songs that play the chips together: *Midnight Pier*, a city pop tune on OPNA FM, SSG and rhythm, MSX-MUSIC, MSX PSG and SCC (28 channels) |
 
 ---
 

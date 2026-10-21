@@ -227,6 +227,13 @@
   ]
  },
  {
+  "name": "6_Demos",
+  "dir": "../Samples/Muc/Templates/6_Demos/",
+  "songs": [
+   "City_Pop_Midnight_Pier.muc"
+  ]
+ },
+ {
   "name": "ACTRAISER_MML",
   "dir": "../Samples/Muc/YuzoKoshiro/ACTRAISER_MML/",
   "songs": [
