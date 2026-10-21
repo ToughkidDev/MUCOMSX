@@ -79,60 +79,6 @@ export function volAt(pos, detent = false) {
 // arrowhead at the right pointing down.
 const RESET_ICON = ['..###..', '.#...#.', '#...###', '#....#.', '.#.....', '..###..'];
 
-// The button under the faders: every channel of every chip back to 0 dB. Drawn like the
-// strips (rFader's rail greys, rFont_03 letters); dim when there is nothing to reset.
-export const RESET_H = 18;
-export class MixerReset {
-  constructor({ title, onReset, anyChanged }) {
-    this.onReset = onReset;
-    this.anyChanged = anyChanged;
-    this.canvas = document.createElement('canvas');
-    this.canvas.className = 'cv-screen cv-mixer-reset';
-    this.canvas.width = STRIP_W;
-    this.canvas.height = RESET_H;
-    this.canvas.title = title || '';
-    this.canvas.setAttribute('role', 'button');
-    this.canvas.tabIndex = 0;
-    this.g = this.canvas.getContext('2d');
-    this.g.imageSmoothingEnabled = false;
-    this.pressed = false;
-    const press = () => { this.pressed = true; this.draw(); setTimeout(() => { this.pressed = false; this.onReset(); this.draw(); }, 90); };
-    this.canvas.addEventListener('click', press);
-    this.canvas.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); press(); } });
-    this.draw();
-  }
-
-  draw() {
-    const g = this.g, w = this.canvas.width, on = this.anyChanged();
-    g.fillStyle = '#000';
-    g.fillRect(0, 0, w, RESET_H);
-    // A raised key in the rail's greys around a black face (rFont_03 is drawn on black):
-    // light top-left edge, dark bottom-right; the other way round while pressed.
-    const x = LABEL_X, y = 3, bw = w - LABEL_X * 2, bh = RESET_H - 4;
-    const light = this.pressed ? '#1a1a1a' : '#9a9a9a', dark = this.pressed ? '#9a9a9a' : '#1a1a1a';
-    g.fillStyle = '#4a4a4a';
-    g.fillRect(x, y, bw, bh);
-    g.fillStyle = light;
-    g.fillRect(x, y, bw, 1); g.fillRect(x, y, 1, bh);
-    g.fillStyle = dark;
-    g.fillRect(x, y + bh - 1, bw, 1); g.fillRect(x + bw - 1, y, 1, bh);
-    g.fillStyle = '#000';
-    g.fillRect(x + 2, y + 2, bw - 4, bh - 4);
-    const label = 'RESET ALL';
-    g.globalAlpha = on ? 1 : 0.45;
-    const font = images.rFont_03;
-    let tx = x + Math.floor((bw - label.length * 4) / 2) + (this.pressed ? 1 : 0);
-    const ty = y + Math.floor((bh - 8) / 2) + (this.pressed ? 1 : 0);
-    for (const ch of label) {
-      const i = ch.charCodeAt(0) - 0x20;
-      if (i > 0 && i < 64) g.drawImage(font, (i % 32) * 4, Math.floor(i / 32) * 8, 4, 8, tx, ty, 4, 8);
-      tx += 4;
-    }
-    g.globalAlpha = 1;
-    this.canvas.style.cursor = on ? 'pointer' : 'default';
-  }
-}
-
 export class MixerStrip {
   // get(ch) -> volume (-192 = off .. +20); set(ch, volume); title: tooltip.
   constructor(type, height, { get, set, title }) {
@@ -148,6 +94,8 @@ export class MixerStrip {
     this.g.imageSmoothingEnabled = false;
     this.restore = new Map();   // channel -> level before OFF (a click on the number)
     this.pressed = null;        // the channel whose reset key is down
+    this.reset = null;          // RESET VOL, on the last strip (setReset)
+    this.title = title || '';
     this.wire();
     this.draw();
   }
@@ -185,9 +133,47 @@ export class MixerStrip {
       g.drawImage(sp.knob, FADER_X + knob, y);
       this.drawResetKey(y, vol !== 0, this.pressed === ch);
     }
+    this.drawResetVol();
   }
 
-  // A raised key in the rail's greys, like RESET ALL; dim when the fader is at 0 already.
+  // RESET VOL under the last strip's faders: lined up with them (same x, width and 8 px
+  // height), two rows below the last one. reset: { onReset, anyChanged, title }.
+  setReset(reset) {
+    this.reset = reset;
+    const last = Math.max(...this.rows.map(([y]) => y));
+    this.reset.y = last + 16;
+    if (this.canvas.height < this.reset.y + 8) {
+      this.canvas.height = this.reset.y + 8;   // (resizing resets the context)
+      this.g.imageSmoothingEnabled = false;
+    }
+    this.draw();
+  }
+
+  drawResetVol() {
+    const r = this.reset;
+    if (!r) return;
+    const g = this.g, x = FADER_X, y = r.y, w = FADER_LEN, h = 8, pressed = r.pressed;
+    g.fillStyle = '#4a4a4a';
+    g.fillRect(x, y, w, h);
+    g.fillStyle = pressed ? '#1a1a1a' : '#9a9a9a';
+    g.fillRect(x, y, w, 1); g.fillRect(x, y, 1, h);
+    g.fillStyle = pressed ? '#9a9a9a' : '#1a1a1a';
+    g.fillRect(x, y + h - 1, w, 1); g.fillRect(x + w - 1, y, 1, h);
+    g.fillStyle = '#000';
+    g.fillRect(x + 1, y + 1, w - 2, h - 2);
+    // rFont_03 draws on rows 2-7 of its 8-pixel cells: those six rows go inside the frame.
+    const label = 'RESET VOL', font = images.rFont_03;
+    g.globalAlpha = r.anyChanged() ? 1 : 0.45;
+    let tx = x + Math.floor((w - label.length * 4) / 2) + (pressed ? 1 : 0);
+    for (const ch of label) {
+      const i = ch.charCodeAt(0) - 0x20;
+      if (i > 0 && i < 64) g.drawImage(font, (i % 32) * 4, Math.floor(i / 32) * 8 + 2, 4, 6, tx, y + 1, 4, 6);
+      tx += 4;
+    }
+    g.globalAlpha = 1;
+  }
+
+  // A raised key in the rail's greys, like RESET VOL; dim when the fader is at 0 already.
   drawResetKey(y, on, pressed) {
     const g = this.g, x = RESET_X, w = RESET_W, h = 8;
     g.fillStyle = '#4a4a4a';
@@ -227,8 +213,15 @@ export class MixerStrip {
   wire() {
     const c = this.canvas;
     let drag = null;
+    const overReset = (x, y) => this.reset && y >= this.reset.y && y < this.reset.y + 8 && x >= FADER_X && x < FADER_X + FADER_LEN;
     c.addEventListener('pointerdown', (e) => {
       const { x, y, row } = this.hit(e);
+      if (overReset(x, y)) {
+        this.reset.pressed = true;
+        this.draw();
+        setTimeout(() => { this.reset.pressed = false; this.reset.onReset(); this.draw(); }, 90);
+        return;
+      }
       if (y < 8) return;
       if (!row) return;
       const ch = row[1];
@@ -253,8 +246,11 @@ export class MixerStrip {
       e.preventDefault();
     });
     c.addEventListener('pointermove', (e) => {
+      const { x, y } = this.hit(e);
+      // The tooltip of what is under the pointer.
+      const tip = overReset(x, y) ? this.reset.title : this.title;
+      if (c.title !== tip) c.title = tip;
       if (drag === null) return;
-      const { x } = this.hit(e);
       this.change(drag, volAt(x - FADER_X - KNOB_W / 2, true));
     });
     const end = () => { drag = null; };
