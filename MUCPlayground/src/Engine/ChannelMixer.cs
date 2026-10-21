@@ -1,8 +1,10 @@
 namespace MucPlayground;
 
-// Per-channel volume, for the channel view's faders. The emulators mix their channels
-// inside, so a channel is made quieter where a driver would do it: in the registers the
-// song writes. FM: the carrier operators' TL (0.75 dB steps, by the channel's algorithm);
+// Per-channel volume, for the channel view's faders, on MDPlayer4Mac's mixer scale: -192 to
+// +20 in 0.5 dB steps (MDSound's chip volume, 16384 * 10^(v / 40)), so -96 dB to +10 dB,
+// with -192 meaning off. The emulators mix their channels inside, so a channel is made
+// quieter or louder where a driver would do it: in the registers the song writes (louder
+// only as far as a register can go; a level the song set to silence stays silent). FM: the carrier operators' TL (0.75 dB steps, by the channel's algorithm);
 // SSG / PSG: the 4-bit level (about 3 dB steps; a channel on the hardware envelope can only
 // be muted); OPNA rhythm and YM2610 ADPCM-A: each instrument's 5-bit level (0.75 dB; muting
 // clears its L/R); ADPCM-B: the 8-bit level; OPLL: the 4-bit attenuation (3 dB steps); SCC:
@@ -15,14 +17,14 @@ namespace MucPlayground;
 //   AY8910: 0-2            K051649: 0-4
 public sealed class ChannelMixer
 {
-    public const int Mute = -1;
+    public const int MinVolume = -192, MaxVolume = 20, Mute = MinVolume;
     public enum Chip { Opna, Opnb, Opm, Opll, Psg, Scc }
 
     sealed class State
     {
         public readonly int[] Reg = new int[512];
         public readonly bool[] Known = new bool[512];
-        public readonly int[] Att = new int[16];     // dB of attenuation, or Mute
+        public readonly int[] Vol = new int[16];     // MDPlayer's mixer units (0.5 dB), Mute = off
     }
 
     readonly Dictionary<(Chip, int), State> states = new();
@@ -52,13 +54,13 @@ public sealed class ChannelMixer
         return s;
     }
 
-    // A fader: 0 (as written) to 48 dB quieter, or Mute.
-    public void SetVolume(Chip chip, int id, int channel, int attenuation)
+    // A fader: -192 (off) to +20; 0 is the song as written.
+    public void SetVolume(Chip chip, int id, int channel, int volume)
     {
         if (channel < 0 || channel >= 16) return;
         State s = Get(chip, id);
-        s.Att[channel] = attenuation == Mute ? Mute : Math.Clamp(attenuation, 0, 48);
-        active = states.Values.Any(x => x.Att.Any(a => a != 0));
+        s.Vol[channel] = Math.Clamp(volume, MinVolume, MaxVolume);
+        active = states.Values.Any(x => x.Vol.Any(a => a != 0));
         // Everything that carries a level goes out again with the new setting (writing the
         // same value again changes nothing).
         if (!sinks.TryGetValue(chip, out var write)) return;
@@ -130,43 +132,43 @@ public sealed class ChannelMixer
                 if (a >= 0x40 && a <= 0x4f && (a & 3) != 3)
                 {
                     int alg = s.Reg[port << 8 | 0xb0 | (a & 3)] & 7;
-                    return Carrier(alg, (a >> 2) & 3) ? Tl(v, s.Att[port * 3 + (a & 3)]) : v;
+                    return Carrier(alg, (a >> 2) & 3) ? Tl(v, s.Vol[port * 3 + (a & 3)]) : v;
                 }
-                if (port == 0 && a >= 8 && a <= 10) return Level4(v, s.Att[6 + a - 8]);
+                if (port == 0 && a >= 8 && a <= 10) return Level4(v, s.Vol[6 + a - 8]);
                 if (chip == Chip.Opna)
                 {
-                    if (port == 0 && a >= 0x18 && a <= 0x1d) return Level5(v, s.Att[9 + a - 0x18]);
-                    if (port == 1 && a == 0x0b) return Linear(v, 255, s.Att[15]);
+                    if (port == 0 && a >= 0x18 && a <= 0x1d) return Level5(v, s.Vol[9 + a - 0x18]);
+                    if (port == 1 && a == 0x0b) return Linear(v, 255, s.Vol[15]);
                 }
                 else
                 {
-                    if (port == 1 && a >= 0x08 && a <= 0x0d) return Level5(v, s.Att[9 + a - 0x08]);
-                    if (port == 0 && a == 0x1b) return Linear(v, 255, s.Att[15]);
+                    if (port == 1 && a >= 0x08 && a <= 0x0d) return Level5(v, s.Vol[9 + a - 0x08]);
+                    if (port == 0 && a == 0x1b) return Linear(v, 255, s.Vol[15]);
                 }
                 return v;
             case Chip.Opm:
                 if (a >= 0x60 && a <= 0x7f)
                 {
                     int ch = a & 7, alg = s.Reg[0x20 | ch] & 7;
-                    return Carrier(alg, (a - 0x60) >> 3) ? Tl(v, s.Att[ch]) : v;
+                    return Carrier(alg, (a - 0x60) >> 3) ? Tl(v, s.Vol[ch]) : v;
                 }
                 return v;
             case Chip.Opll:
                 if (a >= 0x30 && a <= 0x38)
                 {
                     int ch = a - 0x30;
-                    if ((s.Reg[0x0e] & 0x20) == 0 || ch < 6) return (v & 0xf0) | Att4(v & 15, s.Att[ch]);
+                    if ((s.Reg[0x0e] & 0x20) == 0 || ch < 6) return (v & 0xf0) | Att4(v & 15, s.Vol[ch]);
                     int hi = v >> 4 & 15, lo = v & 15;
-                    if (ch == 6) lo = Att4(lo, s.Att[9]);
-                    else if (ch == 7) { hi = Att4(hi, s.Att[13]); lo = Att4(lo, s.Att[10]); }
-                    else { hi = Att4(hi, s.Att[11]); lo = Att4(lo, s.Att[12]); }
+                    if (ch == 6) lo = Att4(lo, s.Vol[9]);
+                    else if (ch == 7) { hi = Att4(hi, s.Vol[13]); lo = Att4(lo, s.Vol[10]); }
+                    else { hi = Att4(hi, s.Vol[11]); lo = Att4(lo, s.Vol[12]); }
                     return hi << 4 | lo;
                 }
                 return v;
             case Chip.Psg:
-                return a >= 8 && a <= 10 ? Level4(v, s.Att[a - 8]) : v;
+                return a >= 8 && a <= 10 ? Level4(v, s.Vol[a - 8]) : v;
             case Chip.Scc:
-                return port == 2 && a < 5 ? Linear(v & 15, 15, s.Att[a]) | (v & 0xf0) : v;
+                return port == 2 && a < 5 ? Linear(v & 15, 15, s.Vol[a]) | (v & 0xf0) : v;
         }
         return v;
     }
@@ -184,15 +186,23 @@ public sealed class ChannelMixer
         };
     }
 
-    static int Steps(int att, double db) => (int)Math.Round(att / db);
-    static int Tl(int v, int att) => (v & 0x80) | (att == Mute ? 127 : Math.Min(127, (v & 0x7f) + Steps(att, 0.75)));
-    static int Level4(int v, int att)
+    static bool Off(int vol) => vol <= MinVolume;
+    // Register steps of `db` dB for a fader value (positive: quieter).
+    static int Steps(int vol, double db) => (int)Math.Round(-vol / 2.0 / db);
+    static int Tl(int v, int vol)
     {
-        if (att == Mute) return v & 0xe0;
-        if ((v & 0x10) != 0) return v;    // on the envelope: as it is
-        return (v & ~15) | Math.Max(0, (v & 15) - Steps(att, 3));
+        int tl = v & 0x7f;
+        if (Off(vol)) return (v & 0x80) | 127;
+        if (tl == 127) return v;          // the song's silence
+        return (v & 0x80) | Math.Clamp(tl + Steps(vol, 0.75), 0, 127);
     }
-    static int Level5(int v, int att) => att == Mute ? 0 : (v & 0xc0) | Math.Max(0, (v & 31) - Steps(att, 0.75));
-    static int Att4(int x, int att) => att == Mute ? 15 : Math.Min(15, x + Steps(att, 3));
-    static int Linear(int v, int max, int att) => att == Mute ? 0 : Math.Clamp((int)Math.Round(v * Math.Pow(10, -att / 20.0)), 0, max);
+    static int Level4(int v, int vol)
+    {
+        if (Off(vol)) return v & 0xe0;
+        if ((v & 0x10) != 0 || (v & 15) == 0) return v;    // on the envelope, or silent: as it is
+        return (v & ~15) | Math.Clamp((v & 15) - Steps(vol, 3), 0, 15);
+    }
+    static int Level5(int v, int vol) => Off(vol) ? 0 : (v & 0xc0) | Math.Clamp((v & 31) - Steps(vol, 0.75), 0, 31);
+    static int Att4(int x, int vol) => Off(vol) ? 15 : Math.Clamp(x + Steps(vol, 3), 0, 15);
+    static int Linear(int v, int max, int vol) => Off(vol) ? 0 : Math.Clamp((int)Math.Round(v * Math.Pow(10, vol / 40.0)), 0, max);
 }

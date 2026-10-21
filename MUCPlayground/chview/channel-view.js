@@ -165,7 +165,8 @@ export class ChannelView {
     this.tickAt = 0;
     this.session = 0;
     // Channel faders (mixer-strip.js), for songs the MUC engine plays: 'TYPE:id:channel' ->
-    // attenuation, kept from song to song; onVolume(type, id, channel, att) tells the engine.
+    // volume on MDPlayer's mixer scale (-192 off .. +20, 0.5 dB steps), kept from song to
+    // song; onVolume(type, id, channel, volume) tells the engine.
     this.volumes = new Map();
     this.onVolume = null;
     this.empty();
@@ -220,7 +221,7 @@ export class ChannelView {
         const key = (ch) => `${p.type}:${p.id}:${ch}`;
         strip = new MixerStrip(p.type, fb.canvas.height, {
           get: (ch) => this.volumes.get(key(ch)) ?? 0,
-          set: (ch, att) => { this.volumes.set(key(ch), att); this.onVolume?.(p.type, p.id, ch, att); this.reset?.draw(); },
+          set: (ch, vol) => { this.volumes.set(key(ch), vol); this.onVolume?.(p.type, p.id, ch, vol); this.reset?.draw(); },
           title: this.root.dataset.mixer || '',
         });
         row.appendChild(strip.canvas);
@@ -328,8 +329,8 @@ export class ChannelView {
   // Every channel volume, of every chip (also ones not on screen now), back to 0 dB.
   resetVolumes() {
     for (const p of this.panels) p.strip?.resetAll();
-    for (const [key, att] of this.volumes) {
-      if (att === 0) continue;
+    for (const [key, vol] of this.volumes) {
+      if (vol === 0) continue;
       const [type, id, ch] = key.split(':');
       this.volumes.set(key, 0);
       this.onVolume?.(type, +id, +ch, 0);

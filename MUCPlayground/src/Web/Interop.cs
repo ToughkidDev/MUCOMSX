@@ -128,12 +128,13 @@ public static partial class Interop
         if (player != null) player.Speed = speed;
     }
 
-    // A channel fader: attenuation 0-48 dB, or -1 to mute (ChannelMixer lists the channels).
+    // A channel fader on MDPlayer4Mac's mixer scale: -192 (off) to +20, 0.5 dB steps
+    // (ChannelMixer lists the channels).
     [JSExport]
-    public static void SetChannelVolume(string chip, int id, int channel, int attenuation)
+    public static void SetChannelVolume(string chip, int id, int channel, int volume)
     {
-        channelVolumes[(chip, id, channel)] = attenuation;
-        if (player != null && ChannelMixer.TryParse(chip, out var c)) player.Mixer.SetVolume(c, id, channel, attenuation);
+        channelVolumes[(chip, id, channel)] = volume;
+        if (player != null && ChannelMixer.TryParse(chip, out var c)) player.Mixer.SetVolume(c, id, channel, volume);
     }
 
     static void ApplyChannelVolumes(MucPlayer p)

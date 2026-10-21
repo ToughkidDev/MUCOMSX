@@ -2,16 +2,18 @@
 // sheet (rail, knob, 2px level bar), turned on its side the way its MixerVisualizer does,
 // and rFont_03 for the numbers. One fader per channel, on the panel's own channel row (8
 // pixels high, like the rail and the knob); channels without a row of their own (rhythm,
-// ADPCM-A) get labelled rows below. A fader goes from OFF (far left) through -48 dB to the
-// song's own level (0, far right); the engine applies it to the registers the song writes.
+// ADPCM-A) get labelled rows below. The scale is MDPlayer4Mac's mixer's: -192 to +20 in
+// 0.5 dB steps (-96 dB to +10 dB; -192, far left, is OFF), with 0 (the song as written) 35/43
+// of the way along, as frmMixer2 splits its travel; the engine applies it to the registers
+// the song writes.
 
 import { images } from './draw.js';
 
-export const STRIP_W = 90;
-const LABEL_X = 2, VALUE_X = 16, FADER_X = 30, FADER_LEN = 56, KNOB_W = 13;
+export const STRIP_W = 92;
+const LABEL_X = 2, VALUE_X = 15, FADER_X = 33, FADER_LEN = 56, KNOB_W = 13;
 const USABLE = FADER_LEN - KNOB_W;
-const OFF_ZONE = 3;          // the first pixels of travel: OFF
-const MAX_ATT = 48;
+export const MIN_VOL = -192, MAX_VOL = 20;
+const ZERO = Math.floor((USABLE * 35) / 43);   // 43 px of travel, like frmMixer2: 35 below 0, 8 above
 
 // [y, channel, label]: the channel numbers ChannelMixer (engine) uses.
 const range = (n, f) => Array.from({ length: n }, (_, i) => f(i));
@@ -57,11 +59,11 @@ function loadSprites() {
   return sprites;
 }
 
-export const knobAt = (att) => (att < 0 ? 0 : OFF_ZONE + Math.round(((MAX_ATT - att) / MAX_ATT) * (USABLE - OFF_ZONE)));
-export function attAt(pos) {
-  if (pos < OFF_ZONE - 0.5) return -1;
-  const t = Math.max(0, Math.min(1, (pos - OFF_ZONE) / (USABLE - OFF_ZONE)));
-  return Math.round(MAX_ATT - t * MAX_ATT);
+// MixerVisualizer.FaderPosition / VolumeAtPosition.
+export const knobAt = (v) => (v <= 0 ? Math.round(((v - MIN_VOL) * ZERO) / -MIN_VOL) : ZERO + Math.round((v * (USABLE - ZERO)) / MAX_VOL));
+export function volAt(pos) {
+  const p = Math.max(0, Math.min(USABLE, pos));
+  return p <= ZERO ? Math.round(MIN_VOL + (p * -MIN_VOL) / ZERO) : Math.round(((p - ZERO) * MAX_VOL) / (USABLE - ZERO));
 }
 
 // The button under the faders: every channel of every chip back to 0 dB. Drawn like the
@@ -119,7 +121,7 @@ export class MixerReset {
 }
 
 export class MixerStrip {
-  // get(ch) -> attenuation (0..48, or -1 = off); set(ch, att); title: tooltip.
+  // get(ch) -> volume (-192 = off .. +20); set(ch, volume); title: tooltip.
   constructor(type, height, { get, set, title }) {
     this.rows = ROWS[type] || [];
     this.get = get;
@@ -151,18 +153,19 @@ export class MixerStrip {
     g.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.text(LABEL_X, 0, 'VOL');
     for (const [y, ch, label] of this.rows) {
-      const att = this.get(ch);
+      const vol = this.get(ch);
       if (label) this.text(LABEL_X, y, label);
-      const value = att < 0 ? 'OFF' : att === 0 ? '0' : `-${att}`;
-      this.text(VALUE_X + (3 - value.length) * 4, y, value);
+      // As MDPlayer prints it: +20 … 0 … -191; OFF at the bottom.
+      const value = vol <= MIN_VOL ? 'OFF' : vol > 0 ? `+${vol}` : `${vol}`;
+      this.text(VALUE_X + (4 - value.length) * 4, y, value);
       // Rail: quiet end left, loud end right.
       g.drawImage(sp.capLeft, FADER_X, y);
       for (let x = 8; x < FADER_LEN - 8; x += 8) g.drawImage(sp.rail, FADER_X + x, y);
       g.drawImage(sp.capRight, FADER_X + FADER_LEN - 8, y);
       // The 2px level bar in the rail, up to the knob's centre (lit, then red by the knob).
-      const knob = knobAt(att), level = knob + (KNOB_W >> 1);
+      const knob = knobAt(vol), level = knob + (KNOB_W >> 1);
       for (let i = 0; i < FADER_LEN; i += 2) {
-        const tile = att >= 0 && i < level ? (i >= level - 8 ? 0 : 1) : 2;
+        const tile = vol > MIN_VOL && i < level ? (i >= level - 8 ? 0 : 1) : 2;
         g.drawImage(images.rFader, 24, 8 + tile, 2, 1, FADER_X + i, y + 3, 2, 1);
       }
       g.drawImage(sp.knob, FADER_X + knob, y);
@@ -184,9 +187,9 @@ export class MixerStrip {
     for (const [, ch] of this.rows) this.change(ch, 0);
   }
 
-  change(ch, att) {
-    if (this.get(ch) === att) return;
-    this.set(ch, att);
+  change(ch, vol) {
+    if (this.get(ch) === vol) return;
+    this.set(ch, vol);
     this.draw();
   }
 
@@ -200,20 +203,20 @@ export class MixerStrip {
       const ch = row[1];
       if (x < FADER_X) {
         // The number: OFF and back.
-        const att = this.get(ch);
-        if (att < 0) this.change(ch, this.restore.get(ch) ?? 0);
-        else { this.restore.set(ch, att); this.change(ch, -1); }
+        const vol = this.get(ch);
+        if (vol <= MIN_VOL) this.change(ch, this.restore.get(ch) ?? 0);
+        else { this.restore.set(ch, vol); this.change(ch, MIN_VOL); }
         return;
       }
       drag = ch;
       c.setPointerCapture(e.pointerId);
-      this.change(ch, attAt(x - FADER_X - KNOB_W / 2));
+      this.change(ch, volAt(x - FADER_X - KNOB_W / 2));
       e.preventDefault();
     });
     c.addEventListener('pointermove', (e) => {
       if (drag === null) return;
       const { x } = this.hit(e);
-      this.change(drag, attAt(x - FADER_X - KNOB_W / 2));
+      this.change(drag, volAt(x - FADER_X - KNOB_W / 2));
     });
     const end = () => { drag = null; };
     c.addEventListener('pointerup', end);
@@ -228,11 +231,9 @@ export class MixerStrip {
       const { row } = this.hit(e);
       if (!row) return;
       e.preventDefault();
-      const att = this.get(row[1]);
-      const up = e.deltaY < 0;
-      if (att < 0) { if (up) this.change(row[1], MAX_ATT); return; }
-      const next = att + (up ? -1 : 1);
-      this.change(row[1], next > MAX_ATT ? -1 : Math.max(0, next));
+      // One step (0.5 dB) a notch, as MDPlayer's mixer.
+      const vol = this.get(row[1]);
+      this.change(row[1], Math.max(MIN_VOL, Math.min(MAX_VOL, vol + (e.deltaY < 0 ? 1 : -1))));
     }, { passive: false });
   }
 }

@@ -134,7 +134,7 @@ onmessage = async (event) => {
         break;
       }
       case 'channelVolume':
-        E.SetChannelVolume(m.chip, m.id, m.ch, m.att);
+        E.SetChannelVolume(m.chip, m.id, m.ch, m.vol);
         break;
       case 'speed':
         E.SetSpeed(m.value);

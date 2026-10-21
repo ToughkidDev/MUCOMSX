@@ -28,7 +28,7 @@ if (Environment.GetEnvironmentVariable("VGM_OUT") is string vgmPath)
 
 MucPlayer player = new();
 if (Environment.GetEnvironmentVariable("SPEED") is string speedText) player.Speed = double.Parse(speedText);
-// CHVOL=YM2608:0:0:-1,AY8910:0:1:12 (chip:id:channel:attenuation dB, -1 mutes)
+// CHVOL=YM2608:0:0:-192,AY8910:0:1:-24 (chip:id:channel:volume, MDPlayer's mixer units of 0.5 dB, -192 off)
 if (Environment.GetEnvironmentVariable("CHVOL") is string chvol)
     foreach (string item in chvol.Split(',', StringSplitOptions.RemoveEmptyEntries))
     {
