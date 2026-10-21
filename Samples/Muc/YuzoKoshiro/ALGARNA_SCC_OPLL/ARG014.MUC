@@ -1,0 +1,41 @@
+#mucom88 1.7
+#title ¶×¸°Ñ É ÏÁ
+#composer Yuzo Koshiro
+#author Yuzo Koshiro
+#date 2018/12/26
+#voice ARGFM.DAT
+#sccvoice ARGSC.DAT
+#comment SCC lead/bass/counter; OPLL harmony; OPNA rhythm arrangement.
+; Original: Yuzo Koshiro. Added harmony/drums: arrangement for this session.
+; Shared one-tick startup rest; original tempo, notes, repeats and loop lengths.
+
+; Original D: lead
+SCCA C96 @0 P1 r%1
+SCCA K0C96LE255,255,255,190,0,10l16o4q3v7[f+2>e4dc+8<b&b2bf+f+eef+abe2>e4df+ab&b2&b8a8ef+8.]2[E255,255,255,190,1,10v7q3[o4bbrbbr>/c4cr<a+a+ra+a+r>]2q1
+SCCA E255,255,255,170,0,255v7c&[c(]5v7f+&[f+(]5]2
+
+; Original E: bass
+SCCB C96 @1 P1 r%1
+SCCB t197K0C96LE255,255,255,190,1,10v7l16o2q3[[b8bb>b8<bb]2[a8aa>a8<aa]2[g+8g+g+>g+8<g+g+]2[g8>gg<]2[a8>aa<]2]2[o1b>b<b>b<b>b<e>e<e>e<e>e<f+>f+<f+>f+<f+>f+
+SCCB ]4
+
+; Original F: countermelody
+SCCC C96 @2 P1 r%1
+SCCC K0C96LE255,255,255,190,0,10v4l16o4q3[[dr<brbrabrf+8rabr>d&]2dr<brbrabre8rg+br>d&drgrbgr<a8>reraerr]2[E255,255,255,190,1,10v5q3[o4f+f+rf+f+r/g4greereer
+SCCC ]2q1E255,255,255,170,0,255v5g&[g(]5v5>c+&[c+(]5]2
+
+; OPLL harmony voice 1
+MSXA C96 @3 v4 q2 r%1
+MSXA L [o4d1 o4c+1 o3b1 o3b2 o4c+2]2 o4d4. [o4e4.]2 o4f+4. o4g4. [o4c+4. o3b4. o3b4.]2 o4c+4.
+
+; OPLL harmony voice 2
+MSXB C96 @3 v4 q2 r%1
+MSXB L [r32o4f+%93 r32o4e%93 r32o4e%93 r32o4d%45 r32o4e%45]2 r32o4f+%33 r32o4g%33 r32o4a+%33 [r32o4b%33]2 [r32o4a+%33 r32o4f+%33 r32o4g%33]2 r32o4a+%33
+
+; OPLL harmony voice 3
+MSXC C96 @3 v4 q2 r%1
+MSXC L [r16o4b%90 r16o4a%90 r16o4g+%90 r16o4g%42 r16o4a%42]2 [r16o4b%30]2 r16o5c+%30 [r16o5d%30 r16o5e%30 r16o5e%30]3
+
+; OPNA rhythm: BD/SD/CYM/HH/TOM/RIM
+G t197 C96 v41,20,13,8,9,13,18 q0 r%1
+G L [@1c8@8c8@32c8@8c8r8@8c8@32c8@8c8]8 [@1c8@8c8r8@40c8r8@8c8@1c8@8c8r8]4

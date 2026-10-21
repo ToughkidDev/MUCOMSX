@@ -1,0 +1,52 @@
+#mucom88 1.7
+#title ÊÞÚÝÂ É ÏÁ 2(¾ÝÄ³)
+#composer Yuzo Koshiro
+#author Yuzo Koshiro
+#date 2018/12/26
+#voice ARGFM.DAT
+#sccvoice ARGSC.DAT
+#comment SCC lead/bass/counter; OPLL harmony; OPNA rhythm arrangement.
+; Original: Yuzo Koshiro. Added harmony/drums: arrangement for this session.
+; Shared one-tick startup rest; original tempo, notes, repeats and loop lengths.
+
+; Original D: lead
+SCCA C128 @3 P1 r%1
+SCCA K2LE255,255,255,190,0,10v7l16o3q4[M50,1,40,200,15b2>M18,1,26,4,15e8.f+8.g8b8.g8.b8a8.g8.f+8g8.<b&b4>>e8.f+8.g8c8.e8.g8a8gf+&f+4]2o3e2.&e8gab4.gba4.&
+SCCA a32&M1,1,40,80,15a16.>M18,1,26,4,15e2.&e8gag4b4a4>d+4[o5[eedergab]2g8.e8.g8/f+8ga&a4]2q3rfc<afa>cf
+
+; Original E: bass
+SCCB C128 @1 P1 r%1
+SCCB t197K2LE255,255,255,190,0,10v8l16o2[[q4ev4q3E255,255,255,1,255,255r32r32E255,255,255,190,0,10v8q4e>e((e))<e>e<e]2c((c))c>c((c))<c>c<cd((d))d>d<((d))/d
+SCCB >d<d]4q0[E255,255,255,1,255,255((r128))o2E255,255,255,190,0,10d128&d32.]3q5[[e>e<]8/[g>g<]4[d>d<]4]2q2>ccccc+c+c+c+d+d+d+d+<bbf+d+[q1)e32(e32q5e>e<e)e
+SCCB e(>e<eq1)d32(d32q5d>d<d)dd(>d<dq1))c32((c32q5c>c<c)cc(g>c/<q1b32b32q5b>b<b)bb>ab(]2q3rfc<afa>cf
+
+; Original F: countermelody
+SCCC C128 @2 P1 r%1
+SCCC K2LE255,255,255,190,0,10v6l16o3q4[D16g2>e8.f+8.g8e8.c8.e8d8.<a&a4>e8.<g8>>>((beg))<e8.f+8.g8<e8.g8.>c8d8.<a&aa>d<a]2D0[o3g2b4.>ef+/g2f+2]2e4g4f+4b4[v6
+SCCC E255,255,255,190,0,10q4o4bbabo1))e(((q0E255,255,255,170,0,255rq4)E255,255,255,190,0,10o5f+g<bbab>o1))d(((q0E255,255,255,170,0,255rq4)
+SCCC E255,255,255,190,0,10o5f+ge8.c8.e8/d+8ef+v8o2E255,255,255,1,255,255q3c32c32o3q0v2M1,1,-500,80,15))a16((MF0q0r8]2q3v6ro5c<afE255,255,255,1,255,255q3v9
+SCCC o2a32a32E255,255,255,170,0,255q0v5rE255,255,255,1,255,255q7v9ec
+
+; Original E,F noise accents (non-overlapping)
+MSXD C128 P2 q0 r%1
+MSXD L
+MSXD r16 [w0v5E255,255,255,1,255,255o2c32 w0v5E255,255,255,1,255,255o2c32 r%56 w0v5E255,255,255,1,255,255o2c32 w0v5E255,255,255,1,255,255o2c32 r%127r%57]3 
+MSXD [w0v5E255,255,255,1,255,255o2c32]2 r%56 [w0v5E255,255,255,1,255,255o2c32]2 r%127r%25 [w10v7E255,255,255,1,255,255o2c128 r%7]2 w10v7E255,255,255,1,255,255o2c128 r%127r%127r%127r%127r%51 
+MSXD w0v6E255,255,255,170,0,255o2c16 r%56 w0v6E255,255,255,170,0,255o2c16 r1 w8v3E255,255,255,1,255,255o2c8 r%40 w0v6E255,255,255,170,0,255o2c16 r%56 
+MSXD w0v6E255,255,255,170,0,255o2c16 r%120 w5v6E255,255,255,170,0,255o2c16 r8
+
+; OPLL harmony voice 1
+MSXA C128 @3 v5 q2 r%1
+MSXA L r8o4c+%112 r8o4d4. [r8o4e4. r8o4f+%112 r8o4f+4.]3 r8o4e4. r8o4f+%112 [r8o4e4.]2 r8o4f+%112 [r8o4f+8]3 r8o4f8 r8o4f+4. r8o4e4. r8o4d4. r8o3b4. r8o4c+4. r8o3b4. [r8o4d4.]2
+
+; OPLL harmony voice 2
+MSXB C128 @3 v5 q2 r%1
+MSXB L r8o4f+%112 r8o4f+4. [r8o4g+4. r8o4a%112 r8o4a4.]4 r8o4g+4. r8o4a%112 [r8o4a8]2 r8o5c8 r8o4g+8 r8o4a4. r8o4g+4. r8o4f+4. r8o4f4. r8o4f+4. r8o4e4. r8o4f+4. r8o4g4.
+
+; OPLL harmony voice 3
+MSXC C128 @3 v5 q2 r%1
+MSXC L r8o4a%112 r8o4a4. [r8o4b4. r8o5c+%112 r8o5d4.]3 r8o4b4. r8o5c+%112 r8o5c+4. r8o4b4. r8o5c+%112 r8o5d8 [r8o5d+8]2 r8o4b8 r8o5c+4. r8o4b4. [r8o4a4. r8o4g+4.]2 r8o4a4. r8o4b4.
+
+; OPNA rhythm: BD/SD/CYM/HH/TOM/RIM
+G t197 C128 v49,27,24,15,12,23,12 q0 r%1
+G L [@13c8@8c8@10c8@9c8@9c8@8c8@10c8@8c8 @9c8@8c8@10c8@9c8@9c8@8c8@10c8@8c8 @9c8@8c8@10c8@9c8@9c8@8c8@10c8@8c8 @9c8@8c8@10c8@9c8@9c8@8c8@10c8@24c8]4

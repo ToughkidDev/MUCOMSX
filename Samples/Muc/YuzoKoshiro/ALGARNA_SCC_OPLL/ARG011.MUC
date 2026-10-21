@@ -1,0 +1,60 @@
+#mucom88 1.7
+#title ÊßÄÛÝ É ÔÏ
+#composer Yuzo Koshiro
+#author Yuzo Koshiro
+#date 2018/12/26
+#voice ARGFM.DAT
+#sccvoice ARGSC.DAT
+#comment SCC lead/bass/counter; OPLL harmony; OPNA rhythm arrangement.
+; Original: Yuzo Koshiro. Added harmony/drums: arrangement for this session.
+; Shared one-tick startup rest; original tempo, notes, repeats and loop lengths.
+
+; Original D: lead
+SCCA C128 @0 P1 r%1
+SCCA V-1E255,255,255,190,0,10v1l16o5v9q4M12,1,36,4,15g+8.>c+8.<g+8f+8.e8.d+8e2.<ea>c+ev9[d+8ef+&f+4]2e4f+4g+4.&g+16.&M1,1,60,80,15f32&M12,1,36,4,15&Lv9q4
+SCCA M12,1,36,4,15[g+8.>c+8.<g+8f+8.e8.d+8e2.<ea>c+e/v9[d+8ef+&f+4]2e4f+4g+4.&g+16.&M1,1,60,80,15f32&M12,1,36,4,15&]2d+8ef+&f+4d+8.e8.d+8c+2o2[q0
+SCCA E255,255,255,1,255,255v11g64r32.>c64<E255,255,255,190,1,10v5r32.]4o5E255,255,255,190,0,10q4v9[g+2g+8.a8.b8b8.f+&f+2f+8g+8a2/c+4f+4g+2r8d+8e8f+8]2b4>
+SCCA c+4d+2ro1))g+g+g+gb>d+<b((
+
+; Original E: bass
+SCCB C128 @1 P1 r%1
+SCCB t197V-1E255,255,255,190,0,10v9l16o3q3c+2.&c+8<c+ea1b2>c2c+8c+8c+c+c+c+<g+8g+8g+g+>ccL[[c+>c+<]8<[a>a<]8[b>b<]4>[c>c<]4[c+>c+<]4/o2g+g+g+g+>c<g+>cg+]2
+SCCB c+>c+<d+>d+<e>e<f+>f+<[[eg+b>e<]4<[b>d+f+b]4[f+a>c+f+<]4/[c+eg+>c+<]2c+>c+<d+>d+<e>e<f+>f+<]2[g+>cd+g+<]2o2rg+g+g+g+b>d+<b
+
+; Original F: countermelody
+SCCC C128 @2 P1 r%1
+SCCC V-1E255,255,255,190,0,10v7l16o5q4M12,1,36,4,15e8.g+8.e8d+8.<g+8.f+8a((a))ea>c+((c+))<a>c+ed+c+<bc+ea>c+<d+f+b>d+d+d+ef+<d+f+>cd+f+d+ef+c+4d+4<<g+>c+d+
+SCCC g+<g+>cd+g+LE255,255,255,190,0,10v7q4[e2d+8.e8.g+8a4c+4e8c+8D16ec+eaD0bf+b>d+f+d+ef+/c<f+>ce-f+d+ed+<eg+>c+<g+eg+el64v3c+<bag+l16o1v10g+g+g+g+>c<g+>c
+SCCC g+<v7]2o4v7g+f+ed+f+ed+<bc+eg+>c+<eg+>c+eo2))c+>c+<d+>d+<e>e<f+>f+<(([q0o2v10[E255,255,255,190,1,10eE255,255,255,1,255,255g128r128r32.>c64<
+SCCC E255,255,255,190,1,10v4r32.v10E255,255,255,1,255,255g64r32.]4[E255,255,255,190,1,10<b>E255,255,255,1,255,255g128r128r32.>c64<E255,255,255,190,1,10v4
+SCCC r32.v10E255,255,255,1,255,255g64r32.]4[E255,255,255,190,1,10f+E255,255,255,1,255,255g128r128r32.>c64<E255,255,255,190,1,10v4r32.v10
+SCCC E255,255,255,1,255,255g64r32.]4/[E255,255,255,190,1,10c+E255,255,255,1,255,255g128r128r32.>c64<E255,255,255,190,1,10v4r32.v10E255,255,255,1,255,255g64
+SCCC r32.]3E255,255,255,190,1,10e[v10E255,255,255,1,255,255>c64<E255,255,255,190,1,10v4r32.]3]2[E255,255,255,190,1,10rE255,255,255,1,255,255r128r128r32.>
+SCCC r64<E255,255,255,190,1,10v4r32.v10E255,255,255,1,255,255g64r32.]2E255,255,255,1,255,255g128r128r32.[v10E255,255,255,1,255,255>c64<
+SCCC E255,255,255,190,1,10v4r32.]7
+
+; Original D,F noise accents (non-overlapping)
+MSXD C128 P2 q0 r%1
+MSXD r%127r%127r%127r%127r%4
+MSXD L
+MSXD r%127r%127r%127r%127r%127r%127r%127r%81 [w0v5E255,255,255,190,1,10o2c32. r%10]3 w0v5E255,255,255,190,1,10o2c32. r%18 [w7v5E255,255,255,190,1,10o2c32. r%26]14 w7v5E255,255,255,190,1,10o2c32. r%18 
+MSXD [w7v5E255,255,255,190,1,10o2c32. r64]2 w7v5E255,255,255,190,1,10o2c32. r%18 [w7v5E255,255,255,190,1,10o2c32. r%26]11 
+MSXD [w7v5E255,255,255,190,1,10o2c32. r16 w7v5E255,255,255,190,1,10o2c16 w7v5E255,255,255,1,255,255o2c128 r%7 w7v5E255,255,255,1,255,255o2c64]2 w7v5E255,255,255,190,1,10o2c32. r%18 
+MSXD [w7v5E255,255,255,190,1,10o2c32. r64]6 w7v5E255,255,255,190,1,10o2c32.
+
+; OPLL harmony voice 1
+MSXA C128 @1 v4 q2 r%1
+MSXA [o4c+1]2 o3b2 o4c2 o4c+2 o4c2 L [o4c+1]2 o3b2 o4c2 o4c+2 o4c2 [o4c+1]2 o3b2 o4c2 o4c+2 o3b4 o3a4 [o3b1]2 o3a1 [o3g+1]2 o3b1 o3a1 o4c1
+
+; OPLL harmony voice 2
+MSXB C128 @1 v4 q2 r%1
+MSXB [o4e1]2 [o4d+2]2 o4e2 o4d+2 L [o4e1]2 [o4d+2]2 o4e2 o4d+2 [o4e1]2 [o4d+2]2 o4e2 o4d+4 o4c+4 [o4d+1]2 [o4c+1]2 o3b1 o4d+1 o4c+1 o4d+1
+
+; OPLL harmony voice 3
+MSXC C128 @4 v4 q2 r%1
+MSXC [o4g+1]2 [o4f+2]2 o4g+2 o4f+2 L [o4g+1]2 [o4f+2]2 o4g+2 o4f+2 [o4g+1]2 [o4f+2]2 o4g+2 [o4f+4]2 o4g+1 [o4f+1]2 o4e1 o4d+1 [o4f+1]3
+
+; OPNA rhythm: BD/SD/CYM/HH/TOM/RIM
+G t197 C128 v44,23,19,11,10,19,15 q0 r%1
+G [@9c8@8c8@10c8@8c8@9c8@8c8@10c8@8c8]3 @9c8@8c8@10c8@8c8@9c8@8c8@10c8@24c8 L 
+G [@9c8@8c8@10c8@8c8@9c8@8c8@10c8@8c8 @9c8@8c8@10c8@8c8@9c8@8c8@10c8@8c8 @9c8@8c8@10c8@8c8@9c8@8c8@10c8@8c8 @9c8@8c8@10c8@8c8@9c8@8c8@10c8@24c8]4
