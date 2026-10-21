@@ -4,7 +4,7 @@
 // the MUC engine (as it renders) or are read straight out of a VGM file; either way each
 // write carries the audio frame it belongs to, and is applied when that frame is heard.
 import { loadImages, images, FrameBuffer, drawFont8 } from './draw.js';
-import { MixerStrip, STRIP_W, ROWS } from './mixer-strip.js';
+import { MixerStrip, MixerReset, STRIP_W, RESET_H, ROWS } from './mixer-strip.js';
 
 const BASE = new URL('./', import.meta.url);
 
@@ -220,13 +220,26 @@ export class ChannelView {
         const key = (ch) => `${p.type}:${p.id}:${ch}`;
         strip = new MixerStrip(p.type, fb.canvas.height, {
           get: (ch) => this.volumes.get(key(ch)) ?? 0,
-          set: (ch, att) => { this.volumes.set(key(ch), att); this.onVolume?.(p.type, p.id, ch, att); },
+          set: (ch, att) => { this.volumes.set(key(ch), att); this.onVolume?.(p.type, p.id, ch, att); this.reset?.draw(); },
           title: this.root.dataset.mixer || '',
         });
         row.appendChild(strip.canvas);
       }
       this.stack.appendChild(row);
       this.panels.push({ type: p.type, id: p.id, chip, fb, strip });
+    }
+    // Under the faders: every channel volume back to the song's level.
+    this.reset = null;
+    if (this.panels.some((p) => p.strip)) {
+      this.reset = new MixerReset({
+        title: this.root.dataset.mixerReset || '',
+        onReset: () => this.resetVolumes(),
+        anyChanged: () => [...this.volumes.values()].some((v) => v !== 0),
+      });
+      const row = document.createElement('div');
+      row.className = 'cv-row cv-reset-row';
+      row.appendChild(this.reset.canvas);
+      this.stack.appendChild(row);
     }
     if (others.length) {
       const note = document.createElement('p');
@@ -280,6 +293,10 @@ export class ChannelView {
         p.strip.canvas.style.marginLeft = `${Math.floor((widest - p.fb.canvas.width) * k)}px`;
       }
     }
+    if (this.reset) {
+      this.reset.canvas.style.width = `${Math.floor(STRIP_W * k)}px`;
+      this.reset.canvas.style.marginLeft = `${Math.floor(widest * k)}px`;
+    }
     this.title.style.width = `${Math.floor(this.title.width * k)}px`;
   }
 
@@ -293,7 +310,7 @@ export class ChannelView {
     height -= gap * (stack.children.length - 1);
     for (const el of stack.children) if (!el.classList.contains('cv-row')) height -= el.offsetHeight;
     const w = Math.max(...this.panels.map((p) => p.fb.canvas.width)) + (this.panels.some((p) => p.strip) ? STRIP_W : 0);
-    let h = this.panels.reduce((sum, p) => sum + p.fb.canvas.height, 0);
+    let h = this.panels.reduce((sum, p) => sum + p.fb.canvas.height, 0) + (this.reset ? RESET_H : 0);
     // The chip list above the panels scales with them.
     if (!this.title.hidden) {
       h += this.title.height;
@@ -305,6 +322,19 @@ export class ChannelView {
   // The faders' tooltip, in the page's language.
   retitle() {
     for (const p of this.panels) if (p.strip) p.strip.canvas.title = this.root.dataset.mixer || '';
+    if (this.reset) this.reset.canvas.title = this.root.dataset.mixerReset || '';
+  }
+
+  // Every channel volume, of every chip (also ones not on screen now), back to 0 dB.
+  resetVolumes() {
+    for (const p of this.panels) p.strip?.resetAll();
+    for (const [key, att] of this.volumes) {
+      if (att === 0) continue;
+      const [type, id, ch] = key.split(':');
+      this.volumes.set(key, 0);
+      this.onVolume?.(type, +id, +ch, 0);
+    }
+    this.reset?.draw();
   }
 
   // Playback stopped: the panels stay, with the live meters cleared (MDPlayer4Mac's

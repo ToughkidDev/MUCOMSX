@@ -137,6 +137,7 @@ const T = {
     splitStack: 'Two views, one above the other', zoom: 'Size', zoomFit: 'Fit',
     cvEmpty: 'Play a song to see its chips here, as in MDPlayer.', cvOther: 'No channel view for: ',
     cvMixerTip: 'Channel volume (MUC and .mub): drag a fader along its channel row (left: OFF, right: the song\'s own level, 0 dB); the wheel moves it 1 dB; click the number to switch the channel off and on; double-click a fader for 0 dB, or VOL for every channel of the chip. It works on the registers the song writes (FM: the carriers\' TL; SSG / PSG / OPLL / SCC: their volume; rhythm, ADPCM: their level), so a channel on the SSG hardware envelope can only be switched off. Kept for the next songs; saved .mub / .vgm files are not changed.',
+    cvMixerResetTip: 'Reset all: every channel volume of every chip back to the song\'s own level (0 dB), including channels switched OFF. The Volume slider in the toolbar is not changed.',
     recovered: (n) => `Attached ${n} again from the Samples folder.`,
   },
   ko: {
@@ -244,6 +245,7 @@ const T = {
     splitStack: '위아래로 나눠 보기', zoom: '크기', zoomFit: '화면 맞춤',
     cvEmpty: '곡을 재생하면 MDPlayer처럼 칩별 채널이 여기에 표시됩니다.', cvOther: '채널 뷰가 없는 칩: ',
     cvMixerTip: '채널 볼륨 (MUC, .mub): 채널 행의 페이더를 좌우로 끕니다 (왼쪽 끝 OFF, 오른쪽 끝은 곡 원래 음량 0 dB). 휠로 1 dB씩, 숫자를 클릭하면 그 채널을 끄고 켭니다. 페이더를 더블클릭하면 0 dB, VOL을 더블클릭하면 그 칩의 모든 채널이 0 dB로 돌아갑니다. 곡이 쓰는 레지스터에 적용되므로 (FM은 캐리어 TL, SSG / PSG / OPLL / SCC는 볼륨, 리듬·ADPCM은 레벨) SSG 하드웨어 엔벨로프를 쓰는 채널은 끄기만 됩니다. 다음 곡에도 유지되고, 저장하는 .mub / .vgm 파일은 바뀌지 않습니다.',
+    cvMixerResetTip: '모두 초기화: 모든 칩의 모든 채널 볼륨을 곡 원래 음량(0 dB)으로 되돌립니다. OFF로 끈 채널도 다시 켜집니다. 툴바의 음량 슬라이더는 바뀌지 않습니다.',
     recovered: (n) => `${n}을(를) Samples 폴더에서 다시 첨부했습니다.`,
   },
   ja: {
@@ -351,6 +353,7 @@ const T = {
     splitStack: '上下に分割', zoom: 'サイズ', zoomFit: '画面に合わせる',
     cvEmpty: '曲を再生すると、MDPlayerのようにチップごとのチャンネルがここに表示されます。', cvOther: 'チャンネルビューのないチップ: ',
     cvMixerTip: 'チャンネル音量（MUC、.mub）: チャンネル行のフェーダーを左右にドラッグします（左端OFF、右端は曲本来の音量0 dB）。ホイールで1 dBずつ、数字をクリックでそのチャンネルをオフ・オン。フェーダーのダブルクリックで0 dB、VOLのダブルクリックでそのチップの全チャンネルが0 dBに戻ります。曲が書くレジスタに効くため（FMはキャリアのTL、SSG / PSG / OPLL / SCCは音量、リズム・ADPCMはレベル）、SSGハードウェアエンベロープのチャンネルはオフだけできます。次の曲にも残り、保存する.mub / .vgmファイルは変わりません。',
+    cvMixerResetTip: 'すべてリセット: 全チップの全チャンネル音量を曲本来の音量（0 dB）に戻します。OFFにしたチャンネルも戻ります。ツールバーの音量スライダーは変わりません。',
     recovered: (n) => `${n}をSamplesフォルダーから再び添付しました。`,
   },
 };
@@ -405,6 +408,7 @@ function applyLanguage() {
   if (SCALES[zoomIndex] === 'fit') $('cvZoom').textContent = t('zoomFit');
   $('chview').dataset.other = t('cvOther');
   $('chview').dataset.mixer = t('cvMixerTip');
+  $('chview').dataset.mixerReset = t('cvMixerResetTip');
   channelView.retitle();
   if (!channelView.panels.length && !$('chview').querySelector('canvas')) channelView.empty();
   document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));

@@ -64,6 +64,60 @@ export function attAt(pos) {
   return Math.round(MAX_ATT - t * MAX_ATT);
 }
 
+// The button under the faders: every channel of every chip back to 0 dB. Drawn like the
+// strips (rFader's rail greys, rFont_03 letters); dim when there is nothing to reset.
+export const RESET_H = 18;
+export class MixerReset {
+  constructor({ title, onReset, anyChanged }) {
+    this.onReset = onReset;
+    this.anyChanged = anyChanged;
+    this.canvas = document.createElement('canvas');
+    this.canvas.className = 'cv-screen cv-mixer-reset';
+    this.canvas.width = STRIP_W;
+    this.canvas.height = RESET_H;
+    this.canvas.title = title || '';
+    this.canvas.setAttribute('role', 'button');
+    this.canvas.tabIndex = 0;
+    this.g = this.canvas.getContext('2d');
+    this.g.imageSmoothingEnabled = false;
+    this.pressed = false;
+    const press = () => { this.pressed = true; this.draw(); setTimeout(() => { this.pressed = false; this.onReset(); this.draw(); }, 90); };
+    this.canvas.addEventListener('click', press);
+    this.canvas.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); press(); } });
+    this.draw();
+  }
+
+  draw() {
+    const g = this.g, w = this.canvas.width, on = this.anyChanged();
+    g.fillStyle = '#000';
+    g.fillRect(0, 0, w, RESET_H);
+    // A raised key in the rail's greys around a black face (rFont_03 is drawn on black):
+    // light top-left edge, dark bottom-right; the other way round while pressed.
+    const x = LABEL_X, y = 3, bw = w - LABEL_X * 2, bh = RESET_H - 4;
+    const light = this.pressed ? '#1a1a1a' : '#9a9a9a', dark = this.pressed ? '#9a9a9a' : '#1a1a1a';
+    g.fillStyle = '#4a4a4a';
+    g.fillRect(x, y, bw, bh);
+    g.fillStyle = light;
+    g.fillRect(x, y, bw, 1); g.fillRect(x, y, 1, bh);
+    g.fillStyle = dark;
+    g.fillRect(x, y + bh - 1, bw, 1); g.fillRect(x + bw - 1, y, 1, bh);
+    g.fillStyle = '#000';
+    g.fillRect(x + 2, y + 2, bw - 4, bh - 4);
+    const label = 'RESET ALL';
+    g.globalAlpha = on ? 1 : 0.45;
+    const font = images.rFont_03;
+    let tx = x + Math.floor((bw - label.length * 4) / 2) + (this.pressed ? 1 : 0);
+    const ty = y + Math.floor((bh - 8) / 2) + (this.pressed ? 1 : 0);
+    for (const ch of label) {
+      const i = ch.charCodeAt(0) - 0x20;
+      if (i > 0 && i < 64) g.drawImage(font, (i % 32) * 4, Math.floor(i / 32) * 8, 4, 8, tx, ty, 4, 8);
+      tx += 4;
+    }
+    g.globalAlpha = 1;
+    this.canvas.style.cursor = on ? 'pointer' : 'default';
+  }
+}
+
 export class MixerStrip {
   // get(ch) -> attenuation (0..48, or -1 = off); set(ch, att); title: tooltip.
   constructor(type, height, { get, set, title }) {
@@ -124,6 +178,12 @@ export class MixerStrip {
     return { x, y, row };
   }
 
+  // Every fader of the chip back to the song's level.
+  resetAll() {
+    this.restore.clear();
+    for (const [, ch] of this.rows) this.change(ch, 0);
+  }
+
   change(ch, att) {
     if (this.get(ch) === att) return;
     this.set(ch, att);
@@ -161,7 +221,7 @@ export class MixerStrip {
     c.addEventListener('dblclick', (e) => {
       const { y, row } = this.hit(e);
       // VOL: every channel of the chip back to the song's level; a fader: that one.
-      if (y < 8) { for (const [, ch] of this.rows) this.change(ch, 0); return; }
+      if (y < 8) { this.resetAll(); return; }
       if (row) this.change(row[1], 0);
     });
     c.addEventListener('wheel', (e) => {
