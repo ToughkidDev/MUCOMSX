@@ -28,6 +28,13 @@ if (Environment.GetEnvironmentVariable("VGM_OUT") is string vgmPath)
 
 MucPlayer player = new();
 if (Environment.GetEnvironmentVariable("SPEED") is string speedText) player.Speed = double.Parse(speedText);
+// CHVOL=YM2608:0:0:-1,AY8910:0:1:12 (chip:id:channel:attenuation dB, -1 mutes)
+if (Environment.GetEnvironmentVariable("CHVOL") is string chvol)
+    foreach (string item in chvol.Split(',', StringSplitOptions.RemoveEmptyEntries))
+    {
+        string[] fields = item.Split(':');
+        if (ChannelMixer.TryParse(fields[0], out var c)) player.Mixer.SetVolume(c, int.Parse(fields[1]), int.Parse(fields[2]), int.Parse(fields[3]));
+    }
 if (!player.Start(r, Open, Environment.GetEnvironmentVariable("NO_TRACE") == null)) { Console.WriteLine("start failed: " + player.Error); return 1; }
 Console.WriteLine($"chips: {player.Chips}  title: {player.Title}");
 

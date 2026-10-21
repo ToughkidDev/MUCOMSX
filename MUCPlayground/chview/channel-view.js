@@ -4,6 +4,7 @@
 // the MUC engine (as it renders) or are read straight out of a VGM file; either way each
 // write carries the audio frame it belongs to, and is applied when that frame is heard.
 import { loadImages, images, FrameBuffer, drawFont8 } from './draw.js';
+import { MixerStrip, STRIP_W, ROWS } from './mixer-strip.js';
 
 const BASE = new URL('./', import.meta.url);
 
@@ -163,6 +164,10 @@ export class ChannelView {
     this.vgm = null;
     this.tickAt = 0;
     this.session = 0;
+    // Channel faders (mixer-strip.js), for songs the MUC engine plays: 'TYPE:id:channel' ->
+    // attenuation, kept from song to song; onVolume(type, id, channel, att) tells the engine.
+    this.volumes = new Map();
+    this.onVolume = null;
     this.empty();
     // 'fit' follows the size of the view (window resizes, split, coming back from the editor).
     new ResizeObserver(() => { if (this.scale === 'fit') this.applyScale(); }).observe(root);
@@ -199,14 +204,29 @@ export class ChannelView {
     if (session !== this.session) return;
     this.stack.innerHTML = '';
     this.panels = [];
+    // VGM files play on MDPlayer's own player, which has no per-channel volume.
+    const mixable = !this.vgm && !!this.onVolume;
     for (const p of loaded) {
       const chip = new p.Cls(p.clock);
       const fb = new FrameBuffer(images[p.Cls.plane]);
       chip.screenInit(fb);
       fb.canvas.className = 'cv-screen';
       fb.canvas.title = p.type + (p.id ? ` #${p.id + 1}` : '');
-      this.stack.appendChild(fb.canvas);
-      this.panels.push({ type: p.type, id: p.id, chip, fb });
+      const row = document.createElement('div');
+      row.className = 'cv-row';
+      row.appendChild(fb.canvas);
+      let strip = null;
+      if (mixable && ROWS[p.type]) {
+        const key = (ch) => `${p.type}:${p.id}:${ch}`;
+        strip = new MixerStrip(p.type, fb.canvas.height, {
+          get: (ch) => this.volumes.get(key(ch)) ?? 0,
+          set: (ch, att) => { this.volumes.set(key(ch), att); this.onVolume?.(p.type, p.id, ch, att); },
+          title: this.root.dataset.mixer || '',
+        });
+        row.appendChild(strip.canvas);
+      }
+      this.stack.appendChild(row);
+      this.panels.push({ type: p.type, id: p.id, chip, fb, strip });
     }
     if (others.length) {
       const note = document.createElement('p');
@@ -251,8 +271,14 @@ export class ChannelView {
       k = this.fitScale();
       if (!k) return;   // hidden: measured again when it is shown
     }
+    // The faders line up in one column, right of the widest panel.
+    const widest = Math.max(0, ...this.panels.map((p) => p.fb.canvas.width));
     for (const p of this.panels) {
       p.fb.canvas.style.width = `${Math.floor(p.fb.canvas.width * k)}px`;
+      if (p.strip) {
+        p.strip.canvas.style.width = `${Math.floor(STRIP_W * k)}px`;
+        p.strip.canvas.style.marginLeft = `${Math.floor((widest - p.fb.canvas.width) * k)}px`;
+      }
     }
     this.title.style.width = `${Math.floor(this.title.width * k)}px`;
   }
@@ -265,8 +291,8 @@ export class ChannelView {
     let height = view.clientHeight - parseFloat(css.paddingTop) - parseFloat(css.paddingBottom) - 1;
     // Space that does not scale: the gaps between panels and the note under them.
     height -= gap * (stack.children.length - 1);
-    for (const el of stack.children) if (el.tagName !== 'CANVAS') height -= el.offsetHeight;
-    const w = Math.max(...this.panels.map((p) => p.fb.canvas.width));
+    for (const el of stack.children) if (!el.classList.contains('cv-row')) height -= el.offsetHeight;
+    const w = Math.max(...this.panels.map((p) => p.fb.canvas.width)) + (this.panels.some((p) => p.strip) ? STRIP_W : 0);
     let h = this.panels.reduce((sum, p) => sum + p.fb.canvas.height, 0);
     // The chip list above the panels scales with them.
     if (!this.title.hidden) {
@@ -274,6 +300,11 @@ export class ChannelView {
       height -= parseFloat(getComputedStyle(this.title).marginBottom) || 0;
     }
     return Math.max(0.1, Math.min(width / w, height / h));
+  }
+
+  // The faders' tooltip, in the page's language.
+  retitle() {
+    for (const p of this.panels) if (p.strip) p.strip.canvas.title = this.root.dataset.mixer || '';
   }
 
   // Playback stopped: the panels stay, with the live meters cleared (MDPlayer4Mac's

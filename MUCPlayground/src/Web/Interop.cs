@@ -11,6 +11,8 @@ public static partial class Interop
     static CompileResult compiled;
     static MucPlayer player;
     static double speed = 1;
+    // The channel view's faders, kept for every song played after they were set.
+    static readonly Dictionary<(string chip, int id, int channel), int> channelVolumes = new();
     static string exportError = "";
     static short[] pcm = new short[0];
 
@@ -86,6 +88,7 @@ public static partial class Interop
         player?.Stop();
         compiled = null;
         player = new MucPlayer { Speed = speed };
+        ApplyChannelVolumes(player);
         bool ok = player.Start(data, Open);
         return Json(w =>
         {
@@ -103,6 +106,7 @@ public static partial class Interop
     public static string Start()
     {
         player = new MucPlayer { Speed = speed };
+        ApplyChannelVolumes(player);
         bool ok = compiled != null && player.Start(compiled, Open);
         return Json(w =>
         {
@@ -122,6 +126,20 @@ public static partial class Interop
     {
         speed = Math.Clamp(value, 0.25, 2);
         if (player != null) player.Speed = speed;
+    }
+
+    // A channel fader: attenuation 0-48 dB, or -1 to mute (ChannelMixer lists the channels).
+    [JSExport]
+    public static void SetChannelVolume(string chip, int id, int channel, int attenuation)
+    {
+        channelVolumes[(chip, id, channel)] = attenuation;
+        if (player != null && ChannelMixer.TryParse(chip, out var c)) player.Mixer.SetVolume(c, id, channel, attenuation);
+    }
+
+    static void ApplyChannelVolumes(MucPlayer p)
+    {
+        foreach (var ((chip, id, channel), att) in channelVolumes)
+            if (ChannelMixer.TryParse(chip, out var c)) p.Mixer.SetVolume(c, id, channel, att);
     }
 
     // Renders up to `frames` stereo frames as little-endian 16-bit PCM. An empty result means the song ended.

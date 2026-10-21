@@ -136,6 +136,7 @@ const T = {
     channelView: '▦ Channels', channelViewTip: 'Channel view (MDPlayer4Mac style) / editor', split: 'Split', splitOff: 'One view', splitSide: 'Two views, side by side',
     splitStack: 'Two views, one above the other', zoom: 'Size', zoomFit: 'Fit',
     cvEmpty: 'Play a song to see its chips here, as in MDPlayer.', cvOther: 'No channel view for: ',
+    cvMixerTip: 'Channel volume (MUC and .mub): drag a fader along its channel row (left: OFF, right: the song\'s own level, 0 dB); the wheel moves it 1 dB; click the number to switch the channel off and on; double-click a fader for 0 dB, or VOL for every channel of the chip. It works on the registers the song writes (FM: the carriers\' TL; SSG / PSG / OPLL / SCC: their volume; rhythm, ADPCM: their level), so a channel on the SSG hardware envelope can only be switched off. Kept for the next songs; saved .mub / .vgm files are not changed.',
     recovered: (n) => `Attached ${n} again from the Samples folder.`,
   },
   ko: {
@@ -242,6 +243,7 @@ const T = {
     channelView: '▦ 채널 뷰', channelViewTip: '채널 뷰(MDPlayer4Mac 방식) / 에디터 전환', split: '분할', splitOff: '하나로 보기', splitSide: '좌우로 나눠 보기',
     splitStack: '위아래로 나눠 보기', zoom: '크기', zoomFit: '화면 맞춤',
     cvEmpty: '곡을 재생하면 MDPlayer처럼 칩별 채널이 여기에 표시됩니다.', cvOther: '채널 뷰가 없는 칩: ',
+    cvMixerTip: '채널 볼륨 (MUC, .mub): 채널 행의 페이더를 좌우로 끕니다 (왼쪽 끝 OFF, 오른쪽 끝은 곡 원래 음량 0 dB). 휠로 1 dB씩, 숫자를 클릭하면 그 채널을 끄고 켭니다. 페이더를 더블클릭하면 0 dB, VOL을 더블클릭하면 그 칩의 모든 채널이 0 dB로 돌아갑니다. 곡이 쓰는 레지스터에 적용되므로 (FM은 캐리어 TL, SSG / PSG / OPLL / SCC는 볼륨, 리듬·ADPCM은 레벨) SSG 하드웨어 엔벨로프를 쓰는 채널은 끄기만 됩니다. 다음 곡에도 유지되고, 저장하는 .mub / .vgm 파일은 바뀌지 않습니다.',
     recovered: (n) => `${n}을(를) Samples 폴더에서 다시 첨부했습니다.`,
   },
   ja: {
@@ -348,6 +350,7 @@ const T = {
     channelView: '▦ チャンネル', channelViewTip: 'チャンネルビュー（MDPlayer4Mac風）/ エディタの切り替え', split: '分割', splitOff: '1画面', splitSide: '左右に分割',
     splitStack: '上下に分割', zoom: 'サイズ', zoomFit: '画面に合わせる',
     cvEmpty: '曲を再生すると、MDPlayerのようにチップごとのチャンネルがここに表示されます。', cvOther: 'チャンネルビューのないチップ: ',
+    cvMixerTip: 'チャンネル音量（MUC、.mub）: チャンネル行のフェーダーを左右にドラッグします（左端OFF、右端は曲本来の音量0 dB）。ホイールで1 dBずつ、数字をクリックでそのチャンネルをオフ・オン。フェーダーのダブルクリックで0 dB、VOLのダブルクリックでそのチップの全チャンネルが0 dBに戻ります。曲が書くレジスタに効くため（FMはキャリアのTL、SSG / PSG / OPLL / SCCは音量、リズム・ADPCMはレベル）、SSGハードウェアエンベロープのチャンネルはオフだけできます。次の曲にも残り、保存する.mub / .vgmファイルは変わりません。',
     recovered: (n) => `${n}をSamplesフォルダーから再び添付しました。`,
   },
 };
@@ -401,6 +404,8 @@ function applyLanguage() {
   $('chview').dataset.empty = t('cvEmpty');
   if (SCALES[zoomIndex] === 'fit') $('cvZoom').textContent = t('zoomFit');
   $('chview').dataset.other = t('cvOther');
+  $('chview').dataset.mixer = t('cvMixerTip');
+  channelView.retitle();
   if (!channelView.panels.length && !$('chview').querySelector('canvas')) channelView.empty();
   document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
   buildExamples();
@@ -2156,6 +2161,8 @@ $('splitter').addEventListener('dblclick', () => { $('panes').style.setProperty(
 // MDPlayer4Mac's channel view in place of the editor. Playing a .mub or .vgm switches to
 // it; while a MUC plays, the button switches between it and the editor.
 const channelView = new ChannelView($('chview'));
+// The channel faders talk to the MUC engine (MUC and .mub playback).
+channelView.onVolume = (chip, id, ch, att) => worker.postMessage({ type: 'channelVolume', chip, id, ch, att });
 let viewMode = 'editor';
 let autoChannels = false;          // opened by playing a file, so a MUC play returns to the editor
 let cvSource = null, cvSession = -1;

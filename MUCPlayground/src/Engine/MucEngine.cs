@@ -237,6 +237,10 @@ public sealed class MucPlayer
     VgmWriter vgm;          // only while exporting
     double speedDue;        // driver steps owed (Speed per output sample)
 
+    // The channel view's per-channel faders (ChannelMixer): applied to what the emulators
+    // get; the chip log and VGM export keep the song's own values.
+    public readonly ChannelMixer Mixer = new();
+
     // Playback speed (0.25–2): the driver's timers run this many steps per output sample,
     // so the tempo changes and the pitch does not. Exports always run at 1.
     public double Speed { get; set; } = 1;
@@ -349,6 +353,12 @@ public sealed class MucPlayer
 
         mds = new MDSound.MDSound(MucEngine.SampleRate, 2048, null);
         mds.Init(MucEngine.SampleRate, 2048, chips.ToArray());
+        Mixer.Sink(ChannelMixer.Chip.Opna, (id, port, a, v) => mds.WriteYM2608((byte)id, (byte)port, (byte)a, (byte)v));
+        Mixer.Sink(ChannelMixer.Chip.Opnb, (id, port, a, v) => mds.WriteYM2610((byte)id, (byte)port, (byte)a, (byte)v));
+        Mixer.Sink(ChannelMixer.Chip.Opm, (id, port, a, v) => mds.WriteYM2151((byte)id, (byte)a, (byte)v));
+        Mixer.Sink(ChannelMixer.Chip.Opll, (id, port, a, v) => mds.WriteYM2413emu((byte)id, (byte)a, (byte)v));
+        Mixer.Sink(ChannelMixer.Chip.Psg, (id, port, a, v) => mds.WriteAY8910((byte)id, (byte)a, (byte)v));
+        Mixer.Sink(ChannelMixer.Chip.Scc, (id, port, a, v) => { mds.WriteK051649((byte)id, port * 2, (byte)a); mds.WriteK051649((byte)id, port * 2 + 1, (byte)v); });
         Chips = string.Join(" + ", names);
         foreach (MDSound.MDSound.Chip c in chips)
         {
@@ -581,35 +591,39 @@ public sealed class MucPlayer
     // Every chip write passes through here: to the emulators, and to the VGM log when exporting.
     void Opna(int chip, int port, int address, int value)
     {
-        mds.WriteYM2608((byte)chip, (byte)port, (byte)address, (byte)value);
+        mds.WriteYM2608((byte)chip, (byte)port, (byte)address, (byte)Mixer.Adjust(ChannelMixer.Chip.Opna, chip, port, address, value));
+        Mixer.After(ChannelMixer.Chip.Opna, chip, port, address);
         vgm?.Write(frame, chip == 0 ? 0x56 + port : 0xa6 + port, address, value);
         if (port == 0 || address != 0x08) Log(chip == 0 ? 0x56 + port : 0xa6 + port, 0, address, value);
     }
 
     void Opnb(int chip, int port, int address, int value)
     {
-        mds.WriteYM2610((byte)chip, (byte)port, (byte)address, (byte)value);
+        mds.WriteYM2610((byte)chip, (byte)port, (byte)address, (byte)Mixer.Adjust(ChannelMixer.Chip.Opnb, chip, port, address, value));
+        Mixer.After(ChannelMixer.Chip.Opnb, chip, port, address);
         vgm?.Write(frame, chip == 0 ? 0x58 + port : 0xa8 + port, address, value);
         Log(chip == 0 ? 0x58 + port : 0xa8 + port, 0, address, value);
     }
 
     void Opm(int address, int value)
     {
-        mds.WriteYM2151(0, (byte)address, (byte)value);
+        mds.WriteYM2151(0, (byte)address, (byte)Mixer.Adjust(ChannelMixer.Chip.Opm, 0, 0, address, value));
+        Mixer.After(ChannelMixer.Chip.Opm, 0, 0, address);
         vgm?.Write(frame, 0x54, address, value);
         Log(0x54, 0, address, value);
     }
 
     void Opll(int address, int value)
     {
-        mds.WriteYM2413emu(0, (byte)address, (byte)value);
+        mds.WriteYM2413emu(0, (byte)address, (byte)Mixer.Adjust(ChannelMixer.Chip.Opll, 0, 0, address, value));
+        Mixer.After(ChannelMixer.Chip.Opll, 0, 0, address);
         vgm?.Write(frame, 0x51, address, value);
         Log(0x51, 0, address, value);
     }
 
     void Psg(int address, int value)
     {
-        mds.WriteAY8910(0, (byte)address, (byte)value);
+        mds.WriteAY8910(0, (byte)address, (byte)Mixer.Adjust(ChannelMixer.Chip.Psg, 0, 0, address, value));
         vgm?.Write(frame, 0xa0, address, value);
         Log(0xa0, 0, address, value);
     }
@@ -617,7 +631,7 @@ public sealed class MucPlayer
     void WriteScc(int port, int address, int value)
     {
         mds.WriteK051649(0, port * 2, (byte)address);
-        mds.WriteK051649(0, port * 2 + 1, (byte)value);
+        mds.WriteK051649(0, port * 2 + 1, (byte)Mixer.Adjust(ChannelMixer.Chip.Scc, 0, port, address, value));
         vgm?.WriteScc(frame, port, address, value);
         Log(0xd2, port, address, value);
     }

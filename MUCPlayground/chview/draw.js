@@ -11,7 +11,7 @@ export const images = {};
 
 const NAMES = ['planeD', 'planeYM2610', 'planeYM2203', 'planeE', 'planeYM2413', 'planeAY8910', 'planeK051649',
   'rFont_01', 'rFont_02', 'rFont_03', 'rFont_04', 'rKBD_01', 'rVol_01', 'rPan_01', 'rPSGMode_01', 'rPSGMode_02',
-  'rPSGEnv', 'rType_01', 'rType_02', 'rNESDMC', 'rWavGraph'];
+  'rPSGEnv', 'rType_01', 'rType_02', 'rNESDMC', 'rWavGraph', 'rFader'];
 
 let loading = null;
 export function loadImages(base) {

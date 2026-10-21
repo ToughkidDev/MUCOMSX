@@ -133,6 +133,9 @@ onmessage = async (event) => {
         play(session, () => E.StartFile(data));
         break;
       }
+      case 'channelVolume':
+        E.SetChannelVolume(m.chip, m.id, m.ch, m.att);
+        break;
       case 'speed':
         E.SetSpeed(m.value);
         break;
