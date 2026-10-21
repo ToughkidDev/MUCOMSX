@@ -690,6 +690,13 @@ function setSource(text) {
   scheduleCheck();
   scheduleTracker();
   markRows = new Map();
+  // The last song's messages and the line picked from them point into the old text:
+  // gone until the new text is checked.
+  pickedMark = null;
+  lastResult = null;
+  $('messages').innerHTML = '';
+  $('msgCount').textContent = '';
+  $('msgCount').className = 'count';
   renderGutter();
   updateBytes();
   updateCursor();
