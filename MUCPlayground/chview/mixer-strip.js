@@ -2,18 +2,22 @@
 // sheet (rail, knob, 2px level bar), turned on its side the way its MixerVisualizer does,
 // and rFont_03 for the numbers. One fader per channel, on the panel's own channel row (8
 // pixels high, like the rail and the knob); channels without a row of their own (rhythm,
-// ADPCM-A) get labelled rows below. The scale is MDPlayer4Mac's mixer's: -192 to +20 in
-// 0.5 dB steps (-96 dB to +10 dB; -192, far left, is OFF), with 0 (the song as written) 35/43
-// of the way along, as frmMixer2 splits its travel; the engine applies it to the registers
-// the song writes.
+// ADPCM-A) get labelled rows below. The units are MDPlayer4Mac's mixer's (0.5 dB steps, 0
+// the song as written, 35/43 of the way along as frmMixer2 splits its travel): from -32
+// (-16 dB) to +20 (+10 dB), and below -32 OFF (-192 for the engine). Dragging rests at 0 for
+// a couple of pixels; the small key right of each fader puts it back to 0. The engine
+// applies the faders to the registers the song writes.
 
 import { images } from './draw.js';
 
-export const STRIP_W = 92;
+export const STRIP_W = 102;
 const LABEL_X = 2, VALUE_X = 15, FADER_X = 33, FADER_LEN = 56, KNOB_W = 13;
+const RESET_X = FADER_X + FADER_LEN + 2, RESET_W = 10;   // the key that puts a fader back to 0
 const USABLE = FADER_LEN - KNOB_W;
-export const MIN_VOL = -192, MAX_VOL = 20;
+export const MIN_VOL = -192, LOW_VOL = -32, MAX_VOL = 20;   // MIN_VOL: OFF
 const ZERO = Math.floor((USABLE * 35) / 43);   // 43 px of travel, like frmMixer2: 35 below 0, 8 above
+const OFF_PX = 2;                              // the first pixels: OFF
+const DETENT_PX = 2;                           // dragging rests at 0 this close to it
 
 // [y, channel, label]: the channel numbers ChannelMixer (engine) uses.
 const range = (n, f) => Array.from({ length: n }, (_, i) => f(i));
@@ -59,12 +63,21 @@ function loadSprites() {
   return sprites;
 }
 
-// MixerVisualizer.FaderPosition / VolumeAtPosition.
-export const knobAt = (v) => (v <= 0 ? Math.round(((v - MIN_VOL) * ZERO) / -MIN_VOL) : ZERO + Math.round((v * (USABLE - ZERO)) / MAX_VOL));
-export function volAt(pos) {
-  const p = Math.max(0, Math.min(USABLE, pos));
-  return p <= ZERO ? Math.round(MIN_VOL + (p * -MIN_VOL) / ZERO) : Math.round(((p - ZERO) * MAX_VOL) / (USABLE - ZERO));
+// After MixerVisualizer.FaderPosition / VolumeAtPosition, over -32..0..+20 and OFF.
+export function knobAt(v) {
+  if (v <= MIN_VOL) return 0;
+  if (v <= 0) return OFF_PX + Math.round(((Math.max(LOW_VOL, v) - LOW_VOL) * (ZERO - OFF_PX)) / -LOW_VOL);
+  return ZERO + Math.round((v * (USABLE - ZERO)) / MAX_VOL);
 }
+export function volAt(pos, detent = false) {
+  const p = Math.max(0, Math.min(USABLE, pos));
+  if (detent && Math.abs(p - ZERO) <= DETENT_PX) return 0;
+  if (p < OFF_PX - 0.5) return MIN_VOL;
+  return p <= ZERO ? Math.round(LOW_VOL + ((p - OFF_PX) * -LOW_VOL) / (ZERO - OFF_PX)) : Math.round(((p - ZERO) * MAX_VOL) / (USABLE - ZERO));
+}
+// A small turning arrow for the reset key (7 x 6): a ring open at the lower right, its
+// arrowhead at the right pointing down.
+const RESET_ICON = ['..###..', '.#...#.', '#...###', '#....#.', '.#.....', '..###..'];
 
 // The button under the faders: every channel of every chip back to 0 dB. Drawn like the
 // strips (rFader's rail greys, rFont_03 letters); dim when there is nothing to reset.
@@ -134,6 +147,7 @@ export class MixerStrip {
     this.g = this.canvas.getContext('2d');
     this.g.imageSmoothingEnabled = false;
     this.restore = new Map();   // channel -> level before OFF (a click on the number)
+    this.pressed = null;        // the channel whose reset key is down
     this.wire();
     this.draw();
   }
@@ -169,7 +183,24 @@ export class MixerStrip {
         g.drawImage(images.rFader, 24, 8 + tile, 2, 1, FADER_X + i, y + 3, 2, 1);
       }
       g.drawImage(sp.knob, FADER_X + knob, y);
+      this.drawResetKey(y, vol !== 0, this.pressed === ch);
     }
+  }
+
+  // A raised key in the rail's greys, like RESET ALL; dim when the fader is at 0 already.
+  drawResetKey(y, on, pressed) {
+    const g = this.g, x = RESET_X, w = RESET_W, h = 8;
+    g.fillStyle = '#4a4a4a';
+    g.fillRect(x, y, w, h);
+    g.fillStyle = pressed ? '#1a1a1a' : '#9a9a9a';
+    g.fillRect(x, y, w, 1); g.fillRect(x, y, 1, h);
+    g.fillStyle = pressed ? '#9a9a9a' : '#1a1a1a';
+    g.fillRect(x, y + h - 1, w, 1); g.fillRect(x + w - 1, y, 1, h);
+    g.fillStyle = '#000';
+    g.fillRect(x + 1, y + 1, w - 2, h - 2);
+    g.fillStyle = on ? '#e8e8e8' : '#5a5a5a';
+    const ox = x + 1 + (pressed ? 1 : 0), oy = y + 1 + (pressed ? 1 : 0);
+    RESET_ICON.forEach((line, r) => { for (let c = 0; c < line.length; c++) if (line[c] === '#') g.fillRect(ox + c, oy + r, 1, 1); });
   }
 
   // Native pixel and row under the pointer.
@@ -201,6 +232,14 @@ export class MixerStrip {
       if (y < 8) return;
       if (!row) return;
       const ch = row[1];
+      if (x >= RESET_X) {
+        // The reset key: this fader back to 0.
+        if (x >= RESET_X + RESET_W) return;
+        this.pressed = ch;
+        this.draw();
+        setTimeout(() => { this.pressed = null; this.restore.delete(ch); this.change(ch, 0); this.draw(); }, 90);
+        return;
+      }
       if (x < FADER_X) {
         // The number: OFF and back.
         const vol = this.get(ch);
@@ -210,30 +249,32 @@ export class MixerStrip {
       }
       drag = ch;
       c.setPointerCapture(e.pointerId);
-      this.change(ch, volAt(x - FADER_X - KNOB_W / 2));
+      this.change(ch, volAt(x - FADER_X - KNOB_W / 2, true));
       e.preventDefault();
     });
     c.addEventListener('pointermove', (e) => {
       if (drag === null) return;
       const { x } = this.hit(e);
-      this.change(drag, volAt(x - FADER_X - KNOB_W / 2));
+      this.change(drag, volAt(x - FADER_X - KNOB_W / 2, true));
     });
     const end = () => { drag = null; };
     c.addEventListener('pointerup', end);
     c.addEventListener('pointercancel', end);
     c.addEventListener('dblclick', (e) => {
-      const { y, row } = this.hit(e);
+      const { x, y, row } = this.hit(e);
       // VOL: every channel of the chip back to the song's level; a fader: that one.
       if (y < 8) { this.resetAll(); return; }
-      if (row) this.change(row[1], 0);
+      if (row && x < RESET_X) this.change(row[1], 0);
     });
     c.addEventListener('wheel', (e) => {
       const { row } = this.hit(e);
       if (!row) return;
       e.preventDefault();
-      // One step (0.5 dB) a notch, as MDPlayer's mixer.
-      const vol = this.get(row[1]);
-      this.change(row[1], Math.max(MIN_VOL, Math.min(MAX_VOL, vol + (e.deltaY < 0 ? 1 : -1))));
+      // One step (0.5 dB) a notch, as MDPlayer's mixer; below -32 is OFF.
+      const vol = this.get(row[1]), up = e.deltaY < 0;
+      let next = vol <= MIN_VOL ? (up ? LOW_VOL : MIN_VOL) : vol + (up ? 1 : -1);
+      if (next < LOW_VOL) next = MIN_VOL;
+      this.change(row[1], Math.min(MAX_VOL, next));
     }, { passive: false });
   }
 }
