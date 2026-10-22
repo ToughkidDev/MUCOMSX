@@ -1,0 +1,116 @@
+name: 🎧 MUCPlayground problem / MUCPlayground 문제 / MUCPlaygroundの不具合
+description: Something is wrong in the web editor — compiling, playing, the channel view, banks, opening or saving files.
+title: "[Playground] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the editor that runs in the browser.
+        Korean, Japanese and English are all welcome. Ideas go to **💡 Idea or improvement**.
+        브라우저에서 동작하는 에디터용 양식입니다. 한국어·일본어·영어 모두 환영합니다. 아이디어는 **💡 개선 제안**으로 보내 주세요.
+        ブラウザで動くエディタ用の様式です。韓国語・日本語・英語のいずれでも歓迎します。アイデアは **💡 改善の提案** へどうぞ。
+
+        **The .MUC (with its voice / PCM files) that shows the problem helps most.**
+        문제가 생기는 .MUC(음색·PCM 파일 포함)가 가장 도움이 됩니다. 問題が起きる.MUC(音色・PCMファイル含む)が最も役立ちます。
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before reporting / 제보 전 확인 / 報告の前に
+      options:
+        - label: I searched the existing issues and this is not a duplicate. / 기존 이슈를 검색했고 중복이 아닙니다. / 既存のIssueを検索し、重複ではありません。
+          required: true
+        - label: I reloaded the page (Ctrl+Shift+R / Cmd+Shift+R) and it still happens. / 페이지를 새로 고침(Ctrl+Shift+R)해도 그대로입니다. / ページを再読み込み(Ctrl+Shift+R)しても起きます。
+          required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where / 어디에서 / どこで
+      multiple: true
+      options:
+        - Editor — colours, suggestions, split view / 에디터 — 색, 자동 완성, 분할 / エディタ — 色分け、補完、分割
+        - Compile messages and error / warning marks / 컴파일 메시지와 오류·경고 표시 / コンパイルメッセージとエラー・警告の表示
+        - Playback — sound, tempo, loop, speed / 재생 — 소리, 템포, 루프, 속도 / 再生 — 音、テンポ、ループ、速度
+        - Channel view and volume faders / 채널 뷰와 볼륨 페이더 / チャンネルビューと音量フェーダー
+        - Tracker / keyboard / line play / 트래커·건반·줄 재생 / トラッカー・鍵盤・行再生
+        - Voice banks — FM, SCC, PCM / 음색 뱅크 — FM, SCC, PCM / 音色バンク — FM、SCC、PCM
+        - Opening files, folders, samples / 파일·폴더·샘플 열기 / ファイル・フォルダ・サンプルを開く
+        - Saving .MUC / .MUB / .VGM / 저장 / 保存
+        - Playing .MUB / .VGM / .VGZ / MUB·VGM 재생 / MUB・VGMの再生
+        - Other / 기타 / その他
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: chips
+    attributes:
+      label: Sound chips involved / 관련 음원 / 関係する音源
+      description: Only if the problem is in the sound. / 소리 문제일 때만. / 音の問題のときのみ。
+      options:
+        - label: OPNA (YM2608) FM A B C H I J
+        - label: OPNA SSG D E F
+        - label: OPNA rhythm G / ADPCM K
+        - label: MSX-MUSIC (YM2413) MSXA-C MSXH-J MSXG
+        - label: MSX PSG (AY-3-8910) MSXD-F
+        - label: SCC / SCC+ SCCA-SCCE
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and system / 브라우저와 시스템 / ブラウザとシステム
+      description: Browser and version, operating system, and the page language if it matters. / 브라우저와 버전, 운영체제, 관계있다면 화면 언어. / ブラウザとバージョン、OS、関係あれば表示言語。
+      placeholder: "e.g. Chrome 141 / macOS 15.4 / Korean UI"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce / 재현 순서 / 再現手順
+      description: What you clicked or typed, in order. / 무엇을 어떤 순서로 누르거나 입력했는지. / 何をどの順で押したり入力したりしたか。
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected vs what happened / 기대한 결과와 실제 결과 / 期待した結果と実際の結果
+      description: Copy compiler messages in full. If it sounds different from MDPlayer4Mac or a real MSX, say where in the song. / 컴파일 메시지는 전체를 그대로. MDPlayer4Mac이나 실기와 소리가 다르면 곡의 어느 부분인지. / コンパイルメッセージは全文を。MDPlayer4Macや実機と音が違う場合は曲のどの部分か。
+      value: |
+        **Expected / 기대한 결과 / 期待した結果:**
+
+        **Actual / 실제 결과 / 実際の結果:**
+    validations:
+      required: true
+
+  - type: textarea
+    id: song
+    attributes:
+      label: Song files / 곡 파일 / 曲のファイル
+      description: Attach the .MUC and its voice / PCM files, or the .MUB / .VGM you opened. A minimal example is fine. / .MUC와 음색·PCM 파일, 또는 연 .MUB·.VGM을 첨부해 주세요. 최소 예제도 좋습니다. / .MUCと音色・PCMファイル、または開いた.MUB・.VGMを添付してください。最小限の例でも構いません。
+      placeholder: "SONG.MUC, VOICE.DAT, SONG.PCM — drag files into this box to attach (zip them if GitHub refuses the extension)"
+    validations:
+      required: false
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Browser console errors / 브라우저 콘솔 오류 / ブラウザコンソールのエラー
+      description: Optional. F12 (Cmd+Option+J on a Mac) → Console; copy any red lines. / 선택. F12(Mac은 Cmd+Option+J) → Console의 빨간 줄. / 任意。F12(MacはCmd+Option+J)→ Consoleの赤い行。
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else / 그 밖의 정보 / その他
+      description: Screenshots, a recording with sound, or notes. / 스크린숏, 소리가 들어간 녹화, 메모 등. / スクリーンショット、音の入った録画、メモなど。
+    validations:
+      required: false

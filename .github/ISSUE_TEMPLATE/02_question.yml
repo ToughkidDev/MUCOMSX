@@ -29,7 +29,12 @@ body:
         - MUCPLAY — compiling and playing / 컴파일과 연주 / コンパイルと再生
         - MUC2MUB — batch conversion / 배치 변환 / バッチ変換
         - MUBPLAY — playing a MUB / MUB 재생 / MUBの再生
+        - MUCVOICE — editing voices / 음색 편집 / 音色の編集
+        - MUCScope / MUBScope — visual players / 시각화 플레이어 / 視覚表示プレイヤー
+        - MUCPlayground — the web editor / 웹 에디터 / Webエディタ
+        - MSX targets — MSX-MUSIC, PSG, SCC/SCC+ / MSX 음원 / MSX音源
         - Voices and PCM / 음색과 PCM / 音色とPCM
+        - Templates and samples / 템플릿과 샘플 / テンプレートとサンプル
         - MUB / VGM export / 내보내기 / 書き出し
         - Hardware and setup / 하드웨어와 설치 / ハードウェアとセットアップ
         - Other / 기타 / その他
@@ -48,7 +53,7 @@ body:
     id: context
     attributes:
       label: Setup, if relevant / 관련 환경 / 関連する環境
-      description: Tool and build, machine, DOS, sound cartridge — only if the question depends on them. / 툴과 빌드, 기종, DOS, 음원 카트리지 — 질문과 관계있을 때만. / ツールとビルド、機種、DOS、音源カートリッジ — 質問に関係する場合のみ。
+      description: Tool and build, machine, DOS, sound cartridge, or browser for MUCPlayground — only if the question depends on them. / 툴과 빌드, 기종, DOS, 음원 카트리지, MUCPlayground라면 브라우저 — 질문과 관계있을 때만. / ツールとビルド、機種、DOS、音源カートリッジ、MUCPlaygroundならブラウザ — 質問に関係する場合のみ。
     validations:
       required: false
 

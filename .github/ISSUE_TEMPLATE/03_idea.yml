@@ -9,11 +9,15 @@ body:
         Ideas are welcome in Korean, Japanese or English.
         한국어·일본어·영어 모두 환영합니다. 韓国語・日本語・英語のいずれでも歓迎します。
 
-        MSX resources are tight — the editor holds 24 KiB of text, compiled song data
-        fits in 32 KiB, and every feature costs mapper RAM — so please describe the
-        problem you want solved, not only the solution you have in mind.
-        MSX는 자원이 빠듯합니다. 무엇을 해결하고 싶은지부터 적어 주세요.
-        MSXは資源が限られています。解決したい問題から書いてください。
+        MSX resources are tight — the editor holds 60,000 bytes of text, a source file
+        can be 64 KiB, compiled music DATA fits in 120 KiB, 512 KiB of mapper RAM is the
+        minimum, and every feature costs memory — so please describe the problem you
+        want solved, not only the solution you have in mind. (MUCPlayground runs in
+        the browser and is not bound by these limits.)
+        MSX는 자원이 빠듯합니다(에디터 60,000바이트, 소스 64 KiB, DATA 120 KiB, 매퍼 512 KiB 이상).
+        무엇을 해결하고 싶은지부터 적어 주세요. MUCPlayground는 브라우저에서 동작하므로 이 제한이 없습니다.
+        MSXは資源が限られています(エディタ60,000バイト、ソース64 KiB、DATA 120 KiB、マッパー512 KiB以上)。
+        解決したい問題から書いてください。MUCPlaygroundはブラウザで動くため、この制限はありません。
 
   - type: dropdown
     id: area
@@ -24,6 +28,11 @@ body:
         - MUCPLAY.COM (compiler & player / 컴파일러·플레이어 / コンパイラ・プレイヤー)
         - MUC2MUB.COM (batch compiler / 배치 컴파일러 / バッチコンパイラ)
         - MUBPLAY.COM (MUB player / MUB 플레이어 / MUBプレイヤー)
+        - MUCVOICE.COM (voice editor / 음색 에디터 / 音色エディタ)
+        - MUCScope / MUBScope (visual players / 시각화 플레이어 / 視覚表示プレイヤー)
+        - MUCPlayground (web editor / 웹 에디터 / Webエディタ)
+        - MSX targets — MSX-MUSIC, PSG, SCC/SCC+ / MSX 음원 / MSX音源
+        - Templates and samples / 템플릿과 샘플 / テンプレートとサンプル
         - MML syntax / MML 문법 / MML文法
         - Documentation / 문서 / ドキュメント
         - Project site / 프로젝트 사이트 / プロジェクトサイト

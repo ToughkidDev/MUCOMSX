@@ -12,6 +12,10 @@ body:
         **A small file that reproduces the problem is worth more than a long description.**
         재현되는 작은 파일 하나가 긴 설명보다 낫습니다. 再現する小さなファイルが長い説明より役立ちます。
 
+        This form is for the tools that run on the MSX. For the web editor, use **🎧 MUCPlayground** instead.
+        이 양식은 MSX에서 실행하는 툴용입니다. 웹 에디터는 **🎧 MUCPlayground** 양식을 써 주세요.
+        この様式はMSXで動くツール用です。Webエディタは **🎧 MUCPlayground** の様式をお使いください。
+
   - type: checkboxes
     id: preflight
     attributes:
@@ -31,6 +35,9 @@ body:
         - MUCPLAY.COM (compiler & player / 컴파일러·플레이어 / コンパイラ・プレイヤー)
         - MUC2MUB.COM (batch compiler / 배치 컴파일러 / バッチコンパイラ)
         - MUBPLAY.COM (MUB player / MUB 플레이어 / MUBプレイヤー)
+        - MUCVOICE.COM (voice editor / 음색 에디터 / 音色エディタ)
+        - MUCScope (compile & play with visuals / 시각화 컴파일·연주 / 視覚表示つきコンパイル・再生)
+        - MUBScope (MUB player with visuals / 시각화 MUB 플레이어 / 視覚表示つきMUBプレイヤー)
         - Two or more of them together / 둘 이상 연계 / 2つ以上の連携
         - Documentation / 문서 / ドキュメント
         - Other / 기타 / その他
@@ -42,9 +49,22 @@ body:
     attributes:
       label: Build / 빌드 / ビルド
       description: File size in bytes, the release you downloaded, or the date you obtained it. SHA-256 is ideal. / 파일 크기, 받은 릴리스, 또는 받은 날짜. SHA-256이면 가장 좋습니다. / ファイルサイズ、入手したリリース、または入手日。SHA-256が最適です。
-      placeholder: "e.g. MUCPLAY.COM 32,512 bytes / Release 2026-09-14 / SHA-256 200ac651..."
+      placeholder: "e.g. MucoMSX v1.0-Stable / MUCPLAY.COM 32,512 bytes / SHA-256 200ac651..."
     validations:
       required: true
+
+  - type: checkboxes
+    id: chips
+    attributes:
+      label: Sound chips involved / 관련 음원 / 関係する音源
+      description: The parts that play wrong or that the song uses, if you know. / 알고 있다면 잘못 연주되는, 또는 곡이 쓰는 파트. / 分かれば、おかしく鳴る、または曲が使うパート。
+      options:
+        - label: OPNA (YM2608) FM A B C H I J
+        - label: OPNA SSG D E F
+        - label: OPNA rhythm G / ADPCM K
+        - label: MSX-MUSIC (YM2413) MSXA-C MSXH-J MSXG
+        - label: MSX PSG (AY-3-8910) MSXD-F
+        - label: SCC / SCC+ SCCA-SCCE
 
   - type: textarea
     id: machine

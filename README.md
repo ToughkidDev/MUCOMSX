@@ -478,12 +478,14 @@ When reporting a playback or compile problem, these details narrow it down faste
 
 | | |
 |---|---|
-| **Which tool and build** | `MUCEDIT.COM` / `MUCPLAY.COM` / `MUC2MUB.COM` / `MUBPLAY.COM` / `MUCVOICE.COM`, and its version or the date you obtained it |
+| **Which tool and build** | `MUCEDIT.COM` / `MUCPLAY.COM` / `MUC2MUB.COM` / `MUBPLAY.COM` / `MUCVOICE.COM` / MUCScope / MUBScope, and its version or the date you obtained it |
 | **Machine** | Real MSX model, or emulator + machine settings; CPU mode |
 | **System** | MSX-DOS2 or Nextor version, memory mapper, cartridges, storage |
 | **The exact command** | The full command line you typed |
 | **The song** | Filename, and if possible the `.MUC` plus its voice and PCM files |
 | **What happened** | The error or warning text in full, or the section where it sounds wrong — and what you expected instead |
+
+For **MUCPlayground**, give the browser and operating system instead of the machine, system and command; the issue tracker has a form for it.
 
 A small file that reproduces the problem is worth more than a long description.
 If you can't share the music, a minimal example with nothing sensitive in it works
