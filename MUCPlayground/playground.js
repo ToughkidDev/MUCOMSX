@@ -11,6 +11,7 @@ import { FmEditor, formatVoice, INIT as INIT_VOICE } from './fm-editor.js';
 import { Keyboard } from './keyboard.js';
 import { Tracker } from './tracker.js';
 import { BankView } from './bank-view.js';
+import { Manual } from './manual.js';
 import { mucVoices, voiceLines, writeDat as writeDatSlot, newDat as newDatBytes, readDat, voiceKey, importVoices } from './voice-bank.js';
 import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, importWaves } from './scc-bank.js';
 import { readPcmBank, putPcm, mucPcms, pcmLine, mucSamples, pcmKey, importPcm, encodeAdpcm, decodeAdpcm, resample, readWav, writeWav, wavFitsCompiler, NATIVE_RATE, SLOTS as PCM_SLOTS, RAM_SIZE } from './pcm-bank.js';
@@ -29,6 +30,7 @@ const STORE_VOLUME = 'mucplayground.volume';
 const STORE_FONT = 'mucplayground.fontSize';
 const STORE_UI = 'mucplayground.uiSize';
 const STORE_SPLIT = 'mucplayground.split';
+const STORE_MANUAL = 'mucplayground.manualBook';
 const STORE_KEYS = 'mucplayground.keys';      // { open, octave, source }
 
 const T = {
@@ -82,6 +84,7 @@ const T = {
     bankMovedToDat: (n, name) => `${n} moved into ${name}`, bankCopiedToMuc: (n) => `${n} copied into the MUC`, bankNotDat_fm: (name) => `${name} is not a voice file`, bankNotDat_scc: (name) => `${name} is not an SCC wave file (SCWD)`,
     bankLoaded_fm: (name, n) => `${name}: ${n} voices`, bankLoaded_scc: (name, n) => `${name}: ${n} waves`, bankSavedFromMuc: 'Saved a voice file made from the MUC\'s voices', bankNothingToUndo: 'Nothing to undo',
     bankImported_fm: (n, to) => `${n} voices added to the ${to}`, bankImported_scc: (n, to) => `${n} waves added to the ${to}`, bankImportSame: (n) => `${n} already in the bank`, bankImportFull: (n) => `${n} left out: no free numbers`, bankImportNone_fm: (names) => `no FM voices in ${names}`, bankImportNone_scc: (names) => `no SCC waves in ${names}`,
+    manTitle: 'Manual', manTip: 'Manual mode: the MML guide (MUCOM88 and the mucomDotNET extensions) beside the editor; examples go into the song with Insert',
     trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
     trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave',
     trkInput: 'Input', trkInputDisplay: 'As shown (C#4, OFF, 0F)', trkInputTracker: 'Quick keys (Z S X / Q 2 W)',
@@ -190,6 +193,7 @@ const T = {
     bankMovedToDat: (n, name) => `${n}을 ${name}로 옮김`, bankCopiedToMuc: (n) => `${n}을 MUC로 복사`, bankNotDat_fm: (name) => `${name}은 음색 파일이 아닙니다`, bankNotDat_scc: (name) => `${name}은 SCC 파형 파일(SCWD)이 아닙니다`,
     bankLoaded_fm: (name, n) => `${name}: 음색 ${n}개`, bankLoaded_scc: (name, n) => `${name}: 파형 ${n}개`, bankSavedFromMuc: 'MUC 음색으로 만든 음색 파일을 저장했습니다', bankNothingToUndo: '되돌릴 것이 없습니다',
     bankImported_fm: (n, to) => `${to}에 음색 ${n}개 추가`, bankImported_scc: (n, to) => `${to}에 파형 ${n}개 추가`, bankImportSame: (n) => `${n}개는 이미 있음`, bankImportFull: (n) => `${n}개는 빈 번호가 없어 제외`, bankImportNone_fm: (names) => `${names}에 FM 음색 없음`, bankImportNone_scc: (names) => `${names}에 SCC 파형 없음`,
+    manTitle: '문법', manTip: '문법 설명서 모드: 에디터 옆에 MML 설명서(MUCOM88, mucomDotNET 확장 명령)를 띄우고, 예제는 넣기로 곡에 넣습니다',
     trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
     trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브',
     trkInput: '입력', trkInputDisplay: '표시 형식대로 (C#4, OFF, 0F)', trkInputTracker: '빠른 키 (Z S X / Q 2 W)',
@@ -298,6 +302,7 @@ const T = {
     bankMovedToDat: (n, name) => `${n}を${name}へ移動`, bankCopiedToMuc: (n) => `${n}をMUCへコピー`, bankNotDat_fm: (name) => `${name}は音色ファイルではありません`, bankNotDat_scc: (name) => `${name}はSCC波形ファイル（SCWD）ではありません`,
     bankLoaded_fm: (name, n) => `${name}: ${n}音色`, bankLoaded_scc: (name, n) => `${name}: ${n}波形`, bankSavedFromMuc: 'MUCの音色から作った音色ファイルを保存しました', bankNothingToUndo: '元に戻すものがありません',
     bankImported_fm: (n, to) => `${to}に${n}音色を追加`, bankImported_scc: (n, to) => `${to}に${n}波形を追加`, bankImportSame: (n) => `${n}個はすでにあり`, bankImportFull: (n) => `${n}個は空き番号がなく除外`, bankImportNone_fm: (names) => `${names}にFM音色なし`, bankImportNone_scc: (names) => `${names}にSCC波形なし`,
+    manTitle: '文法', manTip: '文法説明書モード: エディタの横にMML説明書（MUCOM88、mucomDotNET拡張コマンド）を表示し、例は挿入で曲に入れます',
     trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
     trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ',
     trkInput: '入力', trkInputDisplay: '表示どおり (C#4, OFF, 0F)', trkInputTracker: 'クイックキー (Z S X / Q 2 W)',
@@ -401,6 +406,7 @@ function applyLanguage() {
   document.documentElement.lang = lang;
   if (typeof waveEditor !== 'undefined') for (const ed of [waveEditor, fmEditor, pcmEditor]) if (ed.isOpen) { ed.build(); ed.render(); }
   if (bankReady) { bank.build(); if (bank.isOpen) bank.refresh(); }
+  if (typeof manual !== 'undefined') manual.setLang(lang);
   if (typeof keyboard !== 'undefined') { keyboard.build(); refreshKeySources(); }
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
@@ -2116,9 +2122,9 @@ async function loadRepoFile(path) {
 
 // ---------- split editor ----------
 function setSplit(mode) {
-  splitMode = ['side', 'stack', 'tracker', 'bank'].includes(mode) ? mode : 'off';
+  splitMode = ['side', 'stack', 'tracker', 'bank', 'manual'].includes(mode) ? mode : 'off';
   const box = $('panes');
-  const right = splitMode === 'tracker' || splitMode === 'bank';
+  const right = splitMode === 'tracker' || splitMode === 'bank' || splitMode === 'manual';
   box.classList.toggle('split-side', splitMode === 'side' || right);
   box.classList.toggle('split-stack', splitMode === 'stack');
   box.classList.toggle('split-tracker', right);
@@ -2127,6 +2133,8 @@ function setSplit(mode) {
   panes[1].root.hidden = splitMode === 'off' || right;
   $('tracker').hidden = splitMode !== 'tracker';
   $('bank').hidden = splitMode !== 'bank';
+  $('manual').hidden = splitMode !== 'manual';
+  $('manualToggle').setAttribute('aria-pressed', String(splitMode === 'manual'));
   $('trackerToggle').setAttribute('aria-pressed', String(splitMode === 'tracker'));
   markBankButtons();
   if (splitMode === 'tracker') { tracker.setText(code.value); tracker.layout(); }
@@ -2609,6 +2617,44 @@ function updateTrackerPlayhead() {
   if (tick !== trkShown) { trkShown = tick; tracker.setPlayhead(tick); }
 }
 $('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'tracker' ? 'off' : 'tracker'));
+
+// ---------- manual mode ----------
+// The MML guide beside the editor (manual.js). Insert puts an example into the song: a
+// one-line command at the caret, whole lines (a part line, a tag, a voice) below the
+// caret's line.
+const manual = new Manual($('manual'), {
+  lang,
+  book: store.get(STORE_MANUAL) || 'mucom88',
+  onBook: (book) => store.set(STORE_MANUAL, book),
+  onClose: () => setSplit('off'),
+  onInsert: insertSnippet,
+});
+function insertSnippet(text) {
+  if (viewMode === 'channels') setView('editor');
+  const code = pane.visible ? pane.code : panes[0].code;
+  code.focus();
+  const value = code.value;
+  let at = code.selectionStart, end = code.selectionEnd;
+  const lineStart = value.lastIndexOf('\n', at - 1) + 1;
+  let lineEnd = value.indexOf('\n', at);
+  if (lineEnd < 0) lineEnd = value.length;
+  const wholeLines = text.includes('\n') || /^(#|\s+@|(?:MSX|SCC)?[A-K][A-K0-9]*[ \t])/.test(text);
+  if (wholeLines) {
+    const line = value.slice(lineStart, lineEnd);
+    if (line.trim()) { at = end = lineEnd; text = '\n' + text; }
+    else { at = lineStart; end = lineEnd; }
+  } else {
+    const before = value[at - 1];
+    if (before && !/\s/.test(before)) text = ' ' + text;
+  }
+  code.setSelectionRange(at, end);
+  if (!document.execCommand('insertText', false, text)) {
+    code.setRangeText(text, at, end, 'end');
+    code.dispatchEvent(new Event('input'));
+  }
+  updateCursor();
+}
+$('manualToggle').addEventListener('click', () => setSplit(splitMode === 'manual' ? 'off' : 'manual'));
 for (const p of panes) {
   p.code.addEventListener('input', scheduleTracker);
   p.code.addEventListener('focus', () => { if (tracker.armed) { tracker.armed = false; tracker.draw(); } });
