@@ -170,8 +170,25 @@ td strong{white-space:nowrap}
 footer{padding:38px 0 56px;text-align:center;color:var(--muted);font-size:.88rem}
 footer p{margin:5px 0}
 
+/* ---------- card rows ----------
+   On touch screens (iPhone, iPad) and narrow windows, tool cards, demo videos and the
+   three-language cards stay on one row instead of wrapping below each other. A row
+   wider than the page scrolls sideways: swipe it, or drag it with a mouse; the cards
+   snap into place. Wide desktop windows keep the grid. */
+@media (any-pointer:coarse),(max-width:820px){
+  .tools,.videos,.tri{grid-template-columns:none;grid-auto-flow:column;
+    grid-auto-columns:minmax(min(var(--card-min),84%),1fr);
+    overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+    scroll-snap-type:x mandatory;padding:2px 2px 12px;margin-inline:-2px;scrollbar-width:thin}
+  .tools{--card-min:340px}
+  .videos{--card-min:320px}
+  .tri{--card-min:280px}
+  .tools>*,.videos>*,.tri>*{scroll-snap-align:start;min-width:0}
+  .tools.dragging,.videos.dragging,.tri.dragging{scroll-snap-type:none;cursor:grabbing;user-select:none}
+  .tools.dragging *,.videos.dragging *,.tri.dragging *{pointer-events:none}
+}
+
 @media (max-width:820px){
-  .tri{grid-template-columns:1fr}
   header.hero{padding:34px 0 30px}
   section{padding:34px 0}
 }
@@ -883,6 +900,41 @@ document.querySelectorAll('.vthumb').forEach(function (btn) {
     frame.referrerPolicy = 'strict-origin-when-cross-origin';
     btn.replaceWith(frame);
   });
+});
+
+/* Card rows: drag sideways with a mouse or trackpad. Touch already swipes. */
+document.querySelectorAll('.tools, .videos, .tri').forEach(function (row) {
+  var startX = 0, startLeft = 0, id = null, moved = false;
+  row.addEventListener('pointerdown', function (e) {
+    if (e.pointerType !== 'mouse' || e.button !== 0 || row.scrollWidth <= row.clientWidth + 1) return;
+    id = e.pointerId; startX = e.clientX; startLeft = row.scrollLeft; moved = false;
+  });
+  row.addEventListener('pointermove', function (e) {
+    if (e.pointerId !== id) return;
+    var dx = e.clientX - startX;
+    if (!moved && Math.abs(dx) < 6) return;
+    if (!moved) { moved = true; row.classList.add('dragging'); row.setPointerCapture(id); }
+    row.scrollLeft = startLeft - dx;
+  });
+  function end(e) {
+    if (e.pointerId !== id) return;
+    id = null;
+    if (!moved) return;
+    row.classList.remove('dragging');
+    /* settle on the nearest card, as a swipe would */
+    var left = row.scrollLeft, best = 0, bestD = Infinity;
+    Array.prototype.forEach.call(row.children, function (c) {
+      var d = Math.abs(c.offsetLeft - row.firstElementChild.offsetLeft - left);
+      if (d < bestD) { bestD = d; best = c.offsetLeft - row.firstElementChild.offsetLeft; }
+    });
+    row.scrollTo({ left: best, behavior: 'smooth' });
+  }
+  row.addEventListener('pointerup', end);
+  row.addEventListener('pointercancel', end);
+  /* a drag is not a click on the link or video under it */
+  row.addEventListener('click', function (e) {
+    if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+  }, true);
 });
 </script>
 
