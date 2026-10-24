@@ -724,6 +724,9 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 window.addEventListener('resize', renderMarks);
 
 function setSource(text) {
+  // The textarea turns CRLF into LF; the line list must match it, or a CRLF file's lines
+  // all end in \r until the first edit (and voice definitions are not recognised).
+  text = text.replace(/\r\n?/g, '\n');
   if (waveEdit) { waveEdit = null; waveEditor.close(); fmEditor.close(); $('panes').hidden = viewMode === 'channels'; }
   for (const p of panes) {
     p.code.value = text;
