@@ -12,6 +12,7 @@ import { Keyboard } from './keyboard.js';
 import { Tracker } from './tracker.js';
 import { BankView } from './bank-view.js';
 import { Manual } from './manual.js';
+import { targetAt } from './manual-lookup.js';
 import { mucVoices, voiceLines, writeDat as writeDatSlot, newDat as newDatBytes, readDat, voiceKey, importVoices } from './voice-bank.js';
 import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, importWaves } from './scc-bank.js';
 import { readPcmBank, putPcm, mucPcms, pcmLine, mucSamples, pcmKey, importPcm, encodeAdpcm, decodeAdpcm, resample, readWav, writeWav, wavFitsCompiler, NATIVE_RATE, SLOTS as PCM_SLOTS, RAM_SIZE } from './pcm-bank.js';
@@ -31,6 +32,7 @@ const STORE_FONT = 'mucplayground.fontSize';
 const STORE_UI = 'mucplayground.uiSize';
 const STORE_SPLIT = 'mucplayground.split';
 const STORE_MANUAL = 'mucplayground.manualBook';
+const STORE_MANUAL_FOLLOW = 'mucplayground.manualFollow';
 const STORE_KEYS = 'mucplayground.keys';      // { open, octave, source }
 
 const T = {
@@ -527,6 +529,7 @@ function updateCursor() {
   updateWave(row);
   if (keysOpen) refreshKeySources();
   if (splitMode === 'tracker' && document.activeElement === code) tracker.caretAt(row, col - 1);
+  if (splitMode === 'manual' && typeof manual !== 'undefined') pointManual();
 }
 
 // Definition previews: with the caret on an SCC wave (@Wn) the wave is drawn under it;
@@ -2625,7 +2628,9 @@ $('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'track
 const manual = new Manual($('manual'), {
   lang,
   book: store.get(STORE_MANUAL) || 'mucom88',
+  follow: store.get(STORE_MANUAL_FOLLOW) !== 'off',
   onBook: (book) => store.set(STORE_MANUAL, book),
+  onFollow: (on) => { store.set(STORE_MANUAL_FOLLOW, on ? 'on' : 'off'); if (on) pointManual(); },
   onClose: () => setSplit('off'),
   onInsert: insertSnippet,
 });
@@ -2654,7 +2659,20 @@ function insertSnippet(text) {
   }
   updateCursor();
 }
-$('manualToggle').addEventListener('click', () => setSplit(splitMode === 'manual' ? 'off' : 'manual'));
+$('manualToggle').addEventListener('click', () => { setSplit(splitMode === 'manual' ? 'off' : 'manual'); pointManual(); });
+// The entry for the command at the caret (manual-lookup.js), shortly after the caret stops.
+let manualTimer = 0;
+function pointManual() {
+  if (splitMode !== 'manual') return;
+  clearTimeout(manualTimer);
+  manualTimer = setTimeout(() => {
+    const code = pane.visible ? pane.code : panes[0].code;
+    const before = code.value.slice(0, code.selectionStart);
+    const row = before.split('\n').length;
+    const col = before.length - before.lastIndexOf('\n') - 1;
+    manual.point(targetAt(code.value.split('\n'), row, col));
+  }, 120);
+}
 for (const p of panes) {
   p.code.addEventListener('input', scheduleTracker);
   p.code.addEventListener('focus', () => { if (tracker.armed) { tracker.armed = false; tracker.draw(); } });
