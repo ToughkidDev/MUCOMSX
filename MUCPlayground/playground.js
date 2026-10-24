@@ -602,7 +602,8 @@ function updateWave(row) {
   edit.addEventListener('pointerdown', (e) => e.preventDefault());
   edit.addEventListener('mousedown', (e) => e.preventDefault());
   edit.addEventListener('click', () => (fm ? openFmEditor(def) : openWaveEditor(def)));
-  head.prepend(edit);
+  // The FM editor writes the usual form; a 25-byte @% voice is shown but edited in the text.
+  if (def.format !== 25) head.prepend(edit);
   const notes = [];
   const colors = {
     line: cssColor('--accent2'), fill: cssColor('--accent2', 0.22), axis: cssColor('--muted'), grid: cssColor('--line'),

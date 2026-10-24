@@ -3,11 +3,17 @@
 //   "  @n"            two spaces, @ and the number (as mucomDotNET's FVTEXT reads it)
 //   "   FB,ALG"
 //   4 lines           OP1..OP4: AR,D1R,D2R,RR,D1L,TL,KS,ML,DT
+// or MUCOM88's 25-byte form, the register values as they are written to the chip:
+//   "  @%n"
+//   6 lines of 4      DT/ML, TL, KS/AR, AM/D1R, D2R, D1L/RR, each in slot order
+//                     (OP1, OP3, OP2, OP4); decimal or $hex
+//   1 line            FB/ALG
 // The drawings are a guide, not an emulation: the wave is computed the OPN way (phase
 // modulation, TL in 0.75 dB steps, ML multiples, OP1 feedback) at full envelope level,
 // ignoring DT and KS; envelope times follow the OPN rate table roughly.
 
 const HEAD = /^ .@(\d+)[ \t]*(?:;.*)?$/;
+const HEAD25 = /^ .@%(\d+)[ \t]*(?:;.*)?$/;
 export const FIELDS = ['AR', 'D1R', 'D2R', 'RR', 'D1L', 'TL', 'KS', 'ML', 'DT'];
 export const LIMITS = [31, 31, 31, 15, 15, 127, 3, 15, 7];
 export const OP_COLORS = ['#d1495b', '#e09f3e', '#2a9d8f', '#577fd8'];
@@ -30,7 +36,10 @@ const nums = (s) => s.split(';')[0].split(',').map((x) => x.trim()).filter((x) =
 // { id, fb, alg, ops: [{AR,…,DT}], row, endRow, col, focus (0-3 an operator, -1 the
 //   header or FB/ALG line), problems: [{ op (-1 = FB/ALG), field, value?, count? }] }
 export function voiceAt(lines, row) {
-  for (let head = row; head >= Math.max(1, row - 5); head--) {
+  for (let head = row; head >= Math.max(1, row - 7); head--) {
+    const h25 = HEAD25.exec(lines[head - 1] || '');
+    if (h25) return row > head + 7 ? null : voice25(lines, row, head, Number(h25[1]));
+    if (row > head + 5) continue;
     const h = HEAD.exec(lines[head - 1] || '');
     if (!h) continue;
     if (row > head + 5) return null;
@@ -225,4 +234,33 @@ export function drawVoice(canvas, voice, colors) {
     g.stroke();
   }
   g.setLineDash([]);
+}
+
+// Numbers of a 25-byte line: decimal or $hex.
+const nums25 = (s) => s.split(';')[0].split(',').map((x) => x.trim()).filter((x) => x !== '')
+  .map((x) => (/^\$[0-9a-f]+$/i.test(x) ? parseInt(x.slice(1), 16) : /^\d+$/.test(x) ? Number(x) : NaN));
+const SLOT_OF_OP = [0, 2, 1, 3];   // OP1..OP4 in the chip's slot order (OP1, OP3, OP2, OP4)
+
+// A voice in the 25-byte form, as voiceAt returns it (format: 25). The values are register
+// bytes, so they are always in range; only the count of each line is checked.
+function voice25(lines, row, head, id) {
+  const problems = [];
+  const reg = [];
+  for (let r = 0; r < 6; r++) {
+    const v = nums25(lines[head + r] || '');
+    if (v.length !== 4 || v.some((x) => !(x >= 0 && x <= 255))) problems.push({ op: -1, count: v.length, need: 4 });
+    reg.push(v);
+  }
+  const fa = nums25(lines[head + 6] || '');
+  if (fa.length !== 1) problems.push({ op: -1, count: fa.length, need: 1 });
+  const fbAlg = fa[0] & 63;
+  const ops = [0, 1, 2, 3].map((k) => {
+    const at = (r) => (reg[r][SLOT_OF_OP[k]] ?? 0) & 255;
+    return {
+      AR: at(2) & 31, D1R: at(3) & 31, D2R: at(4) & 31, RR: at(5) & 15, D1L: at(5) >> 4,
+      TL: at(1) & 127, KS: at(2) >> 6, ML: at(0) & 15, DT: (at(0) >> 4) & 7,
+    };
+  });
+  return { id, fb: fbAlg >> 3, alg: fbAlg & 7, ops, row: head, endRow: head + 7, col: lines[head - 1].indexOf('@'),
+    focus: -1, problems, format: 25 };
 }
