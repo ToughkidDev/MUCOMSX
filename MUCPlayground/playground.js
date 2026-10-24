@@ -33,6 +33,7 @@ const STORE_UI = 'mucplayground.uiSize';
 const STORE_SPLIT = 'mucplayground.split';
 const STORE_MANUAL = 'mucplayground.manualBook';
 const STORE_MANUAL_FOLLOW = 'mucplayground.manualFollow';
+const STORE_MANUAL_SIZE = 'mucplayground.manualFontSize';
 const STORE_KEYS = 'mucplayground.keys';      // { open, octave, source }
 
 const T = {
@@ -2629,6 +2630,8 @@ const manual = new Manual($('manual'), {
   lang,
   book: store.get(STORE_MANUAL) || 'mucom88',
   follow: store.get(STORE_MANUAL_FOLLOW) !== 'off',
+  fontSize: Number(store.get(STORE_MANUAL_SIZE)) || null,
+  onFontSize: (px) => store.set(STORE_MANUAL_SIZE, px ? String(px) : ''),
   onBook: (book) => store.set(STORE_MANUAL, book),
   onFollow: (on) => { store.set(STORE_MANUAL_FOLLOW, on ? 'on' : 'off'); if (on) pointManual(); },
   onClose: () => setSplit('off'),

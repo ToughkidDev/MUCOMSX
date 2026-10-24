@@ -7,11 +7,11 @@ import { highlightLine } from './editor-assist.js';
 
 const UI = {
   en: { search: 'Search commands…', insert: 'Insert', insertTip: 'Put this example into the editor (whole lines go below the caret\'s line)',
-        follow: 'Follow caret', followTip: 'Show the entry for the command at the editor\'s caret', none: 'Nothing found in this book.', other: (n, b) => `${n} in ${b}`, chapters: 'Chapters', results: (n) => `${n} found`, close: 'Close the manual', top: 'Top' },
+        size: 'Text', sizeTip: 'Text size of the manual (remembered in this browser; double-click for the default)', follow: 'Follow caret', followTip: 'Show the entry for the command at the editor\'s caret', none: 'Nothing found in this book.', other: (n, b) => `${n} in ${b}`, chapters: 'Chapters', results: (n) => `${n} found`, close: 'Close the manual', top: 'Top' },
   ko: { search: '명령 검색…', insert: '넣기', insertTip: '이 예제를 에디터에 넣기 (여러 줄 예제는 커서가 있는 줄 아래에)',
-        follow: '커서 따라가기', followTip: '에디터 커서 위치의 명령에 해당하는 항목을 보여 줍니다', none: '이 설명서에는 결과가 없습니다.', other: (n, b) => `${b}에 ${n}개`, chapters: '장', results: (n) => `${n}개 찾음`, close: '설명서 닫기', top: '맨 위' },
+        size: '글자', sizeTip: '설명서의 글자 크기 (이 브라우저에 기억됨, 더블클릭하면 기본값)', follow: '커서 따라가기', followTip: '에디터 커서 위치의 명령에 해당하는 항목을 보여 줍니다', none: '이 설명서에는 결과가 없습니다.', other: (n, b) => `${b}에 ${n}개`, chapters: '장', results: (n) => `${n}개 찾음`, close: '설명서 닫기', top: '맨 위' },
   ja: { search: 'コマンドを検索…', insert: '挿入', insertTip: 'この例をエディタに入れる(複数行の例はカーソル行の下に)',
-        follow: 'カーソルに追従', followTip: 'エディタのカーソル位置のコマンドの項目を表示します', none: 'この説明書には見つかりません。', other: (n, b) => `${b}に${n}件`, chapters: '章', results: (n) => `${n}件`, close: '説明書を閉じる', top: '先頭' },
+        size: '文字', sizeTip: '説明書の文字サイズ（このブラウザに記憶、ダブルクリックで標準）', follow: 'カーソルに追従', followTip: 'エディタのカーソル位置のコマンドの項目を表示します', none: 'この説明書には見つかりません。', other: (n, b) => `${b}に${n}件`, chapters: '章', results: (n) => `${n}件`, close: '説明書を閉じる', top: '先頭' },
 };
 
 const keyOf = (e) => e.c + '|' + (e.on || '');
@@ -27,7 +27,7 @@ const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>'
 const pick = (o, lang) => (o ? o[lang] || o.en : '');
 
 export class Manual {
-  // opts: { lang, book, follow, onInsert(text), onClose(), onBook(book), onFollow(on) }
+  // opts: { lang, book, follow, fontSize, onInsert(text), onClose(), onBook(book), onFollow(on), onFontSize(px | null) }
   constructor(root, opts) {
     this.root = root;
     this.opts = opts;
@@ -45,6 +45,7 @@ export class Manual {
       <div class="man-tools">
         <input type="search" class="man-search" spellcheck="false" autocomplete="off">
         <span class="man-count" aria-live="polite"></span>
+        <label class="man-size"><span></span> <input type="range" min="10" max="24" step="0.5"> <output></output></label>
         <label class="man-follow"><input type="checkbox"> <span></span></label>
       </div>
       <nav class="man-nav"></nav>
@@ -53,6 +54,11 @@ export class Manual {
     this.$('.man-close').addEventListener('click', () => opts.onClose?.());
     this.$('.man-search').addEventListener('input', (e) => { this.query = e.target.value.trim(); this.renderBody(); });
     this.$('.man-search').addEventListener('keydown', (e) => { if (e.key === 'Escape' && this.query) { e.stopPropagation(); e.target.value = ''; this.query = ''; this.renderBody(); } });
+    // Text size: everything in the manual is sized from its own font size.
+    const size = this.$('.man-size input');
+    size.addEventListener('input', () => this.setFontSize(Number(size.value), true));
+    size.addEventListener('dblclick', () => this.setFontSize(null, true));
+    this.setFontSize(opts.fontSize ?? null, false);
     this.$('.man-follow input').checked = this.follow;
     this.$('.man-follow input').addEventListener('change', (e) => {
       this.follow = e.target.checked;
@@ -83,6 +89,16 @@ export class Manual {
 
   setLang(lang) { this.lang = lang; this.render(); }
 
+  // px, or null for the page's default (which follows the Menus size).
+  setFontSize(px, user) {
+    const ok = Number.isFinite(px) && px >= 10 && px <= 24;
+    this.root.style.fontSize = ok ? `${px}px` : '';
+    const shown = ok ? px : Math.round(parseFloat(getComputedStyle(this.root).fontSize) * 2) / 2 || 13.5;
+    this.$('.man-size input').value = shown;
+    this.$('.man-size output').textContent = shown.toFixed(1);
+    if (user) this.opts.onFontSize?.(ok ? px : null);
+  }
+
   // keepQuery: from a search hint, show the other book's results for the same words.
   setBook(book, keepQuery = false) {
     if (!BOOKS[book]) return;
@@ -102,6 +118,8 @@ export class Manual {
     this.$('.man-close').title = ui.close;
     this.$('.man-search').placeholder = ui.search;
     this.$('.man-follow span').textContent = ui.follow;
+    this.$('.man-size span').textContent = ui.size;
+    this.$('.man-size').title = ui.sizeTip;
     this.$('.man-follow').title = ui.followTip;
     const book = BOOKS[this.book];
     this.$('.man-nav').innerHTML = book.sections.map((s) => `<a href="#" data-sec="${s.id}">${esc(pick(s.t, this.lang))}</a>`).join('');
