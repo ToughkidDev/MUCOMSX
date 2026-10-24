@@ -458,6 +458,15 @@ footer p{margin:2px 0}
 .samples{width:min(760px,calc((100vw - 32px) / var(--ui)));max-height:min(80vh / var(--ui),720px);max-height:min(80dvh / var(--ui),720px);padding:0;border:1px solid var(--line);
          border-radius:12px;background:var(--panel);color:var(--ink);display:none;flex-direction:column}
 .samples[open]{display:flex}
+.share-dlg{width:min(620px,calc((100vw - 32px) / var(--ui)))}
+.share-body{padding:4px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.share-row{display:flex;gap:8px;flex-wrap:wrap}
+.share-row input{flex:1 1 260px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:.82rem}
+.share-info{margin:0;padding-left:18px;font-size:.85rem;color:var(--muted)}
+.share-info li{margin:3px 0}
+.share-info li.warn{color:var(--accent)}
+.shared-note{width:100%;display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;font-size:.85rem;padding:6px 10px;border:1px solid var(--accent2);border-radius:8px;background:color-mix(in srgb,var(--accent2) 10%,var(--panel))}
+.shared-note[hidden]{display:none}
 .samples::backdrop{background:rgba(20,18,14,.45)}
 .s-head{display:flex;gap:8px;align-items:center;padding:14px 16px 8px;flex-wrap:wrap}
 .s-head h2{margin:0 auto 0 0;font-size:1rem}
@@ -538,10 +547,12 @@ footer p{margin:2px 0}
     <button type="button" id="saveMub" title="Compiled song">.mub</button>
     <button type="button" id="saveVgm" title="Chip log">.vgm</button>
   </div>
+  <button type="button" class="btn" id="shareBtn" data-i18n-title="shareTip"><span aria-hidden="true">🔗</span> <span data-i18n="share">Share</span></button>
   <input id="openInput" type="file" multiple accept=".muc,.mub,.vgm,.vgz,.MUC,.MUB,.VGM,.VGZ,.txt,.dat,.DAT,.pcm,.PCM,.bin,.BIN,.wav,.WAV" hidden>
   <input id="folderInput" type="file" webkitdirectory multiple hidden>
   <input id="filesInput" type="file" multiple hidden>
   <div class="status" id="status" role="status"></div>
+  <div class="shared-note" id="sharedNote" hidden><span id="sharedNoteText"></span> <button type="button" class="btn small" id="sharedRestore"></button> <button type="button" class="btn small" id="sharedDismiss" aria-label="Close">✕</button></div>
 </div>
 
 <main class="layout">
@@ -644,6 +655,21 @@ footer p{margin:2px 0}
   </div>
   <p class="s-source" id="sampleSource"></p>
   <div class="s-list" id="sampleList"></div>
+</dialog>
+
+<dialog class="samples share-dlg" id="shareDlg" aria-labelledby="shareTitle">
+  <div class="s-head">
+    <h2 id="shareTitle" data-i18n="shareTitle">Share this song</h2>
+    <button class="btn" id="shareClose" type="button" aria-label="Close">✕</button>
+  </div>
+  <div class="share-body">
+    <div class="share-row">
+      <input id="shareUrl" type="text" readonly spellcheck="false" aria-labelledby="shareTitle">
+      <button class="btn primary" id="shareCopy" type="button" data-i18n="shareCopy">Copy</button>
+      <button class="btn" id="shareNative" type="button" data-i18n="shareNative" hidden>Share…</button>
+    </div>
+    <ul class="share-info" id="shareInfo"></ul>
+  </div>
 </dialog>
 
 <dialog class="samples" id="folderDlg" aria-labelledby="folderTitle">

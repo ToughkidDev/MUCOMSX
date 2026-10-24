@@ -14,6 +14,7 @@ import { BankView } from './bank-view.js';
 import { Manual } from './manual.js';
 import { targetAt } from './manual-lookup.js';
 import { QuickRef } from './quick-ref.js';
+import { encodeSong, decodeSong, sharedRequest, pageBase, EMBED_LIMIT } from './share.js';
 import { mucVoices, voiceLines, writeDat as writeDatSlot, newDat as newDatBytes, readDat, voiceKey, importVoices } from './voice-bank.js';
 import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, importWaves } from './scc-bank.js';
 import { readPcmBank, putPcm, mucPcms, pcmLine, mucSamples, pcmKey, importPcm, encodeAdpcm, decodeAdpcm, resample, readWav, writeWav, wavFitsCompiler, NATIVE_RATE, SLOTS as PCM_SLOTS, RAM_SIZE } from './pcm-bank.js';
@@ -43,6 +44,17 @@ const T = {
     play: '▶ Play', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
+    share: 'Share', shareTip: 'Make a link to this song that opens it ready to play', shareTitle: 'Share this song', shareCopy: 'Copy', shareCopied: 'Copied ✓', shareNative: 'Share…',
+    shareSample: (n) => `A link to the sample "${n}" in the repository; its voice and PCM files come with it.`,
+    shareExample: 'A link to the built-in example.',
+    shareText: (kb) => `The song text is inside the link (${kb} KB compressed); changes made after this are not.`,
+    shareRepoFiles: (names) => `From the repository: ${names}`, shareEmbedded: (names) => `Inside the link: ${names}`,
+    shareMissing: (names) => `Not in the link: ${names}. Too large or not attached; put them in the repository's Samples folder or send them separately.`,
+    shareLong: (n) => `The link is ${n.toLocaleString()} characters long; some messengers cut long links.`,
+    shareHow: 'Whoever opens the link gets this song and its files in their own browser, ready for Play.',
+    shareFailed: 'Could not make the link: ',
+    sharedOpened: (n) => `Opened the shared song "${n}". Press Play to listen.`, sharedBad: 'This shared link could not be read: ',
+    sharedKept: 'The song you had open was kept.', sharedRestore: 'Bring it back', sharedRestored: 'Your previous song is back.',
     reference: 'Quick reference',
    
    
@@ -152,6 +164,17 @@ const T = {
     play: '▶ 재생', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
+    share: '공유', shareTip: '이 곡을 바로 재생할 수 있는 링크로 만듭니다', shareTitle: '이 곡 공유하기', shareCopy: '복사', shareCopied: '복사됨 ✓', shareNative: '공유…',
+    shareSample: (n) => `저장소의 샘플 "${n}" 링크입니다. 음색·PCM 파일도 함께 열립니다.`,
+    shareExample: '내장 예제 링크입니다.',
+    shareText: (kb) => `곡 텍스트가 링크 안에 들어 있습니다(압축 ${kb} KB). 이후에 고친 내용은 들어가지 않습니다.`,
+    shareRepoFiles: (names) => `저장소에서 가져올 파일: ${names}`, shareEmbedded: (names) => `링크 안에 든 파일: ${names}`,
+    shareMissing: (names) => `링크에 없는 파일: ${names}. 너무 크거나 첨부되지 않았습니다. 저장소의 Samples 폴더에 넣거나 따로 보내 주세요.`,
+    shareLong: (n) => `링크 길이가 ${n.toLocaleString()}자입니다. 일부 메신저는 긴 링크를 자를 수 있습니다.`,
+    shareHow: '링크를 연 사람의 브라우저에 이 곡과 파일이 그대로 열리고, 재생만 누르면 됩니다.',
+    shareFailed: '링크를 만들지 못했습니다: ',
+    sharedOpened: (n) => `공유된 곡 "${n}"을(를) 열었습니다. 재생을 눌러 들어 보세요.`, sharedBad: '공유 링크를 읽지 못했습니다: ',
+    sharedKept: '열려 있던 내 곡은 따로 보관했습니다.', sharedRestore: '되돌리기', sharedRestored: '이전에 쓰던 곡을 되돌렸습니다.',
     reference: '빠른 참조',
    
    
@@ -261,6 +284,17 @@ const T = {
     play: '▶ 再生', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
+    share: '共有', shareTip: 'この曲をすぐ再生できるリンクにします', shareTitle: 'この曲を共有', shareCopy: 'コピー', shareCopied: 'コピーしました ✓', shareNative: '共有…',
+    shareSample: (n) => `リポジトリのサンプル「${n}」へのリンクです。音色・PCMファイルも一緒に開きます。`,
+    shareExample: '内蔵の例へのリンクです。',
+    shareText: (kb) => `曲のテキストがリンクの中に入っています（圧縮 ${kb} KB）。この後の変更は入りません。`,
+    shareRepoFiles: (names) => `リポジトリから読み込むファイル: ${names}`, shareEmbedded: (names) => `リンクに入っているファイル: ${names}`,
+    shareMissing: (names) => `リンクに入っていないファイル: ${names}。大きすぎるか添付されていません。リポジトリのSamplesフォルダに入れるか、別に送ってください。`,
+    shareLong: (n) => `リンクの長さは${n.toLocaleString()}文字です。長いリンクを切るメッセンジャーもあります。`,
+    shareHow: 'リンクを開いた人のブラウザにこの曲とファイルがそのまま開き、再生を押すだけで聴けます。',
+    shareFailed: 'リンクを作れませんでした: ',
+    sharedOpened: (n) => `共有された曲「${n}」を開きました。再生を押して聴いてください。`, sharedBad: '共有リンクを読めませんでした: ',
+    sharedKept: '開いていた自分の曲は別に保管しました。', sharedRestore: '元に戻す', sharedRestored: '前の曲に戻しました。',
     reference: 'クイックリファレンス',
    
    
@@ -466,6 +500,7 @@ let markRows = new Map();   // row -> 'err' | 'warn'
 let markSpots = [];         // { row, col, kind } for the wavy underline
 let pickedMark = null;      // { row, kind }: the message last clicked, drawn as a red / yellow line
 let playingRows = null;     // [from, to] while only those rows play (line-play.js)
+let sharedStatus = null;  // what opening a share link said, kept until the engine is ready
 let manualReady = false;   // the manual and the quick reference exist (made further down)
 let bankReady = false;      // the voice bank view exists (it is made further down)
 let waveEdit = null;        // { row, fm } of the definition open in the wave / FM editor
@@ -906,11 +941,13 @@ const fileStore = (() => {
 })();
 let fileGeneration = 0;   // bumps when the attached set is replaced, so a late restore stands down
 
-function attach(name, data, keep = true) {
+// origin: the file's path in the repository when it was fetched from there (a share link
+// then names the path instead of carrying the bytes).
+function attach(name, data, keep = true, origin = null) {
   const base = name.split(/[\\/]/).pop();
-  files.set(base.toLowerCase(), { name: base, data });
+  files.set(base.toLowerCase(), { name: base, data, origin });
   worker.postMessage({ type: 'setFile', name: base, data: data.slice(0) });
-  if (keep) fileStore.put(base.toLowerCase(), { name: base, data: data.slice(0) });
+  if (keep) fileStore.put(base.toLowerCase(), { name: base, data: data.slice(0), origin });
   renderFiles();
 }
 
@@ -951,7 +988,7 @@ async function recoverMissingFiles() {
       try {
         const data = await fetchRepoFile(path);
         if (generation !== fileGeneration) return;
-        attach(ref, data);
+        attach(ref, data, true, path);
         found.push(ref);
         break;
       } catch { /* try the next place */ }
@@ -1308,7 +1345,9 @@ function onEngineMessage(m, source) {
         break;
       }
       engineReady = true;
-      setStatus(t('ready'));
+      // A share link's message (opened, or not readable) outlasts the engine's start.
+      if (sharedStatus) setStatus(sharedStatus.text, sharedStatus.err); else setStatus(t('ready'));
+      sharedStatus = null;
       if (pendingPlay) { pendingPlay = false; play(); }
       if (pendingFile) { const f = pendingFile; pendingFile = null; playFile(f.name, f.data); }
       break;
@@ -2100,13 +2139,14 @@ async function fetchRepoFile(path) {
   throw new Error(path);
 }
 
-async function loadRepoFile(path) {
+// force: no question about replacing your text (a share link; your text was kept).
+async function loadRepoFile(path, force = false) {
   const name = path.slice(path.lastIndexOf('/') + 1);
   try {
     setStatus(t('loadingSample', name));
     const data = await fetchRepoFile(path);
     if (kindOf(name, data) !== 'muc') { playFile(name, data); return; }
-    if (current === 'mine' && code.value.trim() && !confirm(t('confirmReplace'))) { setStatus(engineReady ? t('ready') : t('loading')); return; }
+    if (!force && current === 'mine' && code.value.trim() && !confirm(t('confirmReplace'))) { setStatus(engineReady ? t('ready') : t('loading')); return; }
     stop();
     clearFiles();
     setSource(decodeText(data));
@@ -2118,7 +2158,7 @@ async function loadRepoFile(path) {
     const dir = path.slice(0, path.lastIndexOf('/') + 1);
     for (const ref of referencedFiles()) {
       const match = (sampleTree?.files || []).find((f) => f.toLowerCase() === (dir + ref).toLowerCase()) || dir + ref;
-      try { attach(ref, await fetchRepoFile(match)); } catch { /* listed as missing */ }
+      try { attach(ref, await fetchRepoFile(match), true, match); } catch { /* listed as missing */ }
     }
     setStatus(engineReady ? t('ready') : t('loading'));
   } catch (e) {
@@ -3158,7 +3198,152 @@ const filesRestored = (async () => {
   const generation = fileGeneration;
   const kept = await fileStore.all();
   if (generation !== fileGeneration) return;
-  for (const f of kept) if (f && f.name && f.data && !files.has(f.name.toLowerCase())) attach(f.name, f.data, false);
+  for (const f of kept) if (f && f.name && f.data && !files.has(f.name.toLowerCase())) attach(f.name, f.data, false, f.origin || null);
   if (kept.length) scheduleCheck();
   try { await recoverMissingFiles(); } catch { /* listed as not attached */ }
+})();
+
+
+// ---------- share links (share.js) ----------
+const safePath = (p) => typeof p === 'string' && p.startsWith(SAMPLES_ROOT) && !p.split('/').includes('..');
+
+$('shareBtn').addEventListener('click', async () => {
+  const info = [];
+  const li = (text, warn = false) => info.push({ text, warn });
+  let url;
+  try {
+    const base = pageBase(location);
+    if (current.startsWith('repo:') && safePath(current.slice(5))) {
+      url = `${base}?sample=${current.slice(5 + SAMPLES_ROOT.length).split('/').map(encodeURIComponent).join('/')}`;
+      li(t('shareSample', sourceName));
+    } else if (current === 'demo' || current === 'template') {
+      url = `${base}?ex=${current}`;
+      li(t('shareExample'));
+    } else {
+      // The files the song names: from the repository by path, small ones of yours inside
+      // the link, the rest listed as missing.
+      const repoFiles = [], embedded = [], missing = [];
+      let room = EMBED_LIMIT;
+      for (const ref of [...new Set(referencedFiles().map((r) => r.split(/[\\/]/).pop()))]) {
+        const f = files.get(ref.toLowerCase());
+        if (!f) missing.push(ref);
+        else if (f.origin && safePath(f.origin)) repoFiles.push({ name: f.name, path: f.origin });
+        else if (f.data.byteLength <= room) { embedded.push({ name: f.name, data: f.data }); room -= f.data.byteLength; }
+        else missing.push(ref);
+      }
+      const payload = await encodeSong({ name: sourceName, text: code.value, repoFiles, embedded });
+      url = `${base}#s=${payload}`;
+      li(t('shareText', (payload.length * 3 / 4 / 1024).toFixed(1)));
+      if (repoFiles.length) li(t('shareRepoFiles', repoFiles.map((f) => f.name).join(', ')));
+      if (embedded.length) li(t('shareEmbedded', embedded.map((f) => f.name).join(', ')));
+      if (missing.length) li(t('shareMissing', missing.join(', ')), true);
+    }
+  } catch (e) {
+    setStatus(t('shareFailed') + e.message, true);
+    return;
+  }
+  if (url.length > 8000) li(t('shareLong', url.length), true);
+  li(t('shareHow'));
+  $('shareUrl').value = url;
+  $('shareInfo').innerHTML = '';
+  for (const x of info) { const el = document.createElement('li'); el.textContent = x.text; if (x.warn) el.className = 'warn'; $('shareInfo').appendChild(el); }
+  $('shareCopy').textContent = t('shareCopy');
+  $('shareNative').hidden = !navigator.share;
+  $('shareDlg').showModal();
+  $('shareUrl').focus();
+  $('shareUrl').select();
+});
+$('shareCopy').addEventListener('click', async () => {
+  const url = $('shareUrl').value;
+  try { await navigator.clipboard.writeText(url); }
+  catch { $('shareUrl').select(); document.execCommand('copy'); }
+  $('shareCopy').textContent = t('shareCopied');
+});
+$('shareNative').addEventListener('click', () => navigator.share({ title: sourceName, url: $('shareUrl').value }).catch(() => {}));
+$('shareClose').addEventListener('click', () => $('shareDlg').close());
+
+// The song you had open, kept while a shared one is looked at (IndexedDB, one record).
+const backupStore = {
+  db: null,
+  open() {
+    return (this.db ||= new Promise((resolve, reject) => {
+      const r = indexedDB.open('mucplayground-backup', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('b');
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    }));
+  },
+  async run(mode, op) {
+    const st = (await this.open()).transaction('b', mode).objectStore('b');
+    return new Promise((resolve, reject) => { const q = op(st); st.transaction.oncomplete = () => resolve(q.result); st.transaction.onerror = () => reject(st.transaction.error); });
+  },
+  put(v) { return this.run('readwrite', (st) => st.put(v, 'song')).catch(() => {}); },
+  get() { return this.run('readonly', (st) => st.get('song')).catch(() => null); },
+  clear() { return this.run('readwrite', (st) => st.delete('song')).catch(() => {}); },
+};
+function showSharedNote(kept) {
+  $('sharedNoteText').textContent = t('sharedKept');
+  $('sharedRestore').textContent = t('sharedRestore');
+  $('sharedNote').hidden = !kept;
+}
+$('sharedDismiss').addEventListener('click', () => { $('sharedNote').hidden = true; });
+$('sharedRestore').addEventListener('click', async () => {
+  const b = await backupStore.get();
+  $('sharedNote').hidden = true;
+  if (!b) return;
+  stop();
+  clearFiles();
+  setSource(b.text);
+  sourceName = b.name || 'SONG.MUC';
+  current = 'mine';
+  saveSong();
+  buildExamples();
+  for (const f of b.files || []) attach(f.name, f.data, true, f.origin || null);
+  backupStore.clear();
+  setStatus(t('sharedRestored'));
+});
+
+// Opening a share link: the address is cleaned at once (a reload keeps what you do next),
+// your own song is kept aside, then the shared one is loaded.
+(async () => {
+  const req = sharedRequest(location);
+  if (!req) return;
+  history.replaceState(null, '', pageBase(location));
+  await filesRestored;
+  let kept = false;
+  if (current === 'mine' && code.value.trim()) {
+    await backupStore.put({ text: code.value, name: sourceName, files: [...files.values()].map((f) => ({ name: f.name, data: f.data, origin: f.origin || null })) });
+    kept = true;
+  }
+  try {
+    if (req.sample) {
+      const path = SAMPLES_ROOT + req.sample;
+      if (!safePath(path)) throw new Error(req.sample);
+      await loadRepoFile(path, true);
+    } else if (req.example) {
+      current = 'shared';
+      await loadExample(req.example);
+    } else {
+      const song = await decodeSong(req.payload);
+      stop();
+      clearFiles();
+      setSource(song.text);
+      sourceName = song.name;
+      current = 'mine';
+      saveSong();
+      buildExamples();
+      for (const f of song.embedded) attach(f.name, f.data);
+      for (const f of song.repoFiles) {
+        if (!safePath(f.path)) continue;
+        try { attach(f.name, await fetchRepoFile(f.path), true, f.path); } catch { /* listed as missing */ }
+      }
+    }
+    showSharedNote(kept);
+    sharedStatus = { text: t('sharedOpened', sourceName), err: false };
+  } catch (e) {
+    showSharedNote(kept);
+    sharedStatus = { text: t('sharedBad') + e.message, err: true };
+  }
+  setStatus(sharedStatus.text, sharedStatus.err);
+  if (engineReady) sharedStatus = null;
 })();
