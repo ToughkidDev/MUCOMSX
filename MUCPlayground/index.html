@@ -438,10 +438,20 @@ textarea::selection{background:var(--sel);color:transparent}
 .files button{border:0;background:transparent;cursor:pointer;color:var(--muted);padding:0 4px;font-size:1rem}
 .hint{font-size:.8rem;color:var(--muted);margin:6px 0 0}
 .btn.small{padding:4px 10px;font-size:.82rem}
-.ref{width:100%;border-collapse:collapse;font-size:.82rem}
-.ref td{padding:3px 0;border-bottom:1px solid var(--line);vertical-align:top}
-.ref td:first-child{font-family:var(--mono);white-space:nowrap;padding-right:10px;color:var(--accent)}
-.ref tr:last-child td{border-bottom:0}
+/* quick reference (quick-ref.js) */
+.qref{display:flex;flex-direction:column;gap:6px}
+.qr-filter{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:4px 8px;font-size:.8rem;font-family:var(--sans)}
+.qr-list{position:relative;max-height:340px;overflow:auto;font-size:.8rem;outline:none;border-top:1px solid var(--line);scrollbar-width:thin}
+.qr-book{margin:8px 0 2px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent2)}
+.qr-sec{margin:6px 0 1px;font-size:.72rem;color:var(--muted);font-weight:700}
+.qr-row{display:grid;grid-template-columns:minmax(4.2em,auto) 1fr;gap:0 10px;padding:2px 6px;border-radius:5px;cursor:pointer;border-left:3px solid transparent}
+.qr-row:hover{background:var(--sel,rgba(127,127,127,.12))}
+.qr-row code{font-family:var(--mono);color:var(--accent);white-space:nowrap}
+.qr-t{min-width:0}
+.qr-s{display:none;grid-column:1/-1;margin:2px 0 1px;font-family:var(--mono);font-size:.74rem;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.qr-row.on{background:color-mix(in srgb,var(--accent2) 16%,transparent);border-left-color:var(--accent2)}
+.qr-row.on .qr-s{display:block}
+.qr-row[hidden],.qr-sec[hidden],.qr-book[hidden]{display:none}
 .links{font-size:.82rem;margin:10px 0 0}
 footer{padding:10px 20px;border-top:1px solid var(--line);font-size:.76rem;color:var(--muted)}
 footer p{margin:2px 0}
@@ -609,19 +619,7 @@ footer p{margin:2px 0}
     </div>
     <div class="card">
       <h2 data-i18n="reference">Quick reference</h2>
-      <table class="ref">
-        <tr><td>A B C H I J</td><td data-i18n="refFm">FM 1–6</td></tr>
-        <tr><td>D E F</td><td data-i18n="refSsg">SSG 1–3</td></tr>
-        <tr><td>G</td><td data-i18n="refRhythm">Rhythm (v needs 7 values)</td></tr>
-        <tr><td>K</td><td data-i18n="refPcm">ADPCM (needs #pcm)</td></tr>
-        <tr><td>SCCA–SCCE</td><td data-i18n="refScc">SCC 1–5, waves @W0:{…}</td></tr>
-        <tr><td>T120 / t225</td><td data-i18n="refTempo">Tempo in BPM / raw Timer-B</td></tr>
-        <tr><td>o4 &gt; &lt;</td><td data-i18n="refOctave">Octave, up, down</td></tr>
-        <tr><td>l8 c4 c%12</td><td data-i18n="refLength">Default length, length, clocks</td></tr>
-        <tr><td>v12 @1</td><td data-i18n="refVoice">Volume, voice</td></tr>
-        <tr><td>[ … ]2 L</td><td data-i18n="refLoop">Repeat, song loop point</td></tr>
-        <tr><td>; text</td><td data-i18n="refComment">Comment</td></tr>
-      </table>
+      <div class="qref" id="quickRef"></div>
       <p class="links"><span data-i18n="manual">Full MML guide:</span>
         <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEdit.md" target="_blank" rel="noopener">한국어</a> ·
         <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditJ.md" target="_blank" rel="noopener">日本語</a> ·

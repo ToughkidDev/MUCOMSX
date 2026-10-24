@@ -14,8 +14,8 @@ const UI = {
         size: '文字', sizeTip: '説明書の内容の文字サイズ、上のボタンはそのまま（このブラウザに記憶、ダブルクリックで標準）', follow: 'カーソルに追従', followTip: 'エディタのカーソル位置のコマンドの項目を表示します', none: 'この説明書には見つかりません。', other: (n, b) => `${b}に${n}件`, chapters: '章', results: (n) => `${n}件`, close: '説明書を閉じる', top: '先頭' },
 };
 
-const keyOf = (e) => e.c + '|' + (e.on || '');
-function findEntry(target) {
+export const keyOf = (e) => e.c + '|' + (e.on || '');
+export function findEntry(target) {
   const book = BOOKS[target.book];
   if (!book) return null;
   for (const s of book.sections) for (const e of s.e) {
@@ -171,8 +171,9 @@ export class Manual {
 
   // Show the entry the editor's caret is on (manual-lookup.js gives { book, c, on }).
   // Nothing happens with Follow caret off, or when the caret is on nothing known.
-  point(target) {
-    if (!this.follow || !target) return;
+  // force: show it even with Follow caret off (a click in the quick reference).
+  point(target, force = false) {
+    if ((!this.follow && !force) || !target) return;
     const entry = findEntry(target);
     if (!entry) return;
     const key = keyOf(entry);

@@ -13,6 +13,7 @@ import { Tracker } from './tracker.js';
 import { BankView } from './bank-view.js';
 import { Manual } from './manual.js';
 import { targetAt } from './manual-lookup.js';
+import { QuickRef } from './quick-ref.js';
 import { mucVoices, voiceLines, writeDat as writeDatSlot, newDat as newDatBytes, readDat, voiceKey, importVoices } from './voice-bank.js';
 import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, importWaves } from './scc-bank.js';
 import { readPcmBank, putPcm, mucPcms, pcmLine, mucSamples, pcmKey, importPcm, encodeAdpcm, decodeAdpcm, resample, readWav, writeWav, wavFitsCompiler, NATIVE_RATE, SLOTS as PCM_SLOTS, RAM_SIZE } from './pcm-bank.js';
@@ -42,10 +43,10 @@ const T = {
     play: '▶ Play', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
-    reference: 'Quick reference', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'Rhythm (v needs 7 values)',
-    refPcm: 'ADPCM (needs #pcm or #@pcm)', refScc: 'SCC 1–5, waves @W0:{…}', refTempo: 'Tempo in BPM / raw Timer-B', refOctave: 'Octave, up, down',
-    refLength: 'Default length, length, clocks', refVoice: 'Volume, voice', refLoop: 'Repeat, song loop point',
-    refComment: 'Comment', manual: 'Full MML guide:',
+    reference: 'Quick reference',
+   
+   
+    manual: 'Full MML guide:',
     credit1: "Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: MDPlayer4Mac and MUCOMSX by ToughkidCST, mucomDotNET and MDSound by kuma4649. GPL-3.0.",
     credit2: 'MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.', source: 'Source and licenses',
     drop: 'Drop .muc / .mub / .vgm / .vgz to play — voice and PCM files are attached; drop a folder to choose a song from it',
@@ -151,10 +152,10 @@ const T = {
     play: '▶ 재생', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
-    reference: '빠른 참조', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: '리듬 (v는 값 7개)',
-    refPcm: 'ADPCM (#pcm 또는 #@pcm 필요)', refScc: 'SCC 1–5, 파형 @W0:{…}', refTempo: '템포 BPM / Timer-B 값', refOctave: '옥타브, 올림, 내림',
-    refLength: '기본 길이, 길이, 클록', refVoice: '음량, 음색', refLoop: '반복, 곡 루프 지점',
-    refComment: '주석', manual: 'MML 전체 설명:',
+    reference: '빠른 참조',
+   
+   
+    manual: 'MML 전체 설명:',
     credit1: '컴파일러, 드라이버, 칩 에뮬레이션은 MDPlayer4Mac의 것을 브라우저용으로 빌드했습니다: ToughkidCST의 MDPlayer4Mac과 MUCOMSX, kuma4649의 mucomDotNET과 MDSound. GPL-3.0.',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0.', source: '소스와 라이선스',
     drop: '.muc / .mub / .vgm / .vgz를 놓으면 재생합니다 — 음색·PCM 파일은 첨부되고, 폴더를 놓으면 그 안의 곡을 고를 수 있습니다',
@@ -260,10 +261,10 @@ const T = {
     play: '▶ 再生', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
-    reference: 'クイックリファレンス', refFm: 'FM 1–6', refSsg: 'SSG 1–3', refRhythm: 'リズム（vは7つの値）',
-    refPcm: 'ADPCM（#pcmか#@pcmが必要）', refScc: 'SCC 1–5、波形 @W0:{…}', refTempo: 'テンポ BPM / Timer-B値', refOctave: 'オクターブ、上げ、下げ',
-    refLength: '基本音長、音長、クロック', refVoice: '音量、音色', refLoop: '繰り返し、曲のループ位置',
-    refComment: 'コメント', manual: 'MMLの詳しい説明:',
+    reference: 'クイックリファレンス',
+   
+   
+    manual: 'MMLの詳しい説明:',
     credit1: 'コンパイラ・ドライバ・チップエミュレーションはMDPlayer4Macのものをブラウザ向けにビルドしています: ToughkidCST氏のMDPlayer4MacとMUCOMSX、kuma4649氏のmucomDotNETとMDSound。GPL-3.0。',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0。', source: 'ソースとライセンス',
     drop: '.muc / .mub / .vgm / .vgzをドロップすると再生します — 音色・PCMファイルは添付され、フォルダをドロップするとその中の曲を選べます',
@@ -409,7 +410,7 @@ function applyLanguage() {
   document.documentElement.lang = lang;
   if (typeof waveEditor !== 'undefined') for (const ed of [waveEditor, fmEditor, pcmEditor]) if (ed.isOpen) { ed.build(); ed.render(); }
   if (bankReady) { bank.build(); if (bank.isOpen) bank.refresh(); }
-  if (typeof manual !== 'undefined') manual.setLang(lang);
+  if (manualReady) { manual.setLang(lang); quickRef.setLang(lang); }
   if (typeof keyboard !== 'undefined') { keyboard.build(); refreshKeySources(); }
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
@@ -465,6 +466,7 @@ let markRows = new Map();   // row -> 'err' | 'warn'
 let markSpots = [];         // { row, col, kind } for the wavy underline
 let pickedMark = null;      // { row, kind }: the message last clicked, drawn as a red / yellow line
 let playingRows = null;     // [from, to] while only those rows play (line-play.js)
+let manualReady = false;   // the manual and the quick reference exist (made further down)
 let bankReady = false;      // the voice bank view exists (it is made further down)
 let waveEdit = null;        // { row, fm } of the definition open in the wave / FM editor
 
@@ -530,7 +532,7 @@ function updateCursor() {
   updateWave(row);
   if (keysOpen) refreshKeySources();
   if (splitMode === 'tracker' && document.activeElement === code) tracker.caretAt(row, col - 1);
-  if (splitMode === 'manual' && typeof manual !== 'undefined') pointManual();
+  if (manualReady) pointManual();
 }
 
 // Definition previews: with the caret on an SCC wave (@Wn) the wave is drawn under it;
@@ -2662,18 +2664,26 @@ function insertSnippet(text) {
   }
   updateCursor();
 }
+manualReady = true;
 $('manualToggle').addEventListener('click', () => { setSplit(splitMode === 'manual' ? 'off' : 'manual'); pointManual(); });
-// The entry for the command at the caret (manual-lookup.js), shortly after the caret stops.
+// The quick reference in the side panel: every command; a click opens it in the manual.
+const quickRef = new QuickRef($('quickRef'), {
+  lang,
+  onOpen: (target) => { if (splitMode !== 'manual') setSplit('manual'); manual.point(target, true); },
+});
+// The entry for the command at the caret (manual-lookup.js), shortly after the caret
+// stops: marked in the quick reference, and shown in the manual when it is open.
 let manualTimer = 0;
 function pointManual() {
-  if (splitMode !== 'manual') return;
   clearTimeout(manualTimer);
   manualTimer = setTimeout(() => {
     const code = pane.visible ? pane.code : panes[0].code;
     const before = code.value.slice(0, code.selectionStart);
     const row = before.split('\n').length;
     const col = before.length - before.lastIndexOf('\n') - 1;
-    manual.point(targetAt(code.value.split('\n'), row, col));
+    const target = targetAt(code.value.split('\n'), row, col);
+    quickRef.point(target);
+    if (splitMode === 'manual') manual.point(target);
   }, 120);
 }
 for (const p of panes) {
