@@ -458,6 +458,8 @@ footer p{margin:2px 0}
 .samples{width:min(760px,calc((100vw - 32px) / var(--ui)));max-height:min(80vh / var(--ui),720px);max-height:min(80dvh / var(--ui),720px);padding:0;border:1px solid var(--line);
          border-radius:12px;background:var(--panel);color:var(--ink);display:none;flex-direction:column}
 .samples[open]{display:flex}
+.share-top{align-self:center;padding:5px 12px;font-weight:600;border-color:var(--accent2);color:var(--accent2)}
+.share-top:hover{background:var(--accent2);color:#fff}
 .share-dlg{width:min(620px,calc((100vw - 32px) / var(--ui)))}
 .share-body{padding:4px 16px 16px;display:flex;flex-direction:column;gap:10px}
 .share-row{display:flex;gap:8px;flex-wrap:wrap}
@@ -516,6 +518,7 @@ footer p{margin:2px 0}
     <h1>MUCPlayground <span class="sub" data-i18n="tagline">Write MUCOM88 MML, hear it right away</span></h1>
     <p class="byline">Written by ToughkidCST</p>
   </div>
+  <button type="button" class="btn share-top" id="shareBtn" data-i18n-title="shareTip"><span aria-hidden="true">🔗</span> <span data-i18n="share">Share</span></button>
   <div class="sizes">
     <label class="vol"><span data-i18n="fontSize" data-i18n-title="fontSizeTip">Text</span> <input id="fontSize" data-i18n-title="fontSizeTip" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
     <label class="vol"><span data-i18n="uiSize" data-i18n-title="uiSizeTip">Menus</span> <input id="uiSize" data-i18n-title="uiSizeTip" type="range" min="100" max="200" step="10" value="100"> <output id="uiSizeOut" for="uiSize">100%</output></label>
@@ -547,7 +550,6 @@ footer p{margin:2px 0}
     <button type="button" id="saveMub" title="Compiled song">.mub</button>
     <button type="button" id="saveVgm" title="Chip log">.vgm</button>
   </div>
-  <button type="button" class="btn" id="shareBtn" data-i18n-title="shareTip"><span aria-hidden="true">🔗</span> <span data-i18n="share">Share</span></button>
   <input id="openInput" type="file" multiple accept=".muc,.mub,.vgm,.vgz,.MUC,.MUB,.VGM,.VGZ,.txt,.dat,.DAT,.pcm,.PCM,.bin,.BIN,.wav,.WAV" hidden>
   <input id="folderInput" type="file" webkitdirectory multiple hidden>
   <input id="filesInput" type="file" multiple hidden>
