@@ -7,11 +7,11 @@ import { highlightLine } from './editor-assist.js';
 
 const UI = {
   en: { search: 'Search commands…', insert: 'Insert', insertTip: 'Put this example into the editor (whole lines go below the caret\'s line)',
-        size: 'Text', sizeTip: 'Text size of the manual (remembered in this browser; double-click for the default)', follow: 'Follow caret', followTip: 'Show the entry for the command at the editor\'s caret', none: 'Nothing found in this book.', other: (n, b) => `${n} in ${b}`, chapters: 'Chapters', results: (n) => `${n} found`, close: 'Close the manual', top: 'Top' },
+        size: 'Text', sizeTip: 'Text size of the manual\'s contents; the buttons above stay as they are (remembered in this browser; double-click for the default)', follow: 'Follow caret', followTip: 'Show the entry for the command at the editor\'s caret', none: 'Nothing found in this book.', other: (n, b) => `${n} in ${b}`, chapters: 'Chapters', results: (n) => `${n} found`, close: 'Close the manual', top: 'Top' },
   ko: { search: '명령 검색…', insert: '넣기', insertTip: '이 예제를 에디터에 넣기 (여러 줄 예제는 커서가 있는 줄 아래에)',
-        size: '글자', sizeTip: '설명서의 글자 크기 (이 브라우저에 기억됨, 더블클릭하면 기본값)', follow: '커서 따라가기', followTip: '에디터 커서 위치의 명령에 해당하는 항목을 보여 줍니다', none: '이 설명서에는 결과가 없습니다.', other: (n, b) => `${b}에 ${n}개`, chapters: '장', results: (n) => `${n}개 찾음`, close: '설명서 닫기', top: '맨 위' },
+        size: '글자', sizeTip: '설명서 내용의 글자 크기, 위쪽 버튼들은 그대로 (이 브라우저에 기억됨, 더블클릭하면 기본값)', follow: '커서 따라가기', followTip: '에디터 커서 위치의 명령에 해당하는 항목을 보여 줍니다', none: '이 설명서에는 결과가 없습니다.', other: (n, b) => `${b}에 ${n}개`, chapters: '장', results: (n) => `${n}개 찾음`, close: '설명서 닫기', top: '맨 위' },
   ja: { search: 'コマンドを検索…', insert: '挿入', insertTip: 'この例をエディタに入れる(複数行の例はカーソル行の下に)',
-        size: '文字', sizeTip: '説明書の文字サイズ（このブラウザに記憶、ダブルクリックで標準）', follow: 'カーソルに追従', followTip: 'エディタのカーソル位置のコマンドの項目を表示します', none: 'この説明書には見つかりません。', other: (n, b) => `${b}に${n}件`, chapters: '章', results: (n) => `${n}件`, close: '説明書を閉じる', top: '先頭' },
+        size: '文字', sizeTip: '説明書の内容の文字サイズ、上のボタンはそのまま（このブラウザに記憶、ダブルクリックで標準）', follow: 'カーソルに追従', followTip: 'エディタのカーソル位置のコマンドの項目を表示します', none: 'この説明書には見つかりません。', other: (n, b) => `${b}に${n}件`, chapters: '章', results: (n) => `${n}件`, close: '説明書を閉じる', top: '先頭' },
 };
 
 const keyOf = (e) => e.c + '|' + (e.on || '');
@@ -54,7 +54,7 @@ export class Manual {
     this.$('.man-close').addEventListener('click', () => opts.onClose?.());
     this.$('.man-search').addEventListener('input', (e) => { this.query = e.target.value.trim(); this.renderBody(); });
     this.$('.man-search').addEventListener('keydown', (e) => { if (e.key === 'Escape' && this.query) { e.stopPropagation(); e.target.value = ''; this.query = ''; this.renderBody(); } });
-    // Text size: everything in the manual is sized from its own font size.
+    // Text size of the guide's contents.
     const size = this.$('.man-size input');
     size.addEventListener('input', () => this.setFontSize(Number(size.value), true));
     size.addEventListener('dblclick', () => this.setFontSize(null, true));
@@ -92,8 +92,10 @@ export class Manual {
   // px, or null for the page's default (which follows the Menus size).
   setFontSize(px, user) {
     const ok = Number.isFinite(px) && px >= 10 && px <= 24;
-    this.root.style.fontSize = ok ? `${px}px` : '';
-    const shown = ok ? px : Math.round(parseFloat(getComputedStyle(this.root).fontSize) * 2) / 2 || 13.5;
+    // Only the guide's text (the entries) changes; the book buttons, tools and chapters stay.
+    const body = this.$('.man-body');
+    body.style.fontSize = ok ? `${px}px` : '';
+    const shown = ok ? px : Math.round(parseFloat(getComputedStyle(body).fontSize) * 2) / 2 || 13.5;
     this.$('.man-size input').value = shown;
     this.$('.man-size output').textContent = shown.toFixed(1);
     if (user) this.opts.onFontSize?.(ok ? px : null);
