@@ -1,0 +1,120 @@
+#title MSX all chips (MucoMSX chip extension)
+#composer
+#comment Template: SCC, MSX-MUSIC and the MSX PSG together with the MucoMSX chip extension commands
+
+; ==================================================================
+;  Every MSX chip with the MucoMSX chip extension commands
+;  全MSXチップ MucoMSXチップ拡張コマンド版
+; ==================================================================
+; [EN] An 8-bar game tune on all the MSX chips at once, written with the
+;      chip extensions (two-letter commands starting with ?):
+;        SCC / SCC+   SCCA lead, SCCB the lead detuned (chorus),
+;                     SCCC arpeggios, SCCD pad, SCCE bass
+;        MSX-MUSIC    MSXA MSXB MSXC brass on the off-beats, MSXG drums
+;        MSX PSG      MSXD answers the lead, MSXE hi-hats (effects)
+;      Needs MDPlayer4Mac v0.2.4 or later. The SCC, PSG and MSX-MUSIC
+;      templates explain each chip's commands in more detail.
+; [JA] 全MSXチップを同時に使う8小節のゲーム曲を、チップ拡張(?で始まる
+;      2文字のコマンド)で書いたものです:
+;        SCC / SCC+   SCCAリード、SCCBデチューンしたリード(コーラス)、
+;                     SCCCアルペジオ、SCCDパッド、SCCEベース
+;        MSX-MUSIC    MSXA MSXB MSXC 裏拍のブラス、MSXGドラム
+;        MSX PSG      MSXDリードへの応答、MSXEハイハット(エフェクト)
+;      MDPlayer4Mac v0.2.4以降が必要です。各チップのコマンドは
+;      SCC、PSG、MSX-MUSICのテンプレートで詳しく説明しています。
+;
+; [EN] Compact rows: ?XU7 makes %1 a sixteenth note, %4 a quarter and
+;      %16 a whole note (one bar). :n is a label, ?FJn jumps back to it
+;      (the loop), ?FDn={ ... ?FR} is a shared phrase that ?FCn plays,
+;      ?FB repeats. Every part starts with a sixteenth rest (r%1), the
+;      time the drums need to set their kit and volume (?ID-,1).
+; [JA] コンパクト行: ?XU7で%1が16分音符、%4が4分音符、%16が全音符
+;      (1小節)。:nはラベル、?FJnでそこへ戻り(ループ)、?FDn={ … ?FR}は
+;      ?FCnで演奏する共有フレーズ、?FBは繰り返しです。全パートは16分
+;      休符(r%1)で始まります。ドラムがキットと音量を設定する(?ID-,1)
+;      ための時間です。
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。
+; ==================================================================
+
+; [EN] Chords (8 bars): | Em | C | D | Bm | Em | C | Am B7 | Em |
+; [JA] コード(8小節): | Em | C | D | Bm | Em | C | Am B7 | Em |
+
+; ---- SCC waves / SCC波形 ----
+; ?WD0 sine (pad) / サイン(パッド)
+?WD0={0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-128,-125,-117,-106,-90,-71,-49,-25}
+; ?WD1 soft sawtooth (lead) / 柔らかいのこぎり波(リード)
+?WD1={0,73,109,102,77,63,64,67,59,44,34,33,32,24,11,2,0,-2,-11,-24,-32,-33,-34,-44,-59,-67,-64,-63,-77,-102,-109,-73}
+; ?WD2 rounded square (bass) / 角の丸い矩形波(ベース)
+?WD2={0,64,96,112,112,112,112,112,112,112,112,112,112,112,96,64,0,-64,-96,-112,-112,-112,-112,-112,-112,-112,-112,-112,-112,-112,-96,-64}
+; ?WD3 bright (arpeggio) / 明るい音(アルペジオ)
+?WD3={0,37,69,93,105,107,101,90,78,67,58,52,45,37,27,14,0,-14,-27,-37,-45,-52,-58,-67,-78,-90,-101,-107,-105,-93,-69,-37}
+
+; ---- MSX-MUSIC drum kit / MSX-MUSICのドラムキット ----
+; [EN] The pitches of the drums, from Konami's F-1 Spirit 3D Special.
+; [JA] ドラムの音程。コナミのF-1スピリット3Dスペシャルのものです。
+?IT1={224,4,190,3,5,1}
+
+; ---- SCC phrases / SCCのフレーズ ----
+; the start of bars 1 and 5 / 1小節目と5小節目の頭
+SCCS ?FD20={ o5 e%2 f+%2 g%4 b%4 ?FR }
+; the melody / メロディ
+SCCS ?FD21={ ?FC20 a%2 g%2 e%6 d%2 c%4 e%4 d%4 f+%4 a%4 g%2 f+%2 f+%12 r%4 ?FR }
+SCCS ?FD22={ ?FC20 >e%4 d%4 c%4< b%4 g%4 a%4 >c%4< b%4 d+%4 e%12 r%4 ?FR }
+; arpeggios, one bar each / アルペジオ、各1小節
+SCCS ?FD30={ o4 e%2 g%2 b%2 >e%2 <b%2 g%2 e%2 b%2 ?FR }
+SCCS ?FD31={ o4 c%2 e%2 g%2 >c%2 <g%2 e%2 c%2 g%2 ?FR }
+SCCS ?FD32={ o4 d%2 f+%2 a%2 >d%2 <a%2 f+%2 d%2 a%2 ?FR }
+SCCS ?FD33={ o3 b%2 >d%2 f+%2 b%2 f+%2 d%2 <b%2 >f+%2 ?FR }
+SCCS ?FD34={ o4 a%2 >c%2 e%2 <a%2 b%2 >d+%2 f+%2 <b%2 ?FR }
+
+; ---- PSG drum effects (Gradius 2) / PSGのドラムエフェクト(グラディウス2) ----
+; ?XD0 closed hi-hat, ?XD1 open hi-hat / クローズドとオープンのハイハット
+PSGS ?XD0={ :90 ?XM1,1 ?NP0 ?XS$07 ! }
+PSGS ?XD1={ :91 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+
+; ---- SCC / SCC+ ----
+SCCA ?XU7 ?XT1 @1 ?EP0,$81,$32 ?MW16 ?MV0,$53 v8 r%1
+SCCA :1 ?FC21 ?FC22 ?FJ1
+SCCB ?XU7 ?XT1 @1 ?EP0,$81,$32 ?DB3 v5 r%1
+SCCB :2 ?FC21 ?FC22 ?FJ2
+SCCC ?XU7 ?XT1 @3 ?EP2,$73,$23 v6 r%1
+SCCC :3 ?FC30 ?FC31 ?FC32 ?FC33 ?FC30 ?FC31 ?FC34 ?FC30 ?FJ3
+SCCD ?XU7 ?XT1 @0 ?EP0,$8F,$56 v6 r%1
+SCCD :4 o4 b%16 g%16 a%16 f+%16 b%16 g%16 a%16 b%16 ?FJ4
+SCCE ?XU7 ?XT1 @2 ?EP0,$81,$32 v8 r%1
+SCCE :5 ?FB0 o2 e%2 >e%2 ?FB4 ?FB0 o2 c%2 >c%2 ?FB4 ?FB0 o2 d%2 >d%2 ?FB4 ?FB0 o1 b%2 >b%2 ?FB4
+SCCE    ?FB0 o2 e%2 >e%2 ?FB4 ?FB0 o2 c%2 >c%2 ?FB4 ?FB0 o2 a%2 >a%2 ?FB2 ?FB0 o1 b%2 >b%2 ?FB2 ?FB0 o2 e%2 >e%2 ?FB4 ?FJ5
+
+; ---- MSX-MUSIC ----
+; MSXA MSXB MSXC trumpet on the off-beat eighths / 裏拍の8分でトランペット
+MSXA ?XU7 ?XT1 @7 ?QP128 v13 r%1
+MSXA :6 o4 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 d%2
+MSXA    r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 d+%2 r%2 d+%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 ?FJ6
+MSXB ?XU7 ?XT1 @7 ?QP128 v13 r%1
+MSXB :7 o4 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 f+%2 r%2 f+%2 r%2 f+%2 r%2 f+%2 r%2 f+%2 r%2 f+%2 r%2 f+%2 r%2 f+%2
+MSXB    r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 a%2 r%2 a%2 r%2 f+%2 r%2 f+%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 ?FJ7
+MSXC ?XU7 ?XT1 @7 ?QP128 v13 r%1
+MSXC :8 o4 r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 >c%2 r%2 c%2 r%2 c%2 r%2 c%2 <r%2 a%2 r%2 a%2 r%2 a%2 r%2 a%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2
+MSXC    r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 >c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 <r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2 ?FJ8
+; MSXG drums: bass drum 16, snare 8, tom 4, top cymbal 2, hi-hat 1 (added)
+; ドラム: バスドラム16、スネア8、タム4、トップシンバル2、ハイハット1(足す)
+MSXG ?XU7 ?XT64 ?IT1 v15 ?ID-,1
+MSXG :9 ?ID16,4 ?ID8,4 ?ID16,2 ?ID16,2 ?ID8,4 ?FB3,9
+MSXG    ?ID16,4 ?ID8,4 ?ID4,2 ?ID4,2 ?ID8,1 ?ID8,1 ?ID10,2
+MSXG :10 ?ID16,4 ?ID8,4 ?ID16,2 ?ID16,2 ?ID8,4 ?FB3,10
+MSXG    ?ID16,4 ?ID8,4 ?ID4,2 ?ID4,2 ?ID8,1 ?ID8,1 ?ID10,2 ?FJ9
+
+; ---- MSX PSG ----
+; MSXD answers the lead in bars 4 and 8 / 4小節目と8小節目でリードに応える
+MSXD ?XU7 ?XT1 ?EP0,$84,$76 v15 r%1
+MSXD :11 r%16 r%16 r%16 r%8 o5 b%2 a%2 f+%2 d%2 r%16 r%16 r%16 r%8 g%2 f+%2 e%2 d+%2 ?FJ11
+; MSXE hi-hats: closed on the eighths, open on beat 4's off-beat. ?FB8: 8 bars.
+; A ?XT4 part cannot rest, so the first sixteenth rest is played as ?XT1.
+; ハイハット: 8分でクローズ、4拍目の裏でオープン。?FB8: 8小節。
+; ?XT4のパートは休符を書けないので、最初の16分休符は?XT1で鳴らします。
+MSXE ?XU7 ?XT1 v15 r%1 ?XT4 o4
+MSXE :12 ?FB0 c%2 c%2 c%2 c%2 c%2 c%2 c%2 c+%2 ?FB8 ?FJ12

@@ -157,8 +157,16 @@ const T = {
     missingFolder: 'Find in folder', missingFolderTip: (f) => `Look for ${f} in the song's folder: the folder opened with Folder… (or the one remembered), else pick the folder the song is in; every file the song names is attached from there`,
     underrun: 'Playback is catching up; this device renders slowly.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'Replace the editor contents? Your current text is lost unless you saved it.',
-    newSong: 'New', newSongTip: 'Start a new MUC from the template (OPNA + MSX chips)', newStarted: 'New song from the template: OPNA and every MSX chip, with comments on each part. Save it as .muc when you are done.',
+    newSong: 'New', newSongTip: 'Start a new MUC from a template', newStarted: (name) => `New song from the template ${name}, with comments on each part. Save it as .muc when you are done.`,
     confirmNew: 'Start a new song from the template? Your current text and attached files are removed unless you saved them.',
+    newTitle: 'New song from a template', newHint: 'Every template plays as it is and explains itself in comments (English and Japanese).', newGroupStd: 'MUCOM88 MML', newGroupExt: 'MucoMSX chip extension (? commands, MDPlayer4Mac v0.2.4 or later)',
+    tplOption: (name) => `Template (${name})`,
+    tplName_template: 'OPNA + MSX chips', tplDesc_template: 'OPNA FM, SSG and rhythm with MSX-MUSIC, the MSX PSG and the five SCC parts, in ordinary MML.',
+    tplName_extAll: 'MSX chips, chip extension', tplDesc_extAll: 'SCC, MSX-MUSIC and the PSG together: shared phrases, envelopes, vibrato, effect hi-hats and ?ID drums.',
+    tplName_extOpna: 'OPNA + MSX chips, chip extension', tplDesc_extOpna: 'OPNA FM and rhythm beside SCC, MSX-MUSIC and PSG parts written with the ? commands, kept in step with C112 and t198.',
+    tplName_extScc: 'SCC, chip extension', tplDesc_extScc: 'The five SCC/SCC+ parts: ?WD waves, ?EP envelopes, vibrato, a detuned chorus, ?FD phrases and ?FB repeats.',
+    tplName_extPsg: 'MSX PSG, chip extension', tplDesc_extPsg: 'Lead, bass and a drum part made of ?XD effects on the three PSG channels.',
+    tplName_extOpll: 'MSX-MUSIC, chip extension', tplDesc_extOpll: 'YM2413 parts with built-in and custom (?IU) instruments, ?QP gate, sustain, and ?ID drums with a kit.',
     audioFailed: 'Audio could not start: ', bytes: (n) => `${n.toLocaleString()} bytes`,
     saveMub: 'Save .mub', saveVgm: 'Save .vgm', follow: 'Follow playback', exporting: (k) => `Writing .${k}…`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
@@ -299,8 +307,16 @@ const T = {
     missingFolder: '폴더에서 찾기', missingFolderTip: (f) => `곡의 폴더에서 ${f}를 찾습니다. 폴더…로 연 폴더(또는 기억된 폴더)를 쓰고, 없으면 곡이 있는 폴더를 고르게 합니다. 곡이 쓰는 파일을 모두 거기서 첨부합니다`,
     underrun: '렌더링이 재생을 따라잡는 중입니다. 이 기기에서는 느릴 수 있습니다.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: '에디터 내용을 바꿀까요? 저장하지 않은 현재 내용은 사라집니다.',
-    newSong: '새로', newSongTip: '템플릿(OPNA + MSX 칩)으로 새 MUC 작성 시작', newStarted: '템플릿으로 새 곡을 시작했습니다. OPNA와 MSX 칩을 모두 쓰고 파트마다 설명이 있습니다. 다 쓰면 .muc로 저장하세요.',
+    newSong: '새로', newSongTip: '템플릿으로 새 MUC 작성 시작', newStarted: (name) => `템플릿 ${name}(으)로 새 곡을 시작했습니다. 파트마다 설명이 있습니다. 다 쓰면 .muc로 저장하세요.`,
     confirmNew: '템플릿으로 새 곡을 시작할까요? 저장하지 않은 현재 내용과 첨부 파일은 사라집니다.',
+    newTitle: '템플릿으로 새 곡', newHint: '모든 템플릿은 그대로 연주되며 주석(영어·일본어)으로 설명되어 있습니다.', newGroupStd: 'MUCOM88 MML', newGroupExt: 'MucoMSX 칩 확장 (? 명령, MDPlayer4Mac v0.2.4 이상)',
+    tplOption: (name) => `템플릿 (${name})`,
+    tplName_template: 'OPNA + MSX 칩', tplDesc_template: 'OPNA FM·SSG·리듬과 MSX-MUSIC, MSX PSG, SCC 5파트를 일반 MML로.',
+    tplName_extAll: 'MSX 칩, 칩 확장', tplDesc_extAll: 'SCC, MSX-MUSIC, PSG를 함께: 공유 구절, 엔벨로프, 비브라토, 효과 하이햇, ?ID 드럼.',
+    tplName_extOpna: 'OPNA + MSX 칩, 칩 확장', tplDesc_extOpna: 'OPNA FM과 리듬 옆에 ? 명령으로 쓴 SCC, MSX-MUSIC, PSG 파트. C112와 t198로 박자를 맞춥니다.',
+    tplName_extScc: 'SCC, 칩 확장', tplDesc_extScc: 'SCC/SCC+ 5파트: ?WD 파형, ?EP 엔벨로프, 비브라토, 디튠 코러스, ?FD 구절, ?FB 반복.',
+    tplName_extPsg: 'MSX PSG, 칩 확장', tplDesc_extPsg: 'PSG 3채널로 리드, 베이스, ?XD 효과로 만든 드럼.',
+    tplName_extOpll: 'MSX-MUSIC, 칩 확장', tplDesc_extOpll: 'YM2413 파트: 내장·사용자(?IU) 음색, ?QP 게이트, 서스테인, 키트를 쓰는 ?ID 드럼.',
     audioFailed: '오디오를 시작하지 못했습니다: ', bytes: (n) => `${n.toLocaleString()} 바이트`,
     saveMub: '.mub 저장', saveVgm: '.vgm 저장', follow: '재생 위치 따라가기', exporting: (k) => `.${k} 만드는 중…`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
@@ -441,8 +457,16 @@ const T = {
     missingFolder: 'フォルダから探す', missingFolderTip: (f) => `曲のフォルダで${f}を探します。フォルダ…で開いたフォルダ（または記憶したフォルダ）を使い、なければ曲のあるフォルダを選びます。曲が使うファイルをすべてそこから添付します`,
     underrun: 'レンダリングが再生に追いつこうとしています。この端末では遅い場合があります。', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     confirmReplace: 'エディタの内容を置き換えますか？保存していない現在の内容は失われます。',
-    newSong: '新規', newSongTip: 'テンプレート（OPNA + MSXチップ）で新しいMUCを書き始める', newStarted: 'テンプレートで新しい曲を始めました。OPNAと全MSXチップを使い、パートごとに説明があります。書き終えたら.mucで保存してください。',
+    newSong: '新規', newSongTip: 'テンプレートで新しいMUCを書き始める', newStarted: (name) => `テンプレート「${name}」で新しい曲を始めました。パートごとに説明があります。書き終えたら.mucで保存してください。`,
     confirmNew: 'テンプレートで新しい曲を始めますか？保存していない現在の内容と添付ファイルは失われます。',
+    newTitle: 'テンプレートで新しい曲', newHint: 'どのテンプレートもそのまま演奏でき、コメント（英語・日本語）で説明しています。', newGroupStd: 'MUCOM88 MML', newGroupExt: 'MucoMSXチップ拡張（?コマンド、MDPlayer4Mac v0.2.4以降）',
+    tplOption: (name) => `テンプレート（${name}）`,
+    tplName_template: 'OPNA + MSXチップ', tplDesc_template: 'OPNAのFM・SSG・リズムとMSX-MUSIC、MSX PSG、SCC 5パートを普通のMMLで。',
+    tplName_extAll: 'MSXチップ、チップ拡張', tplDesc_extAll: 'SCC、MSX-MUSIC、PSGを一緒に: 共有フレーズ、エンベロープ、ビブラート、エフェクトのハイハット、?IDドラム。',
+    tplName_extOpna: 'OPNA + MSXチップ、チップ拡張', tplDesc_extOpna: 'OPNAのFMとリズムの横で、?コマンドで書いたSCC、MSX-MUSIC、PSGのパート。C112とt198で拍をそろえます。',
+    tplName_extScc: 'SCC、チップ拡張', tplDesc_extScc: 'SCC/SCC+の5パート: ?WD波形、?EPエンベロープ、ビブラート、デチューンのコーラス、?FDフレーズ、?FB繰り返し。',
+    tplName_extPsg: 'MSX PSG、チップ拡張', tplDesc_extPsg: 'PSG 3チャンネルでリード、ベース、?XDエフェクトで作るドラム。',
+    tplName_extOpll: 'MSX-MUSIC、チップ拡張', tplDesc_extOpll: 'YM2413のパート: 内蔵とユーザー(?IU)の音色、?QPゲート、サステイン、キットを使う?IDドラム。',
     audioFailed: 'オーディオを開始できませんでした: ', bytes: (n) => `${n.toLocaleString()}バイト`,
     saveMub: '.mubを保存', saveVgm: '.vgmを保存', follow: '再生位置を追う', exporting: (k) => `.${k}を作成中…`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
@@ -1230,8 +1254,24 @@ async function findMissingInFolder() {
 
 // ---------- examples ----------
 let samples = [];
-let current = 'mine';   // what the editor holds: 'mine', 'demo', 'template' or 's:<group>:<song>'
-const BUILT_IN = { demo: ['demo.muc', 'DEMO.MUC'], template: ['template.muc', 'SONG.MUC'] };
+let current = 'mine';   // what the editor holds: 'mine', a BUILT_IN key or 'repo:<path>'
+// The demo and the templates New offers: a file next to the page, or one in the repository
+// (fetched like a sample).
+const EXT_TEMPLATES = 'Samples/Muc/Templates/7_MSX_Extension/';
+const BUILT_IN = {
+  demo: ['demo.muc', 'DEMO.MUC'],
+  template: ['template.muc', 'SONG.MUC'],
+  extAll: [EXT_TEMPLATES + 'MSX_Ext_All_Chips.muc', 'SONG.MUC', true],
+  extOpna: [EXT_TEMPLATES + 'OPNA_and_MSX_Ext.muc', 'SONG.MUC', true],
+  extScc: [EXT_TEMPLATES + 'MSX_Ext_SCC.muc', 'SONG.MUC', true],
+  extPsg: [EXT_TEMPLATES + 'MSX_Ext_PSG.muc', 'SONG.MUC', true],
+  extOpll: [EXT_TEMPLATES + 'MSX_Ext_MSX_MUSIC.muc', 'SONG.MUC', true],
+};
+const TEMPLATES = ['template', 'extAll', 'extOpna', 'extScc', 'extPsg', 'extOpll'];
+async function builtInText(id) {
+  const [file, , repo] = BUILT_IN[id];
+  return decodeText(repo ? await fetchRepoFile(file) : await (await fetch(file)).arrayBuffer());
+}
 
 function buildExamples() {
   const sel = $('examples');
@@ -1239,7 +1279,7 @@ function buildExamples() {
   const opt = (value, label) => { const o = document.createElement('option'); o.value = value; o.textContent = label; sel.appendChild(o); };
   opt('mine', t('yourSong'));
   opt('demo', t('demo'));
-  opt('template', t('template'));
+  for (const id of TEMPLATES) opt(id, id === 'template' ? t('template') : t('tplOption', t('tplName_' + id)));
   if (current.startsWith('repo:')) opt(current, current.slice(current.lastIndexOf('/') + 1).replace(/\.muc$/i, ''));
   sel.value = [...sel.options].some((o) => o.value === current) ? current : 'mine';
   $('sampleSearch').placeholder = t('search');
@@ -1255,8 +1295,8 @@ async function loadExample(value) {
   stop();
   try {
     const [file, name] = BUILT_IN[value];
-    setStatus(t('loadingSample', file));
-    const text = decodeText(await (await fetch(file)).arrayBuffer());
+    setStatus(t('loadingSample', file.slice(file.lastIndexOf('/') + 1)));
+    const text = await builtInText(value);
     clearFiles();
     setSource(text);
     sourceName = name;
@@ -1270,17 +1310,17 @@ async function loadExample(value) {
 }
 $('examples').addEventListener('change', (e) => loadExample(e.target.value));
 
-// New: the template (OPNA plus every MSX chip, commented) and no attached files.
-// It counts as an unedited example until the first keystroke makes it 'mine'.
-async function newSong() {
+// New: a template (commented, see TEMPLATES) and no attached files. It counts as an unedited
+// example until the first keystroke makes it 'mine'.
+async function newSong(id = 'template') {
   if (current === 'mine' && code.value.trim() && !confirm(t('confirmNew'))) return;
   let text;
-  try { text = decodeText(await (await fetch(BUILT_IN.template[0])).arrayBuffer()); } catch (e) { setStatus(t('sampleFailed') + e.message, true); return; }
+  try { text = await builtInText(id); } catch (e) { setStatus(t('sampleFailed') + e.message, true); return; }
   stopByUser();
   clearFiles();
   setSource(text);
-  sourceName = BUILT_IN.template[1];
-  current = 'template';
+  sourceName = BUILT_IN[id][1];
+  current = id;
   saveSong();
   buildExamples();
   lastResult = null;
@@ -1289,9 +1329,31 @@ async function newSong() {
   $('nowMeta').textContent = '';
   setView('editor');
   if (!matchMedia('(pointer: coarse)').matches) panes[0].code.focus();
-  setStatus(t('newStarted'));
+  setStatus(t('newStarted', t('tplName_' + id)));
 }
-$('newSong').addEventListener('click', newSong);
+// The New dialog: the templates, ordinary MML first, then the chip extension ones.
+function openNewDialog() {
+  const list = $('newList');
+  list.innerHTML = '';
+  for (const [group, ids] of [['newGroupStd', ['template']], ['newGroupExt', TEMPLATES.filter((id) => id !== 'template')]]) {
+    const head = document.createElement('li');
+    head.className = 'new-group';
+    head.textContent = t(group);
+    list.appendChild(head);
+    for (const id of ids) {
+      const li = document.createElement('li');
+      li.innerHTML = '<button type="button"><b></b><span></span></button>';
+      li.querySelector('b').textContent = t('tplName_' + id);
+      li.querySelector('span').textContent = t('tplDesc_' + id);
+      li.querySelector('button').addEventListener('click', () => { $('newDlg').close(); newSong(id); });
+      list.appendChild(li);
+    }
+  }
+  $('newDlg').showModal();
+  list.querySelector('button').focus();
+}
+$('newSong').addEventListener('click', openNewDialog);
+$('newClose').addEventListener('click', () => $('newDlg').close());
 
 // ---------- open / save / drop ----------
 $('open').addEventListener('click', () => $('openInput').click());
@@ -3401,7 +3463,7 @@ $('shareBtn').addEventListener('click', async () => {
     if (current.startsWith('repo:') && safePath(current.slice(5))) {
       url = `${base}?sample=${current.slice(5 + SAMPLES_ROOT.length).split('/').map(encodeURIComponent).join('/')}`;
       li(t('shareSample', sourceName));
-    } else if (current === 'demo' || current === 'template') {
+    } else if (Object.hasOwn(BUILT_IN, current)) {
       url = `${base}?ex=${current}`;
       li(t('shareExample'));
     } else {

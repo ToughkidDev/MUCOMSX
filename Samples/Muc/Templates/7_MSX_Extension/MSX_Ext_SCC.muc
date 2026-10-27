@@ -1,0 +1,118 @@
+#title SCC 5ch (MucoMSX chip extension)
+#composer
+#comment Template: the five SCC/SCC+ parts SCCA-SCCE with the MucoMSX chip extension commands
+
+; ==================================================================
+;  SCC / SCC+ with the MucoMSX chip extension commands
+;  SCC / SCC+ MucoMSXチップ拡張コマンド版
+; ==================================================================
+; [EN] The chip extensions are two-letter commands that start with ?
+;      (?WD, ?EP, ?FD ...). With them MDPlayer4Mac v0.2.4 or later
+;      plays the MSX parts with the drivers of Konami's MSX games:
+;      their envelopes, vibrato, detune and shared phrases.
+;      This template plays the five SCC/SCC+ parts SCCA-SCCE.
+; [JA] チップ拡張は?で始まる2文字のコマンドです(?WD、?EP、?FD …)。
+;      MDPlayer4Mac v0.2.4以降は、これを使うMSXパートをコナミのMSX
+;      ゲームのドライバーと同じように演奏します: エンベロープ、
+;      ビブラート、デチューン、共有フレーズ。
+;      このテンプレートはSCC/SCC+の5パートSCCA-SCCEを使います。
+;
+; [EN] Compact rows: ?XUn makes a row a compact stream, n clocks per
+;      unit. A length is written %1-%16 units. Here ?XU7: %1 is a
+;      sixteenth note, %4 a quarter, %16 a whole note (one bar).
+;      A compact row has no L, | or [ ]: it repeats with ?FB and
+;      loops with ?FJ (see below).
+; [JA] コンパクト行: ?XUnでその行がコンパクトストリームになり、1単位が
+;      nクロックです。音長は%1-%16単位で書きます。ここでは?XU7:
+;      %1が16分音符、%4が4分音符、%16が全音符(1小節)です。
+;      コンパクト行にはL、|、[ ]がありません。繰り返しは?FB、
+;      ループは?FJで書きます(下を参照)。
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。
+; ==================================================================
+
+; [EN] Chords (8 bars): | Am | F | G | Em | Am | F | Dm | E |
+; [JA] コード(8小節): | Am | F | G | Em | Am | F | Dm | E |
+
+; ---- Waves: ?WDn={32 values -128..127} / 波形: ?WDn={-128..127の値32個} ----
+; [EN] At the start of a line, before the music. @n in a part picks it.
+; [JA] 行の頭に、演奏の行より前に書きます。パートの@nで選びます。
+; ?WD0 sine (pad) / サイン(パッド)
+?WD0={0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-128,-125,-117,-106,-90,-71,-49,-25}
+; ?WD1 soft sawtooth (lead) / 柔らかいのこぎり波(リード)
+?WD1={0,73,109,102,77,63,64,67,59,44,34,33,32,24,11,2,0,-2,-11,-24,-32,-33,-34,-44,-59,-67,-64,-63,-77,-102,-109,-73}
+; ?WD2 rounded square (bass) / 角の丸い矩形波(ベース)
+?WD2={0,64,96,112,112,112,112,112,112,112,112,112,112,112,96,64,0,-64,-96,-112,-112,-112,-112,-112,-112,-112,-112,-112,-112,-112,-96,-64}
+; ?WD3 bright: sine + 2nd and 3rd harmonics (arpeggio) / 明るい音: サイン+2倍音と3倍音(アルペジオ)
+?WD3={0,37,69,93,105,107,101,90,78,67,58,52,45,37,27,14,0,-14,-27,-37,-45,-52,-58,-67,-78,-90,-101,-107,-105,-93,-69,-37}
+
+; ---- Envelopes and effects / エンベロープとエフェクト ----
+; [EN] ?EPprofile,a,b shapes the level of every note, the way the game
+;      drivers do. Some useful ones (try them on any part):
+;        ?EP-             flat, like an organ
+;        ?EP0,$81,$32     quick fall to about 60%, then held
+;        ?EP0,$81,$73     quick fall to about 35%, then held
+;        ?EP0,$8F,$56     slow fade through the note (strings, pads)
+;        ?EP2,$73,$23     falls away fast (plucks, arpeggios)
+;        ?EP2,$87,$70     soft attack, then a slow fade (swells)
+;      ?MVmode,value is vibrato ($53: small and fast), ?MWn waits n
+;      clocks before it starts. ?DBn detunes; two parts playing the
+;      same notes, one detuned, sound wider (a chorus).
+; [JA] ?EPprofile,a,bは各音の音量の形を、ゲームのドライバーと同じように
+;      決めます。便利な例(どのパートでも試せます):
+;        ?EP-             平ら、オルガンのよう
+;        ?EP0,$81,$32     すぐ約60%に下がり、そのまま保つ
+;        ?EP0,$81,$73     すぐ約35%に下がり、そのまま保つ
+;        ?EP0,$8F,$56     音の間ゆっくり消えていく(ストリングス、パッド)
+;        ?EP2,$73,$23     すぐ消える(撥弦音、アルペジオ)
+;        ?EP2,$87,$70     柔らかいアタックの後ゆっくり消える(スウェル)
+;      ?MVmode,valueはビブラート($53: 小さく速い)、?MWnはビブラートが
+;      始まるまでnクロック待ちます。?DBnはデチューン。同じ音を弾く
+;      2つのパートの片方をデチューンすると広がります(コーラス)。
+
+; ---- Shared phrases / 共有フレーズ ----
+; [EN] SCCS rows only hold definitions for the SCC parts. ?FDn={ ... ?FR}
+;      defines phrase n; ?FCn in a part plays it and comes back.
+;      Phrase numbers are also labels, so keep them apart from the
+;      loop labels (:1-:5) of the parts.
+; [JA] SCCSの行はSCCパート用の定義だけを書きます。?FDn={ … ?FR}が
+;      フレーズnの定義で、パートの?FCnがそれを演奏して戻ってきます。
+;      フレーズ番号はラベルでもあるので、パートのループ用ラベル
+;      (:1-:5)と重ならないようにします。
+; melody / メロディ
+SCCS ?FD20={ o5 e%4 a%4 b%2 >c%4< b%2 ?FR }
+SCCS ?FD21={ a%6 g%2 f%4 e%4 d%4 g%4 a%2 b%4 a%2 g%12 e%4 ?FR }
+SCCS ?FD22={ >c%6 d%2 c%4< a%4 f%4 a%4 >d%4 c%2< b%2 b%8 g+%8 ?FR }
+; arpeggios, one bar each / アルペジオ、各1小節
+SCCS ?FD30={ o4 a%2 >c%2 e%2 a%2 e%2 c%2< a%2 e%2 ?FR }
+SCCS ?FD31={ o4 f%2 a%2 >c%2 f%2 c%2< a%2 f%2 c%2 ?FR }
+SCCS ?FD32={ o4 g%2 b%2 >d%2 g%2 d%2< b%2 g%2 d%2 ?FR }
+SCCS ?FD33={ o4 e%2 g%2 b%2 >e%2 <b%2 g%2 e%2 b%2 ?FR }
+SCCS ?FD34={ o4 d%2 f%2 a%2 >d%2 <a%2 f%2 d%2 a%2 ?FR }
+SCCS ?FD35={ o4 e%2 g+%2 b%2 >e%2 <b%2 g+%2 e%2 b%2 ?FR }
+
+; ---- Parts / パート ----
+; [EN] ?XT1 makes a part play notes. :n is a label; ?FJn at the end
+;      jumps back to it, so the part loops from there.
+; [JA] ?XT1でパートが音符を演奏します。:nはラベルで、最後の?FJnで
+;      そこへ戻るので、パートがそこからループします。
+; SCCA lead with vibrato / ビブラート付きリード
+SCCA ?XU7 ?XT1 @1 ?EP0,$81,$32 ?MW16 ?MV0,$53 v12
+SCCA :1 ?FC20 ?FC21 ?FC20 ?FC22 ?FJ1
+; SCCB the same melody detuned, quieter: a chorus / 同じメロディをデチューンして小さく: コーラス
+SCCB ?XU7 ?XT1 @1 ?EP0,$81,$32 ?DB3 v8
+SCCB :2 ?FC20 ?FC21 ?FC20 ?FC22 ?FJ2
+; SCCC arpeggios / アルペジオ
+SCCC ?XU7 ?XT1 @3 ?EP2,$73,$23 v10
+SCCC :3 ?FC30 ?FC31 ?FC32 ?FC33 ?FC30 ?FC31 ?FC34 ?FC35 ?FJ3
+; SCCD pad: one long note a bar / パッド: 1小節に長い音1つ
+SCCD ?XU7 ?XT1 @0 ?EP0,$8F,$56 v10
+SCCD :4 o5 c%16 <a%16 b%16 b%16 >c%16 <a%16 a%16 g+%16 ?FJ4
+; SCCE bass. ?FB0 marks a place, ?FB4 plays from there 4 times in all.
+; ベース。?FB0で位置を記し、?FB4でそこから合計4回演奏します。
+SCCE ?XU7 ?XT1 @2 ?EP0,$81,$32 v12
+SCCE :5 ?FB0 o2 a%2 >a%2 ?FB4 ?FB0 o2 f%2 >f%2 ?FB4 ?FB0 o2 g%2 >g%2 ?FB4 ?FB0 o2 e%2 >e%2 ?FB4
+SCCE    ?FB0 o2 a%2 >a%2 ?FB4 ?FB0 o2 f%2 >f%2 ?FB4 ?FB0 o2 d%2 >d%2 ?FB4 ?FB0 o2 e%2 >e%2 ?FB4 ?FJ5

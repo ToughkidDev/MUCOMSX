@@ -309,6 +309,17 @@
   ]
  },
  {
+  "name": "7_MSX_Extension",
+  "dir": "../Samples/Muc/Templates/7_MSX_Extension/",
+  "songs": [
+   "MSX_Ext_All_Chips.muc",
+   "MSX_Ext_MSX_MUSIC.muc",
+   "MSX_Ext_PSG.muc",
+   "MSX_Ext_SCC.muc",
+   "OPNA_and_MSX_Ext.muc"
+  ]
+ },
+ {
   "name": "ACTRAISER_MML",
   "dir": "../Samples/Muc/YuzoKoshiro/ACTRAISER_MML/",
   "songs": [

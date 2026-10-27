@@ -1,7 +1,7 @@
 // Share links. The page has no server, so a link carries the song itself:
 //   ?sample=Muc/…/SONG.muc   a repository sample, opened as it is (its voice / PCM files
 //                            come from the same folder)
-//   ?ex=demo | ?ex=template  a built-in example, unedited
+//   ?ex=demo | ?ex=template | ?ex=extScc …  a built-in example or template, unedited
 //   #s=…                     anything else: the text, compressed, with the repository paths
 //                            of attached files that came from the repository and the bytes
 //                            of small files that did not
@@ -47,7 +47,7 @@ export async function decodeSong(payload) {
 export function sharedRequest(loc) {
   const q = new URLSearchParams(loc.search);
   if (q.get('sample')) return { sample: q.get('sample') };
-  if (q.get('ex') === 'demo' || q.get('ex') === 'template') return { example: q.get('ex') };
+  if (/^(?:demo|template|ext[A-Z][a-z]+)$/.test(q.get('ex') || '')) return { example: q.get('ex') };
   const h = /^#s=([A-Za-z0-9_-]+)$/.exec(loc.hash);
   if (h) return { payload: h[1] };
   return null;

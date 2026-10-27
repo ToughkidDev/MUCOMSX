@@ -1,0 +1,105 @@
+#title MSX PSG (MucoMSX chip extension)
+#composer
+#comment Template: the MSX PSG parts MSXD-MSXF with the MucoMSX chip extension commands, drums made of effects
+
+; ==================================================================
+;  MSX PSG with the MucoMSX chip extension commands
+;  MSX PSG MucoMSXチップ拡張コマンド版
+; ==================================================================
+; [EN] MSXD-MSXF are the three square-wave channels of the MSX's PSG
+;      (AY-3-8910) with one shared noise. The chip extensions (two-
+;      letter commands starting with ?) play them like Konami's MSX
+;      game drivers. Here: a lead, a drum part built from effects
+;      (?XD) and a bass. Needs MDPlayer4Mac v0.2.4 or later.
+; [JA] MSXD-MSXFはMSXのPSG(AY-3-8910)の矩形波3チャンネルで、ノイズを
+;      1つ共有します。チップ拡張(?で始まる2文字のコマンド)はこれを
+;      コナミのMSXゲームのドライバーと同じように鳴らします。ここでは
+;      リード、エフェクト(?XD)で作るドラム、ベース。MDPlayer4Mac
+;      v0.2.4以降が必要です。
+;
+; [EN] Compact rows: ?XU7 makes %1 a sixteenth note, %4 a quarter and
+;      %16 a whole note (one bar). They loop with :n and ?FJn and
+;      repeat with ?FB, as there is no L or [ ] on these rows.
+; [JA] コンパクト行: ?XU7で%1が16分音符、%4が4分音符、%16が全音符
+;      (1小節)。この行にはLや[ ]がないので、:nと?FJnでループし、
+;      ?FBで繰り返します。
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。
+; ==================================================================
+
+; [EN] Chords (8 bars): | C | Am | F | G | C | Am | Dm G | C |
+; [JA] コード(8小節): | C | Am | F | G | C | Am | Dm G | C |
+
+; [EN] A song with compact PSG rows needs one SCC wave definition, even
+;      when it has no SCC parts. This one is not played.
+; [JA] コンパクトなPSG行がある曲には、SCCパートがなくてもSCC波形の定義が
+;      1つ必要です。これは鳴りません。
+?WD0={0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-128,-125,-117,-106,-90,-71,-49,-25}
+
+; ---- Envelopes / エンベロープ ----
+; [EN] ?EP0,a,b shapes each note's level. Measured on the PSG:
+;        ?EP0,$81,$38   falls quickly to a third, fades at the note end
+;        ?EP0,$84,$76   a pluck that dies away during the note
+;        ?EP0,$8F,$5F   a slow fade through the note
+;        ?EP-           flat; the note keeps sounding through rests
+;      In b, the first digit is how low the level falls and the second
+;      how fast it fades after the note ($x0 holds it: avoid it here).
+; [JA] ?EP0,a,bは各音の音量の形を決めます。PSGで測った例:
+;        ?EP0,$81,$38   すぐ1/3に下がり、音の終わりで消える
+;        ?EP0,$84,$76   音の間に消えていく撥弦音
+;        ?EP0,$8F,$5F   音の間ゆっくり消えていく
+;        ?EP-           平ら。休符の間も鳴り続けます
+;      bの1桁目は下がる先の高さ、2桁目は音の後に消える速さです
+;      ($x0は鳴らし続けるので、ここでは使いません)。
+
+; ---- Drum effects / ドラムのエフェクト ----
+; [EN] ?XDn={ ... !} defines effect n (0-9), a little program of steps:
+;      ?XMmode,ticks says what each step changes (1 the note, 2 the
+;      pitch, 3 the level) and how long it lasts, ?XPperiod,level is
+;      one step, ?NPn sets the shared noise period and ?GS$09 uses the
+;      PSG's hardware envelope. They come from Konami's Gradius 2.
+;      Each effect starts with its own label (:90-:93).
+;      On a ?XT4 part a note starts an effect: c = ?XD0, c+ = ?XD1,
+;      d = ?XD2, d+ = ?XD3 ...
+; [JA] ?XDn={ … !}はエフェクトn(0-9)、小さなステップのプログラムです。
+;      ?XMmode,ticksは各ステップが何を変えるか(1音符、2音程、3音量)と
+;      長さ、?XPperiod,levelは1ステップ、?NPnは共有ノイズの周期、
+;      ?GS$09はPSGのハードウェアエンベロープを使います。コナミの
+;      グラディウス2のものです。各エフェクトは自分のラベル(:90-:93)で
+;      始まります。
+;      ?XT4のパートでは音符がエフェクトを始めます: c = ?XD0、
+;      c+ = ?XD1、d = ?XD2、d+ = ?XD3 …
+; ?XD0 closed hi-hat / クローズドハイハット
+PSGS ?XD0={ :90 ?XM1,1 ?NP0 ?XS$07 ! }
+; ?XD1 open hi-hat / オープンハイハット
+PSGS ?XD1={ :91 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+; ?XD2 snare / スネア
+PSGS ?XD2={ :92 ?XM3,1 ?NP6 ?XP416,8 ?XM2,1 ?XP512,8 ?XP624,5 ?XP816,3 ! }
+; ?XD3 kick: the pitch falls / キック: 音程が下がる
+PSGS ?XD3={ :93 ?XM2,1 ?GS$09 ?XP768,0 ?XP976,9 ?XP1536,9 ?XP1792,9 ?XP2048,9 ! }
+
+; ---- Shared phrases / 共有フレーズ ----
+; [EN] PSGS rows hold definitions for the PSG parts. ?FDn={ ... ?FR}
+;      is phrase n; ?FCn plays it and comes back.
+; [JA] PSGSの行はPSGパート用の定義です。?FDn={ … ?FR}がフレーズnで、
+;      ?FCnで演奏して戻ってきます。
+; one bar of beat, and a fill / 1小節のビートとフィル
+PSGS ?FD40={ d+%2 c%2 d%2 c%2 d+%2 d+%2 d%2 c+%2 ?FR }
+PSGS ?FD41={ d+%2 c%2 d%2 c%2 d%1 d%1 d%1 d%1 d%2 d%2 ?FR }
+
+; ---- Parts / パート ----
+; MSXD lead with delayed vibrato / ビブラートが遅れてかかるリード
+MSXD ?XU7 ?XT1 ?EP0,$81,$38 ?MW16 ?MV0,$53 v13
+MSXD :1 o5 g%4 e%2 g%2 >c%6 <b%2 a%4 e%4 c%4 e%4 f%2 g%2 a%4 >c%4 <a%4 g%12 r%4
+MSXD    g%4 e%2 g%2 >c%6 d%2 e%4 d%2 c%2 <a%8 f%4 a%4 g%4 b%4 >c%12 r%4 ?FJ1
+; MSXE drums: ?FB0 marks a place, ?FB3 plays from there 3 times in all
+; ドラム: ?FB0で位置を記し、?FB3でそこから合計3回演奏します
+MSXE ?XU7 ?XT4 v13 o4
+MSXE :2 ?FB0 ?FC40 ?FB3 ?FC41 ?FB0 ?FC40 ?FB3 ?FC41 ?FJ2
+; MSXF bass, octave jumps / オクターブで跳ねるベース
+MSXF ?XU7 ?XT1 ?EP0,$81,$38 v12
+MSXF :3 ?FB0 o2 c%2 >c%2 ?FB4 ?FB0 o2 a%2 >a%2 ?FB4 ?FB0 o2 f%2 >f%2 ?FB4 ?FB0 o2 g%2 >g%2 ?FB4
+MSXF    ?FB0 o2 c%2 >c%2 ?FB4 ?FB0 o2 a%2 >a%2 ?FB4 ?FB0 o2 d%2 >d%2 ?FB2 ?FB0 o2 g%2 >g%2 ?FB2 ?FB0 o2 c%2 >c%2 ?FB4 ?FJ3

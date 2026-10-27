@@ -12,6 +12,7 @@ Starting points for writing a MUC (MUCOM88 MML) song. Every template plays as it
 | `4_Genres` | Drums, bass and chords ready, just add the melody: rock, pop, ballad, dance, funk, shuffle blues, jazz swing, bossa nova, reggae, hip-hop, metal, waltz, march, game action |
 | `5_Genres_MSX` | The same idea on MSX chips (MSX-MUSIC drums and chords, SCC bass, melody on SCC): rock, dance, game action, ballad |
 | `6_Demos` | Finished songs that play the chips together: *Midnight Pier*, a city pop tune on OPNA FM, SSG and rhythm, MSX-MUSIC, MSX PSG and SCC (28 channels); *Killer Coast Land OPNA Arrange*, Gradius 2's Colossus Planet theme with its original MSX PSG and SCC parts (MucoMSX chip extension) and YM2608 rhythm drums, FM lead, harmony, chords and bass added |
+| `7_MSX_Extension` | The MucoMSX chip extension commands (`?WD`, `?EP`, `?FD`, `?XD`, `?ID` …, MDPlayer4Mac v0.2.4 or later), also offered by **New** in MUCPlayground: SCC (5 channels), MSX PSG (drums made of effects), MSX-MUSIC (built-in and custom instruments, drum kit), all MSX chips together, and OPNA with MSX parts kept in step |
 
 ---
 

@@ -488,6 +488,13 @@ footer p{margin:2px 0}
 .share-top{align-self:center;padding:5px 12px;font-weight:600;border-color:var(--accent2);color:var(--accent2)}
 .share-top:hover{background:var(--accent2);color:#fff}
 .share-dlg{width:min(620px,calc((100vw - 32px) / var(--ui)))}
+.new-dlg{width:min(600px,calc((100vw - 32px) / var(--ui)))}
+.new-list{list-style:none;margin:0;padding:0 8px 12px;overflow:auto;border-top:1px solid var(--line)}
+.new-list .new-group{padding:12px 8px 4px;font-size:.78rem;font-weight:600;color:var(--muted)}
+.new-list button{display:block;width:100%;text-align:left;border:0;background:transparent;color:inherit;font:inherit;padding:8px 10px;border-radius:8px;cursor:pointer}
+.new-list button:hover,.new-list button:focus-visible{background:var(--sel);outline:none}
+.new-list b{display:block;font-size:.92rem}
+.new-list span{display:block;margin-top:2px;color:var(--muted);font-size:.8rem;line-height:1.4}
 .share-body{padding:4px 16px 16px;display:flex;flex-direction:column;gap:10px}
 .share-row{display:flex;gap:8px;flex-wrap:wrap}
 .share-row input{flex:1 1 260px;min-width:0;border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:.82rem}
@@ -686,6 +693,15 @@ footer p{margin:2px 0}
   </div>
   <p class="s-source" id="sampleSource"></p>
   <div class="s-list" id="sampleList"></div>
+</dialog>
+
+<dialog class="samples new-dlg" id="newDlg" aria-labelledby="newTitle">
+  <div class="s-head">
+    <h2 id="newTitle" data-i18n="newTitle">New song from a template</h2>
+    <button class="btn" id="newClose" type="button" aria-label="Close">✕</button>
+  </div>
+  <p class="s-source" data-i18n="newHint"></p>
+  <ul class="new-list" id="newList"></ul>
 </dialog>
 
 <dialog class="samples share-dlg" id="shareDlg" aria-labelledby="shareTitle">

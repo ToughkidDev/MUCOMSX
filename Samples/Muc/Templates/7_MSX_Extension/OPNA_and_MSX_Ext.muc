@@ -1,0 +1,127 @@
+#title OPNA + MSX chips (MucoMSX chip extension)
+#composer
+#comment Template: OPNA FM and rhythm together with SCC, MSX-MUSIC and PSG parts written with the MucoMSX chip extension commands
+
+; ==================================================================
+;  OPNA together with the MucoMSX chip extension commands
+;  OPNAとMucoMSXチップ拡張コマンドの組み合わせ
+; ==================================================================
+; [EN] The ordinary OPNA (YM2608) parts A-K play beside MSX parts
+;      written with the chip extensions (two-letter commands that start
+;      with ?). Here:
+;        OPNA         A lead, B bass, C strings, G rhythm
+;        SCC / SCC+   SCCA arpeggios, SCCB a harmony under the lead
+;        MSX-MUSIC    MSXA MSXB piano on the off-beats
+;        MSX PSG      MSXD a bell that answers the lead
+;      Needs MDPlayer4Mac v0.2.4 or later.
+; [JA] 普通のOPNA(YM2608)パートA-Kが、チップ拡張(?で始まる2文字の
+;      コマンド)で書いたMSXパートと一緒に鳴ります。ここでは:
+;        OPNA         Aリード、Bベース、Cストリングス、Gリズム
+;        SCC / SCC+   SCCAアルペジオ、SCCBリードの下のハーモニー
+;        MSX-MUSIC    MSXA MSXB 裏拍のピアノ
+;        MSX PSG      MSXDリードに応えるベル
+;      MDPlayer4Mac v0.2.4以降が必要です。
+;
+; [EN] Keeping them together: the MSX parts are compact rows (?XU7: %1
+;      is 7 clocks, a sixteenth note; %16 = 112 clocks, one bar). The
+;      OPNA parts use C112, so that their whole note is the same 112
+;      clocks, and part A sets t198, the timer the MSX parts use. Then
+;      l4 on OPNA is %4 on MSX, and every part is 8 bars (896 clocks).
+; [JA] そろえ方: MSXパートはコンパクト行です(?XU7: %1が7クロックで
+;      16分音符、%16 = 112クロックで1小節)。OPNAのパートはC112にして
+;      全音符を同じ112クロックにし、AパートでMSXパートと同じタイマー
+;      t198を指定します。するとOPNAのl4がMSXの%4になり、全パートが
+;      8小節(896クロック)になります。
+;
+; [EN] Note names: OPNA FM sounds an octave below the same name on SCC,
+;      PSG and MSX-MUSIC: o5 c on OPNA is o4 c on the MSX chips.
+; [JA] 音名: OPNAのFMは、SCC・PSG・MSX-MUSICの同じ音名より1オクターブ
+;      低く鳴ります: OPNAのo5 cはMSXチップのo4 cです。
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。
+; ==================================================================
+
+; [EN] Chords (8 bars): | C | G | Am | F | C | G | F G | C |
+; [JA] コード(8小節): | C | G | Am | F | C | G | F G | C |
+
+; ---- SCC waves / SCC波形 ----
+; ?WD0 sine (harmony) / サイン(ハーモニー)
+?WD0={0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-128,-125,-117,-106,-90,-71,-49,-25}
+; ?WD1 bright (arpeggio) / 明るい音(アルペジオ)
+?WD1={0,37,69,93,105,107,101,90,78,67,58,52,45,37,27,14,0,-14,-27,-37,-45,-52,-58,-67,-78,-90,-101,-107,-105,-93,-69,-37}
+
+; ---- FM voices / FM音色 ----
+; [EN] @n / FB,ALG / one line per operator OP1-OP4
+;      (AR,D1R,D2R,RR,D1L,TL,KS,ML,DT).
+; [JA] @n / FB,ALG / オペレータOP1-OP4ごとに1行
+;      (AR,D1R,D2R,RR,D1L,TL,KS,ML,DT)。
+; @1 lead: ALG 4, a bright pair and an x3 pair / リード: ALG 4、明るい組と3倍の組
+  @1
+   6,4
+   31,6,2,6,3,28,0,1,3
+   31,4,1,6,2,0,0,1,3
+   31,8,2,6,3,34,0,3,7
+   31,4,1,6,2,0,0,1,7
+
+; @2 bass: ALG 0 / ベース: ALG 0
+  @2
+   5,0
+   31,18,0,8,2,26,0,0,0
+   31,14,0,8,2,38,0,1,3
+   31,12,0,8,2,34,0,1,7
+   31,8,4,8,2,0,0,1,0
+
+; @4 strings: ALG 4, slow attack / ストリングス: ALG 4、ゆっくりしたアタック
+  @4
+   6,4
+   14,2,0,5,1,34,0,1,3
+   12,2,1,5,1,0,0,1,3
+   14,2,0,5,1,38,0,2,7
+   12,2,1,5,1,0,0,1,7
+
+; ---- OPNA / OPNA ----
+A t198 C112 @1 v9 q1 p3 M18,1,2,5
+A L o5 e8 g8 >c4 <b8 >c8 d4 | <b2. r4 | >c8 <b8 a4 e4 a8 b8 | >c2 <a4 r4
+A   o5 e8 g8 >c4 <b8 >c8 e4 | d2. r4 | c4 <a4 b4 >d4 | c2. r4
+B C112 @2 v9 q2 p3
+B L o3 [c8>c8<]4 | o2 [g8>g8<]4 | o2 [a8>a8<]4 | o3 [f8>f8<]4
+B   o3 [c8>c8<]4 | o2 [g8>g8<]4 | o3 [f8>f8<]2 o2 [g8>g8<]2 | o3 [c8>c8<]4
+C C112 @4 v7 q0 p2
+C L o5 e1 | d1 | c1 | c1 | e1 | d1 | c2 d2 | e1
+; [EN] G: @ adds drums (1 bass, 2 snare, 4 cymbal, 8 hi-hat, 16 tom).
+; [JA] G: @で楽器を足す(1バス、2スネア、4シンバル、8ハイハット、16タム)。
+G C112 v50,30,26,20,16,26,20
+G L [@9c8 @8c8 @10c8 @8c8 @9c8 @9c8 @10c8 @8c8]3 @9c8 @8c8 @10c8 @8c8 @18c16 @16c16 @16c16 @16c16 @2c8 @3c8
+G   [@9c8 @8c8 @10c8 @8c8 @9c8 @9c8 @10c8 @8c8]3 @9c8 @8c8 @10c8 @8c8 @18c16 @16c16 @16c16 @16c16 @2c8 @3c8
+
+; ---- SCC (chip extension) / SCC(チップ拡張) ----
+; arpeggios, one bar each; ?FD34 is half F, half G
+; アルペジオ、各1小節。?FD34は前半F、後半G
+SCCS ?FD30={ o4 c%2 e%2 g%2 >c%2 <g%2 e%2 c%2 g%2 ?FR }
+SCCS ?FD31={ o3 g%2 b%2 >d%2 g%2 d%2 <b%2 g%2 >d%2 ?FR }
+SCCS ?FD32={ o3 a%2 >c%2 e%2 a%2 e%2 c%2 <a%2 >e%2 ?FR }
+SCCS ?FD33={ o3 f%2 a%2 >c%2 f%2 c%2 <a%2 f%2 >c%2 ?FR }
+SCCS ?FD34={ o3 f%2 a%2 >c%2 f%2 <g%2 b%2 >d%2 g%2 ?FR }
+SCCA ?XU7 ?XT1 @1 ?EP2,$73,$23 v7
+SCCA :1 ?FC30 ?FC31 ?FC32 ?FC33 ?FC30 ?FC31 ?FC34 ?FC30 ?FJ1
+; harmony a third under the OPNA lead / OPNAリードの3度下のハーモニー
+SCCB ?XU7 ?XT1 @0 ?EP0,$81,$32 ?MW16 ?MV0,$53 v6
+SCCB :2 o4 c%2 e%2 g%4 g%2 a%2 b%4 g%12 r%4 a%2 g%2 e%4 c%4 e%2 g%2 a%8 f%4 r%4
+SCCB    c%2 e%2 g%4 g%2 a%2 >c%4 <b%12 r%4 a%4 f%4 g%4 b%4 e%12 r%4 ?FJ2
+
+; ---- MSX-MUSIC (chip extension) / MSX-MUSIC(チップ拡張) ----
+; piano (@3), short notes (?QP128) on the off-beat eighths / ピアノ(@3)、裏拍の8分で短く(?QP128)
+MSXA ?XU7 ?XT1 @3 ?QP128 v14
+MSXA :3 o4 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2
+MSXA    r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 c%2 r%2 c%2 r%2 d%2 r%2 d%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 ?FJ3
+MSXB ?XU7 ?XT1 @3 ?QP128 v14
+MSXB :4 o4 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 a%2 r%2 a%2 r%2 a%2 r%2 a%2
+MSXB    r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 a%2 r%2 a%2 r%2 b%2 r%2 b%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 ?FJ4
+
+; ---- MSX PSG (chip extension) / MSX PSG(チップ拡張) ----
+; a bell answering the lead in bars 2 and 6 / 2小節目と6小節目でリードに応えるベル
+MSXD ?XU7 ?XT1 ?EP0,$84,$76 v15
+MSXD :5 r%16 r%8 o5 d%2 <b%2 g%2 d%2 r%16 r%16 r%16 r%8 g%2 b%2 >d%2 g%2 r%16 r%16 ?FJ5

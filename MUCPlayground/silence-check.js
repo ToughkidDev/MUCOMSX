@@ -53,8 +53,9 @@ export function silentParts(text) {
       const digit = /\d/.test(s[i + 1] || '');
       if (c === ';') break;
       if (c === '?' && /[A-Z]{2}/.test(s.slice(i + 1, i + 3))) {
-        // MucoMSX chip extensions: ?EP / ?EA / ?ET shape the level, like E.
-        if (/^(EP|EA|ET)$/.test(s.slice(i + 1, i + 3))) st.env = true;
+        // MucoMSX chip extensions: ?EP / ?EA / ?ET shape the level, like E; on a ?XT4 track
+        // the notes start ?XD effects, which set the level themselves.
+        if (/^(EP|EA|ET)$/.test(s.slice(i + 1, i + 3)) || /^XT4(?!\d)/.test(s.slice(i + 1, i + 5))) st.env = true;
         i += 2;
         while (/[\d,\-$A-Fa-f]/.test(s[i + 1] || '') && !/[a-g]/.test(s[i + 1])) i++;
         continue;

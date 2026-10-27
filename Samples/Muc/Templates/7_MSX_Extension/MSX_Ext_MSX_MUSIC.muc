@@ -1,0 +1,114 @@
+#title MSX-MUSIC (MucoMSX chip extension)
+#composer
+#comment Template: MSX-MUSIC (YM2413) melody parts and MSXG drums with the MucoMSX chip extension commands
+
+; ==================================================================
+;  MSX-MUSIC with the MucoMSX chip extension commands
+;  MSX-MUSIC MucoMSXチップ拡張コマンド版
+; ==================================================================
+; [EN] MSX-MUSIC is the YM2413 (OPLL) FM chip: six melody channels
+;      MSXA MSXB MSXC MSXH MSXI MSXJ and five drums on MSXG. Each melody
+;      channel plays one of 15 built-in instruments or the one custom
+;      voice. The chip extensions (two-letter commands starting with ?)
+;      play them like Konami's MSX games (F-1 Spirit 3D Special).
+;      Needs MDPlayer4Mac v0.2.4 or later.
+; [JA] MSX-MUSICはYM2413(OPLL)のFM音源です: 旋律6チャンネル
+;      MSXA MSXB MSXC MSXH MSXI MSXJと、MSXGの5つのドラム。旋律の各
+;      チャンネルは内蔵の15音色か、1つのユーザー音色を鳴らします。
+;      チップ拡張(?で始まる2文字のコマンド)はコナミのMSXゲーム
+;      (F-1スピリット3Dスペシャル)と同じように鳴らします。
+;      MDPlayer4Mac v0.2.4以降が必要です。
+;
+; [EN] Compact rows: ?XU7 makes %1 a sixteenth note, %4 a quarter and
+;      %16 a whole note (one bar). They loop with :n and ?FJn and
+;      repeat with ?FB, as there is no L or [ ] on these rows.
+; [JA] コンパクト行: ?XU7で%1が16分音符、%4が4分音符、%16が全音符
+;      (1小節)。この行にはLや[ ]がないので、:nと?FJnでループし、
+;      ?FBで繰り返します。
+;
+; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
+;      and keep what you like. Save makes a .muc on your computer.
+; [JA] 再生(Ctrl+Enter)で聴いてみましょう。1か所変えてはまた再生し、
+;      気に入ったら残します。「保存」でパソコンに.mucを保存できます。
+; ==================================================================
+
+; [EN] Chords (8 bars): | Fmaj7 | Em7 | Dm7 | Cmaj7 | Fmaj7 | Em7 | Dm7 G7 | C |
+; [JA] コード(8小節): | Fmaj7 | Em7 | Dm7 | Cmaj7 | Fmaj7 | Em7 | Dm7 G7 | C |
+
+; ---- Instruments / 音色 ----
+; [EN] On a compact row @n picks the instrument: @1 violin, @2 guitar,
+;      @3 piano, @4 flute, @5 clarinet, @6 oboe, @7 trumpet, @8 organ,
+;      @9 horn, @10 synthesizer, @11 harpsichord, @12 vibraphone,
+;      @13 synth bass, @14 acoustic bass, @15 electric guitar, and @0
+;      the custom voice ?IU0={8 bytes}: the YM2413's voice registers
+;      0-7 (modulator and carrier: AM/VIB/EG/KSR/MULT, KSL/TL, FB,
+;      AR/DR, SL/RR).
+; [JA] コンパクト行では@nで音色を選びます: @1バイオリン、@2ギター、
+;      @3ピアノ、@4フルート、@5クラリネット、@6オーボエ、@7トランペット、
+;      @8オルガン、@9ホルン、@10シンセサイザー、@11ハープシコード、
+;      @12ビブラフォン、@13シンセベース、@14ウッドベース、
+;      @15エレキギター、そして@0がユーザー音色?IU0={8バイト}: YM2413の
+;      音色レジスタ0-7(モジュレータとキャリア: AM/VIB/EG/KSR/MULT、
+;      KSL/TL、FB、AR/DR、SL/RR)。
+?IU0={33,97,29,7,130,143,16,7}
+
+; ---- Notes and gate / 音とゲート ----
+; [EN] ?QPn ends each note after n/256 of its length (?QP128 = half,
+;      staccato; ?QP224 = 7/8). Without it notes are legato.
+;      ?IS1 turns the YM2413 sustain on: notes ring on after they end.
+;      ?MW16 ?MV0,$53: a small vibrato that starts 16 clocks into a note.
+; [JA] ?QPnは各音を長さのn/256で切ります(?QP128 = 半分、スタッカート、
+;      ?QP224 = 7/8)。ないとレガートです。?IS1はYM2413のサステインを
+;      オンにし、音が終わった後も響きます。?MW16 ?MV0,$53: 音の
+;      16クロック後から始まる小さなビブラート。
+
+; ---- Drums / ドラム ----
+; [EN] MSXG with ?XT64 plays the drums. ?IDmask,length hits them and
+;      waits length units. The mask adds 16 bass drum, 8 snare, 4 tom,
+;      2 top cymbal, 1 hi-hat (?ID17 = bass drum + hi-hat).
+;      ?ITn={6 bytes} is a kit: the pitches of the drum channels
+;      (YM2413 registers $16-$18 and $26-$28); this one is from Konami's
+;      F-1 Spirit 3D Special. ?ITn and v take effect at the next ?ID-,n
+;      (a rest with the drums off), so the drums start with ?ID-,1 and
+;      every part starts with a sixteenth rest (r%1) to stay together.
+; [JA] ?XT64のMSXGがドラムを鳴らします。?IDmask,lengthで叩いて
+;      length単位待ちます。maskは16バスドラム、8スネア、4タム、
+;      2トップシンバル、1ハイハットの和です(?ID17 = バスドラム+
+;      ハイハット)。?ITn={6バイト}はキット: ドラムチャンネルの音程
+;      (YM2413のレジスタ$16-$18と$26-$28)。これはコナミの
+;      F-1スピリット3Dスペシャルのものです。?ITnとvは次の?ID-,n
+;      (ドラムを止める休み)で有効になるので、ドラムは?ID-,1で始め、
+;      全パートを16分休符(r%1)で始めてそろえます。
+?IT1={224,4,190,3,5,1}
+
+; ---- Parts / パート ----
+; MSXA lead: the custom voice with vibrato / リード: ユーザー音色とビブラート
+MSXA ?XU7 ?XT1 @0 ?QP224 ?MW16 ?MV0,$53 v13 r%1
+MSXA :1 o4 a%4 >c%4 e%6 d%2 d%4 <b%4 g%8 a%4 >c%4 f%6 e%2 e%12 r%4
+MSXA    <a%4 >c%4 e%6 g%2 g%4 e%4 d%4 <b%4 >c%4 d%4 <b%4 >d%4 c%12 r%4 ?FJ1
+; MSXB MSXC MSXI piano chords, short (?QP128) / ピアノの和音、短く(?QP128)
+MSXB ?XU7 ?XT1 @3 ?QP128 v11 r%1
+MSXB :2 o4 a%3 a%3 a%2 r%2 a%2 r%4 g%3 g%3 g%2 r%2 g%2 r%4 f%3 f%3 f%2 r%2 f%2 r%4 e%3 e%3 e%2 r%2 e%2 r%4
+MSXB    a%3 a%3 a%2 r%2 a%2 r%4 g%3 g%3 g%2 r%2 g%2 r%4 f%3 f%3 f%2 r%2 f%2 r%4 e%3 e%3 e%2 r%2 e%2 r%4 ?FJ2
+MSXC ?XU7 ?XT1 @3 ?QP128 v11 r%1
+MSXC :3 o5 c%3 c%3 c%2 r%2 c%2 r%4 <b%3 b%3 b%2 r%2 b%2 r%4 a%3 a%3 a%2 r%2 a%2 r%4 g%3 g%3 g%2 r%2 g%2 r%4
+MSXC    >c%3 c%3 c%2 r%2 c%2 r%4 <b%3 b%3 b%2 r%2 b%2 r%4 a%3 a%3 a%2 r%2 g%2 r%4 g%3 g%3 g%2 r%2 g%2 r%4 ?FJ3
+MSXI ?XU7 ?XT1 @3 ?QP128 v11 r%1
+MSXI :4 o5 e%3 e%3 e%2 r%2 e%2 r%4 d%3 d%3 d%2 r%2 d%2 r%4 c%3 c%3 c%2 r%2 c%2 r%4 <b%3 b%3 b%2 r%2 b%2 r%4
+MSXI    >e%3 e%3 e%2 r%2 e%2 r%4 d%3 d%3 d%2 r%2 d%2 r%4 c%3 c%3 c%2 r%2 <b%2 r%4 >c%3 c%3 c%2 r%2 c%2 r%4 ?FJ4
+; MSXH walking bass / ウォーキングベース
+MSXH ?XU7 ?XT1 @14 ?QP192 v13 r%1
+MSXH :5 o2 f%4 a%4 >c%4 <a%4 e%4 g%4 b%4 g%4 d%4 f%4 a%4 f%4 c%4 e%4 g%4 e%4
+MSXH    f%4 a%4 >c%4 <a%4 e%4 g%4 b%4 g%4 d%4 f%4 g%4 b%4 c%4 g%4 >c%8 ?FJ5
+; MSXJ strings with sustain, one note a bar / サステイン付きストリングス、1小節に1音
+MSXJ ?XU7 ?XT1 @1 ?IS1 v10 r%1
+MSXJ :6 o5 e%16 d%16 c%16 <b%16 >e%16 d%16 c%8 <b%8 >c%16 ?FJ6
+; MSXG drums: 3 bars of beat and a fill, twice. On MSXG, repeats go back
+; to a label: ?FB3,7 plays from :7 three times in all.
+; ドラム: 3小節のビートとフィルを2回。MSXGの繰り返しはラベルへ戻ります:
+; ?FB3,7は:7から合計3回演奏します。
+MSXG ?XU7 ?XT64 ?IT1 v14 ?ID-,1
+MSXG :7 ?ID17,2 ?ID1,2 ?ID9,2 ?ID1,2 ?ID17,2 ?ID17,2 ?ID9,2 ?ID1,2 ?FB3,7
+MSXG    ?ID17,2 ?ID1,2 ?ID9,2 ?ID1,2 ?ID4,1 ?ID4,1 ?ID8,1 ?ID8,1 ?ID12,2 ?ID18,2
+MSXG :8 ?ID17,2 ?ID1,2 ?ID9,2 ?ID1,2 ?ID17,2 ?ID17,2 ?ID9,2 ?ID1,2 ?FB3,8
+MSXG    ?ID17,2 ?ID1,2 ?ID9,2 ?ID1,2 ?ID4,1 ?ID4,1 ?ID8,1 ?ID8,1 ?ID12,2 ?ID18,2 ?FJ7
