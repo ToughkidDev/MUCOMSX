@@ -11,7 +11,31 @@ const M88 = (c, on) => T('mucom88', c, on);
 const EXT = (c, on) => T('ext', c, on);
 const MSX = (c, on) => T('msx', c, on);
 // The MucoMSX ? commands the msx book explains.
-const MSX_CMDS = new Set(BOOKS.msx.sections.flatMap((s) => s.e.map((e) => e.c)));
+const MSX_ENTRIES = BOOKS.msx.sections.flatMap((s) => s.e);
+const MSX_CMDS = new Set(MSX_ENTRIES.map((e) => e.c));
+
+// MUCOM88 and the mucomDotNET extensions have no MSX channels, so on an MSX channel line
+// (MSXA–MSXK, SCCA–SCCE, PSGS/SCCS/OPLS) every command is looked up in the msx book,
+// which also covers the MUCOM88 commands those channels accept.
+function msxChip(prefix) {
+  if (/^SCC/.test(prefix)) return 'SCC';
+  if (prefix === 'PSGS') return 'PSG';
+  if (prefix === 'OPLS') return 'OPLL';
+  const m = /^MSX([A-K])/.exec(prefix);
+  if (!m) return null;
+  return m[1] === 'G' ? 'MSXG' : 'DEF'.includes(m[1]) ? 'PSG' : 'OPLL';
+}
+// Entries of the other books under their msx-book names.
+const MSX_ALIAS = { 'G @': '@', 'K @': '@', SCCA: '@', '@n': '@', 'G v': 'v', 'G vn': 'v', '> <': 'o', t: 'T', '%': 'c–b', '*n': '*', '**': '*' };
+// OPNA-only commands, explained together as not available on MSX channels.
+const MSX_NONE = new Set(['p', 'K', 's', 'V', 'H', 'R', 'y', 'J', '{ }', 'x', 'S', 'm', 'vm', 'KD', 'MT', 'EX', 'PO', '_', 'y0,', '@a,b', '@n=', 'p4–6', 'l%', '[| |]']);
+function toMsx(t, chip) {
+  if (!t || t.book === 'msx') return t;
+  const c = MSX_ALIAS[t.c] || t.c;
+  if (MSX_ENTRIES.some((e) => e.c === c && (!e.on || e.on.split(' ').includes(chip)))) return MSX(c, chip);
+  if (MSX_NONE.has(t.c)) return MSX('p K s y', chip);
+  return t;
+}
 
 const TAGS = {
   '#mucom88': M88('#mucom88'), '#title': M88('#title'), '#composer': M88('#composer'), '#author': M88('#composer'),
@@ -36,6 +60,8 @@ function partKind(prefix) {
 
 function partTarget(prefix) {
   if (/^(PSGS|SCCS|OPLS)$/.test(prefix)) return MSX('PSGS');
+  const chip = msxChip(prefix);
+  if (chip) return MSX({ PSG: 'MSXD', SCC: 'SCCA', OPLL: 'MSXA', MSXG: 'MSXG' }[chip], chip);
   if (/^SCC/.test(prefix)) return EXT('SCCA');
   if (/^MSX/.test(prefix)) {
     const kind = partKind(prefix);
@@ -155,7 +181,8 @@ export function targetAt(lines, row, col) {
   if (col <= p[1].length) return partTarget(p[1]);
   const start = p[1].length;
   const t = pick(tokens(line.slice(start), partKind(p[1])), col - start);
-  return t;
+  const chip = msxChip(p[1]);
+  return chip ? toMsx(t, chip) : t;
 }
 
 // The token at the caret, or the one just before it (the caret usually sits after what
