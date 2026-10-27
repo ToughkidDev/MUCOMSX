@@ -129,15 +129,15 @@ dotnet workload install wasm-tools   # .NET 8 SDK
 MUCPlayground/src/build.sh
 ```
 
-`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.2.6 with the fix below), publishes `src/Web` and
+`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.2.7), publishes `src/Web` and
 `src/VgmWeb`, and copies only the files the browser loads into `engine/` (about 11 MB, 4.2 MB
 compressed) and `engine-vgm/` (about 20 MB, 7.3 MB compressed); AOT compilation takes a
 few minutes. Run it again after
 adding samples to refresh `samples.json`.
 
-### MucoMSX native core fixes in MDPlayer4Mac v0.2.6
+### MucoMSX native core fixes in MDPlayer4Mac v0.2.6 and v0.2.7
 
-The engine follows MDPlayer4Mac v0.2.6, which took these fixes and additions from MUCPlayground
+MDPlayer4Mac v0.2.6 took these fixes and additions from MUCPlayground
 ([ToughkidDev/MDPlayer4Mac#1](https://github.com/ToughkidDev/MDPlayer4Mac/pull/1), tests in
 `macos/MucoNativeTests/CompactRowTests.cs`): `?FB0 … ?FBn` on MSX-MUSIC and `MSXG`; `r` as a
 rest on `?XT4` effect and `?XT64` drum tracks (six F-1 Spirit 3D Special samples lose a stray
@@ -146,7 +146,7 @@ snare + tom hit at their start); `?ID` hits applying a pending `?IT` kit, `v` an
 without `?WD`; wave morphs that wrap instead of stopping; messages with the two-letter
 command names. Scores that compiled before compile to the same bytes.
 
-The pinned commit adds one fix on top of v0.2.6
+MDPlayer4Mac v0.2.7 adds one more fix from MUCPlayground
 ([ToughkidDev/MDPlayer4Mac#2](https://github.com/ToughkidDev/MDPlayer4Mac/pull/2), test in
 `macos/MucoNativeTests/MixedTagTests.cs`): in a song with MSX parts beside OPNA parts,
 `#CarrierCorrection` and `#OPNA1RhythmMute` were dropped when the OPNA parts were packed, so
