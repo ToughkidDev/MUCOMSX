@@ -35,7 +35,8 @@ const hex2 = (v) => (v === null || v === undefined ? '..' : typeof v === 'string
 
 export class Tracker {
   // opts: t(key, …args); edit(edits[]): apply [{ row, col, len, text }] to the MUC text;
-  // reveal(src | null): show an event's source in the text; preview(on, midi, trackName);
+  // reveal(src | null): show an event's source in the text; preview(on, midi, trackName, fx)
+// (fx: an effect note, heard as noise);
   // colors(name): a part's colour.
   constructor(root, opts) {
     this.root = root;
@@ -375,11 +376,29 @@ export class Tracker {
     return before ? before.fx !== undefined : !!tr.fxTail;
   }
 
-  // An effect typed in a cell: ?XDn written as its note letter.
+  // An effect typed in a cell: ?XDn written as its note letter, heard as a noise burst.
   enterFx(n) {
+    const midi = 12 * (this.octave + 1) + n;
+    this.previewFx(midi);
+    this.edit('note', midi);
+  }
+
+  // The sound of a note typed in the cursor's cell: noise on an effect track (only for an
+  // effect that can be written there), the part's own sound elsewhere. Held until released
+  // when `held`, otherwise a short tap.
+  preview(midi, held = false) {
+    const { track, row } = this.cursor;
+    const name = this.tracks[track]?.name;
+    if (this.isFx(track, row)) { this.previewFx(midi, held); return; }
+    this.o.preview(true, midi, name);
+    if (!held) setTimeout(() => this.o.preview(false, midi), 300);
+  }
+  previewFx(midi, held = false) {
     const { track } = this.cursor;
-    this.edit('note', 12 * (this.octave + 1) + n);
-    return track;
+    const fx = ((midi % 12) + 12) % 12;
+    if (fx > 9 || !this.tracks[track]?.effects?.has(fx)) return;
+    this.o.preview(true, midi, this.tracks[track].name, true);
+    if (!held) setTimeout(() => this.o.preview(false, midi), 300);
   }
 
   hover(e) {
@@ -463,7 +482,7 @@ export class Tracker {
     const midi = 12 * (this.octave + 1) + semi;
     e.preventDefault();
     if (e.repeat) return;
-    this.o.preview(true, midi, this.tracks[track]?.name);
+    this.preview(midi, true);
     this.held = e.code; this.heldMidi = midi;
     this.edit('note', midi);
   }
@@ -546,8 +565,7 @@ export class Tracker {
       const oct = m[3] ? +m[3] : this.octave;
       const midi = 12 * (oct + 1) + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] === '#' ? 1 : 0);
       this.setOctave(oct);
-      this.o.preview(true, midi, this.tracks[this.cursor.track]?.name);
-      setTimeout(() => this.o.preview(false, midi), 300);
+      this.preview(midi);
       this.edit('note', midi);
     } else {
       if (!/^[0-9A-F]{1,2}$/.test(v)) return;

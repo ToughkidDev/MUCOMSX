@@ -2651,17 +2651,26 @@ const tracker = new Tracker($('tracker'), {
   },
   reveal: (src) => revealSource(src),
   keys: () => setKeys(true),
-  preview: (on, midi, name) => {
-    ensureKeysAudio();
-    if (!keysNode) return;
-    if (!on) { keysNode.port.postMessage({ type: 'off', id: 1000 + midi }); return; }
-    keysCtx.resume().catch(() => {});
-    const token = name ? name.replace(/[0-9]/g, '') : 'A';
-    const row = tracker.tracks[tracker.cursor.track]?.events[0]?.src.row || 1;
-    const inst = partInstrument(token, Math.max(row, linkRow || row), inlineVoices(), songWaves()).inst;
-    keysNode.port.postMessage({ type: 'on', id: 1000 + midi, freq: 440 * 2 ** ((midi - 69) / 12), inst });
-  },
+  preview: (on, midi, name, fx) => trackerPreview(on, midi, name, fx),
 });
+// A note typed in the tracker, on the keys' synthesizer. fx: an effect note of a ?XT4 track,
+// which starts a drum-like effect: a noise burst. The first note, while the keys' audio is
+// still starting, is played once it is ready, as a short tap (its release may already
+// have gone by).
+function trackerPreview(on, midi, name, fx = false, tap = false) {
+  const ready = ensureKeysAudio();
+  if (!keysNode) {
+    if (on) ready?.then(() => { if (keysNode) trackerPreview(true, midi, name, fx, true); });
+    return;
+  }
+  if (!on) { keysNode.port.postMessage({ type: 'off', id: 1000 + midi }); return; }
+  if (tap) setTimeout(() => trackerPreview(false, midi), 300);
+  keysCtx.resume().catch(() => {});
+  const token = name ? name.replace(/[0-9]/g, '') : 'A';
+  const row = tracker.tracks[tracker.cursor.track]?.events[0]?.src.row || 1;
+  const inst = fx ? { kind: 'noise' } : partInstrument(token, Math.max(row, linkRow || row), inlineVoices(), songWaves()).inst;
+  keysNode.port.postMessage({ type: 'on', id: 1000 + midi, freq: 440 * 2 ** ((midi - 69) / 12), inst });
+}
 let trackerTimer = 0, linkRow = 0;
 function scheduleTracker() {
   if (splitMode !== 'tracker') return;
