@@ -1,0 +1,98 @@
+; Current MucoMSX MUC. Compilation checked; 
+; Gradius 2 
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0103).
+; muc by ToughkidCST
+
+#title A Planet of Plants (Plant Planet Theme)
+#sccvoice GRA2.DAT
+?WS0,1,1
+?WS1,4,1
+?WS2,5,1
+?WS3,10,1
+MSXD ?XU1 ?FJ70
+MSXE ?XU1 ?FJ15
+MSXF ?XU1 ?FJ4
+SCCA ?XU1 ?FJ70
+SCCB ?XU1 ?FJ19
+SCCC ?XU1 ?FJ30
+SCCD ?XU1 ?FJ50
+SCCE ?XU1 ?FJ61
+PSGS ?XD0={ :0 ?XM1,1 ?NP0 ?XS$07 ! }
+PSGS ?XD1={ :1 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+PSGS ?XD2={ :2 ?XM3,1 ?NP6 ?XP416,8 ?XM2,1 ?XP512,8 ?XP624,5 ?XP816,3 ! }
+PSGS ?XD8={ :3 ?XM2,1 ?GS$09 ?XP768,0 ?XP976,9 ?XP1536,9 ?XP1792,9 ?XP2048,9 ! }
+SCCS ?FD4={ v13 ?EP0,$01,$61 ?DB1 ?FC12 }
+SCCS ?FD5={ v11 o3 ?EP0,$02,$70 c d o2 d o3 d o2 d o3 d ?FB4,5 }
+SCCS ?FD6={ v13 ?EP0,$01,$61 }
+SCCS ?FD7={ o2 d a d o3 d%3 ?FB3,7 o2 d%2 d%2 d%2 }
+SCCS ?FD8={ o1 g o2 d o1 g o2 g%3 ?FB3,8 o1 g%2 g%2 g%2 ?FB4,6,2 a+ f a+ }
+SCCS ?FD9={ ?FC13 }
+SCCS ?FD10={ ?FB3,9 a+ f a+ ?FC14 }
+SCCS ?FD11={ ?FJ5 }
+SCCS ?FD12={ ?XT1 ?XU7 o3 d d d o2 a a a a+ a+ a+ f f f g g g d d d d+ d+ d+ o1 a+ a+ a+ ?FR }
+SCCS ?FD13={ o2 a+ f a+ o1 a+ o2 f o1 a+ ?FR }
+SCCS ?FD14={ o2 d+ a+ d+ o3 d+ o2 a+ o3 d+ o2 d+ a+ d+ o3 d+ o2 d+ o3 d+ o2 d+ d+ d+ g g g a+ a+ a+ o3 d+ d+ d+ ?FR }
+SCCS ?FD15={ ?XT4 ?XU7 g+ d g+ ?FB8,15 }
+SCCS ?FD16={ g+ d ?FB10,16 d d d d }
+SCCS ?FD17={ c%2 c c+ c c ?FB3,17 d%2 d%2 d%2 ?FB8,17,2 }
+SCCS ?FD18={ g+%2 g+ d g+ g+ ?FB8,18 ?FJ16 }
+SCCS ?FD19={ @3 v7 ?EP0,$01,$60 ?FC12 }
+SCCS ?FD20={ @2 ?EP0,$01,$60 v7 c d }
+SCCS ?FD21={ o1 d o2 d ?FB2,21 ?FB4,20,2 }
+SCCS ?FD22={ @3 ?XU7 v7 o2 ?EP0,$01,$60 }
+SCCS ?FD23={ d d d r d d ?FB3,23 }
+SCCS ?FD24={ d ?FB6,24 }
+SCCS ?FD25={ g g g r g g ?FB3,25 }
+SCCS ?FD26={ o2 g o1 g ?FB3,26 ?FB4,22,2 v8 ?EP0,$01,$61 }
+SCCS ?FD27={ ?FC13 }
+SCCS ?FD28={ ?FB4,27,1 ?FC14 }
+SCCS ?FD29={ ?FJ20 }
+SCCS ?FD30={ @1 v9 ?FC44 }
+SCCS ?FD31={ g a+ o4 d+ g a+ o5 d+ }
+SCCS ?FD32={ ?XU3 v3 r ?XU7 }
+SCCS ?FD33={ o6 d o5 a g ?FB4,33 v4 ?FC45 }
+SCCS ?FD34={ g ?FC45 }
+SCCS ?FD35={ g v2 ?FC45 }
+SCCS ?FD36={ g v1 ?FC45 }
+SCCS ?FD37={ ?XU4 g }
+SCCS ?FD38={ @0 ?FC43 }
+SCCS ?FD39={ ?FC46 }
+SCCS ?FD40={ v7 ?FC48 }
+SCCS ?FD41={ o4 b o5 c o4 b a b a g a g f g f e v9 ?FC46 }
+SCCS ?FD42={ v6 o6 c o5 b a b a g a g f g f e f e d e d c d c o4 b o5 c o4 b a ?FB2,38,2 ?FC71 ?EP- ?FC76 ?FJ32 }
+SCCS ?FD43={ ?XU7 v9 ?EP0,$04,$30 ?MV0,$63 o4 ?FR }
+SCCS ?FD44={ ?XT1 ?XU7 ?EP0,$02,$50 o4 d o5 d o4 d o3 a o4 a o3 a a+ o4 a+ o3 a+ f o4 f o3 f g o4 g o3 g d o4 d o3 d ?FR }
+SCCS ?FD45={ o6 d o5 a ?FR }
+SCCS ?FD46={ e b o5 e%7 o4 f o5 c f r%6 o4 e%3 f%3 @1 o5 ?FR }
+SCCS ?FD47={ o6 d o5 a g ?FR }
+SCCS ?FD48={ g f e f e d e d c d c ?FR }
+SCCS ?FD49={ o5 e%7 o4 f o5 c f r%6 o4 e b o5 e o4 f o5 c f ?XU3 r ?FR }
+SCCS ?FD50={ @0 v8 ?FC44 }
+SCCS ?FD51={ d+ o4 d+ o3 d+ o2 a+ o3 a+ o2 a+ }
+SCCS ?FD52={ @1 v5 }
+SCCS ?FD53={ o6 d o5 a g ?FB4,53 v4 ?FC47 }
+SCCS ?FD54={ v3 ?FC47 }
+SCCS ?FD55={ v2 ?FC47 }
+SCCS ?FD56={ v1 ?FC47 }
+SCCS ?FD57={ ?FC43 }
+SCCS ?FD58={ ?DB1 e b ?FC49 }
+SCCS ?FD59={ v7 ?XU7 g f e f e d e d c d c o4 ?XU4 b ?XU7 o5 g f e f e d e d c d c o4 b v9 o4 e b ?FC49 }
+SCCS ?FD60={ v6 ?FC77 ?XU4 e ?FC77 e ?FB2,57,2 @0 ?XU7 v7 ?EP0,$04,$50 o4 ?FC75 ?MV0,$84 a%7 ?FC75 o5 d o4 f%2 g%2 a%2 o3 a o4 a o3 a o4 g o3 a o4 d+ v5 o4
+SCCS ?FC75 g%7 ?EP- ?MV0,$86 v6 ?FC76 ?FJ52 }
+SCCS ?FD61={ ?XT1 @0 ?XU7 v7 o3 ?EP0,$02,$50 a o4 a o3 a d o4 d o3 d f o4 f o3 f c o4 c o3 c d o4 d o3 d o2 g o3 g o2 g o3 d+ g a+ o4 d+ g a+ }
+SCCS ?FD62={ @0 ?XU7 v9 o5 ?DB1 ?MV0,$65 d%3 v7 d%3 v6 d%3 v5 d%3 v4 d%3 v3 d%3 v2 d%6 }
+SCCS ?FD63={ ?FC68 }
+SCCS ?FD64={ ?FC69 }
+SCCS ?FD65={ b a g a g f g f e ?FC68 }
+SCCS ?FD66={ ?FC69 }
+SCCS ?FD67={ o5 c o4 b a b a g a g f ?FB2,63 ?FC71 ?EP- v6 ?FC76 ?FJ62 }
+SCCS ?FD68={ @0 ?XU7 v7 o4 ?EP0,$04,$30 ?MV0,$63 e b o5 e%7 o4 f o5 c f r%6 o4 e%3 f%3 v6 @1 o5 ?FR }
+SCCS ?FD69={ g f e f e d e d c d c o4 b o5 c o4 b a ?FR }
+SCCS ?FD70={ ! }
+SCCS ?FD71={ @1 ?XU7 v9 o3 ?EP0,$04,$50 d o4 d o3 d o4 c%2 o3 ?MV0,$75 a%13 o4 a%2 a+%2 o5 c%2 o4 d o5 d o4 d o5 c o4 d g%13 ?MV- ?FR }
+SCCS ?FD72={ g f e f e d e d c d c ?FR }
+SCCS ?FD73={ b a b a g a g f ?FR }
+SCCS ?FD74={ o5 e%7 o4 f o5 c f r%6 o4 ?FR }
+SCCS ?FD75={ d o5 d o4 d o5 c o4 d ?FR }
+SCCS ?FD76={ o5 d c g c o4 a+ f ?FR }
+SCCS ?FD77={ ?XU7 o6 c o5 b a b a g a g f g f ?FR }
