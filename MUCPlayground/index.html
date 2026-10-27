@@ -261,11 +261,23 @@ textarea::selection{background:var(--sel);color:transparent}
 .trk-info{flex:1 1 200px;min-width:0;color:#8a93a6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .trk-def{font:inherit;font-family:var(--mono);color:#f0a040;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline dotted;display:inline-block;max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}.trk-def:hover{text-decoration:underline}
 .trk-scroll{position:relative;flex:1;overflow:auto;outline:none;min-height:0}
-.trk-scroll:focus-visible{box-shadow:inset 0 0 0 1px #5aa0ff}
+.trk-scroll:focus-visible{box-shadow:inset 0 0 0 2px #5aa0ff}
+.trk-bar .btn:disabled{opacity:.45;cursor:default}
+.trk-bar [data-act=undo],.trk-bar [data-act=redo]{font-size:1.15em;line-height:1.1;min-width:2em}
+.trk-bar .btn:focus-visible,.trk-bar select:focus-visible{outline:2px solid #5aa0ff;outline-offset:1px}
+.trk-help{position:absolute;z-index:6;right:10px;top:44px;max-width:min(460px,calc(100% - 20px));max-height:70%;overflow:auto;padding:10px 14px;background:#1e2230;color:#d6dae4;border:1px solid #3a4152;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);font-size:.82rem}
+.trk-help[hidden]{display:none}
+.trk-help dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:8px 0 0}
+.trk-help dt{font-family:var(--mono);color:#f0d080;white-space:nowrap}
+.trk-help dd{margin:0}
+.trk-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;margin:0}
 .trk-canvas{position:sticky;top:0;left:0;display:block}
 .trk-spacer{position:absolute;top:0;left:0;pointer-events:none}
 .tlink{position:absolute;z-index:3;border:2px solid #5aa0ff;border-radius:3px;pointer-events:none;box-sizing:border-box}
-@media (max-width:900px){.panes.split-tracker{flex-direction:column}.panes.split-tracker .splitter{cursor:row-resize}}
+@media (max-width:900px){.panes.split-tracker{flex-direction:column}.panes.split-tracker .splitter{cursor:row-resize}
+  /* the tracker needs height on a phone: the editor area grows, the text takes a third */
+  .editor-wrap:has(#tracker:not([hidden])){height:92vh;height:92dvh}
+  .panes.split-tracker:has(#tracker:not([hidden])) #paneA{flex-basis:min(var(--split),34%)}}
 /* Voice bank (bank-view.js): right of the text, like the tracker */
 .bank{flex:1 1 0;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel);font-size:.82rem}
 /* ---------- manual mode (manual.js) ---------- */

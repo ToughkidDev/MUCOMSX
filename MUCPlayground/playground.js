@@ -102,9 +102,9 @@ const T = {
     bankImported_fm: (n, to) => `${n} voices added to the ${to}`, bankImported_scc: (n, to) => `${n} waves added to the ${to}`, bankImportSame: (n) => `${n} already in the bank`, bankImportFull: (n) => `${n} left out: no free numbers`, bankImportNone_fm: (names) => `no FM voices in ${names}`, bankImportNone_scc: (names) => `no SCC waves in ${names}`,
     manTitle: 'Manual', manTip: 'Manual mode: the MML guide (MUCOM88 and the mucomDotNET extensions) beside the editor; examples go into the song with Insert',
     trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
-    trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave',
+    trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave; Ctrl+Z undo, ? all keys',
     trkInput: 'Input', trkInputDisplay: 'As shown (C#4, OFF, 0F)', trkInputTracker: 'Quick keys (Z S X / Q 2 W)',
-    trkHintDisplay: 'Click a cell and type it as shown: C#4 / D-5 (note, # or -, octave 1–8), OFF, ... (rest); two hex digits in @ and v; Enter edits what is there, Delete a rest',
+    trkHintDisplay: 'Click a cell and type it as shown: C#4 / D-5 (note, # or -, octave 1–8), OFF, ... (rest); two hex digits in @ and v; Enter edits what is there, Delete a rest; Ctrl+Z undo, ? all keys',
     trkTypeNote: 'Note: A–G, then # or -, then the octave 1–8 (C#4, D-5); OFF; ... for a rest. Enter takes C as C at the octave shown above', trkTypeHex: (k) => `${k}: two hex digits (00–FF); Enter takes one`,
     trkRest: 'Rest', trkRestTip: 'Make the note in this cell a rest (Delete)', trkOffTip: 'Note off: a rest from this row on', trkKeysTip: 'Open the keys mode piano: its keys write notes here',
     trkParamNote: 'Voice and volume go on a cell where a note starts', trkParamSet: (k, v) => `${k}${v} set`, trkParamNext: (k, v) => `${k}${v}: type a second hex digit for a two-digit value`,
@@ -112,6 +112,18 @@ const T = {
     trkWhere: (row, tick, len) => `line ${row} · clock ${tick} · length ${len}`, trkShared: 'written once for every repeat / macro use: edits change all of them',
     trkMacro: 'in a macro', trkPastEnd: 'After the end of this part: write more MML there first', trkCannot: 'Tied, portamento and echo notes are edited in the text',
     trkEmpty: 'no parts',
+    trkStep: 'Step', trkStepTip: 'Rows the cursor moves down after a note, rest or value is entered (0: it stays)',
+    trkUndoTip: 'Undo the tracker\'s last edit (Ctrl+Z)', trkRedoTip: 'Redo (Ctrl+Y or Ctrl+Shift+Z)', trkHelpTip: 'Keys of the tracker (?)',
+    trkUndone: 'Undone', trkRedone: 'Redone', trkNothingUndo: 'Nothing of the tracker\'s to undo', trkNothingRedo: 'Nothing to redo',
+    trkUndoStale: 'The text was changed since: undo it in the text (Ctrl+Z there)',
+    trkHelpTitle: 'Tracker keys',
+    trkKeysDisplay: [['C#4 · D-5 · C4', 'a note: letter, # or -, octave (C alone + Enter: the octave above)'], ['OFF · ...', 'note off · rest'], ['00–FF', 'in the @ and v fields: voice and volume'], ['0–9 · XD3', 'on an effect (?XT4) track: the effect'], ['Enter · F2', 'edit what the cell shows'], ['Delete', 'make the note a rest']],
+    trkKeysTracker: [['Z S X D C …', 'notes of the lower octave'], ['Q 2 W 3 E …', 'notes of the octave above'], ['1 · `', 'note off'], ['Delete', 'make the note a rest'], ['numpad / *', 'octave down / up'], ['0–F', 'in the @ and v fields: two hex digits']],
+    trkKeysCommon: [['↑ ↓ ← →', 'move (← → across note, @, v and parts)'], ['PgUp · PgDn', '16 rows'], ['Home · End', 'top · bottom'], ['Ctrl+↑ · Ctrl+↓', 'previous · next note or rest of the part'], ['Ctrl+Z · Ctrl+Y', 'undo · redo the tracker\'s edits'], ['Step', 'rows moved after an entry'], ['?', 'this list'], ['Esc', 'close it']],
+    trkSrHelp: 'Pattern of the song. Arrow keys move between rows and parts; type notes as shown (C#4, OFF), or digits in the @ and v fields; Ctrl+Z undoes; question mark lists the keys.',
+    trkSayCell: (part, chip, row, what, field) => `${part} ${chip}, row ${row}: ${what}. ${field}`,
+    trkSayNote: (n, inst, vol, len) => `${n}${inst ? `, voice ${inst}` : ''}, volume ${vol}, ${len} clocks`, trkSayRest: (len) => `rest, ${len} clocks`,
+    trkSayHeld: (n) => `${n} held`, trkSayEmpty: 'empty', trkSayFieldNote: 'note field',
     trkFxUndefined: (n) => `?XD${n} is not defined in this song`, trkFxRange: () => 'Effect notes are XD0–XD9 (c to a): a+ and b start no effect',
     trkFxDef: 'Show this ?XD definition in the text', trkTypeFx: 'Effect: a digit 0–9 or XD0–XD9; OFF; ... for a rest',
     keysMode: 'Keys', keysTip: 'Keys mode: a piano under the editor, played with the mouse or the computer keyboard',
@@ -224,9 +236,9 @@ const T = {
     bankImported_fm: (n, to) => `${to}에 음색 ${n}개 추가`, bankImported_scc: (n, to) => `${to}에 파형 ${n}개 추가`, bankImportSame: (n) => `${n}개는 이미 있음`, bankImportFull: (n) => `${n}개는 빈 번호가 없어 제외`, bankImportNone_fm: (names) => `${names}에 FM 음색 없음`, bankImportNone_scc: (names) => `${names}에 SCC 파형 없음`,
     manTitle: '문법', manTip: '문법 설명서 모드: 에디터 옆에 MML 설명서(MUCOM88, mucomDotNET 확장 명령)를 띄우고, 예제는 넣기로 곡에 넣습니다',
     trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
-    trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브',
+    trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브. Ctrl+Z 되돌리기, ? 전체 키',
     trkInput: '입력', trkInputDisplay: '표시 형식대로 (C#4, OFF, 0F)', trkInputTracker: '빠른 키 (Z S X / Q 2 W)',
-    trkHintDisplay: '셀을 클릭하고 표시된 형식대로 입력: C#4 / D-5 (음, # 또는 -, 옥타브 1–8), OFF, ... (쉼표). @·v 칸은 16진 두 자리. Enter는 지금 값을 편집, Delete는 쉼표',
+    trkHintDisplay: '셀을 클릭하고 표시된 형식대로 입력: C#4 / D-5 (음, # 또는 -, 옥타브 1–8), OFF, ... (쉼표). @·v 칸은 16진 두 자리. Enter는 지금 값을 편집, Delete는 쉼표. Ctrl+Z 되돌리기, ? 전체 키',
     trkTypeNote: '음: A–G, # 또는 -, 옥타브 1–8 (C#4, D-5). OFF는 노트 오프, ...는 쉼표. Enter로 C만 넣으면 위의 옥타브로', trkTypeHex: (k) => `${k}: 16진 두 자리 (00–FF). 한 자리는 Enter`,
     trkRest: '쉼표', trkRestTip: '이 칸의 음을 쉼표로 (Delete)', trkOffTip: '노트 오프: 이 행부터 쉼표', trkKeysTip: '건반 모드 열기: 건반을 누르면 여기에 음이 입력됩니다',
     trkParamNote: '음색과 볼륨은 음이 시작하는 칸에 넣습니다', trkParamSet: (k, v) => `${k}${v} 설정`, trkParamNext: (k, v) => `${k}${v}: 두 자리 값이면 16진 숫자를 하나 더 입력하세요`,
@@ -234,6 +246,18 @@ const T = {
     trkWhere: (row, tick, len) => `${row}행 · ${tick}클록 · 길이 ${len}`, trkShared: '반복/매크로에서 한 번 쓴 음: 고치면 모든 반복에 적용됩니다',
     trkMacro: '매크로 안', trkPastEnd: '이 파트가 끝난 뒤입니다. 먼저 텍스트에 MML을 더 써 주세요', trkCannot: '타이, 포르타멘토, 에코 음은 텍스트에서 고쳐 주세요',
     trkEmpty: '파트 없음',
+    trkStep: '간격', trkStepTip: '음·쉼표·값을 넣은 뒤 커서가 내려가는 행 수 (0이면 그대로)',
+    trkUndoTip: '트래커의 마지막 편집 되돌리기 (Ctrl+Z)', trkRedoTip: '다시 하기 (Ctrl+Y 또는 Ctrl+Shift+Z)', trkHelpTip: '트래커 단축키 (?)',
+    trkUndone: '되돌렸습니다', trkRedone: '다시 했습니다', trkNothingUndo: '되돌릴 트래커 편집이 없습니다', trkNothingRedo: '다시 할 편집이 없습니다',
+    trkUndoStale: '그 뒤에 텍스트가 바뀌었습니다. 텍스트에서 되돌려 주세요 (텍스트에서 Ctrl+Z)',
+    trkHelpTitle: '트래커 단축키',
+    trkKeysDisplay: [['C#4 · D-5 · C4', '음: 글자, # 또는 -, 옥타브 (C만 넣고 Enter면 위의 옥타브)'], ['OFF · ...', '노트 오프 · 쉼표'], ['00–FF', '@·v 칸: 음색과 음량'], ['0–9 · XD3', '효과(?XT4) 트랙: 효과 번호'], ['Enter · F2', '칸에 보이는 값 편집'], ['Delete', '음을 쉼표로']],
+    trkKeysTracker: [['Z S X D C …', '아래 옥타브의 음'], ['Q 2 W 3 E …', '위 옥타브의 음'], ['1 · `', '노트 오프'], ['Delete', '음을 쉼표로'], ['숫자패드 / *', '옥타브 내림 · 올림'], ['0–F', '@·v 칸: 16진 두 자리']],
+    trkKeysCommon: [['↑ ↓ ← →', '이동 (← →는 음·@·v 칸과 파트 사이)'], ['PgUp · PgDn', '16행'], ['Home · End', '맨 위 · 맨 아래'], ['Ctrl+↑ · Ctrl+↓', '파트의 이전 · 다음 음이나 쉼표'], ['Ctrl+Z · Ctrl+Y', '트래커 편집 되돌리기 · 다시 하기'], ['간격', '입력 뒤 내려가는 행 수'], ['?', '이 목록'], ['Esc', '닫기']],
+    trkSrHelp: '곡의 패턴입니다. 화살표로 행과 파트 사이를 이동하고, 표시된 형식(C#4, OFF)으로 음을, @·v 칸에는 숫자를 입력합니다. Ctrl+Z는 되돌리기, 물음표는 단축키 목록입니다.',
+    trkSayCell: (part, chip, row, what, field) => `${part} ${chip}, ${row}행: ${what}. ${field}`,
+    trkSayNote: (n, inst, vol, len) => `${n}${inst ? `, 음색 ${inst}` : ''}, 음량 ${vol}, ${len}클록`, trkSayRest: (len) => `쉼표, ${len}클록`,
+    trkSayHeld: (n) => `${n} 이어짐`, trkSayEmpty: '빈 칸', trkSayFieldNote: '음 칸',
     trkFxUndefined: (n) => `이 곡에는 ?XD${n} 정의가 없습니다`, trkFxRange: () => '효과 음표는 XD0–XD9(c–a)입니다. a+와 b는 효과가 없습니다',
     trkFxDef: '이 ?XD 정의를 텍스트에서 보기', trkTypeFx: '효과: 숫자 0–9 또는 XD0–XD9, OFF는 노트 오프, ...는 쉼표',
     keysMode: '건반', keysTip: '건반 모드: 에디터 아래에 건반을 표시하고 마우스나 키보드로 연주',
@@ -346,9 +370,9 @@ const T = {
     bankImported_fm: (n, to) => `${to}に${n}音色を追加`, bankImported_scc: (n, to) => `${to}に${n}波形を追加`, bankImportSame: (n) => `${n}個はすでにあり`, bankImportFull: (n) => `${n}個は空き番号がなく除外`, bankImportNone_fm: (names) => `${names}にFM音色なし`, bankImportNone_scc: (names) => `${names}にSCC波形なし`,
     manTitle: '文法', manTip: '文法説明書モード: エディタの横にMML説明書（MUCOM88、mucomDotNET拡張コマンド）を表示し、例は挿入で曲に入れます',
     trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
-    trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ',
+    trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ。Ctrl+Zで元に戻す、?で全キー',
     trkInput: '入力', trkInputDisplay: '表示どおり (C#4, OFF, 0F)', trkInputTracker: 'クイックキー (Z S X / Q 2 W)',
-    trkHintDisplay: 'セルをクリックして表示どおりに入力: C#4 / D-5（音、# か -、オクターブ1–8）、OFF、...（休符）。@・v欄は16進2桁。Enterで今の値を編集、Deleteで休符',
+    trkHintDisplay: 'セルをクリックして表示どおりに入力: C#4 / D-5（音、# か -、オクターブ1–8）、OFF、...（休符）。@・v欄は16進2桁。Enterで今の値を編集、Deleteで休符。Ctrl+Zで元に戻す、?で全キー',
     trkTypeNote: '音: A–G、# か -、オクターブ1–8（C#4, D-5）。OFFはノートオフ、...は休符。EnterでCだけなら上のオクターブで', trkTypeHex: (k) => `${k}: 16進2桁（00–FF）。1桁はEnter`,
     trkRest: '休符', trkRestTip: 'このセルの音を休符に（Delete）', trkOffTip: 'ノートオフ: この行から休符', trkKeysTip: '鍵盤モードを開く: 鍵盤を押すとここに音が入ります',
     trkParamNote: '音色と音量は音が始まるセルに入れます', trkParamSet: (k, v) => `${k}${v} を設定`, trkParamNext: (k, v) => `${k}${v}: 2桁の値ならもう1つ16進数字を入力`,
@@ -356,6 +380,18 @@ const T = {
     trkWhere: (row, tick, len) => `${row}行目 · ${tick}クロック · 長さ ${len}`, trkShared: '繰り返し/マクロで一度だけ書かれた音: 直すとすべての繰り返しに反映されます',
     trkMacro: 'マクロ内', trkPastEnd: 'このパートの終わりより後です。先にテキストにMMLを書いてください', trkCannot: 'タイ、ポルタメント、エコーの音はテキストで直してください',
     trkEmpty: 'パートなし',
+    trkStep: '間隔', trkStepTip: '音・休符・値を入れた後にカーソルが下がる行数（0ならそのまま）',
+    trkUndoTip: 'トラッカーの最後の編集を元に戻す (Ctrl+Z)', trkRedoTip: 'やり直し (Ctrl+Y か Ctrl+Shift+Z)', trkHelpTip: 'トラッカーのキー (?)',
+    trkUndone: '元に戻しました', trkRedone: 'やり直しました', trkNothingUndo: '元に戻すトラッカーの編集がありません', trkNothingRedo: 'やり直す編集がありません',
+    trkUndoStale: 'その後テキストが変わりました。テキストで元に戻してください（テキストでCtrl+Z）',
+    trkHelpTitle: 'トラッカーのキー',
+    trkKeysDisplay: [['C#4 · D-5 · C4', '音: 文字、# か -、オクターブ（Cだけ入れてEnterなら上のオクターブ）'], ['OFF · ...', 'ノートオフ · 休符'], ['00–FF', '@・v欄: 音色と音量'], ['0–9 · XD3', 'エフェクト(?XT4)トラック: エフェクト番号'], ['Enter · F2', '欄の値を編集'], ['Delete', '音を休符に']],
+    trkKeysTracker: [['Z S X D C …', '下のオクターブの音'], ['Q 2 W 3 E …', '上のオクターブの音'], ['1 · `', 'ノートオフ'], ['Delete', '音を休符に'], ['テンキー / *', 'オクターブ下げ · 上げ'], ['0–F', '@・v欄: 16進2桁']],
+    trkKeysCommon: [['↑ ↓ ← →', '移動（← →は音・@・v欄とパートの間）'], ['PgUp · PgDn', '16行'], ['Home · End', '先頭 · 末尾'], ['Ctrl+↑ · Ctrl+↓', 'パートの前 · 次の音か休符'], ['Ctrl+Z · Ctrl+Y', 'トラッカー編集の元に戻す · やり直し'], ['間隔', '入力後に下がる行数'], ['?', 'この一覧'], ['Esc', '閉じる']],
+    trkSrHelp: '曲のパターンです。矢印キーで行とパートを移動し、表示どおりの形（C#4、OFF）で音を、@・v欄には数字を入力します。Ctrl+Zで元に戻し、疑問符でキーの一覧です。',
+    trkSayCell: (part, chip, row, what, field) => `${part} ${chip}、${row}行: ${what}。${field}`,
+    trkSayNote: (n, inst, vol, len) => `${n}${inst ? `、音色 ${inst}` : ''}、音量 ${vol}、${len}クロック`, trkSayRest: (len) => `休符、${len}クロック`,
+    trkSayHeld: (n) => `${n} 継続`, trkSayEmpty: '空', trkSayFieldNote: '音の欄',
     trkFxUndefined: (n) => `この曲には?XD${n}の定義がありません`, trkFxRange: () => 'エフェクト音符はXD0–XD9（c–a）です。a+とbはエフェクトを始めません',
     trkFxDef: 'この?XD定義をテキストで表示', trkTypeFx: 'エフェクト: 数字0–9かXD0–XD9、OFFはノートオフ、...は休符',
     keysMode: '鍵盤', keysTip: '鍵盤モード: エディタの下に鍵盤を出し、マウスやキーボードで演奏',
@@ -1567,6 +1603,7 @@ function setFontSize(value) {
   closeSuggest();
   renderMarks();
   traceDirty = true;
+  if (typeof tracker !== 'undefined') tracker.setFontSize(size);
   store.set(STORE_FONT, String(size));
 }
 $('fontSize').addEventListener('input', (e) => setFontSize(e.target.value));
@@ -2624,6 +2661,16 @@ const tracker = new Tracker($('tracker'), {
     return PART_COLORS[(TRACK_LETTERS.indexOf(name[prefix ? 3 : 0]) + prefix * 4) % PART_COLORS.length];
   },
   sourceText: (row, col, len) => (lines[row - 1] || '').slice(col, col + len),
+  text: () => code.value,
+  // Undo / redo of the tracker's edits: the whole text put back, the view kept where it is.
+  restore: (text) => {
+    const { scrollTop, scrollLeft } = code;
+    code.setRangeText(text, 0, code.value.length, 'start');
+    code.scrollTop = scrollTop;
+    code.scrollLeft = scrollLeft;
+    code.dispatchEvent(new Event('input'));
+    tracker.setText(code.value);
+  },
   edit: (edits) => {
     // Right to left, so earlier positions stay valid.
     edits.sort((a, b) => b.row - a.row || b.col - a.col);
@@ -2671,6 +2718,7 @@ function trackerPreview(on, midi, name, fx = false, tap = false) {
   const inst = fx ? { kind: 'noise' } : partInstrument(token, Math.max(row, linkRow || row), inlineVoices(), songWaves()).inst;
   keysNode.port.postMessage({ type: 'on', id: 1000 + midi, freq: 440 * 2 ** ((midi - 69) / 12), inst });
 }
+tracker.setFontSize(Number($('fontSize').value) || 13.5);
 let trackerTimer = 0, linkRow = 0;
 function scheduleTracker() {
   if (splitMode !== 'tracker') return;
