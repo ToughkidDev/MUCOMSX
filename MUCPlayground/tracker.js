@@ -16,6 +16,9 @@
 //             redrawn from the text
 //   playing   the page passes the playing position (from the engine's trace); the rows scroll
 //             with it, the playing row in the middle
+//   effects   on a MucoMSX ?XT4 track a note starts a shared effect: its cell shows XD0–XD9
+//             (c … a) in orange with no @, the info line the ?XDn definition (a click shows it
+//             in the text); a digit or XDn is typed there, and keys give c … a as XD0–XD9
 
 import { timeline, lengthText, noteText, tokenText } from './mml-timeline.js';
 import { KEY_MAP } from './keyboard.js';
@@ -25,7 +28,7 @@ const RESOLUTIONS = [4, 8, 12, 16, 24, 32, 48, 64];   // rows per whole note
 const C = {
   bg: '#121317', row4: '#1a1c22', row16: '#232731', grid: '#2b2f3a', num: '#6f7787', num16: '#d6b25e',
   note: '#e6e6e6', inst: '#5ab0f0', vol: '#7fd17f', off: '#e3736a', empty: '#3d4250', hold: '#4b5263',
-  dim: 0.45, cursorRow: '#26304a', cursor: '#5aa0ff', play: '#4a2f68', playLine: '#b07cff', head: '#191b21', text: '#c8ccd6',
+  fx: '#f0a040', dim: 0.45, cursorRow: '#26304a', cursor: '#5aa0ff', play: '#4a2f68', playLine: '#b07cff', head: '#191b21', text: '#c8ccd6',
 };
 
 const hex2 = (v) => (v === null || v === undefined ? '..' : typeof v === 'string' ? (v.slice(0, 2) + '..').slice(0, 2) : ((v & 255).toString(16).toUpperCase().padStart(2, '0')));
@@ -81,6 +84,9 @@ export class Tracker {
     // Scrolling by hand while a song plays stops the rows following it for a moment.
     this.scroller.addEventListener('scroll', () => { if (performance.now() - this.autoAt > 80) this.holdUntil = performance.now() + 2500; this.draw(); });
     this.scroller.addEventListener('pointerdown', (e) => this.click(e));
+    // Hovering an effect note shows its ?XD definition; leaving goes back to the cursor's cell.
+    this.scroller.addEventListener('pointermove', (e) => this.hover(e));
+    this.scroller.addEventListener('pointerleave', () => { if (this.hovered) { this.hovered = null; this.showInfo(this.eventAt(this.cursor.track, this.cursor.row * this.rowTicks)?.ev); } });
     this.scroller.addEventListener('keydown', (e) => this.key(e));
     this.scroller.addEventListener('keyup', (e) => { if (this.held === e.code) { this.o.preview(false, this.heldMidi); this.held = null; } });
     this.scroller.addEventListener('focus', () => { this.armed = true; this.draw(); });
@@ -213,7 +219,14 @@ export class Tracker {
         const ev = starts[0];
         let tx = x + 6;
         const put = (text, col, alpha = 1) => { g.globalAlpha = alpha; g.fillStyle = col; g.fillText(text, tx, cy); tx += g.measureText(text).width + m.cw * 0.6; g.globalAlpha = 1; };
-        if (ev && ev.kind === 'note') {
+        if (ev && ev.kind === 'note' && ev.fx !== undefined) {
+          // an effect note: XD0–XD9 (red when the song does not define it)
+          const a = ev.rep ? C.dim : 1;
+          const known = ev.fx < 10 && this.tracks[k].effects?.has(ev.fx);
+          put(ev.tied ? '^^^' : ev.fx < 10 ? `XD${ev.fx}` : 'XD?', ev.tied ? C.hold : known ? C.fx : C.off, a);
+          put('..', C.empty);
+          put(hex2(ev.vol), C.vol, a);
+        } else if (ev && ev.kind === 'note') {
           const a = ev.rep ? C.dim : 1;
           const name = NAMES[ev.midi % 12] + (Math.floor(ev.midi / 12) - 1);
           put(ev.tied ? '^^^' : name, ev.tied ? C.hold : C.note, a);
@@ -328,6 +341,60 @@ export class Tracker {
     if (!ev) { info.textContent = this.o.t(this.input === 'display' ? 'trkHintDisplay' : 'trkHint'); return; }
     const where = this.o.t('trkWhere', ev.src.row, ev.tick, ev.len);
     info.textContent = where + (ev.shared ? ' · ' + this.o.t('trkShared') : '') + (ev.src.macro ? ' · ' + this.o.t('trkMacro') : '') + (ev.src.alone ? '' : ' · ' + this.o.t('trkMulti'));
+    if (ev.fx !== undefined) this.showEffect(info, ev.fx);
+  }
+
+  // The ?XDn definition an effect note starts, in front of the info line's text (so it is
+  // never cut off): a click shows it in the editor.
+  showEffect(info, fx) {
+    const track = this.tracks.find((tr) => tr.effects);
+    const def = track?.effects.get(fx);
+    info.prepend(' · ');
+    if (!def) { info.prepend(this.o.t(fx < 10 ? 'trkFxUndefined' : 'trkFxRange', fx)); return; }
+    const link = document.createElement('button');
+    link.type = 'button';
+    link.className = 'trk-def';
+    link.textContent = def.text;
+    link.title = this.o.t('trkFxDef');
+    link.addEventListener('pointerdown', (e) => e.preventDefault());
+    link.onclick = () => this.o.reveal({ row: def.row, col: def.col, len: def.len });
+    info.prepend(link);
+  }
+
+  // Whether the cursor's cell is on an effect (?XT4) stretch of its track: the event there,
+  // or the last one before it, starts an effect; below the end, the track ends as one.
+  isFx(track, row) {
+    const tr = this.tracks[track];
+    if (!tr) return false;
+    const tick = row * this.rowTicks;
+    const at = this.startsIn(track, row)[0] || this.eventAt(track, tick)?.ev;
+    if (at) return at.fx !== undefined;
+    if (tick >= tr.end) return !!tr.fxTail;
+    let before = null;
+    for (const ev of tr.events) { if (ev.tick > tick) break; before = ev; }
+    return before ? before.fx !== undefined : !!tr.fxTail;
+  }
+
+  // An effect typed in a cell: ?XDn written as its note letter.
+  enterFx(n) {
+    const { track } = this.cursor;
+    this.edit('note', 12 * (this.octave + 1) + n);
+    return track;
+  }
+
+  hover(e) {
+    if (!this.m || e.buttons || this.editor) return;
+    const r = this.scroller.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    const track = Math.floor((x + this.scroller.scrollLeft - this.m.numW) / this.m.colW);
+    const row = Math.floor((y + this.scroller.scrollTop - this.m.headH - this.pad) / this.m.rowH);
+    const ev = y >= this.m.headH && x >= this.m.numW && row >= 0 ? this.startsIn(track, row)[0] : null;
+    const key = ev?.fx !== undefined ? `${track}:${row}` : null;
+    if (key === this.hovered) return;
+    const was = this.hovered;
+    this.hovered = key;
+    if (key) this.showInfo(ev);
+    else if (was) this.showInfo(this.eventAt(this.cursor.track, this.cursor.row * this.rowTicks)?.ev);
   }
 
   click(e) {
@@ -362,7 +429,10 @@ export class Tracker {
     if (this.input === 'display') {
       // Typed as shown: a letter, O, . or - starts a note field; hex digits an @ / v field;
       // Enter opens the field with what it shows.
-      const starts = this.cursor.col === 0 ? /^[a-go.\-]$/i : /^[0-9a-f]$/i;
+      const fx = this.cursor.col === 0 && this.isFx(track, row);
+      // On an effect track a digit is the effect itself, X starts XDn.
+      if (fx && /^[0-9]$/.test(e.key)) { e.preventDefault(); this.enterFx(+e.key); return; }
+      const starts = this.cursor.col === 0 ? (fx ? /^[a-gox.\-]$/i : /^[a-go.\-]$/i) : /^[0-9a-f]$/i;
       if (e.key === 'Enter' || e.key === 'F2') { e.preventDefault(); this.openEditor(this.fieldText(), true); return; }
       if (e.key.length === 1 && starts.test(e.key)) { e.preventDefault(); this.openEditor(e.key.toUpperCase()); return; }
       if (e.code === 'Delete' || e.code === 'Backspace') { e.preventDefault(); if (this.cursor.col === 0) this.edit('rest'); return; }
@@ -406,6 +476,7 @@ export class Tracker {
     if (!ev) return col ? '' : '';
     if (col === 0) {
       if (ev.kind === 'rest') return 'OFF';
+      if (ev.fx !== undefined) return `XD${ev.fx}`;
       return NAMES[ev.midi % 12] + (Math.floor(ev.midi / 12) - 1);
     }
     const v = col === 1 ? ev.inst : ev.vol;
@@ -433,12 +504,13 @@ export class Tracker {
     this.editor = box;
     box.focus();
     if (select) box.select();
-    this.showInfo(null, this.o.t(col === 0 ? 'trkTypeNote' : 'trkTypeHex', col === 1 ? '@' : 'v'));
+    const fxCell = col === 0 && this.isFx(track, row);
+    this.showInfo(null, this.o.t(fxCell ? 'trkTypeFx' : col === 0 ? 'trkTypeNote' : 'trkTypeHex', col === 1 ? '@' : 'v'));
     const done = () => this.commitEditor(false);
     box.addEventListener('input', () => {
       const v = box.value.toUpperCase().replace(/\s/g, '').replace('+', '#');
       if (v !== box.value) box.value = v;
-      const complete = col === 0 ? /^([A-G][-#]?[1-8]|OFF|\.\.\.|---)$/.test(v) : /^[0-9A-F]{2}$/.test(v);
+      const complete = col === 0 ? /^([A-G][-#]?[1-8]|OFF|\.\.\.|---)$/.test(v) || (fxCell && /^XD[0-9]$/.test(v)) : /^[0-9A-F]{2}$/.test(v);
       if (complete) done();
     });
     box.addEventListener('keydown', (e) => {
@@ -467,6 +539,8 @@ export class Tracker {
     if (col === 0) {
       if (v === 'OFF') { this.edit('off'); return; }
       if (v === '' || /^[.\-]+$/.test(v)) { if (v) this.edit('rest'); return; }
+      const xd = /^(?:XD)?([0-9])$/.exec(v);
+      if (xd && this.isFx(this.cursor.track, this.cursor.row)) { this.enterFx(+xd[1]); return; }
       const m = /^([A-G])([-#]?)([1-8])?$/.exec(v);
       if (!m || (!m[3] && !forced)) { this.showInfo(null, this.o.t('trkTypeNote')); return; }
       const oct = m[3] ? +m[3] : this.octave;
@@ -521,10 +595,19 @@ export class Tracker {
     const tr = this.tracks[track];
     if (!tr) return;
     this.armed = true;
+    // On an effect track only c … a (XD0–XD9) the song defines can be written; the octave
+    // means nothing there, so the note keeps the octave it is written at.
+    let fx = null;
+    if (action === 'note' && this.isFx(track, row)) {
+      fx = ((midi % 12) + 12) % 12;
+      if (fx > 9) { this.showInfo(null, this.o.t('trkFxRange', fx)); return; }
+      if (!tr.effects?.has(fx)) { this.showInfo(null, this.o.t('trkFxUndefined', fx)); return; }
+    }
+    const pitch = (oct) => (fx === null ? midi : 12 * (oct + 1) + fx);
     const starts = this.startsIn(track, row);
     const hit = starts.length ? { ev: starts[0] } : this.eventAt(track, tick);
     if (!hit) {
-      if (tick >= tr.end) this.append(tr, tick, action, midi);
+      if (tick >= tr.end) this.append(tr, tick, action, fx === null ? midi : pitch(tr.tail.oct));
       else this.showInfo(null, this.o.t('trkPastEnd'));
       return;
     }
@@ -536,7 +619,7 @@ export class Tracker {
     if (ev.tick >= tick) {
       // The event starts in this row: change it in place.
       if (action === 'note') {
-        const text = noteText(midi, ev.oct);
+        const text = noteText(pitch(ev.oct), ev.oct);
         const [pre, name, post] = splitOctave(text);
         if (post) edits.push({ row: src.row, col: src.col + src.len, len: 0, text: post });
         edits.push({ row: src.row, col: src.col, len: src.letterLen, text: pre + name });
@@ -548,7 +631,7 @@ export class Tracker {
       if (action !== 'note' && ev.kind === 'rest') return;
       const before = tick - ev.tick, after = ev.len - before;
       const head = this.o.sourceText(src.row, src.col, src.letterLen) + lengthText(before, clock, unit);
-      const tail = action === 'note' ? noteText(midi, ev.oct, lengthText(after, clock, unit)) : 'r' + lengthText(after, clock, unit);
+      const tail = action === 'note' ? noteText(pitch(ev.oct), ev.oct, lengthText(after, clock, unit)) : 'r' + lengthText(after, clock, unit);
       edits.push({ row: src.row, col: src.col, len: src.len, text: `${head} ${tail}` });
     }
     this.o.edit(edits);

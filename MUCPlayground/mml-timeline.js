@@ -264,6 +264,10 @@ function ticksOf(len, st, kind = 'note') {
   return kind === 'l' ? t + add : (t + add) & 255;
 }
 
+// A PSG / SCC track of type 4 (?XT4): its notes start the shared effects ?XD0–?XD9 (the
+// note's place in the octave: c = 0, c+ = 1 … a = 9) instead of sounding a pitch.
+const fxTrack = (st) => st.ext && st.base && st.type !== null && (st.type & 5) === 4;
+
 function run(nodes, st, out, rep) {
   for (const node of nodes) {
     if (st.ended) return;
@@ -277,6 +281,7 @@ function run(nodes, st, out, rep) {
         if (node.t === 'note') {
           ev.midi = 12 * (st.oct + 1) + node.semi;
           ev.inst = node.drum ?? st.inst;
+          if (fxTrack(st)) ev.fx = ((node.semi % 12) + 12) % 12;
           ev.vol = st.vol;
           if (st.tie) ev.tied = true;
           if (node.porta) ev.porta = true;
@@ -320,7 +325,12 @@ function run(nodes, st, out, rep) {
         if (!st.base) break;
         if (st.stepNext && node.v !== null) { st.stepLen = node.v; st.stepNext = false; }
         const type = st.type ?? 1;
-        if (type & 1 && node.v !== null) {
+        if (fxTrack(st) && node.v !== null) {
+          // a note byte that starts effect ?XD(byte >> 4)
+          const len = ((node.v & 15) + 1) * st.unit;
+          out.push({ tick: st.tick, len, kind: 'note', midi: 12 * (st.oct + 1) + (node.v >> 4), fx: node.v >> 4, inst: st.inst, vol: st.vol, src: node.src, rep, oct: st.oct, clock: st.clock, unit: st.unit });
+          st.tick += len;
+        } else if (type & 1 && node.v !== null) {
           // ?XS on a note track is a note byte: pitch (12+ a rest) and length in units.
           const pitch = node.v >> 4, len = ((node.v & 15) + 1) * st.unit;
           const ev = { tick: st.tick, len, kind: pitch >= 12 ? 'rest' : 'note', src: node.src, rep, oct: st.oct, clock: st.clock, unit: st.unit };
@@ -394,6 +404,15 @@ function msxTracks(rows, macros) {
     return [{ text: ROUTE, row: 0, col: 0, ch }, seg];
   };
   const code = [], labels = new Map(), routes = new Map();
+  // The shared effects (?XDn={…}), for the tracker: where each is defined and its text.
+  const effects = new Map();
+  const XD = /(?:\?XD|[?@]R)[ \t]*(\$[0-9A-Fa-f]+|\d+)[ \t]*=?[ \t]*\{[^}]*\}?/g;
+  for (const { seg } of rows) {
+    for (const m of seg.text.matchAll(XD)) {
+      const id = m[1][0] === '$' ? parseInt(m[1].slice(1), 16) : +m[1];
+      if (!effects.has(id)) effects.set(id, { row: seg.row, col: seg.col + m.index, len: m[0].length, text: m[0].endsWith('}') ? m[0] : m[0] + ' …' });
+    }
+  }
   const add = (ch, segs) => {
     for (const node of parse(streamOf(segs, macros), true, lex.get(ch))) {
       if (node.t === 'label' && !labels.has(node.id)) labels.set(node.id, code.length);
@@ -443,7 +462,8 @@ function msxTracks(rows, macros) {
       pc++;
     }
     finish(events);
-    tracks.push({ name: ch, events, end: st.tick, loopTick: st.loopTick, clock: st.clock, unit: compact.get(ch) ? st.unit : 0, tail: tailOf(own, st, compact.get(ch)) });
+    tracks.push({ name: ch, events, end: st.tick, loopTick: st.loopTick, clock: st.clock, unit: compact.get(ch) ? st.unit : 0, tail: tailOf(own, st, compact.get(ch)),
+      effects, fxTail: fxTrack(st) });
   }
   return tracks;
 }
