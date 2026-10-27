@@ -10,6 +10,7 @@ import { WaveEditor } from './wave-editor.js';
 import { FmEditor, formatVoice, INIT as INIT_VOICE } from './fm-editor.js';
 import { Keyboard } from './keyboard.js';
 import { Tracker } from './tracker.js';
+import { ScopeView } from './scope-view.js';
 import { BankView } from './bank-view.js';
 import { Manual } from './manual.js';
 import { targetAt } from './manual-lookup.js';
@@ -101,6 +102,13 @@ const T = {
     bankLoaded_fm: (name, n) => `${name}: ${n} voices`, bankLoaded_scc: (name, n) => `${name}: ${n} waves`, bankSavedFromMuc: 'Saved a voice file made from the MUC\'s voices', bankNothingToUndo: 'Nothing to undo',
     bankImported_fm: (n, to) => `${n} voices added to the ${to}`, bankImported_scc: (n, to) => `${n} waves added to the ${to}`, bankImportSame: (n) => `${n} already in the bank`, bankImportFull: (n) => `${n} left out: no free numbers`, bankImportNone_fm: (names) => `no FM voices in ${names}`, bankImportNone_scc: (names) => `no SCC waves in ${names}`,
     manTitle: 'Manual', manTip: 'Manual mode: the MML guide (MUCOM88 and the mucomDotNET extensions) beside the editor; examples go into the song with Insert',
+    scopeTitle: 'Scope', scopeTip: 'Oscilloscope mode: every channel\'s own waveform next to the text, while the song plays',
+    scopeWindow: 'Time', scopeWindowTip: 'How much of each wave is shown (5–100 ms; double-click: 25 ms)',
+    scopeMeters: 'Levels', scopeMetersTip: 'A level meter per channel under the waves: its loudness against the chip\'s full output (dB), the peak held for a second',
+    scopeAll: 'All channels', scopeAllTip: 'Show every channel of the song\'s chips, also those that have not sounded',
+    scopeIdle: 'Play the song to see each channel\'s wave', scopeWaiting: 'No channel has sounded yet',
+    scopeVgm: 'The oscilloscope shows MUC and MUB songs (not VGM files)',
+    scopeChannels: (n, list) => `Oscilloscope of ${n} channels: ${list}`, scopeCount: (n) => `${n} channels`,
     trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
     trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave; Ctrl+Z undo, ? all keys',
     trkInput: 'Input', trkInputDisplay: 'As shown (C#4, OFF, 0F)', trkInputTracker: 'Quick keys (Z S X / Q 2 W)',
@@ -235,6 +243,13 @@ const T = {
     bankLoaded_fm: (name, n) => `${name}: 음색 ${n}개`, bankLoaded_scc: (name, n) => `${name}: 파형 ${n}개`, bankSavedFromMuc: 'MUC 음색으로 만든 음색 파일을 저장했습니다', bankNothingToUndo: '되돌릴 것이 없습니다',
     bankImported_fm: (n, to) => `${to}에 음색 ${n}개 추가`, bankImported_scc: (n, to) => `${to}에 파형 ${n}개 추가`, bankImportSame: (n) => `${n}개는 이미 있음`, bankImportFull: (n) => `${n}개는 빈 번호가 없어 제외`, bankImportNone_fm: (names) => `${names}에 FM 음색 없음`, bankImportNone_scc: (names) => `${names}에 SCC 파형 없음`,
     manTitle: '문법', manTip: '문법 설명서 모드: 에디터 옆에 MML 설명서(MUCOM88, mucomDotNET 확장 명령)를 띄우고, 예제는 넣기로 곡에 넣습니다',
+    scopeTitle: '스코프', scopeTip: '오실로스코프 모드: 곡이 재생되는 동안 채널마다 파형을 텍스트 옆에 보여 줌',
+    scopeWindow: '시간폭', scopeWindowTip: '각 파형을 얼마나 길게 보여 줄지 (5–100 ms, 더블클릭하면 25 ms)',
+    scopeMeters: '레벨', scopeMetersTip: '파형 아래 채널마다 레벨 미터: 칩의 최대 출력에 대한 음량(dB), 최고점은 1초 동안 유지',
+    scopeAll: '모든 채널', scopeAllTip: '아직 소리가 나지 않은 채널까지 곡이 쓰는 칩의 모든 채널을 보여 줌',
+    scopeIdle: '곡을 재생하면 채널마다 파형이 보입니다', scopeWaiting: '아직 소리가 난 채널이 없습니다',
+    scopeVgm: '오실로스코프는 MUC와 MUB 곡을 보여 줍니다 (VGM 파일은 안 됨)',
+    scopeChannels: (n, list) => `채널 ${n}개의 오실로스코프: ${list}`, scopeCount: (n) => `채널 ${n}개`,
     trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
     trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브. Ctrl+Z 되돌리기, ? 전체 키',
     trkInput: '입력', trkInputDisplay: '표시 형식대로 (C#4, OFF, 0F)', trkInputTracker: '빠른 키 (Z S X / Q 2 W)',
@@ -369,6 +384,13 @@ const T = {
     bankLoaded_fm: (name, n) => `${name}: ${n}音色`, bankLoaded_scc: (name, n) => `${name}: ${n}波形`, bankSavedFromMuc: 'MUCの音色から作った音色ファイルを保存しました', bankNothingToUndo: '元に戻すものがありません',
     bankImported_fm: (n, to) => `${to}に${n}音色を追加`, bankImported_scc: (n, to) => `${to}に${n}波形を追加`, bankImportSame: (n) => `${n}個はすでにあり`, bankImportFull: (n) => `${n}個は空き番号がなく除外`, bankImportNone_fm: (names) => `${names}にFM音色なし`, bankImportNone_scc: (names) => `${names}にSCC波形なし`,
     manTitle: '文法', manTip: '文法説明書モード: エディタの横にMML説明書（MUCOM88、mucomDotNET拡張コマンド）を表示し、例は挿入で曲に入れます',
+    scopeTitle: 'スコープ', scopeTip: 'オシロスコープモード: 曲の再生中、チャンネルごとの波形をテキストの横に表示',
+    scopeWindow: '時間幅', scopeWindowTip: '各波形をどれだけの長さ表示するか（5–100 ms、ダブルクリックで25 ms）',
+    scopeMeters: 'レベル', scopeMetersTip: '波形の下にチャンネルごとのレベルメーター: チップの最大出力に対する音量(dB)、ピークは1秒保持',
+    scopeAll: '全チャンネル', scopeAllTip: 'まだ鳴っていないチャンネルも含め、曲が使うチップの全チャンネルを表示',
+    scopeIdle: '曲を再生するとチャンネルごとの波形が表示されます', scopeWaiting: 'まだ鳴ったチャンネルがありません',
+    scopeVgm: 'オシロスコープはMUCとMUBの曲を表示します（VGMファイルは不可）',
+    scopeChannels: (n, list) => `${n}チャンネルのオシロスコープ: ${list}`, scopeCount: (n) => `${n}チャンネル`,
     trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
     trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ。Ctrl+Zで元に戻す、?で全キー',
     trkInput: '入力', trkInputDisplay: '表示どおり (C#4, OFF, 0F)', trkInputTracker: 'クイックキー (Z S X / Q 2 W)',
@@ -1453,6 +1475,12 @@ function onEngineMessage(m, source) {
     case 'trace':
       if (m.session === traceSession) for (const v of m.events) traceEvents.push(v);
       break;
+    case 'scopeChannels':
+      if (source === active && m.session === traceSession) { if (m.channels) scopeView.setChannels(m.channels); else scopeView.setUnsupported(); }
+      break;
+    case 'scope':
+      if (source === active && m.session === traceSession) scopeView.push(m.data);
+      break;
     case 'chips':
       if (source === cvSource && m.session === cvSession) channelView.push(m.events);
       break;
@@ -2263,9 +2291,9 @@ async function loadRepoFile(path, force = false) {
 
 // ---------- split editor ----------
 function setSplit(mode) {
-  splitMode = ['side', 'stack', 'tracker', 'bank', 'manual'].includes(mode) ? mode : 'off';
+  splitMode = ['side', 'stack', 'tracker', 'bank', 'manual', 'scope'].includes(mode) ? mode : 'off';
   const box = $('panes');
-  const right = splitMode === 'tracker' || splitMode === 'bank' || splitMode === 'manual';
+  const right = splitMode === 'tracker' || splitMode === 'bank' || splitMode === 'manual' || splitMode === 'scope';
   box.classList.toggle('split-side', splitMode === 'side' || right);
   box.classList.toggle('split-stack', splitMode === 'stack');
   box.classList.toggle('split-tracker', right);
@@ -2277,6 +2305,11 @@ function setSplit(mode) {
   $('manual').hidden = splitMode !== 'manual';
   $('manualToggle').setAttribute('aria-pressed', String(splitMode === 'manual'));
   $('trackerToggle').setAttribute('aria-pressed', String(splitMode === 'tracker'));
+  // The oscilloscope (scope-view.js): the engine keeps each channel's samples only while it shows.
+  $('scopeView').hidden = splitMode !== 'scope';
+  $('scopeToggle').setAttribute('aria-pressed', String(splitMode === 'scope'));
+  if (splitMode === 'scope') scopeView.open(); else scopeView.close();
+  worker.postMessage({ type: 'scope', on: splitMode === 'scope' });
   markBankButtons();
   if (splitMode === 'tracker') { tracker.setText(code.value); tracker.layout(); }
   if (splitMode === 'bank') bank.refresh();
@@ -2654,12 +2687,15 @@ function keyNote(on, midi) {
 // The text on the left, the song as a tracker pattern on the right (tracker.js); an edit on
 // either side shows on the other, and while a song plays the rows follow it.
 const TRACK_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUV';
+// A part's colour in the tracker and the oscilloscope (A, MSXD, SCCB, 2A on a second chip …).
+function partColor(name) {
+  name = name.replace(/^\d/, '');
+  const prefix = name.startsWith('SCC') ? 2 : name.startsWith('MSX') ? 1 : 0;
+  return PART_COLORS[(TRACK_LETTERS.indexOf(name[prefix ? 3 : 0]) + prefix * 4) % PART_COLORS.length];
+}
 const tracker = new Tracker($('tracker'), {
   t,
-  colors: (name) => {
-    const prefix = name.startsWith('SCC') ? 2 : name.startsWith('MSX') ? 1 : 0;
-    return PART_COLORS[(TRACK_LETTERS.indexOf(name[prefix ? 3 : 0]) + prefix * 4) % PART_COLORS.length];
-  },
+  colors: partColor,
   sourceText: (row, col, len) => (lines[row - 1] || '').slice(col, col + len),
   text: () => code.value,
   // Undo / redo of the tracker's edits: the whole text put back, the view kept where it is.
@@ -2778,6 +2814,17 @@ function updateTrackerPlayhead() {
   if (tick !== trkShown) { trkShown = tick; tracker.setPlayhead(tick); }
 }
 $('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'tracker' ? 'off' : 'tracker'));
+
+// ---------- oscilloscope mode ----------
+// noteOf: the MML token a part plays now, from the playback positions (its label: A, MSXD …).
+const scopeView = new ScopeView($('scopeView'), {
+  t, colors: partColor, now: () => (playing ? playedFrame() : null),
+  noteOf: (name) => {
+    for (const [key, p] of positions) if (partInfo(key).label === name) return tokenAt(p).text.trim();
+    return '';
+  },
+});
+$('scopeToggle').addEventListener('click', () => setSplit(splitMode === 'scope' ? 'off' : 'scope'));
 
 // ---------- manual mode ----------
 // The MML guide beside the editor (manual.js). Insert puts an example into the song: a

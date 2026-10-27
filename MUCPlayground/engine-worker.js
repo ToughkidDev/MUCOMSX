@@ -36,6 +36,8 @@ async function play(id, start) {
   start = JSON.parse(start());
   if (!start.ok) { postMessage({ type: 'error', message: start.error }); return; }
   postMessage({ type: 'started', info: start, session: id });
+  // The channels the oscilloscope view can show (none for a VGM file).
+  postMessage({ type: 'scopeChannels', session: id, channels: E.ScopeChannels ? JSON.parse(E.ScopeChannels()) : null });
   rendered = 0;
   played = 0;
   audio.postMessage({ type: 'reset', session: id });
@@ -64,6 +66,14 @@ async function play(id, start) {
     if (trace.length) {
       const events = Int32Array.from(trace);
       postMessage({ type: 'trace', session: id, events }, [events.buffer]);
+    }
+    // Each channel's own output, for the oscilloscope view (only while it is open).
+    if (E.TakeScope) {
+      const scope = E.TakeScope();
+      if (scope.length) {
+        const copy = scope.slice();
+        postMessage({ type: 'scope', session: id, data: copy.buffer }, [copy.buffer]);
+      }
     }
     // Chip register writes and live output levels, for the channel view.
     for (const [type, take] of [['chips', E.TakeChipLog], ['levels', E.TakeLevels]]) {
@@ -133,6 +143,9 @@ onmessage = async (event) => {
         play(session, () => E.StartFile(data));
         break;
       }
+      case 'scope':
+        E.SetScope?.(m.on);
+        break;
       case 'channelVolume':
         E.SetChannelVolume(m.chip, m.id, m.ch, m.vol);
         break;

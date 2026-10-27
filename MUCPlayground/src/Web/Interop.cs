@@ -87,7 +87,7 @@ public static partial class Interop
     {
         player?.Stop();
         compiled = null;
-        player = new MucPlayer { Speed = speed };
+        player = new MucPlayer { Speed = speed, ScopeOn = scopeOn };
         ApplyChannelVolumes(player);
         bool ok = player.Start(data, Open);
         return Json(w =>
@@ -105,7 +105,7 @@ public static partial class Interop
     [JSExport]
     public static string Start()
     {
-        player = new MucPlayer { Speed = speed };
+        player = new MucPlayer { Speed = speed, ScopeOn = scopeOn };
         ApplyChannelVolumes(player);
         bool ok = compiled != null && player.Start(compiled, Open);
         return Json(w =>
@@ -164,6 +164,34 @@ public static partial class Interop
         int[] events = player.Trace.ToArray();
         player.Trace.Clear();
         return events;
+    }
+
+    // The per-channel oscilloscope: on while the page shows it (only then are samples kept).
+    static bool scopeOn;
+    [JSExport]
+    public static void SetScope(bool on) { scopeOn = on; if (player != null) player.ScopeOn = on; }
+
+    // Its channels for the song playing: [{ name, chip }].
+    [JSExport]
+    public static string ScopeChannels()
+    {
+        if (player == null) return "[]";
+        string[] names = player.ScopeNames, chips = player.ScopeChips;
+        return "[" + string.Join(",", names.Select((n, i) => $"{{\"name\":\"{n}\",\"chip\":\"{chips[i]}\"}}")) + "]";
+    }
+
+    // The samples kept since the last call: the output frame of the first (int32), then for
+    // each kept sample (22,050 Hz) one 16-bit value per channel, little-endian.
+    [JSExport]
+    public static byte[] TakeScope()
+    {
+        if (player == null) return new byte[0];
+        short[] s = player.TakeScope(out long frame);
+        if (s.Length == 0) return new byte[0];
+        byte[] bytes = new byte[4 + s.Length * 2];
+        BitConverter.TryWriteBytes(bytes.AsSpan(0, 4), (int)frame);
+        Buffer.BlockCopy(s, 0, bytes, 4, s.Length * 2);
+        return bytes;
     }
 
     // Chip writes since the last call: pairs of frame and packed write (see MucPlayer.ChipLog).

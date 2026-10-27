@@ -35,6 +35,7 @@ if (Environment.GetEnvironmentVariable("CHVOL") is string chvol)
         string[] fields = item.Split(':');
         if (ChannelMixer.TryParse(fields[0], out var c)) player.Mixer.SetVolume(c, int.Parse(fields[1]), int.Parse(fields[2]), int.Parse(fields[3]));
     }
+player.ScopeOn = Environment.GetEnvironmentVariable("SCOPE") != null;
 if (!player.Start(r, Open, Environment.GetEnvironmentVariable("NO_TRACE") == null)) { Console.WriteLine("start failed: " + player.Error); return 1; }
 Console.WriteLine($"chips: {player.Chips}  title: {player.Title}");
 
@@ -55,6 +56,19 @@ while (done < total && !player.Stopped)
     }
 }
 double ms = sw.Elapsed.TotalMilliseconds;
+// SCOPE=1: each oscilloscope channel's peak and its rising zero crossings per second.
+if (player.ScopeOn)
+{
+    short[] sc = player.TakeScope(out long first);
+    string[] names = player.ScopeNames, kinds = player.ScopeChips;
+    int n = names.Length, len = n == 0 ? 0 : sc.Length / n;
+    for (int c = 0; c < n; c++)
+    {
+        int peak = 0, cross = 0, prev = 0;
+        for (int i = 0; i < len; i++) { int v = sc[i * n + c]; peak = Math.Max(peak, Math.Abs(v)); if (prev < 0 && v >= 0) cross++; prev = v; }
+        Console.WriteLine($"  scope {names[c],-5} {kinds[c],-5} peak {peak,6}  crossings/s {cross / (len / 22050.0),7:F1}");
+    }
+}
 // DUMP=file: the trace and the chip writes (frame, value pairs), for checking timings.
 if (Environment.GetEnvironmentVariable("DUMP") is string dump)
     File.WriteAllText(dump, "T " + string.Join(',', player.Trace) + "\nC " + string.Join(',', player.ChipLog) + "\n");

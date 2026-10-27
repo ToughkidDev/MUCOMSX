@@ -211,6 +211,18 @@ public sealed class MucPlayer
     MsxMubProfile msx;
     MsxSoundMapper mapper;
     NativeMucomSession native;   // a packed msPb0103–010A score: MDPlayer4Mac's native core plays it
+    // The per-channel oscilloscope (ChannelScope.cs): its channels are found when playback
+    // starts; their samples are kept while ScopeOn.
+    ChannelScope scope;
+    public bool ScopeOn { get; set; }
+    public string[] ScopeNames => scope?.Probes.Select((p) => p.Name).ToArray() ?? Array.Empty<string>();
+    public string[] ScopeChips => scope?.Probes.Select((p) => p.Chip).ToArray() ?? Array.Empty<string>();
+    public short[] TakeScope(out long frame) { if (scope == null) { frame = -1; return Array.Empty<short>(); } return scope.Take(out frame); }
+    // The algorithm of each YM2608 FM channel, from $B0–$B2 (which operators the scope sums).
+    readonly int[][] opnaAlgo = { new int[6], new int[6] };
+    MDSound.emu2413 opllChip;
+    MDSound.ay8910 psgChip;
+    MDSound.K051649 sccChip;
     PackedMusicPlayer packed;    // its sequencer, for the song position (ticks)
     long packedTicks = -1;
     static readonly FieldInfo NativePacked = typeof(NativeMucomSession).GetField("packed", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -281,6 +293,7 @@ public sealed class MucPlayer
         native = null;
         packed = null;
         driver = null;
+        scope = null; opllChip = null; psgChip = null; sccChip = null;
         if (!MucEngine.IsMub(mub)) { Fail("Not a MUB."); return false; }
 
         try { msx = MsxMubProfile.HasMagic(mub) ? MsxMubProfile.Parse(mub) : null; }
@@ -309,7 +322,7 @@ public sealed class MucPlayer
         {
             if (msx.UsesOpll)
             {
-                MDSound.emu2413 opll = new();
+                MDSound.emu2413 opll = opllChip = new();
                 chips.Add(new() { type = MDSound.MDSound.enmInstrumentType.YM2413emu, ID = 0, Instrument = opll,
                     Update = opll.Update, Start = opll.Start, Stop = opll.Stop, Reset = opll.Reset,
                     SamplingRate = MucEngine.SampleRate, Volume = 0, Clock = 3_579_545 });
@@ -317,7 +330,7 @@ public sealed class MucPlayer
             }
             if (msx.UsesPsg)
             {
-                MDSound.ay8910 ay = new();
+                MDSound.ay8910 ay = psgChip = new();
                 chips.Add(new() { type = MDSound.MDSound.enmInstrumentType.AY8910, ID = 0, Instrument = ay,
                     Update = ay.Update, Start = ay.Start, Stop = ay.Stop, Reset = ay.Reset,
                     SamplingRate = MucEngine.SampleRate, Volume = 0, Clock = 1_789_773 / 2 });
@@ -325,7 +338,7 @@ public sealed class MucPlayer
             }
             if (msx.UsesScc)
             {
-                MDSound.K051649 scc = new();
+                MDSound.K051649 scc = sccChip = new();
                 chips.Add(new() { type = MDSound.MDSound.enmInstrumentType.K051649, ID = 0, Instrument = scc,
                     Update = scc.Update, Start = scc.Start, Stop = scc.Stop, Reset = scc.Reset,
                     SamplingRate = MucEngine.SampleRate, Volume = 0, Clock = 1_789_773 });
@@ -341,6 +354,16 @@ public sealed class MucPlayer
 
         mds = new MDSound.MDSound(MucEngine.SampleRate, 2048, null);
         mds.Init(MucEngine.SampleRate, 2048, chips.ToArray());
+        scope = new ChannelScope();
+        try
+        {
+            if (used[0]) scope.AddOpna(ym2608, 0, opnaAlgo[0], "");
+            if (used[1]) scope.AddOpna(ym2608, 1, opnaAlgo[1], "2");
+            if (opllChip != null) scope.AddOpll(opllChip);
+            if (psgChip != null) scope.AddAy8910(psgChip);
+            if (sccChip != null) scope.AddScc(sccChip);
+        }
+        catch { /* no scope for chips whose insides are not as expected */ }
         Mixer.Sink(ChannelMixer.Chip.Opna, (id, port, a, v) => mds.WriteYM2608((byte)id, (byte)port, (byte)a, (byte)v));
         Mixer.Sink(ChannelMixer.Chip.Opnb, (id, port, a, v) => mds.WriteYM2610((byte)id, (byte)port, (byte)a, (byte)v));
         Mixer.Sink(ChannelMixer.Chip.Opm, (id, port, a, v) => mds.WriteYM2151((byte)id, (byte)a, (byte)v));
@@ -510,6 +533,7 @@ public sealed class MucPlayer
                 packedTicks = packed.Ticks;
                 Trace.Add((int)frame); Trace.Add(-1); Trace.Add((int)Math.Min(int.MaxValue, packedTicks - 1)); Trace.Add(0); Trace.Add(0);
             }
+            if (ScopeOn && vgm == null) scope?.Capture(frame);
             frame++;
             if (Status < 1) { Silence(); Stopped = true; }
         }
@@ -627,6 +651,7 @@ public sealed class MucPlayer
     // Every chip write passes through here: to the emulators, and to the VGM log when exporting.
     void Opna(int chip, int port, int address, int value)
     {
+        if (address >= 0xb0 && address <= 0xb2 && chip < 2) opnaAlgo[chip][port * 3 + address - 0xb0] = value & 7;
         mds.WriteYM2608((byte)chip, (byte)port, (byte)address, (byte)Mixer.Adjust(ChannelMixer.Chip.Opna, chip, port, address, value));
         Mixer.After(ChannelMixer.Chip.Opna, chip, port, address);
         vgm?.Write(frame, chip == 0 ? 0x56 + port : 0xa6 + port, address, value);
