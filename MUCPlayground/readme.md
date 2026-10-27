@@ -129,7 +129,7 @@ dotnet workload install wasm-tools   # .NET 8 SDK
 MUCPlayground/src/build.sh
 ```
 
-`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.2.6), publishes `src/Web` and
+`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.2.6 with the fix below), publishes `src/Web` and
 `src/VgmWeb`, and copies only the files the browser loads into `engine/` (about 11 MB, 4.2 MB
 compressed) and `engine-vgm/` (about 20 MB, 7.3 MB compressed); AOT compilation takes a
 few minutes. Run it again after
@@ -145,6 +145,13 @@ snare + tom hit at their start); `?ID` hits applying a pending `?IT` kit, `v` an
 `[ ]n` and `L` on compact rows; `?IR` / `?IU` on compact MSX-MUSIC rows; PSG-only songs
 without `?WD`; wave morphs that wrap instead of stopping; messages with the two-letter
 command names. Scores that compiled before compile to the same bytes.
+
+The pinned commit adds one fix on top of v0.2.6
+([ToughkidDev/MDPlayer4Mac#2](https://github.com/ToughkidDev/MDPlayer4Mac/pull/2), test in
+`macos/MucoNativeTests/MixedTagTests.cs`): in a song with MSX parts beside OPNA parts,
+`#CarrierCorrection` and `#OPNA1RhythmMute` were dropped when the OPNA parts were packed, so
+every FM carrier played at the same level and muted rhythm sounds still played. Songs without
+these tags play as before.
 
 To compare against MDPlayer4Mac on the desktop:
 
