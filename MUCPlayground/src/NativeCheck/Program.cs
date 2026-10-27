@@ -55,12 +55,16 @@ while (done < total && !player.Stopped)
     }
 }
 double ms = sw.Elapsed.TotalMilliseconds;
+// DUMP=file: the trace and the chip writes (frame, value pairs), for checking timings.
+if (Environment.GetEnvironmentVariable("DUMP") is string dump)
+    File.WriteAllText(dump, "T " + string.Join(',', player.Trace) + "\nC " + string.Join(',', player.ChipLog) + "\n");
 if (Environment.GetEnvironmentVariable("SHOW_TRACE") is string show)
 {
     string[] lines = File.ReadAllText(path).Replace("\r", "").Split('\n');
     for (int i = 0; i + 4 < player.Trace.Count && i < int.Parse(show) * 5; i += 5)
     {
         int row = player.Trace[i + 2], col = player.Trace[i + 3], len = player.Trace[i + 4];
+        if (player.Trace[i + 1] == -1) { Console.WriteLine($"  t={player.Trace[i] / 44100.0,6:F3}s tick={row}"); continue; }
         string line = row - 1 < lines.Length ? lines[row - 1] : "";
         string text = col - 1 < line.Length ? line.Substring(col - 1, Math.Min(Math.Max(len, 1), line.Length - col + 1)) : "?";
         Console.WriteLine($"  t={player.Trace[i] / 44100.0,6:F3}s key={player.Trace[i + 1],5} row={row,3} col={col,3} len={len,2} '{text}'");

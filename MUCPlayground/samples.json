@@ -162,6 +162,53 @@
   ]
  },
  {
+  "name": "Gradius2",
+  "dir": "../Samples/Muc/MucoMSXChipExtension(msPb)Format/Gradius2/",
+  "songs": [
+   "A Dream of Dreamer (Ending Theme).MUC",
+   "A Fighter (Boss).MUC",
+   "A Journey to the Start (Air Battle Theme).MUC",
+   "A Planet of Plants (Plant Planet Theme).MUC",
+   "Above the Horizon (Opening Theme).MUC",
+   "Blazed Up (Flame Planet Theme).MUC",
+   "Dancing Venus (Floating Continents Theme).MUC",
+   "Don't Leave Me Alone (Fortress Planet Theme).MUC",
+   "Frontier Disputes (Life Planet Theme).MUC",
+   "Killer Coast Land (Colossus Planet Theme).MUC",
+   "Killer Love (Return Theme).MUC",
+   "Moonspin (Large Battleship Venom Theme).MUC",
+   "Powerful Waves (Boss Battleship Interior - Last Boss).MUC",
+   "Red Diamond (Ancient Planet Theme).MUC",
+   "Starting Point (Start).MUC",
+   "Tears Began Gushing (Space Tricky Area Theme).MUC",
+   "The War is Over (Game Over).MUC"
+  ]
+ },
+ {
+  "name": "10_SCCWaveForms",
+  "dir": "../Samples/Muc/Templates/10_SCCWaveForms/",
+  "songs": [
+   "Clash_Pennant_Race_2__BANK001.MUC",
+   "F_1_Spirit_The_Way_to_Formula_1__BANK001.MUC",
+   "Hexion__BANK001.MUC",
+   "Kekkyoku_Nankyoku_Daibouken__BANK001.MUC",
+   "King_s_Valley_2_The_Seal_of_El_Giza__BANK001.MUC",
+   "Majou_Densetsu__BANK001.MUC",
+   "Metal_Gear_2_Solid_Snake__BANK001.MUC",
+   "Nemesis_2__BANK001.MUC",
+   "Nemesis_3_The_Eve_of_Destruction__BANK001.MUC",
+   "Nemesis__BANK001.MUC",
+   "Parodius__BANK001.MUC",
+   "Quarth__BANK001.MUC",
+   "SD_Snatcher__BANK001.MUC",
+   "Salamander__BANK001.MUC",
+   "Snatcher__BANK001.MUC",
+   "Space_Manbow__BANK001.MUC",
+   "The_Pro_Baseball_Clash_Pennant_Race__BANK001.MUC",
+   "TwinBee__BANK001.MUC"
+  ]
+ },
+ {
   "name": "1_Basics",
   "dir": "../Samples/Muc/Templates/1_Basics/",
   "songs": [
@@ -251,6 +298,26 @@
    "arg007.muc",
    "arg011.muc",
    "arg014.muc"
+  ]
+ },
+ {
+  "name": "ALGARNA_SCC_OPLL",
+  "dir": "../Samples/Muc/YuzoKoshiro/ALGARNA_SCC_OPLL/",
+  "songs": [
+   "ARG006.MUC",
+   "ARG007.MUC",
+   "ARG011.MUC",
+   "ARG014.MUC"
+  ]
+ },
+ {
+  "name": "ALGARNA_SCC_OPLL_PSG",
+  "dir": "../Samples/Muc/YuzoKoshiro/ALGARNA_SCC_OPLL_PSG/",
+  "songs": [
+   "ARG006.MUC",
+   "ARG007.MUC",
+   "ARG011.MUC",
+   "ARG014.MUC"
   ]
  },
  {

@@ -89,6 +89,7 @@ function tokens(s, kind) {
       const op = /^(?:[-+]?(?:\$[0-9A-Fa-f]+|\d*)(?:,[-+]?(?:\$[0-9A-Fa-f]+|\d*))*)=?/.exec(s.slice(i + 3))[0];
       if (MSX_CMDS.has(m[0])) { push(3 + op.length, MSX(m[0])); continue; }
     }
+    if ((m = /^:\d+/.exec(r))) { push(m[0].length, MSX(':')); continue; }
     // a ? command still being typed, or a one-letter ? form: no entry (not the letter's)
     if ((m = /^\?[A-Za-z]{0,2}/.exec(r))) { push(m[0].length, null); continue; }
     if ((m = /^\[\||^\|\]/.exec(r))) { push(2, EXT('[| |]')); continue; }

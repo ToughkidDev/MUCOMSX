@@ -532,7 +532,7 @@ export class Tracker {
     if (ev.tied || ev.porta || ev.echo) { this.showInfo(null, this.o.t('trkCannot')); return; }
     const src = ev.src;
     const edits = [];
-    const clock = ev.clock || tr.clock || 128;
+    const clock = ev.clock || tr.clock || 128, unit = ev.unit || 0;
     if (ev.tick >= tick) {
       // The event starts in this row: change it in place.
       if (action === 'note') {
@@ -547,8 +547,8 @@ export class Tracker {
       // Inside a longer note or rest: cut it in two at this row.
       if (action !== 'note' && ev.kind === 'rest') return;
       const before = tick - ev.tick, after = ev.len - before;
-      const head = this.o.sourceText(src.row, src.col, src.letterLen) + lengthText(before, clock);
-      const tail = action === 'note' ? noteText(midi, ev.oct, lengthText(after, clock)) : 'r' + lengthText(after, clock);
+      const head = this.o.sourceText(src.row, src.col, src.letterLen) + lengthText(before, clock, unit);
+      const tail = action === 'note' ? noteText(midi, ev.oct, lengthText(after, clock, unit)) : 'r' + lengthText(after, clock, unit);
       edits.push({ row: src.row, col: src.col, len: src.len, text: `${head} ${tail}` });
     }
     this.o.edit(edits);
@@ -561,7 +561,7 @@ export class Tracker {
   // what was sounding before it (the last note or rest) is held up to it.
   append(tr, tick, action, midi) {
     if (tr.tail.ended) { this.showInfo(null, this.o.t('trkEnded')); return; }
-    const clock = tr.clock || 128, len = this.rowTicks;
+    const clock = tr.clock || 128, len = this.rowTicks, unit = tr.unit || 0;
     const gap = tick - tr.end;
     const edits = [];
     let text = '';
@@ -571,15 +571,15 @@ export class Tracker {
       if (plain) {
         // longer last note / rest instead of a gap
         const letters = this.o.sourceText(last.src.row, last.src.col, last.src.letterLen);
-        edits.push({ row: last.src.row, col: last.src.col, len: last.src.len, text: tokenText(letters, last.len + gap, clock) });
-      } else text += tokenText('r', gap, clock) + ' ';
+        edits.push({ row: last.src.row, col: last.src.col, len: last.src.len, text: tokenText(letters, last.len + gap, clock, unit) });
+      } else text += tokenText('r', gap, clock, unit) + ' ';
     }
     if (action === 'note') {
       const [pre, name, post] = splitOctave(noteText(midi, tr.tail.oct));
-      text += pre + tokenText(name, len, clock) + post;
-    } else text += tokenText('r', len, clock);
+      text += pre + tokenText(name, len, clock, unit) + post;
+    } else text += tokenText('r', len, clock, unit);
     const t = tr.tail;
-    if (t.alone) edits.push({ row: t.row, col: t.col, len: 0, text: ' ' + text });
+    if (t.alone) edits.push({ row: t.row, col: t.col, len: 0, text: t.before ? text + ' ' : ' ' + text });
     else edits.push({ row: t.row, col: this.o.sourceText(t.row, 0, 1e9).length, len: 0, text: `\n${tr.name} ${text}` });
     this.o.edit(edits);
     this.cursor.row = Math.min(this.rows - 1, Math.floor(tick / this.rowTicks) + 1);

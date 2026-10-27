@@ -211,6 +211,9 @@ public sealed class MucPlayer
     MsxMubProfile msx;
     MsxSoundMapper mapper;
     NativeMucomSession native;   // a packed msPb0103–010A score: MDPlayer4Mac's native core plays it
+    PackedMusicPlayer packed;    // its sequencer, for the song position (ticks)
+    long packedTicks = -1;
+    static readonly FieldInfo NativePacked = typeof(NativeMucomSession).GetField("packed", BindingFlags.NonPublic | BindingFlags.Instance);
     long frame;
     VgmWriter vgm;          // only while exporting
     double speedDue;        // driver steps owed (Speed per output sample)
@@ -224,7 +227,9 @@ public sealed class MucPlayer
     public double Speed { get; set; } = 1;
 
     // Where each channel is in the source, as the driver plays it: flat groups of
-    // frame, channel key, row, column, length. Only changes are recorded.
+    // frame, channel key, row, column, length. Only changes are recorded. A packed score
+    // has no source positions; it reports its tick count instead, as frame, -1, tick, 0, 0
+    // (the page finds the notes at that tick in the text).
     public readonly List<int> Trace = new();
     readonly Dictionary<int, long> lastPosition = new();
 
@@ -274,6 +279,7 @@ public sealed class MucPlayer
         visChips.Clear();
         native?.Dispose();
         native = null;
+        packed = null;
         driver = null;
         if (!MucEngine.IsMub(mub)) { Fail("Not a MUB."); return false; }
 
@@ -383,11 +389,14 @@ public sealed class MucPlayer
                 native = new NativeMucomSession(mub, (int)MucEngine.SampleRate, WriteNative, openFile,
                     (chip, d, type) => { if (chip == NativeChip.Opnb1) Adpcm(0, d, type); else if (chip == NativeChip.Opnb2) Adpcm(1, d, type); },
                     "song.muc");
+                packed = NativePacked?.GetValue(native) as PackedMusicPlayer;
+                packedTicks = -1;
                 return true;
             }
             catch (Exception e)
             {
                 native = null;
+                packed = null;
                 Fail(e.Message);
                 return false;
             }
@@ -494,6 +503,12 @@ public sealed class MucPlayer
                 speedDue -= 1;
                 if (native != null) native.AdvanceSample(); else driver.Rendering();
                 if (Status < 1) break;
+            }
+            // Ticks counts the ticks played: tick n of the score has just played when it becomes n + 1.
+            if (packed != null && packed.Ticks > 0 && packed.Ticks != packedTicks)
+            {
+                packedTicks = packed.Ticks;
+                Trace.Add((int)frame); Trace.Add(-1); Trace.Add((int)Math.Min(int.MaxValue, packedTicks - 1)); Trace.Add(0); Trace.Add(0);
             }
             frame++;
             if (Status < 1) { Silence(); Stopped = true; }

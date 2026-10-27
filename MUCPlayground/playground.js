@@ -1381,6 +1381,8 @@ function onEngineMessage(m, source) {
       traceSession = m.session;
       traceMsx = !!m.info.msx;
       trkPlay.clear();
+      packedTracks = null;
+      packedAt.clear();
       traceEvents = [];
       traceIndex = 0;
       traceStale = false;
@@ -1613,7 +1615,8 @@ async function play(rows = null) {
   setStatus(t('compiling'));
   playingRows = rows;
   updateLinePlay();
-  worker.postMessage({ type: 'compile', text: rows ? lineSnippet(code.value, rows[0], rows[1]) : code.value, play: true });
+  playedText = rows ? lineSnippet(code.value, rows[0], rows[1]) : code.value;
+  worker.postMessage({ type: 'compile', text: playedText, play: true });
 }
 
 // ---------- playing a line ----------
@@ -1967,6 +1970,7 @@ function updateTrace() {
   while (traceIndex + 4 < traceEvents.length && traceEvents[traceIndex] <= now) {
     const key = traceEvents[traceIndex + 1], row = traceEvents[traceIndex + 2];
     traceIndex += 5;
+    if (key === -1) { packedTick(row, traceEvents[traceIndex - 5] / SAMPLE_RATE, changed); continue; }
     // Playing some lines: the other part rows only set things up, so they are not shown.
     if (playingRows && (row < playingRows[0] || row > playingRows[1]) && partLine(lines[row - 1])) continue;
     positions.set(key, { row, col: traceEvents[traceIndex - 2], len: traceEvents[traceIndex - 1] });
@@ -1976,6 +1980,50 @@ function updateTrace() {
   if (traceIndex > 50000) { traceEvents = traceEvents.slice(traceIndex); traceIndex = 0; }
   if (changed.length) { follow(changed); renderParts(); traceDirty = true; }
   if (traceDirty) { traceDirty = false; renderTrace(); }
+}
+
+// A packed MucoMSX score (?XU, ?FD …) reports its tick instead of source positions: the
+// note or rest each part plays at that tick is found in the played text's timeline
+// (mml-timeline.js), which counts in the same ticks; a part past its end goes round its
+// loop (L, or ?FJ back to a label).
+let playedText = '';
+let packedTracks = null;
+const packedAt = new Map();   // channel key -> index of the event shown
+function packedKey(name) {
+  const m = /^(MSX|SCC)?([A-K])(\d?)$/.exec(name);
+  if (!m) return null;
+  return (m[1] === 'MSX' ? 1000 : m[1] === 'SCC' ? 2000 : 0) + PART_LETTERS.indexOf(m[2]) * 10 + (+m[3] || 0);
+}
+// Shift-JIS bytes of the first `chars` characters, as the trace counts columns.
+function byteCount(text, chars = text.length) {
+  let b = 0;
+  for (let i = 0; i < Math.min(chars, text.length); i++) {
+    const c = text.charCodeAt(i);
+    b += c < 0x80 || (c >= 0xff61 && c <= 0xff9f) ? 1 : 2;
+  }
+  return b;
+}
+function packedTick(tick, at, changed) {
+  if (!packedTracks) {
+    try { packedTracks = timeline(playedText).map((tr) => ({ ...tr, key: packedKey(tr.name) })).filter((tr) => tr.key !== null && tr.events.length); } catch { packedTracks = []; }
+  }
+  for (const tr of packedTracks) {
+    let t = tick;
+    if (t >= tr.end) {
+      if (tr.loopTick === null || tr.end <= tr.loopTick) continue;
+      t = tr.loopTick + ((t - tr.end) % (tr.end - tr.loopTick));
+    }
+    // The last event starting at or before t.
+    let lo = 0, hi = tr.events.length - 1, k = -1;
+    while (lo <= hi) { const mid = (lo + hi) >> 1; if (tr.events[mid].tick <= t) { k = mid; lo = mid + 1; } else hi = mid - 1; }
+    if (k < 0 || packedAt.get(tr.key) === k) continue;
+    packedAt.set(tr.key, k);
+    const src = tr.events[k].src, line = lines[src.row - 1] || '';
+    if (playingRows && (src.row < playingRows[0] || src.row > playingRows[1])) continue;
+    positions.set(tr.key, { row: src.row, col: byteCount(line, src.col) + 1, len: byteCount(line.slice(src.col), src.len) });
+    if (splitMode === 'tracker') trackerTrace(tr.key, src.row, src.col + 1, at);
+    changed.push(tr.key);
+  }
 }
 
 // With the editor split, the pane you are working in stays put and the other one follows.
