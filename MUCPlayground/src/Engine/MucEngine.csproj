@@ -22,8 +22,9 @@
     <Reference Include="musicDriverInterface">
       <HintPath>$(Mdp4MacDir)/macos/ThirdParty/mucomDotNET/Common_NET5/musicDriverInterface.dll</HintPath>
     </Reference>
-    <!-- MUCOMSX native MSX parts (MSX-MUSIC, PSG, SCC/SCC+): the same helpers MDPlayer4Mac uses. -->
-    <Compile Include="$(Mdp4MacDir)/macos/MDPlayerCore/Driver/MUCOM/Msx*.cs" Link="Msx/%(Filename)%(Extension)" />
+    <!-- MUCOMSX native MSX parts (MSX-MUSIC, PSG, SCC/SCC+) and the MucoMSX chip extension
+         commands: MDPlayer4Mac's native core, compiled in (its helpers are internal). -->
+    <Compile Include="$(Mdp4MacDir)/macos/MucoNative/*.cs" Link="MucoNative/%(Filename)%(Extension)" />
     <!-- Compiler messages and YM2608 rhythm samples travel inside the assembly; the browser has no disk. -->
     <EmbeddedResource Include="$(Mdp4MacDir)/macos/ThirdParty/mucomDotNET/mucomDotNETCompiler/lang/*.txt" LogicalName="lang/%(Filename)%(Extension)" WithCulture="false" />
     <EmbeddedResource Include="$(Mdp4MacDir)/macos/MDPlayerUI/Assets/Rhythm/*.WAV" LogicalName="rhythm/%(Filename)%(Extension)" />

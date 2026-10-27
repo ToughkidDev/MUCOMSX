@@ -35,11 +35,11 @@ Compose in MML · Compile on the MSX itself · Play on real hardware · Export M
 
 | Date | | |
 |---|---|---|
-| **2026-10-19** | `WEB` | [MUCPlayground — write MUC in the browser and hear it right away](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) **NEW** |
+| **2026-10-27** | `WEB` | [MUCPlayground plays the MucoMSX chip extension commands (MDPlayer4Mac v0.2.5) and adds their manual](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) **NEW** |
+| 2026-10-19 | `WEB` | [MUCPlayground — write MUC in the browser and hear it right away](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) |
 | 2026-10-15 | `RELEASE` | [MucoMSX v1.0-Stable released — SCC/SCC+ SSG extension, PCMInvert, rhythm/session fixes and MUCVOICE v0.5beta](https://github.com/ToughkidDev/MUCOMSX/releases/tag/v1.0-stable) |
 | 2026-10-15 | `DOCS` | [Five-tool multilingual manuals and MUCVOICE v0.5beta](MUCVoice/mucvoice.en.md) |
 | 2026-10-13 | `UPDATE` | [SCC/SSG, PCMInvert, performance fixes and MUCVOICE](shared/docs/RELEASE_UPDATE_261013.en.md) |
-| 2026-10-04 | `SAMPLES` | [Snatcher — 44 MUC songs added to the samples](Samples/Muc/MSX/Snatcher) |
 
 [All news →](NEWS.md)
 
@@ -124,7 +124,7 @@ MUBPlay 시연 · MUBPlay デモ
 
 ## 🎧 Try it in your browser / 브라우저에서 바로 / ブラウザですぐに
 
-**[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)** is an editor where you type MUC (MML) and hear it at once — nothing to install. It runs MDPlayer4Mac's compiler and chip emulation in the browser: YM2608 FM, SSG, rhythm and ADPCM, plus MSX-MUSIC, PSG and SCC/SCC+. The editor colours MML, suggests commands as you type and checks the song while you write, can be split to show two places of a long song, and opens an MML guide (MUCOM88 and the mucomDotNET extensions) beside the text; while a song plays, each part's current command lights up, or MDPlayer4Mac's channel view shows every chip channel. **New** starts from a commented template that plays OPNA and every MSX chip (MSX-MUSIC, PSG, the five SCC parts) together. Ready-made [templates](Samples/Muc/Templates) (basics, one per sound chip, drum libraries, genre songs waiting for a melody, a city pop demo on every chip; commented in English and Japanese) and every song in the samples folder are one click away, your song saves as `.MUC`, `.MUB` or `.VGM`, and **Share** makes a link that opens the song, voice and PCM files included, ready to play. Drag a `.MUC`, `.MUB`, `.VGM` or `.VGZ` from your computer onto it to play it.
+**[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)** is an editor where you type MUC (MML) and hear it at once — nothing to install. It runs MDPlayer4Mac's compiler and chip emulation in the browser: YM2608 FM, SSG, rhythm and ADPCM, plus MSX-MUSIC, PSG and SCC/SCC+. The editor colours MML, suggests commands as you type and checks the song while you write, can be split to show two places of a long song, and opens an MML guide (MUCOM88, the mucomDotNET extensions and the MucoMSX chip extension commands) beside the text; while a song plays, each part's current command lights up, or MDPlayer4Mac's channel view shows every chip channel. **New** starts from a commented template that plays OPNA and every MSX chip (MSX-MUSIC, PSG, the five SCC parts) together. Ready-made [templates](Samples/Muc/Templates) (basics, one per sound chip, drum libraries, genre songs waiting for a melody, a city pop demo on every chip; commented in English and Japanese) and every song in the samples folder are one click away, your song saves as `.MUC`, `.MUB` or `.VGM`, and **Share** makes a link that opens the song, voice and PCM files included, ready to play. Drag a `.MUC`, `.MUB`, `.VGM` or `.VGZ` from your computer onto it to play it.
 
 ### ➡️ [**Open MUCPlayground**](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) · [How it works](MUCPlayground/readme.md)
 

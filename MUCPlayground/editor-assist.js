@@ -2,22 +2,28 @@
 // Colouring draws the same text, coloured, underneath a transparent <textarea>, so the
 // browser's own caret, selection, undo and IME keep working unchanged.
 import { TAGS, PARTS, COMMANDS, VOICE_TEMPLATE } from './mml-reference.js';
+import { BOOKS } from './manual-data.js';
 
 export const PART_LETTERS = 'ABCDEFGHIJK';
 export const PART_COLORS = ['#e4572e', '#e09f1f', '#7fa83a', '#1f9e89', '#3d7cc9', '#8e5bd1', '#d6457f',
   '#c46a2b', '#3fa34d', '#5b7f95', '#b0306a'];
 
-// Part names: A–K, MUCOMSX native MSXA…, and the msPb0102 dedicated SCC parts SCCA–SCCE.
-const PART_LINE = /^((?:MSX)?[A-K][A-K0-9]*|SCC(?:[A-E][0-9]?)+)(?=[ \t])/;
+// Part names: A–K, MUCOMSX native MSXA…, the msPb0102 dedicated SCC parts SCCA–SCCE, and
+// the shared-definition rows of the MucoMSX chip extensions (PSGS, SCCS, OPLS).
+const PART_LINE = /^((?:MSX)?[A-K][A-K0-9]*|SCC(?:[A-E][0-9]?)+|PSGS|SCCS|OPLS)(?=[ \t])/;
 export const SCC_COLOR = '#0fa3b8';
 const MACRO_DEF = /^#\s*\*(\d+)\s*\{/;
-const VOICE_DEF = /^[ \t]+@(\d+)/;
+const VOICE_DEF = /^[ \t]+@(%?\d+)/;
+// MucoMSX global resources, at the start of a line: ?WD0={…} SCC wave, ?WS1,2,1 bank wave,
+// ?IU0={…} OPLL voice, ?IT0={…} drum kit, ?KT0={…} pitch table, ?IM0={…} instrument program.
+const RESOURCE_DEF = /^\?(WD|WS|IU|IT|KT|IM)\s*\d+/;
 // SCC5 inline wave: @W0:{ … }, read as MUCOMSX's compiler reads it: spaces and : or = are
 // optional (@W1 : { … }, @W1={ … }, @W1 { … }), and @W1 alone heads a 64-sample wave.
 const WAVE_DEF = /^[ \t]+@W(\d+)(?=[ \t]*(?:[:={;]|$))/;
 
 export function partKind(label) {
-  if (label.startsWith('SCC')) return 'ssg';   // SCC5 parts take the SSG commands (v0–15, E …)
+  if (label.startsWith('SCC') || label === 'PSGS') return 'ssg';   // SCC5 parts take the SSG commands (v0–15, E …)
+  if (label === 'OPLS') return 'fm';
   const letter = label.replace(/^MSX/, '')[0];
   if ('ABCHIJ'.includes(letter)) return 'fm';
   if ('DEF'.includes(letter)) return 'ssg';
@@ -38,7 +44,17 @@ function mml(text) {
     if (ch === ';') { out += span('t-com', text.slice(i)); break; }
     if (ch === ' ' || ch === '\t') { out += ch; i++; continue; }
     let j = i + 1;
-    if (/[a-gr]/.test(ch)) {
+    if (ch === '?' && /[A-Z]{2}/.test(text.slice(j, j + 2)) && !/[A-Za-z]/.test(text[j + 2] || '')) {
+      // A MucoMSX chip extension command (?EP, ?WD …), or a one-letter alias (?e, ?a …).
+      out += span('t-cmd', text.slice(i, j + 2));
+      j += 2;
+    } else if ((ch === '?' || ch === '@') && /[A-Za-z]/.test(text[j] || '') && ch === '?') {
+      out += span('t-cmd', text.slice(i, j + 1));
+      j += 1;
+    } else if (ch === '$' && /[0-9a-fA-F]/.test(text[j] || '')) {
+      while (j < text.length && /[0-9a-fA-F]/.test(text[j])) j++;
+      out += span('t-num', text.slice(i, j));
+    } else if (/[a-gr]/.test(ch)) {
       while (j < text.length && (text[j] === '+' || text[j] === '-')) j++;
       out += span('t-note', text.slice(i, j));
     } else if (ch === '*' && /\d/.test(text[j] || '')) {
@@ -49,7 +65,7 @@ function mml(text) {
     } else if (/[0-9,.\-]/.test(ch)) {
       while (j < text.length && /[0-9,.\-]/.test(text[j])) j++;
       out += span('t-num', text.slice(i, j));
-    } else if (/[[\]/&^<>{}|:()%]/.test(ch)) {
+    } else if (/[[\]/&^<>{}|:()%=!]/.test(ch)) {
       out += span('t-str', ch);
     } else {
       out += esc(ch);
@@ -73,9 +89,11 @@ export function highlightLine(line) {
     const t = /^#\S*/.exec(line)[0];
     return span('t-tag', t) + span('t-val', line.slice(t.length));
   }
+  const r = RESOURCE_DEF.exec(line);
+  if (r) return span('t-mac', r[0]) + mml(line.slice(r[0].length));
   const p = PART_LINE.exec(line);
   if (p) {
-    const letter = p[1].replace(/^MSX/, '')[0];
+    const letter = p[1] === 'PSGS' ? 'D' : p[1] === 'OPLS' ? 'A' : p[1].replace(/^MSX/, '')[0];
     const color = p[1].startsWith('SCC') ? SCC_COLOR : PART_COLORS[PART_LETTERS.indexOf(letter)] || 'inherit';
     return `<span class="t-part" style="color:${color}">${esc(p[1])}</span>` + mml(line.slice(p[1].length));
   }
@@ -119,6 +137,28 @@ export class Highlighter {
 // ---------- suggestions ----------
 const NOTE_LETTERS = 'abcdefgr';
 
+// The MucoMSX ? commands (the manual's msx book): which chips a part line drives, as the
+// book's `on` names them, and the entries a ? on such a line may be.
+function msxChips(label) {
+  if (/^SCC/.test(label)) return ['SCC'];
+  if (label === 'PSGS') return ['PSG'];
+  if (label === 'OPLS') return ['OPLL'];
+  const m = /^MSX([A-K])/.exec(label);
+  if (!m) return null;
+  return m[1] === 'G' ? ['MSXG'] : 'DEF'.includes(m[1]) ? ['PSG'] : ['OPLL'];
+}
+const MSX_ENTRIES = BOOKS.msx.sections.flatMap((s) => s.e);
+const msxDesc = (e, language) => `${e.t[language] || e.t.en}: ${e.d[language] || e.d.en}`;
+// Resource lines start with ?XXn={…}: offered at the start of a line, filled in from the
+// entry's example.
+function resourceItems(prefix, language) {
+  return MSX_ENTRIES.filter((e) => /^\?(WD|WS|IU=|IT=|KT=|IM=)/.test(e.c) && e.c.startsWith(prefix.slice(0, 3)))
+    .map((e) => {
+      const ex = (e.x || '').split('\n').find((l) => l.startsWith(e.c.slice(0, 3)));
+      return { label: e.c.replace('=', ''), insert: ex || '?WS0,0,1', sig: e.s, desc: msxDesc(e, language) };
+    });
+}
+
 // Items to suggest at the caret, or null. `force` is Ctrl+Space: show even with no prefix.
 export function suggestionsAt(text, caret, language, force) {
   const lineStart = text.lastIndexOf('\n', caret - 1) + 1;
@@ -128,6 +168,7 @@ export function suggestionsAt(text, caret, language, force) {
   if (/^#[^\s]*$/.test(before)) {
     return { prefix: before, items: TAGS.filter((e) => e.label.toLowerCase().startsWith(before.toLowerCase())).map((e) => ({ ...e, desc: describe(e) })) };
   }
+  if (/^\?[A-Z]{0,2}$/.test(before)) return { prefix: before, items: resourceItems(before, language) };
   if (/^[A-Z]*$/.test(before) && (before || force)) {
     return { prefix: before, items: PARTS.filter((e) => e.label.startsWith(before)).map((e) => ({ ...e, insert: e.label + ' ', desc: describe(e) })) };
   }
@@ -145,13 +186,23 @@ export function suggestionsAt(text, caret, language, force) {
   const [body] = commentSplit(before.slice(p ? p[1].length : 0));
   if (body.length < before.length - (p ? p[1].length : 0)) return null;     // inside a comment
 
-  const prefix = /[@*]?[A-Za-z]*$/.exec(body)[0];
+  const prefix = /[@*?]?[A-Za-z]*$/.exec(body)[0];
   const lines = text.split('\n');
+  if (prefix.startsWith('?')) {
+    const chips = p && msxChips(p[1]);
+    if (!chips && kind !== 'any') return null;
+    const items = MSX_ENTRIES.filter((e) => e.c.startsWith('?') && !e.c.endsWith('=') && !/^\?W[DS]$/.test(e.c) && e.c.startsWith(prefix.toUpperCase())
+      && (!chips || !e.on || e.on.split(' ').some((c) => chips.includes(c))))
+      .map((e) => ({ label: e.c, insert: e.c, sig: e.s, desc: msxDesc(e, language) }));
+    return { prefix, items };
+  }
   if (prefix === '@' && p && p[1].startsWith('SCC')) {
     const waves = [];
     lines.forEach((l, i) => {
       const w = WAVE_DEF.exec(l);
       if (w) waves.push({ label: '@' + w[1], insert: '@' + w[1], sig: `line ${i + 1}`, desc: describe({ en: 'SCC wave defined in this song (@W)', ko: '이 곡에 정의된 SCC 파형(@W)', ja: 'この曲で定義したSCC波形（@W）' }) });
+      const d = /^\?WD\s*(\d+)/.exec(l);
+      if (d) waves.push({ label: '@' + d[1], insert: '@' + d[1], sig: `line ${i + 1}`, desc: describe({ en: 'SCC wave defined in this song (?WD)', ko: '이 곡에 정의된 SCC 파형(?WD)', ja: 'この曲で定義したSCC波形（?WD）' }) });
     });
     return { prefix, items: waves };
   }

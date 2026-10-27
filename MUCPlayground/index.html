@@ -268,10 +268,10 @@ textarea::selection{background:var(--sel);color:transparent}
 /* Voice bank (bank-view.js): right of the text, like the tracker */
 .bank{flex:1 1 0;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel);font-size:.82rem}
 /* ---------- manual mode (manual.js) ---------- */
-.manual{flex:1 1 0;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel);font-family:var(--sans);font-size:.86rem;line-height:1.55}
+.manual{flex:1 1 0;container-type:inline-size;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel);font-family:var(--sans);font-size:.86rem;line-height:1.55}
 .manual[hidden]{display:none}
 .man-head{display:flex;align-items:stretch;gap:8px;padding:10px 10px 8px;border-bottom:1px solid var(--line)}
-.man-books{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:0}
+.man-books{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;min-width:0}
 .man-books button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;min-width:0;cursor:pointer;
   border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:8px 12px;font:inherit}
 .man-books button b{font-size:1.1em}
@@ -312,6 +312,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .man-none{color:var(--muted);margin:16px 0}
 .man-other{margin:12px 0}
 @media (max-width:600px){.man-books{grid-template-columns:1fr}}
+@container (max-width:520px){.man-books{grid-template-columns:1fr}}
 .bank[hidden]{display:none}
 .bank-bar,.bank-tools{display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;padding:6px 10px;border-bottom:1px solid var(--line)}
 .bank-bar b{font-size:.88rem}

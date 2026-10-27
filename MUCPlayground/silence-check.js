@@ -52,6 +52,13 @@ export function silentParts(text) {
       const c = s[i];
       const digit = /\d/.test(s[i + 1] || '');
       if (c === ';') break;
+      if (c === '?' && /[A-Z]{2}/.test(s.slice(i + 1, i + 3))) {
+        // MucoMSX chip extensions: ?EP / ?EA / ?ET shape the level, like E.
+        if (/^(EP|EA|ET)$/.test(s.slice(i + 1, i + 3))) st.env = true;
+        i += 2;
+        while (/[\d,\-$A-Fa-f]/.test(s[i + 1] || '') && !/[a-g]/.test(s[i + 1])) i++;
+        continue;
+      }
       if (c === '*' && digit) {
         const n = /^\d+/.exec(s.slice(i + 1))[0];
         if (depth < 8 && macros.has(n) && walk(macros.get(n), st, depth + 1) >= 0) return i;

@@ -4,10 +4,14 @@
 //   targetAt(lines, row, col) -> { book, c, on? } or null
 // row is 1-based, col is the caret's index in the line (0 = before the first character).
 import { voiceAt } from './fm-preview.js';
+import { BOOKS } from './manual-data.js';
 
 const T = (book, c, on) => ({ book, c, on });
 const M88 = (c, on) => T('mucom88', c, on);
 const EXT = (c, on) => T('ext', c, on);
+const MSX = (c, on) => T('msx', c, on);
+// The MucoMSX ? commands the msx book explains.
+const MSX_CMDS = new Set(BOOKS.msx.sections.flatMap((s) => s.e.map((e) => e.c)));
 
 const TAGS = {
   '#mucom88': M88('#mucom88'), '#title': M88('#title'), '#composer': M88('#composer'), '#author': M88('#composer'),
@@ -18,6 +22,8 @@ const TAGS = {
 
 // The kind of sound a part line drives.
 function partKind(prefix) {
+  if (prefix === 'PSGS') return 'ssg';
+  if (prefix === 'OPLS') return 'fm';
   if (/^SCC/.test(prefix)) return 'scc';
   const msx = /^MSX/.test(prefix);
   const letter = prefix.replace(/^(MSX|SCC)/, '')[0];
@@ -29,6 +35,7 @@ function partKind(prefix) {
 }
 
 function partTarget(prefix) {
+  if (/^(PSGS|SCCS|OPLS)$/.test(prefix)) return MSX('PSGS');
   if (/^SCC/.test(prefix)) return EXT('SCCA');
   if (/^MSX/.test(prefix)) {
     const kind = partKind(prefix);
@@ -51,6 +58,13 @@ function tokens(s, kind) {
     let m;
     if (/\s/.test(ch)) { i++; continue; }
     if (ch === ';') { push(s.length - i, M88(';')); continue; }
+    // MucoMSX ?XX commands (?EP2,129,115  ?MV0,$64  ?FD1=  ?EP-)
+    if ((m = /^\?[A-Z]{2}/.exec(r))) {
+      const op = /^(?:[-+]?(?:\$[0-9A-Fa-f]+|\d*)(?:,[-+]?(?:\$[0-9A-Fa-f]+|\d*))*)=?/.exec(s.slice(i + 3))[0];
+      if (MSX_CMDS.has(m[0])) { push(3 + op.length, MSX(m[0])); continue; }
+    }
+    // a ? command still being typed, or a one-letter ? form: no entry (not the letter's)
+    if ((m = /^\?[A-Za-z]{0,2}/.exec(r))) { push(m[0].length, null); continue; }
     if ((m = /^\[\||^\|\]/.exec(r))) { push(2, EXT('[| |]')); continue; }
     if (ch === '|') { push(1, M88('|')); continue; }
     if (ch === '[') { push(1, M88('[ ]')); continue; }
@@ -127,12 +141,16 @@ export function targetAt(lines, row, col) {
     const tag = /^#\S*/.exec(line)[0].toLowerCase();
     return TAGS[tag] || null;
   }
+  // MucoMSX global resources (?WD0={…}, ?IU0={…} …) and braced FM voices (@1:{…}).
+  const res = /^\?(WD|WS|IU|IT|KT|IM)/.exec(line);
+  if (res) return MSX(/^W/.test(res[1]) ? '?' + res[1] : `?${res[1]}=`);
+  if (/^[ \t]+@%?\d+[ \t]*:[ \t]*\{/.test(line)) return MSX('@n:{ }');
   // FM voice and SCC wave definitions.
   if (/^[ \t]+@W\d/.test(line)) return EXT('@W');
   // (only on indented lines: a part line right below a voice is music)
   if (/^[ \t]/.test(line) && voiceAt(lines, row)) return M88('@n', 'FM');
   // Part lines: the part prefix, then MML.
-  const p = /^((?:MSX|SCC)?[A-K][A-K0-9]*)([ \t])/.exec(line) || /^(SCC(?:[A-E][0-9]?)+)([ \t])/.exec(line);
+  const p = /^((?:MSX|SCC)?[A-K][A-K0-9]*|PSGS|SCCS|OPLS)([ \t])/.exec(line) || /^(SCC(?:[A-E][0-9]?)+)([ \t])/.exec(line);
   if (!p) return null;
   if (col <= p[1].length) return partTarget(p[1]);
   const start = p[1].length;

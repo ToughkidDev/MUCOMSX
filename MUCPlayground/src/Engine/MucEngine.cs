@@ -8,6 +8,7 @@
 using System.Reflection;
 using System.Text;
 using MDPlayer.Driver.MUCOM;
+using MDPlayer.MucoNative;
 using mucomDotNET.Common;
 using musicDriverInterface;
 
@@ -130,11 +131,15 @@ public static class MucEngine
 
         try
         {
-            if (MsxMucCompiler.IsNativeSource(source))
+            // MUCOMSX: MSX parts with the chip extension commands (?EP, ?WD, PSGS …) become a
+            // packed msPb0103–010A score, older native MSX songs an msPb0100–0102 one; both
+            // through MDPlayer4Mac's native core, as MDPlayer4Mac compiles them.
+            bool packed = MsxMusicalCompiler.HasExtensions(Encoding.Latin1.GetString(source));
+            if (packed || MsxMucCompiler.IsNativeSource(source))
             {
-                result.Mub = MsxMucCompiler.Compile(source, "song.muc", openFile);
+                result.Mub = NativeMucCompiler.Compile(source, openFile, "song.muc");
                 if (result.Mub == null) result.Errors.Add(new(-1, -1, "MUCOMSX native MSX compilation failed."));
-                else if (traceMsx) result.Data = MsxTrace.Build(source, result.Mub, openFile);
+                else if (traceMsx && !MsxMubProfile.Parse(result.Mub).IsPacked) result.Data = MsxTrace.Build(source, result.Mub, openFile);
                 return result;
             }
 
@@ -185,40 +190,12 @@ public static class MucEngine
         return lo;
     }
 
-    // Copied from MDPlayer4Mac's MucomDotNET: the upstream compiler only recognizes track
-    // labels in column zero and splits lines on CRLF. Line count is preserved, so compiler
-    // row numbers still point at the editor's lines.
+    // MDPlayer4Mac's own: the upstream compiler only recognizes track labels in column zero
+    // and splits lines on CRLF, and a portamento length written after the brace ({ce}4) is
+    // moved after the first note. Line count is preserved, so compiler row numbers still
+    // point at the editor's lines.
     internal static byte[] NormalizeTrackDeclarationIndentation(byte[] source)
-    {
-        const string trackCharacters = "ABCDEFGHIJKLMNOPQRSTUVabcdefghijklmnopqrstuvWXYZwxyz";
-        using MemoryStream result = new(source.Length);
-        for (int position = 0; position < source.Length;)
-        {
-            int lineEnd = position;
-            while (lineEnd < source.Length && source[lineEnd] != '\r' && source[lineEnd] != '\n') lineEnd++;
-            int contentStart = position;
-            while (contentStart < lineEnd && (source[contentStart] == (byte)' ' || source[contentStart] == (byte)'\t')) contentStart++;
-            bool isTrackDeclaration = contentStart < lineEnd && source[contentStart] < 0x80
-                && trackCharacters.IndexOf((char)source[contentStart]) >= 0;
-            int copyStart = isTrackDeclaration ? contentStart : position;
-            result.Write(source, copyStart, lineEnd - copyStart);
-            if (lineEnd >= source.Length) break;
-            if (source[lineEnd] == '\r')
-            {
-                result.WriteByte((byte)'\r');
-                lineEnd++;
-                if (lineEnd < source.Length && source[lineEnd] == '\n') lineEnd++;
-            }
-            else
-            {
-                lineEnd++;
-                result.WriteByte((byte)'\r');
-            }
-            result.WriteByte((byte)'\n');
-            position = lineEnd;
-        }
-        return result.ToArray();
-    }
+        => MucSourceNormalization.NormalizeTrackDeclarationIndentation(source);
 
     public static bool IsMub(byte[] data)
         => data?.Length >= 4
@@ -233,6 +210,7 @@ public sealed class MucPlayer
     mucomDotNET.Driver.Driver driver;
     MsxMubProfile msx;
     MsxSoundMapper mapper;
+    NativeMucomSession native;   // a packed msPb0103–010A score: MDPlayer4Mac's native core plays it
     long frame;
     VgmWriter vgm;          // only while exporting
     double speedDue;        // driver steps owed (Speed per output sample)
@@ -273,7 +251,8 @@ public sealed class MucPlayer
     public string ChipList { get; private set; } = "";
     public string Title { get; private set; } = "";
     public string Composer { get; private set; } = "";
-    public int LoopCount => driver == null ? 0 : Math.Max(0, driver.GetNowLoopCounter());
+    public int LoopCount => native != null ? (int)Math.Min(int.MaxValue, native.LoopCounter)
+        : driver == null ? 0 : Math.Max(0, driver.GetNowLoopCounter());
 
     // Plays a fresh compile. With trace on, the driver is given the compiler's own data
     // (identical bytes) so it can report source positions in Trace.
@@ -293,6 +272,9 @@ public sealed class MucPlayer
         ChipLog.Clear();
         VisLog.Clear();
         visChips.Clear();
+        native?.Dispose();
+        native = null;
+        driver = null;
         if (!MucEngine.IsMub(mub)) { Fail("Not a MUB."); return false; }
 
         try { msx = MsxMubProfile.HasMagic(mub) ? MsxMubProfile.Parse(mub) : null; }
@@ -391,6 +373,26 @@ public sealed class MucPlayer
             }
         }
 
+        if (msx?.IsPacked == true)
+        {
+            // The native core sequences the score (and any OPNA A–K beside it); its chip
+            // writes go through the same path as the driver's, so faders and exports work.
+            try
+            {
+                ReadTags(msx.SequencerData);
+                native = new NativeMucomSession(mub, (int)MucEngine.SampleRate, WriteNative, openFile,
+                    (chip, d, type) => { if (chip == NativeChip.Opnb1) Adpcm(0, d, type); else if (chip == NativeChip.Opnb2) Adpcm(1, d, type); },
+                    "song.muc");
+                return true;
+            }
+            catch (Exception e)
+            {
+                native = null;
+                Fail(e.Message);
+                return false;
+            }
+        }
+
         try
         {
             byte[] data = mub;
@@ -479,20 +481,22 @@ public sealed class MucPlayer
         }
     }
 
+    int Status => native != null ? native.Status : driver.GetStatus();
+
     void OneFrame()
     {
-        if (Stopped || driver == null) return;
+        if (Stopped || (driver == null && native == null)) return;
         try
         {
             speedDue += vgm != null ? 1 : Speed;
             while (speedDue >= 1)
             {
                 speedDue -= 1;
-                driver.Rendering();
-                if (driver.GetStatus() < 1) break;
+                if (native != null) native.AdvanceSample(); else driver.Rendering();
+                if (Status < 1) break;
             }
             frame++;
-            if (driver.GetStatus() < 1) { Silence(); Stopped = true; }
+            if (Status < 1) { Silence(); Stopped = true; }
         }
         catch (Exception e)
         {
@@ -502,6 +506,7 @@ public sealed class MucPlayer
 
     public void Stop()
     {
+        if (native != null) { native.Dispose(); Stopped = true; return; }
         if (driver == null) return;
         try { driver.MusicSTOP(); } catch { }
         Silence();
@@ -561,6 +566,22 @@ public sealed class MucPlayer
         Trace.Add(lp.row);
         Trace.Add(lp.col);
         Trace.Add(lp.length);
+    }
+
+    // The native core's ordered writes, to the same chips as the driver's.
+    void WriteNative(NativeChipWrite w)
+    {
+        switch (w.Chip)
+        {
+            case NativeChip.Opna1: Opna(0, w.Port, w.Address, w.Value); break;
+            case NativeChip.Opna2: Opna(1, w.Port, w.Address, w.Value); break;
+            case NativeChip.Opnb1: Opnb(0, w.Port, w.Address, w.Value); break;
+            case NativeChip.Opnb2: Opnb(1, w.Port, w.Address, w.Value); break;
+            case NativeChip.Opm: Opm(w.Address, w.Value); break;
+            case NativeChip.Psg: Psg(w.Address, w.Value); break;
+            case NativeChip.Opll: Opll(w.Address, w.Value); break;
+            case NativeChip.Scc: WriteScc(w.Port, w.Address, w.Value); break;
+        }
     }
 
     void WriteOpna1(ChipDatum v)
@@ -673,6 +694,8 @@ public sealed class MucPlayer
 
     void Silence()
     {
+        // The native core silences what it played when it is disposed.
+        if (native != null) { try { native.Dispose(); } catch { } return; }
         if (mds == null || msx == null || mapper == null) return;
         try
         {

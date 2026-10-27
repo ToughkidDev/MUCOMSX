@@ -1,5 +1,6 @@
 // Manual mode: the MML guide (manual-data.js) next to the editor. First choose the book,
-// MUCOM88 or the mucomDotNET extensions; then jump to a chapter, or search both books.
+// MUCOM88, the mucomDotNET extensions or the MucoMSX chip extensions; then jump to a
+// chapter, or search (with a pointer to matches in the other books).
 // Each entry shows the command, its form, what it does, and an example drawn with the
 // editor's colours that "Insert" puts into the song.
 import { BOOKS } from './manual-data.js';
@@ -156,7 +157,7 @@ export class Manual {
       for (const entry of e) html += this.entryHtml(entry, ui);
       html += '</section>';
     }
-    // The words may be in the other book.
+    // The words may be in another book.
     if (this.query) {
       for (const [key, b] of Object.entries(BOOKS)) {
         if (key === this.book) continue;

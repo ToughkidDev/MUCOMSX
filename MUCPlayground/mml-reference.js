@@ -37,6 +37,9 @@ export const PARTS = [
   { label: 'MSXA', kind: 'fm', en: 'MUCOMSX: MSX-MUSIC (YM2413) 1; MSXB/C/H/I/J are 2–6', ko: 'MUCOMSX: MSX-MUSIC(YM2413) 1, MSXB/C/H/I/J는 2–6', ja: 'MUCOMSX: MSX-MUSIC（YM2413）1、MSXB/C/H/I/Jは2–6' },
   { label: 'MSXD', kind: 'ssg', en: 'MUCOMSX: internal MSX PSG 1; MSXE/F are 2–3', ko: 'MUCOMSX: MSX 내장 PSG 1, MSXE/F는 2–3', ja: 'MUCOMSX: MSX内蔵PSG 1、MSXE/Fは2–3' },
   { label: 'SCCA', kind: 'ssg', en: 'MUCOMSX msPb0102: dedicated SCC/SCC+ 1; SCCB–SCCE are 2–5. Waves from @Wn:{32 values −128…127} or #sccvoice; v0–15 is linear', ko: 'MUCOMSX msPb0102: 전용 SCC/SCC+ 1, SCCB–SCCE는 2–5. 파형은 @Wn:{−128…127 값 32개} 또는 #sccvoice, v0–15는 선형 음량', ja: 'MUCOMSX msPb0102: 専用SCC/SCC+ 1、SCCB–SCCEは2–5。波形は@Wn:{−128…127の32値}か#sccvoice、v0–15は線形音量' },
+  { label: 'PSGS', kind: 'ssg', en: 'MucoMSX: shared phrases and effects for the PSG rows (?FDn={…}, ?XDn={…}); plays nothing itself', ko: 'MucoMSX: PSG 줄이 함께 쓰는 구절·효과(?FDn={…}, ?XDn={…}), 스스로는 연주하지 않음', ja: 'MucoMSX: PSG行が共有するフレーズ・エフェクト（?FDn={…}、?XDn={…}）、それ自体は演奏しない' },
+  { label: 'SCCS', kind: 'ssg', en: 'MucoMSX: shared phrases and effects for the SCC rows', ko: 'MucoMSX: SCC 줄이 함께 쓰는 구절·효과', ja: 'MucoMSX: SCC行が共有するフレーズ・エフェクト' },
+  { label: 'OPLS', kind: 'fm', en: 'MucoMSX: shared phrases and effects for the MSX-MUSIC rows', ko: 'MucoMSX: MSX-MUSIC 줄이 함께 쓰는 구절·효과', ja: 'MucoMSX: MSX-MUSIC行が共有するフレーズ・エフェクト' },
   { label: 'MSXG', kind: 'rhythm', en: 'MUCOMSX: MSX-MUSIC rhythm', ko: 'MUCOMSX: MSX-MUSIC 리듬', ja: 'MUCOMSX: MSX-MUSICリズム' },
 ];
 
