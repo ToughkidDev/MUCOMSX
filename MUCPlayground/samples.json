@@ -162,6 +162,24 @@
   ]
  },
  {
+  "name": "F-1_Spirit_3D_Special",
+  "dir": "../Samples/Muc/MucoMSXChipExtension(msPb)Format/F-1_Spirit_3D_Special/",
+  "songs": [
+   "01 Is it Domingo Today.MUC",
+   "02 Constructor.MUC",
+   "03 Practice Makes Perfect.MUC",
+   "04 Turn on The Run.MUC",
+   "05 Out of Rap.MUC",
+   "06 Hot Road.MUC",
+   "07 Make What Haste You Can!.MUC",
+   "08 Big Don.MUC",
+   "09 Glory.MUC",
+   "10 Light Step.MUC",
+   "11 Calm Feeling (07).MUC",
+   "11 Calm Feeling (0C).MUC"
+  ]
+ },
+ {
   "name": "Gradius2",
   "dir": "../Samples/Muc/MucoMSXChipExtension(msPb)Format/Gradius2/",
   "songs": [
@@ -182,6 +200,15 @@
    "Starting Point (Start).MUC",
    "Tears Began Gushing (Space Tricky Area Theme).MUC",
    "The War is Over (Game Over).MUC"
+  ]
+ },
+ {
+  "name": "SpaceManbow",
+  "dir": "../Samples/Muc/MucoMSXChipExtension(msPb)Format/SpaceManbow/",
+  "songs": [
+   "01 Beyond the Darkness 1 (Opening 1).MUC",
+   "02 Beyond the Darkness 2 (Opening 2).MUC",
+   "03 Battle Ship (1st.BGM).MUC"
   ]
  },
  {
@@ -277,7 +304,8 @@
   "name": "6_Demos",
   "dir": "../Samples/Muc/Templates/6_Demos/",
   "songs": [
-   "City_Pop_Midnight_Pier.muc"
+   "City_Pop_Midnight_Pier.muc",
+   "Killer_Coast_Land_OPNA_Arrange.muc"
   ]
  },
  {

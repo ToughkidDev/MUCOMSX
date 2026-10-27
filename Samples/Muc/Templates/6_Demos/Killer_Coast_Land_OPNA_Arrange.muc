@@ -1,0 +1,348 @@
+#title Killer Coast Land (Colossus Planet Theme) - OPNA Arrange
+#composer Konami (Gradius 2, MSX 1987)
+#comment Arrangement: the MSX PSG and SCC parts of the original, with YM2608 rhythm drums and FM chords and melody added.
+
+; ==================================================================
+;  Killer Coast Land (Colossus Planet Theme) - OPNA Arrange
+;  キラー・コースト・ランド(巨像惑星のテーマ) - OPNAアレンジ
+;  Gradius 2 (MSX, Konami 1987). muc by ToughkidCST
+; ==================================================================
+; [EN] The MSX parts are the original MUC unchanged (MucoMSX chip
+;      extension, msPb0103 or later): MSXE PSG drums, MSXF PSG bass,
+;      SCCB bass, SCCC SCCD lead, SCCE arpeggios. On top of them the
+;      YM2608 (OPNA) plays:
+;        A    FM lead: doubles the SCC melody (an octave up in the
+;             A section) with vibrato
+;        B    FM harmony a third or sixth under the lead (second A
+;             section and the B section)
+;        C H I  three-note FM chords: string pads in the intro, the
+;             first A section and the first half of B; brass hits on
+;             the shuffle in the rest
+;        J    FM bass doubling the SCC bass
+;        G    rhythm: bass drum, snare, hi-hat, toms, crash cymbal
+; [JA] MSXのパートは元のMUCのままです(MucoMSXチップ拡張、
+;      msPb0103以降): MSXE PSGドラム、MSXF PSGベース、SCCBベース、
+;      SCCC SCCD リード、SCCE アルペジオ。その上でYM2608(OPNA)が
+;      演奏します:
+;        A    FMリード: SCCのメロディを重ねる(Aメロは1オクターブ
+;             上)、ビブラート付き
+;        B    リードの3度・6度下のFMハーモニー(2回目のAメロとBメロ)
+;        C H I  3音のFM和音: イントロ、1回目のAメロ、Bメロ前半は
+;             ストリングスのパッド、それ以外はシャッフルのブラスヒット
+;        J    SCCのベースを重ねるFMベース
+;        G    リズム: バスドラム、スネア、ハイハット、タム、クラッシュ
+;
+; [EN] Form (12/8 shuffle, t198, 96 clocks a bar): intro 8 bars,
+;      A section 8 bars twice, B section 8 bars; every part is 32 bars
+;      and loops from the start. The OPNA parts use C96 so that their
+;      clocks are the MSX parts' clocks: l4 = 24, l12 = one triplet
+;      eighth (8). t198 is the MSX parts' timer, so both run together.
+; [JA] 構成(12/8のシャッフル、t198、1小節96クロック): イントロ8小節、
+;      Aメロ8小節×2、Bメロ8小節。全パート32小節で、先頭からループ
+;      します。OPNAのパートはC96で、MSXのパートと同じクロックになり
+;      ます: l4 = 24、l12 = 3連の8分(8)。t198はMSXパートのタイマー
+;      と同じなので、両方が一緒に進みます。
+;
+; [EN] FM note names sound an octave below SCC note names: o5 a on
+;      OPNA is o4 a on SCC (440 Hz).
+; [JA] FMの音名はSCCの音名より1オクターブ低く鳴ります: OPNAのo5 aは
+;      SCCのo4 a(440 Hz)と同じ高さです。
+
+; [EN] Chords / [JA] コード
+;   intro | A7sus4 | A7     | F    | G      | (x2)
+;   A     | A      | G/A    | Asus2| G/A    |
+;         | D/F+   | F      | E    | E7     | (x2)
+;   B     | Am     | F      | G    | E      | (x2)
+
+; ---- SCC waves / SCC波形 ----
+; [EN] Waves 0-5, taken from GRA2.DAT (the original's #sccvoice bank:
+;      ?WS0,0,1 ?WS1,8,1 ?WS2,1,1 ?WS3,9,1 ?WS4,4,1 ?WS5,5,1), so the
+;      song needs no extra file.
+; [JA] 波形0~5。元の#sccvoiceバンクGRA2.DATから取り出したもの
+;      (?WS0,0,1 ?WS1,8,1 ?WS2,1,1 ?WS3,9,1 ?WS4,4,1 ?WS5,5,1)なので、
+;      ほかのファイルは要りません。
+?WD0={0,-8,-16,-24,-32,-40,-48,-56,-64,-72,-80,-88,-96,-104,-112,-120,-128,120,112,104,96,88,80,72,64,56,48,40,32,24,16,8}
+?WD1={0,-16,-32,-48,-64,-80,-96,-112,-128,112,96,80,64,48,32,16,0,-16,-32,-48,-64,-80,-96,-112,-128,112,96,80,64,48,32,16}
+?WD2={0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,-128,-112,-96,-80,-64,-48,-32,-16,0,16,32,48,64,80,96,112}
+?WD3={0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,-128,-96,-64,-32,0,32,64,96,-128,-96,-64,-32,0,32,64,96}
+?WD4={48,80,80,48,0,0,16,64,96,112,96,48,-16,-32,-32,0,32,32,16,-64,-96,-112,-96,-64,0,0,-48,-80,-80,-48,0,0}
+?WD5={0,0,0,-128,0,112,112,112,0,0,0,-128,0,0,0,-128,-128,-128,-128,0,-128,0,0,0,0,-128,-128,-128,0,-128,-128,-128}
+
+; ---- MSX parts (original) / MSXパート(オリジナル) ----
+MSXD ?XU1 ?FJ91
+MSXE ?XU1 ?FJ4
+MSXF ?XU1 ?FJ13
+SCCA ?XU1 ?FJ91
+SCCB ?XU1 ?FJ40
+SCCC ?XU1 ?FJ61
+SCCD ?XU1 ?FJ71
+SCCE ?XU1 ?FJ76
+PSGS ?XD0={ :0 ?XM1,1 ?NP0 ?XS$07 ! }
+PSGS ?XD1={ :1 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+PSGS ?XD2={ :2 ?XM3,1 ?NP6 ?XP416,8 ?XM2,1 ?XP512,8 ?XP624,5 ?XP816,3 ! }
+PSGS ?XD8={ :3 ?XM2,1 ?GS$09 ?XP768,0 ?XP976,9 ?XP1536,9 ?XP1792,9 ?XP2048,9 ! }
+SCCS ?FD4={ ?XT4 ?XU4 ?FC11 }
+SCCS ?FD5={ ?FC12 }
+SCCS ?FD6={ ?FB4,5 ?FC11 }
+SCCS ?FD7={ ?FC12 }
+SCCS ?FD8={ ?FB3,7 g+%4 g+%2 g+%2 g+%2 g+%2 }
+SCCS ?FD9={ c%4 c%2 c+%6 ?FB32,9 }
+SCCS ?FD10={ g+%4 g+%2 c+%2 g+%2 g+%2 ?FB15,10 g+%4 d d d%2 d%2 d%2 ?FJ4 }
+SCCS ?FD11={ g+%2 d%2 g+%2 d%2 g+%2 d%2 ?FB4,11,1 ?FR }
+SCCS ?FD12={ g+%4 g+%2 c+%2 c%2 c%2 ?FR }
+SCCS ?FD13={ ?XT1 ?DB1 ?XU4 ?EP0,$01,$26 }
+SCCS ?FD14={ ?FC32 }
+SCCS ?FD15={ a%2 ?FC32 }
+SCCS ?FD16={ g%2 ?FC32 }
+SCCS ?FD17={ a%2 ?FB4,14 }
+SCCS ?FD18={ ?FC92 f%2 ?FC92 c%2 ?FC92 f%2 ?FB2,18 }
+SCCS ?FD19={ ?FC33 }
+SCCS ?FD20={ g%2 ?FC33 }
+SCCS ?FD21={ d%2 ?FC33 }
+SCCS ?FD22={ g%2 ?FB2,19 ?FB2,14,2 ?EP0,$01,$55 o3 ?FC34 }
+SCCS ?FD23={ ?EP0,$01,$88 o2 }
+SCCS ?FD24={ a%2 a%2 ?FC36 }
+SCCS ?FD25={ ?FB2,24 }
+SCCS ?FD26={ f%2 f%2 ?FC37 }
+SCCS ?FD27={ ?FB2,26 }
+SCCS ?FD28={ g%2 g%2 ?FC38 }
+SCCS ?FD29={ ?FB2,28 }
+SCCS ?FD30={ e%2 e%2 ?FC39 }
+SCCS ?FD31={ ?FB2,30 ?FB2,24,2 ?FJ13 }
+SCCS ?FD32={ v12 o2 a%2 v9 o3 ?FR }
+SCCS ?FD33={ v12 o2 g%2 v9 o3 ?FR }
+SCCS ?FD34={ a%4 a%2 a%2 a%2 a%2 ?FB8,34 f+%4 f+%2 f+%2 f+%2 f+%2 f+%4 f+%2 f+%2 f+%2 f+%2 f%4 f%2 f%2 f%2 f%2 f%4 f%2 f%2 f%2 f%2 }
+SCCS ?FD35={ e%4 e%2 e%2 e%2 e%2 ?FB4,35 ?FB2,34,2 ?FR }
+SCCS ?FD36={ a%2 o3 a%2 o2 a%2 a%2 ?FR }
+SCCS ?FD37={ f%2 o3 f%2 o2 f%2 f%2 ?FR }
+SCCS ?FD38={ g%2 o3 g%2 o2 g%2 g%2 ?FR }
+SCCS ?FD39={ e%2 o3 e%2 o2 e%2 e%2 ?FR }
+SCCS ?FD40={ ?XT1 ?DB1 @5 ?XU4 ?EP0,$01,$60 }
+SCCS ?FD41={ ?FC59 }
+SCCS ?FD42={ a%2 ?FC59 }
+SCCS ?FD43={ g%2 ?FC59 }
+SCCS ?FD44={ a%2 ?FB4,41 }
+SCCS ?FD45={ v11 o1 f%2 v9 o2 f%2 v11 o1 f%2 v9 o2 c%2 o1 v11 f%2 v9 o2 f%2 ?FB2,45 }
+SCCS ?FD46={ ?FC60 }
+SCCS ?FD47={ g%2 ?FC60 }
+SCCS ?FD48={ d%2 ?FC60 }
+SCCS ?FD49={ g%2 ?FB2,46 ?FB2,41,2 ?FC34 }
+SCCS ?FD50={ v9 ?EP0,$01,$50 }
+SCCS ?FD51={ a%4 ?FC36 }
+SCCS ?FD52={ ?FB2,51 }
+SCCS ?FD53={ f%4 ?FC37 }
+SCCS ?FD54={ ?FB2,53 }
+SCCS ?FD55={ g%4 ?FC38 }
+SCCS ?FD56={ ?FB2,55 }
+SCCS ?FD57={ e%4 ?FC39 }
+SCCS ?FD58={ ?FB2,57 ?FB2,51,2 ?FJ40 }
+SCCS ?FD59={ v11 o1 a%2 v9 o2 ?FR }
+SCCS ?FD60={ v11 o1 g%2 v9 o2 ?FR }
+SCCS ?FD61={ ?XT1 }
+SCCS ?FD62={ @0 ?XU6 v10 o5 ?EP0,$1E,$50 d%16 c+%16 @1 ?EP0,$01,$77 @2 o4 v12 c%8 f%4 a%4 b%2 r g g%12 ?FB2,62 ?XU8 ?EP0,$02,$65 ?FC69 }
+SCCS ?FD63={ f+%9 ?FC69 }
+SCCS ?FD64={ b%9 ?FC70 }
+SCCS ?FD65={ e%6 a%3 g+%12 ?FC69 }
+SCCS ?FD66={ f+%9 ?FC69 }
+SCCS ?FD67={ b%9 ?FC70 }
+SCCS ?FD68={ e%7 a b o5 e%12 v13 o4 ?EP0,$02,$66 ?FC93 b%6 g%6 a%3 g+%3 f+%3 g+%3 ?FC93 b%12 o5 e%6 f+%3 g+%3 ?FJ62 }
+SCCS ?FD69={ o3 a%3 o4 e%6 d c+ o3 a b%3 o4 ?FR }
+SCCS ?FD70={ d%3 a%9 f%6 c%3 f%3 e r o3 b o4 ?FR }
+SCCS ?FD71={ ?FC75 }
+SCCS ?FD72={ ?EP0,$1E,$41 a%16 a%16 ?EP0,$02,$46 v11 c%8 f%4 a%4 b%2 r g g%12 ?FB2,72 }
+SCCS ?FD73={ ?XU8 v12 o3 ?EP0,$01,$65 a%3 o4 e%6 d c+ o3 a b%3 o4 f+%4 ?DR d e f+ e d ?DB1 o3 e%3 a%6 b a e g%3 o4 g%9 o3 a%3 o4 d%4 o3 a o4 d a d o3 a o4 c%6 o3 a%3 o4 c%3
+SCCS o3 b r e b%6 o4 d%3 e%3 d%3 o3 b%3 e%3 ?FB2,73 ?DR @3 v10 ?EP0,$01,$55 o3 a%4 o4 c e a%6 o3 a%4 o4 c f a%6 o3 g%4 b o4 d g%6 ?DB1 a%3 g+%3 f+%3
+SCCS g+%3 ?DR o4 a%4 o5 c e a%6 o4 a%4 o5 c f a%6 o4 g%4 b o5 d g%6 }
+SCCS ?FD74={ o5 e o4 b e ?FB2,74 o5 f+ d o4 a o5 g+ e o4 b ?FJ71 }
+SCCS ?FD75={ ?XT1 ?DB1 @0 ?XU6 v9 o4 ?EP0,$1E,$41 ?FR }
+SCCS ?FD76={ ?FC75 }
+SCCS ?FD77={ e%16 e%16 ?XU4 @4 ?EP0,$01,$40 ?DR v9 }
+SCCS ?FD78={ o6 f%2 c%2 o5 a%2 f%2 a%2 o6 c%2 ?FB2,78 }
+SCCS ?FD79={ g%2 d%2 o5 b%2 g%2 b%2 o6 d%2 ?FB2,79 ?FB2,76,2 ?DB1 @4 ?XU8 v11 o4 ?EP0,$01,$80 }
+SCCS ?FD80={ ?FC90 }
+SCCS ?FD81={ ?DR ?FC95 f+ r g g d g ?DB1 ?FC90 }
+SCCS ?FD82={ ?FC95 ?FC95 }
+SCCS ?FD83={ a d a a d a ?FB2,83 }
+SCCS ?FD84={ a f a a f a ?FB2,84 }
+SCCS ?FD85={ b e g+ ?FB8,85 ?FB2,80,2 }
+SCCS ?FD86={ @4 ?XU8 v12 o4 ?EP0,$01,$76 }
+SCCS ?FD87={ e%2 e e e e ?FB2,87 }
+SCCS ?FD88={ f%2 f f f f ?FB2,88 }
+SCCS ?FD89={ g%2 g g g g ?FB2,89 @0 o3 e%6 o4 d%3 e%3 ?FB2,86,2 ?FJ76 }
+SCCS ?FD90={ a r a a e a ?FB2,90 ?FR }
+SCCS ?FD91={ ! }
+SCCS ?FD92={ v12 o2 f%2 v9 o3 ?FR }
+SCCS ?FD93={ a%10 a b o5 c%6 o4 a%3 o5 c%3 o4 ?FR }
+SCCS ?FD94={ a%3 o4 e%6 d c+ o3 a b%3 o4 ?FR }
+SCCS ?FD95={ g r g g d g ?FR }
+
+; ---- FM voices / FM音色 ----
+; [EN] @n / FB,ALG / one line per operator OP1-OP4
+;      (AR,D1R,D2R,RR,D1L,TL,KS,ML,DT).
+; [JA] @n / FB,ALG / オペレータOP1-OP4ごとに1行
+;      (AR,D1R,D2R,RR,D1L,TL,KS,ML,DT)。
+; @1 lead: ALG 4, a bright pair and an x3 pair detuned against it
+;    リード: ALG 4、明るい組と、デチューンした3倍の組
+  @1
+   6,4
+   31,6,2,6,3,28,0,1,3
+   31,4,1,6,2,0,0,1,3
+   31,8,2,6,3,34,0,3,7
+   31,4,1,6,2,0,0,1,7
+
+; @2 bass: ALG 0, the first operators decay fast for the attack
+;    ベース: ALG 0、前段のオペレータが速く減衰してアタックを作る
+  @2
+   5,0
+   31,18,0,8,2,26,0,0,0
+   31,14,0,8,2,38,0,1,3
+   31,12,0,8,2,34,0,1,7
+   31,8,4,8,2,0,0,1,0
+
+; @3 brass: ALG 4, the modulators open slower than the carriers
+;    ブラス: ALG 4、モジュレータがキャリアより遅く開く
+  @3
+   5,4
+   18,8,0,7,4,28,0,1,3
+   22,4,1,7,1,0,0,1,3
+   18,8,0,7,4,32,0,1,7
+   22,4,1,7,1,0,0,1,7
+
+; @4 strings: ALG 4, slow attack and release
+;    ストリングス: ALG 4、ゆっくりしたアタックとリリース
+  @4
+   6,4
+   14,2,0,5,1,34,0,1,3
+   12,2,1,5,1,0,0,1,3
+   14,2,0,5,1,38,0,2,7
+   12,2,1,5,1,0,0,1,7
+
+; @5 harmony: ALG 4, a softer lead that sits under @1
+;    ハーモニー: ALG 4、@1の下に収まる柔らかいリード
+  @5
+   4,4
+   31,8,2,6,3,36,0,1,3
+   28,4,1,6,2,0,0,1,3
+   31,10,3,6,4,40,0,2,7
+   28,4,1,6,2,0,0,1,7
+
+; ---- OPNA FM / OPNA FM ----
+; [EN] A sets the tempo (t198 = the MSX parts' timer) for the song.
+;      Every OPNA part starts with C96 and loops from the start (L).
+; [JA] Aでテンポ(t198 = MSXパートのタイマー)を決めます。OPNAの
+;      全パートはC96で始まり、先頭からループします(L)。
+A t198 C96 L @1 v7 q1 p3 M18,1,2,5 D2
+A   r1 | r1
+A   o6 c2 f4 a4 | b8 r16 g16 g2.
+A   r1 | r1
+A   o6 c2 f4 a4 | b8 r16 g16 g2.
+A   o5 a4 >e2 d12 c+12 <a12 | b4 >f+2.
+A   o5 a4 >e2 d12 c+12 <a12 | b4 >b2.
+A   o6 d4 a2. | f2 c4 f4
+A   o6 e12 r12 <b12 >e2 a4 | g+1
+A   o5 a4 >e2 d12 c+12 <a12 | b4 >f+2.
+A   o5 a4 >e2 d12 c+12 <a12 | b4 >b2.
+A   o6 d4 a2. | f2 c4 f4
+A   o6 e12 r12 <b12 >e%56 a12 b12 | >e1
+A   o5 a%80 a12 b12 | >c2 <a4 >c4
+A   o5 b2 g2 | a4 g+4 f+4 g+4
+A   o5 a%80 a12 b12 | >c2 <a4 >c4
+A   o5 b1 | >e2 f+4 g+4
+
+B C96 L @5 v5 q1 p3 M18,1,2,5
+B   r1 | r1
+B   r1 | r1
+B   r1 | r1
+B   o5 a2 a4 >f4 | g8 r16 <b16 b2.
+B   r1 | r1
+B   r1 | r1
+B   r1 | r1
+B   r1 | r1
+B   o5 c+4 >c+2 <b12 a12 c+12 | g4 >d2.
+B   o5 c+4 >c+2 <b12 a12 c+12 | g4 >g2.
+B   o5 f+4 >f+2. | <a2 a4 a4
+B   o5 g+12 r12 g+12 g+%56 >f12 g+12 | g+1
+B   o5 c%80 c12 g12 | a2 f4 a4
+B   o5 g2 <b2 | >e4 e4 e4 e4
+B   o5 c%80 c12 g12 | a2 f4 a4
+B   o5 g1 | g+2 >d4 e4
+
+; [EN] C H I one note each of the chord: @4 strings hold the bar,
+;      @3 brass hits on the shuffle (1, the last triplet of 2, 3, the
+;      last triplet of 4).
+; [JA] C H I 和音の1音ずつ: @4ストリングスは1小節伸ばし、@3ブラスは
+;      シャッフルで刻む(1拍目、2拍目の3連の最後、3拍目、4拍目の
+;      3連の最後)。
+C C96 L q1 p2
+C   @4 v5 o4 a1 | a1 | a1 | b1
+C   o4 a1 | a1 | a1 | b1
+C   o4 a1 | b1 | a1 | b1
+C   o4 a1 | a1 | b1 | g+1
+C   @3 v5 o4 a12 r3 a12 a12 r3 a12 | b12 r3 b12 b12 r3 b12 | a12 r3 a12 a12 r3 a12 | b12 r3 b12 b12 r3 b12
+C   o4 a12 r3 a12 a12 r3 a12 | a12 r3 a12 a12 r3 a12 | b12 r3 b12 b12 r3 b12 | g+12 r3 g+12 g+12 r3 g+12
+C   @4 v5 o4 a1 | a1 | b1 | b1
+C   @3 v5 o5 c12 r3 c12 c12 r3 c12 | c12 r3 c12 c12 r3 c12 | <b12 r3 b12 b12 r3 b12 | b12 r3 b12 a12 r3 b12
+
+H C96 L q1 p3
+H   @4 v3 o5 d1 | c+1 | c1 | d1
+H   o5 d1 | c+1 | c1 | d1
+H   o5 c+1 | d1 | e1 | d1
+H   o5 d1 | c1 | e1 | <b1
+H   @3 v3 o5 c+12 r3 c+12 c+12 r3 c+12 | d12 r3 d12 d12 r3 d12 | e12 r3 e12 e12 r3 e12 | d12 r3 d12 d12 r3 d12
+H   o5 d12 r3 d12 d12 r3 d12 | c12 r3 c12 c12 r3 c12 | e12 r3 e12 e12 r3 e12 | <b12 r3 b12 b12 r3 b12
+H   @4 v3 o5 c1 | c1 | d1 | e1
+H   @3 v3 o5 e12 r3 e12 e12 r3 e12 | f12 r3 f12 f12 r3 f12 | d12 r3 d12 d12 r3 d12 | e12 r3 e12 d12 r3 e12
+
+I C96 L q1 p1
+I   @4 v5 o5 g1 | g1 | f1 | g1
+I   o5 g1 | g1 | f1 | g1
+I   o5 e1 | f+1 | b1 | g1
+I   o5 f+1 | f1 | b1 | d1
+I   @3 v5 o5 e12 r3 e12 e12 r3 e12 | f+12 r3 f+12 f+12 r3 f+12 | b12 r3 b12 b12 r3 b12 | g12 r3 g12 g12 r3 g12
+I   o5 f+12 r3 f+12 f+12 r3 f+12 | f12 r3 f12 f12 r3 f12 | b12 r3 b12 b12 r3 b12 | d12 r3 d12 d12 r3 d12
+I   @4 v5 o5 e1 | f1 | g1 | b1
+I   @3 v5 o5 a12 r3 a12 a12 r3 a12 | a12 r3 a12 a12 r3 a12 | g12 r3 g12 g12 r3 g12 | g+12 r3 g+12 f+12 r3 g+12
+
+J C96 L @2 v7 q2 p3
+J   o2 a12 >a12 <a12 >g12 <a12 >a12 <a12 >a12 <a12 >g12 <a12 >a12 | <a12 >a12 <a12 >g12 <a12 >a12 <a12 >a12 <a12 >g12 <a12 >a12
+J   o2 f12 >f12 <f12 >c12 <f12 >f12 <f12 >f12 <f12 >c12 <f12 >f12 | <g12 >g12 <g12 >d12 <g12 >g12 <g12 >g12 <g12 >d12 <g12 >g12
+J   o2 a12 >a12 <a12 >g12 <a12 >a12 <a12 >a12 <a12 >g12 <a12 >a12 | <a12 >a12 <a12 >g12 <a12 >a12 <a12 >a12 <a12 >g12 <a12 >a12
+J   o2 f12 >f12 <f12 >c12 <f12 >f12 <f12 >f12 <f12 >c12 <f12 >f12 | <g12 >g12 <g12 >d12 <g12 >g12 <g12 >g12 <g12 >d12 <g12 >g12
+J   o3 a6 a12 a12 a12 a12 a6 a12 a12 a12 a12 | a6 a12 a12 a12 a12 a6 a12 a12 a12 a12
+J   o3 a6 a12 a12 a12 a12 a6 a12 a12 a12 a12 | a6 a12 a12 a12 a12 a6 a12 a12 a12 a12
+J   o3 f+6 f+12 f+12 f+12 f+12 f+6 f+12 f+12 f+12 f+12 | f6 f12 f12 f12 f12 f6 f12 f12 f12 f12
+J   o3 e6 e12 e12 e12 e12 e6 e12 e12 e12 e12 | e6 e12 e12 e12 e12 e6 e12 e12 e12 e12
+J   o3 a6 a12 a12 a12 a12 a6 a12 a12 a12 a12 | a6 a12 a12 a12 a12 a6 a12 a12 a12 a12
+J   o3 a6 a12 a12 a12 a12 a6 a12 a12 a12 a12 | a6 a12 a12 a12 a12 a6 a12 a12 a12 a12
+J   o3 f+6 f+12 f+12 f+12 f+12 f+6 f+12 f+12 f+12 f+12 | f6 f12 f12 f12 f12 f6 f12 f12 f12 f12
+J   o3 e6 e12 e12 e12 e12 e6 e12 e12 e12 e12 | e6 e12 e12 e12 e12 e6 e12 e12 e12 e12
+J   o3 a6 a12 >a12 <a12 a12 a6 a12 >a12 <a12 a12 | f6 f12 >f12 <f12 f12 f6 f12 >f12 <f12 f12
+J   o3 g6 g12 >g12 <g12 g12 g6 g12 >g12 <g12 g12 | e6 e12 >e12 <e12 e12 e6 e12 >e12 <e12 e12
+J   o3 a6 a12 >a12 <a12 a12 a6 a12 >a12 <a12 a12 | f6 f12 >f12 <f12 f12 f6 f12 >f12 <f12 f12
+J   o3 g6 g12 >g12 <g12 g12 g6 g12 >g12 <g12 g12 | e6 e12 >e12 <e12 e12 e6 e12 >e12 <e12 e12
+
+; ---- OPNA rhythm / OPNAリズム ----
+; [EN] @ adds drums: 1 bass, 2 snare, 4 cymbal, 8 hi-hat, 16 tom,
+;      32 rim shot. A shuffle groove (c6 c12 = one beat), half time in
+;      the intro, four on the floor in the B section, a fill every
+;      fourth bar and a crash at each section.
+; [JA] @で楽器を足す: 1バス、2スネア、4シンバル、8ハイハット、16タム、
+;      32リム。シャッフル(c6 c12 = 1拍)、イントロはハーフタイム、
+;      Bメロは4つ打ち、4小節ごとにフィル、各セクションの頭でクラッシュ。
+G C96 L v47,30,26,20,16,26,20
+G   @5c2 @1c4 @16c12 @16c12 @16c12 | @1c4 @1c4 @1c4 @2c12 @2c12 @3c12
+G   @9c6 @8c12 @8c6 @8c12 @10c6 @8c12 @8c6 @8c12 | @9c6 @8c12 @8c6 @8c12 @10c6 @8c12 @2c12 @2c12 @2c12
+G   @5c2 @1c4 @16c12 @16c12 @16c12 | @1c4 @1c4 @1c4 @2c12 @2c12 @3c12
+G   @9c6 @8c12 @8c6 @8c12 @10c6 @8c12 @8c6 @8c12 | @9c6 @8c12 @10c6 @8c12 @17c12 @16c12 @16c12 @18c12 @18c12 @3c12
+G   @5c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12 | @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12
+G   @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12 | @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @2c12 @2c12 @18c12
+G   @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12 | @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12
+G   @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12 | @9c6 @8c12 @10c6 @8c12 @17c12 @16c12 @16c12 @18c12 @18c12 @3c12
+G   @5c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12 | @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12
+G   @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12 | @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @2c12 @2c12 @18c12
+G   @5c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12 | @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12
+G   @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @10c6 @8c12 | @9c6 @8c12 @10c6 @8c12 @17c12 @16c12 @16c12 @18c12 @18c12 @3c12
+G   @5c6 @8c12 @11c6 @8c12 @9c6 @8c12 @11c6 @9c12 | @9c6 @8c12 @11c6 @8c12 @9c6 @8c12 @11c6 @9c12
+G   @9c6 @8c12 @11c6 @8c12 @9c6 @8c12 @11c6 @9c12 | @9c6 @8c12 @10c6 @8c12 @9c6 @9c12 @2c12 @2c12 @18c12
+G   @5c6 @8c12 @11c6 @8c12 @9c6 @8c12 @11c6 @9c12 | @9c6 @8c12 @11c6 @8c12 @9c6 @8c12 @11c6 @9c12
+G   @9c6 @8c12 @11c6 @8c12 @9c6 @8c12 @11c6 @9c12 | @9c6 @8c12 @11c6 @8c12 @17c12 @16c12 @16c12 @18c12 @18c12 @3c12
