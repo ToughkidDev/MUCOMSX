@@ -129,13 +129,13 @@ dotnet workload install wasm-tools   # .NET 8 SDK
 MUCPlayground/src/build.sh
 ```
 
-`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.2.7), publishes `src/Web` and
+`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.2.8), publishes `src/Web` and
 `src/VgmWeb`, and copies only the files the browser loads into `engine/` (about 11 MB, 4.2 MB
 compressed) and `engine-vgm/` (about 20 MB, 7.3 MB compressed); AOT compilation takes a
 few minutes. Run it again after
 adding samples to refresh `samples.json`.
 
-### MucoMSX native core fixes in MDPlayer4Mac v0.2.6 and v0.2.7
+### MucoMSX native core fixes in MDPlayer4Mac v0.2.6 to v0.2.8
 
 MDPlayer4Mac v0.2.6 took these fixes and additions from MUCPlayground
 ([ToughkidDev/MDPlayer4Mac#1](https://github.com/ToughkidDev/MDPlayer4Mac/pull/1), tests in
@@ -152,6 +152,12 @@ MDPlayer4Mac v0.2.7 adds one more fix from MUCPlayground
 `#CarrierCorrection` and `#OPNA1RhythmMute` were dropped when the OPNA parts were packed, so
 every FM carrier played at the same level and muted rhythm sounds still played. Songs without
 these tags play as before.
+
+MDPlayer4Mac v0.2.8 does the same for songs packed as msPb0100–0102 (inline `@W` waves and
+ordinary SCC rows, such as SPC2MUC output;
+[ToughkidDev/MDPlayer4Mac#3](https://github.com/ToughkidDev/MDPlayer4Mac/pull/3)): their
+container lost every header tag, so `#CarrierCorrection` was ignored and `#title` and
+`#composer` were missing. The repository samples in these formats play as before.
 
 To compare against MDPlayer4Mac on the desktop:
 
