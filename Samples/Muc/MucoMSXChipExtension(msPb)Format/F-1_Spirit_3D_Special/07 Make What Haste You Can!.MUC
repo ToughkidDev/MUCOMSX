@@ -1,0 +1,95 @@
+; Current MucoMSX MUC. Compilation checked; 
+#title F-1 Spirit 3D Special
+; Score from F-1 Spirit 3D Special (1988)(Konami)
+; Muc by ToughkidCST
+
+?IT1={224,4,190,3,5,1}
+MSXB ?XU1 l%1 ?FJ1
+MSXC ?XU1 l%1 ?FJ5
+MSXH ?XU1 l%1 ?FJ3
+MSXI ?XU1 l%1 ?FJ9
+MSXJ ?XU1 l%1 ?FJ7
+MSXG ?XU1 l%1 ?FJ11
+OPLS ?FD0={ ! }
+OPLS ?FD1={ ?XT1 @10 ?XU6 v14 ?QP48 r%1 o5 d%1 d%1 ?QP128 d%2 ?QP48 d%1 ?QP224 d+%3 e%4 ?XU2 v12 ?QP48 e%1 d+%1 d%1 c+%1 c%1 o4 b%1 a+%1 a%1
+OPLS g+%1 g%1 f+%1 f%1 @11 ?QP48 v12 ?XU6 o4 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48
+OPLS o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 o4 a%1
+OPLS ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 }
+OPLS ?FD2={ e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 o4 g+%1 ?QP64 o3
+OPLS e%1 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 @7 v15 ?QP64 o5 f+%1 f+%1 d%1 d%1 ?QP64 o5
+OPLS f+%1 f+%1 d%1 d%1 @11 v12 o4 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1
+OPLS ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 ?QP48 o4
+OPLS a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4
+OPLS a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4
+OPLS g+%1 ?QP64 o3 e%1 @7 v15 ?QP96 o4 a%1 g+%1 a%1 b%1 r%1 o5 e%1 r%1 b%1 @11 v12 ?QP48 o4 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1
+OPLS a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4
+OPLS a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 e%1 d%1 e%1 a%2
+OPLS ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 o3 e%1 ?QP48
+OPLS o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 @7 v15 ?QP64 o5 f+%1 f+%1 d%1 d%1 ?QP64 o5 f+%1 f+%1 d%1
+OPLS d%1 @11 v12 ?QP48 o4 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1
+OPLS ?QP48 o4 g+%1 ?QP64 o3 e%1 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3
+OPLS e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 ?QP48 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64
+OPLS o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64
+OPLS o3 e%1 @7 v15 ?QP80 o4 a%1 o5 d%2 d%1 ?QP80 d%1 ?QP48 o4 a%1 ?QP80 o5 d%1 o4 a%1 @11 v12 o4 e%1 d%1 e%1 a%2 ?QP80 o3 e%1 ?QP48 o4
+OPLS g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 o4 a%2 ?QP64 o3 e%1 ?QP48 o4
+OPLS a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 ?FJ2 }
+OPLS ?FD3={ ?XT1 @10 ?XU6 v14 ?DB2 ?QP48 r%1 o5 d%1 d%1 ?QP128 d%2 ?QP48 d%1 ?QP224 d+%3 e%4 ?XU2 v12 ?QP48 e%1 d+%1 d%1 c+%1 c%1 o4 b%1 a+%1
+OPLS a%1 g+%1 g%1 f+%1 f%1 @11 ?QP48 v12 ?XU6 ?DB1 o4 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3
+OPLS e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1
+OPLS o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 }
+OPLS ?FD4={ e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 o4 g+%1 ?QP64 o3
+OPLS e%1 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 @7 v11 ?DB2 r%2 ?QP64 o6 f+%1 f+%1 d%1 d%1
+OPLS ?QP64 o6 f+%1 f+%1 @11 v12 ?DB1 o4 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1
+OPLS ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 ?QP48 o4
+OPLS a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4
+OPLS a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4
+OPLS g+%1 ?QP64 o3 e%1 @7 v11 ?DB2 r%2 ?QP80 o4 a%1 g+%1 a%1 b%1 r%1 o5 e%1 @11 v12 ?DB1 ?QP48 o4 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4
+OPLS g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1
+OPLS ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 e%1 d%1
+OPLS e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 o3
+OPLS e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 @7 v11 ?DB2 r%2 ?QP64 o6 f+%1 f+%1 d%1 d%1 ?QP64 o6
+OPLS f+%1 f+%1 @11 v12 ?DB1 ?QP48 o4 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1
+OPLS ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 ?QP48 o4
+OPLS a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 ?QP48 e%1 d%1 e%1 a%2 ?QP64 o3 e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48
+OPLS o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48
+OPLS o4 g+%1 ?QP64 o3 e%1 @7 v11 ?DB2 r%2 ?QP80 o4 a%1 o5 d%2 d%1 ?QP80 d%1 ?QP48 o4 a%1 ?QP80 o5 @11 v12 ?DB1 o4 e%1 d%1 e%1 a%2 ?QP80 o3
+OPLS e%1 ?QP48 o4 g+%1 a%1 ?QP64 o3 e%1 ?QP48 o4 a%2 ?QP64 o3 e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 o4 a%2 ?QP64 o3
+OPLS e%1 ?QP48 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 o4 a%1 ?QP64 o3 e%1 ?QP48 o4 g+%1 ?QP64 o3 e%1 e%1 ?QP48 o4 f+%3 ?FJ4 }
+OPLS ?FD5={ ?XT1 @3 ?QP48 ?XU6 v14 r%1 o2 d%1 d%1 d%2 d%1 d+%3 v14 o3 r%1 e%1 d%1 o2 b%1 a%1 g+%1 g%1 e%1 v14 }
+OPLS ?FD6={ e%3 o2 e%1 o1 e%1 o2 e%1 d%1 e%1 o1 e%1 o2 d%2 o1 e%1 o2 d%1 o1 e%1 o2 c+%2 o1 e%1 o2 d%2 o1 e%1 o2 d%1 o1 e%1 o2 c+%1
+OPLS o1 e%1 o2 d%1 o1 e%1 o2 c+%1 o1 e%1 b%1 a%3 e%3 o2 e%1 o1 e%1 o2 e%1 d%1 e%1 o1 e%1 o2 d%2 o1 e%1 o2 d%1 o1 e%1 o2 e%2 o1 e%1
+OPLS o2 d%2 o1 e%1 o2 d%1 o1 e%1 o2 c+%1 o1 e%1 g+%1 e%1 a%1 e%1 b%1 o2 d%2 o1 e%1 e%3 o2 e%1 o1 e%1 o2 e%1 d%1 e%1 o1 e%1 o2 d%2
+OPLS o1 e%1 o2 d%1 o1 e%1 o2 c+%2 o1 e%1 o2 d%2 o1 e%1 o2 d%1 o1 e%1 o2 c+%1 o1 e%1 o2 d%1 o1 e%1 o2 c+%1 o1 e%1 b%1 a%3 e%3 o2
+OPLS e%1 o1 e%1 o2 e%1 d%1 e%1 o1 e%1 o2 d%2 o1 e%1 o2 d%1 o1 e%1 o2 c+%2 o1 e%1 o2 d%2 o1 e%1 o2 d%1 o1 e%1 o2 c+%1 o1 e%1 g+%1
+OPLS e%1 a%1 e%1 b%1 o2 d%2 o1 e%1 ?FJ6 }
+OPLS ?FD7={ ?XT1 @10 ?XU6 v14 ?QP48 r%1 o4 a%1 a%1 ?QP128 a%2 ?QP48 a%1 ?QP224 a+%3 b%4 ?XU2 v12 ?QP48 b%1 a+%1 a%1 g+%1 g%1 f+%1 f%1 e%1
+OPLS d+%1 d%1 c+%1 c%1 @11 v12 ?QP48 ?XU6 o4 ?QP48 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 e%1
+OPLS r%1 e%1 r%1 r%1 e%3 }
+OPLS ?FD8={ r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 @7 v15 ?QP64 o6 d%1 d%1 o5 a%1 a%1 ?QP64 o6
+OPLS d%1 d%1 o5 a%1 a%1 @11 v12 ?QP48 o4 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 e%1 r%1 e%1
+OPLS r%1 r%1 e%3 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 @7 v15 ?QP80 o3 a%1 g+%1 a%1 b%1 r%1
+OPLS o4 e%1 r%1 b%1 @11 v12 ?QP48 o4 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 e%1 r%1 e%1 r%1
+OPLS r%1 e%3 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 @7 v15 ?QP64 o6 d%1 d%1 o5 a%1 a%1 ?QP64 o6
+OPLS d%1 d%1 o5 a%1 a%1 @11 v12 ?QP48 o4 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 e%1 r%1 e%1
+OPLS r%1 r%1 e%3 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 @7 v15 ?QP80 o5 d%1 f+%2 f+%1 ?QP80 a%1
+OPLS ?QP48 d%1 ?QP80 g+%1 d%1 @11 v12 ?QP48 o4 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 e%1 r%1
+OPLS e%1 r%1 r%1 e%3 ?FJ8 }
+OPLS ?FD9={ ?XT1 @10 ?XU6 v14 ?DB2 ?QP48 r%1 o4 a%1 a%1 ?QP128 a%2 ?QP48 a%1 ?QP224 a+%3 b%4 ?XU2 v12 ?QP48 b%1 a+%1 a%1 g+%1 g%1 f+%1 f%1
+OPLS e%1 d+%1 d%1 c+%1 c%1 @11 v12 ?QP48 ?XU6 o4 ?DB1 ?QP48 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1
+OPLS r%1 e%1 r%1 e%1 r%1 r%1 e%3 }
+OPLS ?FD10={ r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 @7 v11 ?DB2 r%2 ?QP64 o6 d%1 d%1 ?QP16 o5 a%1
+OPLS a%1 ?QP64 o6 d%1 d%1 ?QP16 o5 @11 v12 ?DB1 ?QP48 o4 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1
+OPLS e%1 r%1 e%1 r%1 r%1 e%3 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 @7 v11 ?DB2 r%2 ?QP64 o4
+OPLS a%1 g+%1 a%1 b%1 r%1 o5 e%1 @11 v12 ?DB1 ?QP48 o4 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1
+OPLS e%1 r%1 e%1 r%1 r%1 e%3 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 @7 v11 ?DB2 r%2 ?QP64 o6
+OPLS d%1 d%1 o5 a%1 a%1 ?QP64 o6 d%1 d%1 o5 @11 v12 ?DB1 ?QP48 o4 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1
+OPLS e%1 r%1 e%1 r%1 e%1 r%1 r%1 e%3 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 @7 v11 ?DB2 r%2
+OPLS ?QP80 o5 d%1 f+%2 f+%1 ?QP80 a%1 ?QP48 d%1 ?QP80 @11 v12 ?DB1 ?QP48 o4 r%3 e%2 r%1 e%1 e%1 r%1 e%2 r%1 e%1 r%1 e%1 r%1 r%1 e%2 r%1
+OPLS e%1 r%1 e%1 r%1 e%1 r%1 e%1 r%1 r%1 e%3 ?FJ10 }
+MSXG ?FD11={ ?XT64 ?XU6 v14 ?IT1 r%1 ?XU6 g+%1 ?IB c%1 g+%2 g+%1 g+%3 ?IB c%1 c+%1 g+%1 g+%1 g+%1 g+%1 g+%1 g+%1 g+%1 }
+MSXG ?FD12={ v14 ?IT1 ?IB c%1 c+%1 d%1 g+%1 c+%1 ?IB c%1 ?IB c%1 c+%1 ?IB c%1 c+%1 c+%1 c+%1 g+%1 c+%1 c+%1 d%1 ?IB c%1 c+%1 d%1 g+%1 c+%1
+MSXG ?IB c%1 ?IB c%1 c+%1 ?IB c%1 c+%1 ?IB c%1 c+%1 g+%1 c+%1 c+%1 d%1 ?IB c%1 c+%1 d%1 g+%1 c+%1 ?IB c%1 ?IB c%1 c+%1 ?IB c%1 c+%1 c+%1
+MSXG c+%1 g+%1 c+%1 c+%1 d%1 ?IB c%1 c+%1 d%1 g+%1 c+%1 ?IB c%1 ?IB c%1 c+%1 ?IB c%1 ?IB c%1 ?IB c%1 c+%1 g+%1 c+%1 c+%1 d%1 ?IB c%1 c+%1
+MSXG d%1 g+%1 c+%1 ?IB c%1 ?IB c%1 c+%1 ?IB c%1 c+%1 c+%1 c+%1 g+%1 c+%1 c+%1 d%1 ?IB g+%1 c+%1 d%1 g+%1 c+%1 ?IB c%1 ?IB c%1 c+%1 ?IB
+MSXG c%1 c+%1 ?IB c%1 c+%1 g+%1 c+%1 c+%1 d%1 ?IB c%1 c+%1 d%1 g+%1 c+%1 ?IB c%1 ?IB c%1 c+%1 ?IB c%1 c+%1 c+%1 c+%1 g+%1 c+%1 c+%1 d%1
+MSXG ?IB c%1 c+%1 d%1 g+%1 c+%1 ?IB c%1 ?IB c%1 c+%1 d%1 v14 g+%1 g+%1 g+%1 g+%1 c+%1 g+%1 g+%1 ?FJ12 }
