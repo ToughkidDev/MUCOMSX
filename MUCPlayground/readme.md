@@ -30,7 +30,7 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
 - **Channel view, as in MDPlayer4Mac:** while a song plays, **▦ Channels** swaps the editor for MDPlayer4Mac's channel view: each chip's panel (YM2608, YM2610, YM2203, YM2151, YM2413, AY-3-8910 PSG, K051649 SCC/SCC+) with a keyboard per channel, note names, frequencies, level meters, pan, voice registers and, for the SCC, the wave tables, drawn with MDPlayer's own bitmaps. The chips the song uses are named at the top left in MDPlayer's note font (`YM2608`, `AY8910  YM2413  K052539`, the same chip twice as `YM2610 X2`). Panels are stacked FM → SSG/PSG → PCM, rows are grouped the MDPlayer4Mac way, the rhythm / ADPCM meters follow the emulator's real output, and **Size** opens at *Fit* each time the view is shown and goes back and forth, *Fit* → 100 → 75 → 50 → 25 → 50 → 75 → 100 % → *Fit* …; *Fit* scales the panels, keeping their shape, to the largest size at which all of them fill the view, and follows the window as it is resized. Playing a `.mub` or `.vgm` switches to it by itself; playing a MUC afterwards returns to the editor. Stopping keeps the panels on screen. The view follows what you hear: the engine logs every chip write with its audio frame (for VGM files the page reads the writes from the file), and they are applied as that frame is played.
 - **Split editor:** the **Split** buttons under the editor show the song twice, side by side or one above the other, to work on two places of a long MUC at once. Both views are live; typing in either changes both. While a song plays, the view you are working in stays where it is and the other one follows the playing part. Drag the bar between them to resize (double-click to even them); the choice is remembered.
 - **Examples:** a short demo with inline FM voices, and **Samples…**, a browser for this repository's [`Samples`](../Samples) folder (search, grouped by folder; `.muc` opens in the editor, `.mub` / `.vgm` / `.vgz` play). Its first groups are the [templates](../Samples/Muc/Templates): basics, one per sound chip, drum libraries, genre songs with drums, bass and chords ready for your melody, *Midnight Pier*, a finished city pop demo that plays every chip at once, and *Killer Coast Land OPNA Arrange*, a Gradius 2 song whose MucoMSX MSX parts are joined by YM2608 rhythm and FM parts, commented in English and Japanese. The folder is read live from GitHub, so **a song committed to `Samples/` shows up straight away**, without rebuilding anything. Voice / PCM files the song names (for example `SNATCHEA.DAT`) are fetched from the same folder. The list is cached for 10 minutes (*Refresh* rereads it); if GitHub cannot be reached, for example after GitHub's limit of about 60 anonymous API requests an hour, the list built into the page (`samples.json`) is used instead.
-- **New:** opens a list of templates to start a song from: the template in ordinary MML (`template.muc`, the same as `Samples/Muc/Templates/2_Chips/OPNA_and_MSX_All.muc`), an 8-bar song that uses OPNA and every MSX target of the latest msPb format together, with a comment on each part: OPNA FM (inline voices), OPNA rhythm, MSX-MUSIC (`MSXA`/`MSXB` and the `MSXG` drums), the MSX PSG (`MSXD`, with a software envelope) and the five SCC/SCC+ parts `SCCA`–`SCCE` (inline `@Wn:{…}` waves, envelopes, macros, repeats with `/`, the `L` loop); and five templates written with the MucoMSX chip extension commands ([`Samples/Muc/Templates/7_MSX_Extension`](../Samples/Muc/Templates/7_MSX_Extension), fetched like the samples): all MSX chips together, OPNA with MSX parts (kept in step with `C112` and `t198`), SCC (`?WD` waves, `?EP` envelopes, `?MV` vibrato, a `?DB` chorus, `?FD` phrases, `?FB` repeats, `?FJ` loops), MSX PSG (a drum part made of `?XD` effects) and MSX-MUSIC (`@n` and `?IU` instruments, `?QP` gate, `?IS` sustain, `?ID` drums with an `?IT` kit). Every template is commented in English and Japanese, compiles without messages and has every part 8 bars long. The examples list offers them too, and a share link opens one with `?ex=template`, `?ex=extAll`, `?ex=extOpna`, `?ex=extScc`, `?ex=extPsg` or `?ex=extOpll`. Attached files are removed. New asks first when the editor holds your own text; a template counts as yours from the first keystroke.
+- **New:** opens a list of templates to start a song from: the template in ordinary MML (`template.muc`, the same as `Samples/Muc/Templates/2_Chips/OPNA_and_MSX_All.muc`), an 8-bar song that uses OPNA and every MSX target of the latest msPb format together, with a comment on each part: OPNA FM (inline voices), OPNA rhythm, MSX-MUSIC (`MSXA`/`MSXB` and the `MSXG` drums), the MSX PSG (`MSXD`, with a software envelope) and the five SCC/SCC+ parts `SCCA`–`SCCE` (inline `@Wn:{…}` waves, envelopes, macros, repeats with `/`, the `L` loop); and five templates written with the MucoMSX chip extension commands for MDPlayer4Mac v0.2.6 and later, their compact rows written with `|`, `[ ]n` and `L` ([`Samples/Muc/Templates/7_MSX_Extension`](../Samples/Muc/Templates/7_MSX_Extension), fetched like the samples): all MSX chips together, OPNA with MSX parts (kept in step with `C112` and `t198`), SCC (`?WD` waves, `?EP` envelopes, `?MV` vibrato, a `?DB` chorus, `?FD` phrases, `?FB` repeats, `?FJ` loops), MSX PSG (a drum part made of `?XD` effects) and MSX-MUSIC (`@n` and `?IU` instruments, `?QP` gate, `?IS` sustain, `?ID` drums with an `?IT` kit). Every template is commented in English and Japanese, compiles without messages and has every part 8 bars long. The examples list offers them too, and a share link opens one with `?ex=template`, `?ex=extAll`, `?ex=extOpna`, `?ex=extScc`, `?ex=extPsg` or `?ex=extOpll`. Attached files are removed. New asks first when the editor holds your own text; a template counts as yours from the first keystroke.
 - **Your own files:** open a `.muc`, attach `#voice` / `#pcm` files, or drop them on the page. Your song is autosaved in the browser **together with its attached voice / PCM files** (IndexedDB), so after leaving and coming back it plays exactly as before. If a restored song names a file that was not kept (for example one saved by an older version of the page), it is fetched again from the song's Samples folder, or from `Samples/` when exactly one file there has that name.
 - **Channel volume in the channel view:** for songs the MUC engine plays (MUC and .mub), a column of faders beside the chip panels, one on each channel's own row, drawn with MDPlayer4Mac's mixer graphics (its `rFader` rail, knob and level bar, turned on their side as its mixer does, and the `rFont_03` digits): OPNA FM1–6, SSG1–3, ADPCM and the six rhythm sounds; YM2610 FM, SSG, ADPCM-B and ADPCM-A 1–6; OPM 1–8; OPLL 1–9 and its five drums; PSG A–C; SCC 1–5. The faders use MDPlayer4Mac's mixer units (0.5 dB steps, 0 — the song's own level — 35/43 of the way along as MDPlayer's fader has it, values printed as MDPlayer prints them): from −32 (−16 dB) to +20 (+10 dB), and OFF below −32. Dragging rests at 0 for a couple of pixels on the way through; the small key at the right of each fader puts it back to 0; the wheel moves it 0.5 dB (from −32 down to OFF), clicking the number switches the channel off and back, double-clicking a fader returns it to 0 and double-clicking VOL returns the whole chip. **RESET VOL**, lined up with the faders (same position, width and height) two rows below the last one, puts every channel of every chip back to 0 (channels switched OFF too; it is dimmed when there is nothing to reset, and leaves the toolbar's Volume as it is). The emulators mix their channels inside, so the engine (`ChannelMixer.cs`) applies the faders to the registers the song writes, as a driver sets volume: the carrier operators' TL by the channel's algorithm (0.75 dB steps), the SSG / PSG / OPLL / SCC volume (about 3 dB steps; a channel on the SSG hardware envelope can only be switched off), each rhythm / ADPCM-A sound's level, and the ADPCM-B level; louder goes only as far as a register can (a carrier already at full level, or SSG at 15, stays). Checked natively: −24 (−12 dB) measures −12.1 dB on FM (algorithms 0 and 7) and SSG, −60 measures −30 dB, +10 measures +5 dB where there is headroom, OFF is silent, and switching off the ADPCM or all SCC channels gives exactly the song without those parts (OPLL's quietest level is −45 dB, so its OFF leaves a faint trace). The settings stay for the next songs; the chip panels still show the song's own register values, and saved .mub / .vgm files are unchanged. VGM files play on MDPlayer's own player, which has no per-channel volume, so they show no faders.
 - **Playback speed:** the **Speed** slider beside Volume plays the song at 25–200 % without changing its pitch: the MUC engine runs the driver's timers that many steps per output sample, and VGM files use MDPlayer's own VGM speed. While dragging, the slider rests at 100 % for a few pixels (a small mark under the track shows where), so normal speed is easy to find again; double-click goes back to 100 %, and the arrow keys move it 1 % at a time. The value shows in colour when it is not 100 %. Saved .mub / .vgm files are always at normal speed.
@@ -57,7 +57,7 @@ The sound engine is not a new implementation. It is **[MDPlayer4Mac](https://git
 |---|---|
 | MUC compiler | mucomDotNET compiler with MDPlayer4Mac's MUCOMSX changes |
 | MUCOM88 driver | mucomDotNET driver with MDPlayer4Mac's MSX overlay |
-| MSX parts | MDPlayer4Mac's `MucoNative` (`NativeMucCompiler`, `MsxMucCompiler`, `MsxMusicalCompiler`, `NativeMucomSession`, `PackedMusicPlayer` …), with `src/mdplayer4mac.patch` |
+| MSX parts | MDPlayer4Mac's `MucoNative` (`NativeMucCompiler`, `MsxMucCompiler`, `MsxMusicalCompiler`, `NativeMucomSession`, `PackedMusicPlayer` …) |
 | Chip emulation | MDSound (fmgen YM2608/YM2610/PSG, emu2413, K051649, YM2151) |
 
 `src/Engine/MucEngine.cs` is the only new engine code: it wires those pieces together the
@@ -129,37 +129,22 @@ dotnet workload install wasm-tools   # .NET 8 SDK
 MUCPlayground/src/build.sh
 ```
 
-`build.sh` checks out MDPlayer4Mac at the pinned commit, applies `src/mdplayer4mac.patch`, publishes `src/Web` and
+`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.2.6), publishes `src/Web` and
 `src/VgmWeb`, and copies only the files the browser loads into `engine/` (about 11 MB, 4.2 MB
 compressed) and `engine-vgm/` (about 20 MB, 7.3 MB compressed); AOT compilation takes a
 few minutes. Run it again after
 adding samples to refresh `samples.json`.
 
-### Changes to the MucoMSX native core (`src/mdplayer4mac.patch`)
+### MucoMSX native core fixes in MDPlayer4Mac v0.2.6
 
-Fixes and additions to MDPlayer4Mac's `MucoNative` that the pinned commit does not have yet,
-with their tests (`macos/MucoNativeTests/CompactRowTests.cs`; the native test suite passes, and
-all 261 sample MUCs render the same chip writes as before except where a fix applies):
-
-- **`?FB0 … ?FBn` on MSX-MUSIC and `MSXG`:** compiled, but the OPLL player stopped at the
-  repeat ("unknown opcode DE"). It now repeats as on PSG and SCC.
-- **`r` on `?XT4` effect tracks and `?XT64` drum tracks:** a rest was played as note value 12:
-  on `?XT4` playback stopped ("Undefined shared rhythm/effect phrase"), on `MSXG` it hit snare
-  and tom. It is now a rest. This removes a stray snare + tom hit at the start of six of the
-  F-1 Spirit 3D Special samples, which start their drums with `r%1`.
-- **`?ID` hits** now apply a pending `?IT` kit, `v` and `?IB`, as note hits do (before, only a
-  note hit or `?ID-` did, so the first `?ID` hits used the default kit at full volume).
-- **Compact (`?XU`) rows** take `|` (bar line), `[ ]n` (two levels, over several lines) and `L`
-  (the `!` at the end jumps back to it), as ordinary rows do. `/` is refused with a hint.
-- **Compact MSX-MUSIC rows** take `?IRn` (= `@n`) and `?IUn` (custom voice n).
-- **PSG-only songs** no longer need an SCC wave (`?WD`): a silent one is added. A compact SCC row
-  without waves gets a clear message.
-- **Wave morph (`?WM`)** reads the wave data with a stride that grows to 31 bytes; where that ran
-  past the last wave, playback stopped. It now wraps to the first wave (the page warns, PG04).
-- **Messages** name the two-letter command (`?IR`, `?WM` …) instead of its internal letter.
-
-These features are not in MDPlayer4Mac v0.2.5 itself: a song that uses them plays in
-MUCPlayground but not yet in the desktop player.
+The engine follows MDPlayer4Mac v0.2.6, which took these fixes and additions from MUCPlayground
+([ToughkidDev/MDPlayer4Mac#1](https://github.com/ToughkidDev/MDPlayer4Mac/pull/1), tests in
+`macos/MucoNativeTests/CompactRowTests.cs`): `?FB0 … ?FBn` on MSX-MUSIC and `MSXG`; `r` as a
+rest on `?XT4` effect and `?XT64` drum tracks (six F-1 Spirit 3D Special samples lose a stray
+snare + tom hit at their start); `?ID` hits applying a pending `?IT` kit, `v` and `?IB`; `|`,
+`[ ]n` and `L` on compact rows; `?IR` / `?IU` on compact MSX-MUSIC rows; PSG-only songs
+without `?WD`; wave morphs that wrap instead of stopping; messages with the two-letter
+command names. Scores that compiled before compile to the same bytes.
 
 To compare against MDPlayer4Mac on the desktop:
 
@@ -179,5 +164,5 @@ dotnet run -c Release --project MUCPlayground/src/NativeCheck -p:Mdp4MacDir=<MDP
 
 MUCPlayground's engine (`engine/` and `src/`) is distributed under GPL-3.0. Its
 corresponding source is `src/` together with MDPlayer4Mac at the commit pinned in
-`src/build.sh` with `src/mdplayer4mac.patch` applied. The YM2608 rhythm samples are the same `2608_*.WAV` files MDPlayer4Mac
+`src/build.sh`. The YM2608 rhythm samples are the same `2608_*.WAV` files MDPlayer4Mac
 ships.

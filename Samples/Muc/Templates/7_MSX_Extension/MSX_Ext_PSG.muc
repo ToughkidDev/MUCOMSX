@@ -10,21 +10,23 @@
 ;      (AY-3-8910) with one shared noise. The chip extensions (two-
 ;      letter commands starting with ?) play them like Konami's MSX
 ;      game drivers. Here: a lead, a drum part built from effects
-;      (?XD) and a bass. Needs MDPlayer4Mac v0.2.4 or later.
+;      (?XD) and a bass. Needs MDPlayer4Mac v0.2.6 or later.
 ; [JA] MSXD-MSXFはMSXのPSG(AY-3-8910)の矩形波3チャンネルで、ノイズを
 ;      1つ共有します。チップ拡張(?で始まる2文字のコマンド)はこれを
 ;      コナミのMSXゲームのドライバーと同じように鳴らします。ここでは
 ;      リード、エフェクト(?XD)で作るドラム、ベース。MDPlayer4Mac
-;      v0.2.4以降が必要です。
+;      v0.2.6以降が必要です。
 ;
 ; [EN] Compact rows: ?XU7 makes %1 a sixteenth note, %4 a quarter and
-;      %16 a whole note (one bar). They loop with :n and ?FJn and
-;      repeat with ?FB, as MDPlayer4Mac v0.2.4 and later play them.
-;      MUCPlayground's engine also takes |, [ ]n and L on these rows.
+;      %16 a whole note (one bar). As on ordinary rows, | is a bar line,
+;      [ ]n repeats (two levels; it may go on over the next lines) and L
+;      marks the loop: the ! at the end goes back to it. ?FB0 ... ?FBn
+;      and :n with ?FJn do the same the older way (MDPlayer4Mac v0.2.4).
 ; [JA] コンパクト行: ?XU7で%1が16分音符、%4が4分音符、%16が全音符
-;      (1小節)。:nと?FJnでループし、?FBで繰り返します(MDPlayer4Mac
-;      v0.2.4以降で鳴る書き方)。MUCPlaygroundのエンジンではこの行でも
-;      |、[ ]n、Lが使えます。
+;      (1小節)。通常の行と同じく|は小節線、[ ]nは繰り返し(2重まで、
+;      次の行へ続いてもよい)、Lはループ位置で、最後の!がそこへ戻ります。
+;      ?FB0 … ?FBnや:nと?FJnは同じことの以前の書き方です
+;      (MDPlayer4Mac v0.2.4)。
 ;
 ; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
 ;      and keep what you like. Save makes a .muc on your computer.
@@ -35,11 +37,8 @@
 ; [EN] Chords (8 bars): | C | Am | F | G | C | Am | Dm G | C |
 ; [JA] コード(8小節): | C | Am | F | G | C | Am | Dm G | C |
 
-; [EN] A song with compact PSG rows needs one SCC wave definition, even
-;      when it has no SCC parts. This one is not played.
-; [JA] コンパクトなPSG行がある曲には、SCCパートがなくてもSCC波形の定義が
-;      1つ必要です。これは鳴りません。
-?WD0={0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-128,-125,-117,-106,-90,-71,-49,-25}
+; [EN] Since v0.2.6 a PSG-only song needs no SCC wave (?WD).
+; [JA] v0.2.6からPSGだけの曲にSCC波形(?WD)は要りません。
 
 ; ---- Envelopes / エンベロープ ----
 ; [EN] ?EP0,a,b shapes each note's level. Measured on the PSG:
@@ -96,13 +95,13 @@ PSGS ?FD41={ d+%2 c%2 d%2 c%2 d%1 d%1 d%1 d%1 d%2 d%2 ?FR }
 ; ---- Parts / パート ----
 ; MSXD lead with delayed vibrato / ビブラートが遅れてかかるリード
 MSXD ?XU7 ?XT1 ?EP0,$81,$38 ?MW16 ?MV0,$53 v13
-MSXD :1 o5 g%4 e%2 g%2 >c%6 <b%2 a%4 e%4 c%4 e%4 f%2 g%2 a%4 >c%4 <a%4 g%12 r%4
-MSXD    g%4 e%2 g%2 >c%6 d%2 e%4 d%2 c%2 <a%8 f%4 a%4 g%4 b%4 >c%12 r%4 ?FJ1
-; MSXE drums: ?FB0 marks a place, ?FB3 plays from there 3 times in all
-; ドラム: ?FB0で位置を記し、?FB3でそこから合計3回演奏します
+MSXD L o5 g%4 e%2 g%2 >c%6 <b%2 | a%4 e%4 c%4 e%4 | f%2 g%2 a%4 >c%4 <a%4 | g%12 r%4
+MSXD   g%4 e%2 g%2 >c%6 d%2 | e%4 d%2 c%2 <a%8 | f%4 a%4 g%4 b%4 | >c%12 r%4 !
+; MSXE drums: three bars of beat and a fill, twice ([ ] inside [ ])
+; ドラム: 3小節のビートとフィルを2回([ ]の中の[ ])
 MSXE ?XU7 ?XT4 v13 o4
-MSXE :2 ?FB0 ?FC40 ?FB3 ?FC41 ?FB0 ?FC40 ?FB3 ?FC41 ?FJ2
+MSXE L [[?FC40]3 ?FC41]2 !
 ; MSXF bass, octave jumps / オクターブで跳ねるベース
 MSXF ?XU7 ?XT1 ?EP0,$81,$38 v12
-MSXF :3 ?FB0 o2 c%2 >c%2 ?FB4 ?FB0 o2 a%2 >a%2 ?FB4 ?FB0 o2 f%2 >f%2 ?FB4 ?FB0 o2 g%2 >g%2 ?FB4
-MSXF    ?FB0 o2 c%2 >c%2 ?FB4 ?FB0 o2 a%2 >a%2 ?FB4 ?FB0 o2 d%2 >d%2 ?FB2 ?FB0 o2 g%2 >g%2 ?FB2 ?FB0 o2 c%2 >c%2 ?FB4 ?FJ3
+MSXF L [o2 c%2 >c%2]4 | [o2 a%2 >a%2]4 | [o2 f%2 >f%2]4 | [o2 g%2 >g%2]4
+MSXF   [o2 c%2 >c%2]4 | [o2 a%2 >a%2]4 | [o2 d%2 >d%2]2 [o2 g%2 >g%2]2 | [o2 c%2 >c%2]4 !

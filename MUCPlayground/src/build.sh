@@ -5,12 +5,11 @@
 #   dotnet workload install wasm-tools
 #
 # The compiler, driver and chip emulators come from MDPlayer4Mac, pinned below so the
-# published engine always matches the commit it was tested against, with mdplayer4mac.patch
-# applied on top.
+# published engine always matches the commit it was tested against.
 set -euo pipefail
 
 MDP4MAC_REPO=https://github.com/ToughkidDev/MDPlayer4Mac.git
-MDP4MAC_COMMIT=dd2a46b7acc1aee42690fd54061975bb47ab6acf
+MDP4MAC_COMMIT=be46e455fc263dfaeb7bfb96c104f3ea2eb766af   # v0.2.6
 
 here="$(cd "$(dirname "$0")" && pwd)"
 playground="$(dirname "$here")"
@@ -21,10 +20,6 @@ if [ ! -d "$mdp/.git" ]; then
 fi
 git -C "$mdp" fetch --quiet origin "$MDP4MAC_COMMIT" || true
 git -C "$mdp" checkout --quiet --force "$MDP4MAC_COMMIT"
-# Fixes and additions to the MucoMSX native core not in that commit yet (see the patch's
-# tests, macos/MucoNativeTests/CompactRowTests.cs): applied to a clean checkout each time.
-git -C "$mdp" clean -fdq -- macos/MucoNative macos/MucoNativeTests
-git -C "$mdp" apply "$here/mdplayer4mac.patch"
 # MDPlayerCore (VGM playback) also references the other drivers' projects; trimming drops them.
 git -C "$mdp" submodule update --init --depth 1
 

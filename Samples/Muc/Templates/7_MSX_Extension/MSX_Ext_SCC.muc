@@ -7,12 +7,12 @@
 ;  SCC / SCC+ MucoMSXチップ拡張コマンド版
 ; ==================================================================
 ; [EN] The chip extensions are two-letter commands that start with ?
-;      (?WD, ?EP, ?FD ...). With them MDPlayer4Mac v0.2.4 or later
+;      (?WD, ?EP, ?FD ...). With them MDPlayer4Mac v0.2.6 or later
 ;      plays the MSX parts with the drivers of Konami's MSX games:
 ;      their envelopes, vibrato, detune and shared phrases.
 ;      This template plays the five SCC/SCC+ parts SCCA-SCCE.
 ; [JA] チップ拡張は?で始まる2文字のコマンドです(?WD、?EP、?FD …)。
-;      MDPlayer4Mac v0.2.4以降は、これを使うMSXパートをコナミのMSX
+;      MDPlayer4Mac v0.2.6以降は、これを使うMSXパートをコナミのMSX
 ;      ゲームのドライバーと同じように演奏します: エンベロープ、
 ;      ビブラート、デチューン、共有フレーズ。
 ;      このテンプレートはSCC/SCC+の5パートSCCA-SCCEを使います。
@@ -20,15 +20,17 @@
 ; [EN] Compact rows: ?XUn makes a row a compact stream, n clocks per
 ;      unit. A length is written %1-%16 units. Here ?XU7: %1 is a
 ;      sixteenth note, %4 a quarter, %16 a whole note (one bar).
-;      It repeats with ?FB and loops with :n and ?FJn (see below), as
-;      MDPlayer4Mac v0.2.4 and later play them. MUCPlayground's engine
-;      also takes |, [ ]n and L on these rows, as on ordinary rows.
+;      As on ordinary rows, | is a bar line, [ ]n repeats (two levels;
+;      it may go on over the next lines) and L marks the loop: the ! at
+;      the end goes back to it. ?FB0 ... ?FBn and :n with ?FJn do the
+;      same the older way (MDPlayer4Mac v0.2.4).
 ; [JA] コンパクト行: ?XUnでその行がコンパクトストリームになり、1単位が
 ;      nクロックです。音長は%1-%16単位で書きます。ここでは?XU7:
 ;      %1が16分音符、%4が4分音符、%16が全音符(1小節)です。
-;      繰り返しは?FB、ループは:nと?FJnで書きます(下を参照)。
-;      MDPlayer4Mac v0.2.4以降で鳴る書き方です。MUCPlaygroundの
-;      エンジンでは通常の行と同じく|、[ ]n、Lも使えます。
+;      通常の行と同じく|は小節線、[ ]nは繰り返し(2重まで、次の行へ
+;      続いてもよい)、Lはループ位置で、最後の!がそこへ戻ります。
+;      ?FB0 … ?FBnや:nと?FJnは同じことの以前の書き方です
+;      (MDPlayer4Mac v0.2.4)。
 ;
 ; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
 ;      and keep what you like. Save makes a .muc on your computer.
@@ -78,12 +80,10 @@
 ; ---- Shared phrases / 共有フレーズ ----
 ; [EN] SCCS rows only hold definitions for the SCC parts. ?FDn={ ... ?FR}
 ;      defines phrase n; ?FCn in a part plays it and comes back.
-;      Phrase numbers are also labels, so keep them apart from the
-;      loop labels (:1-:5) of the parts.
+;      Phrase numbers are also labels (for ?FJn and ?FBn,label).
 ; [JA] SCCSの行はSCCパート用の定義だけを書きます。?FDn={ … ?FR}が
 ;      フレーズnの定義で、パートの?FCnがそれを演奏して戻ってきます。
-;      フレーズ番号はラベルでもあるので、パートのループ用ラベル
-;      (:1-:5)と重ならないようにします。
+;      フレーズ番号はラベルでもあります(?FJnと?FBn,label用)。
 ; melody / メロディ
 SCCS ?FD20={ o5 e%4 a%4 b%2 >c%4< b%2 ?FR }
 SCCS ?FD21={ a%6 g%2 f%4 e%4 d%4 g%4 a%2 b%4 a%2 g%12 e%4 ?FR }
@@ -97,24 +97,21 @@ SCCS ?FD34={ o4 d%2 f%2 a%2 >d%2 <a%2 f%2 d%2 a%2 ?FR }
 SCCS ?FD35={ o4 e%2 g+%2 b%2 >e%2 <b%2 g+%2 e%2 b%2 ?FR }
 
 ; ---- Parts / パート ----
-; [EN] ?XT1 makes a part play notes. :n is a label; ?FJn at the end
-;      jumps back to it, so the part loops from there.
-; [JA] ?XT1でパートが音符を演奏します。:nはラベルで、最後の?FJnで
-;      そこへ戻るので、パートがそこからループします。
+; [EN] ?XT1 makes a part play notes. L marks where the part loops.
+; [JA] ?XT1でパートが音符を演奏します。Lがループする位置です。
 ; SCCA lead with vibrato / ビブラート付きリード
 SCCA ?XU7 ?XT1 @1 ?EP0,$81,$32 ?MW16 ?MV0,$53 v12
-SCCA :1 ?FC20 ?FC21 ?FC20 ?FC22 ?FJ1
+SCCA L ?FC20 ?FC21 | ?FC20 ?FC22 !
 ; SCCB the same melody detuned, quieter: a chorus / 同じメロディをデチューンして小さく: コーラス
 SCCB ?XU7 ?XT1 @1 ?EP0,$81,$32 ?DB3 v8
-SCCB :2 ?FC20 ?FC21 ?FC20 ?FC22 ?FJ2
+SCCB L ?FC20 ?FC21 | ?FC20 ?FC22 !
 ; SCCC arpeggios / アルペジオ
 SCCC ?XU7 ?XT1 @3 ?EP2,$73,$23 v10
-SCCC :3 ?FC30 ?FC31 ?FC32 ?FC33 ?FC30 ?FC31 ?FC34 ?FC35 ?FJ3
+SCCC L ?FC30 ?FC31 ?FC32 ?FC33 | ?FC30 ?FC31 ?FC34 ?FC35 !
 ; SCCD pad: one long note a bar / パッド: 1小節に長い音1つ
 SCCD ?XU7 ?XT1 @0 ?EP0,$8F,$56 v10
-SCCD :4 o5 c%16 <a%16 b%16 b%16 >c%16 <a%16 a%16 g+%16 ?FJ4
-; SCCE bass. ?FB0 marks a place, ?FB4 plays from there 4 times in all.
-; ベース。?FB0で位置を記し、?FB4でそこから合計4回演奏します。
+SCCD L o5 c%16 | <a%16 | b%16 | b%16 | >c%16 | <a%16 | a%16 | g+%16 !
+; SCCE bass: [ ]4 plays a bar of octave jumps / ベース: [ ]4でオクターブで跳ねる1小節
 SCCE ?XU7 ?XT1 @2 ?EP0,$81,$32 v12
-SCCE :5 ?FB0 o2 a%2 >a%2 ?FB4 ?FB0 o2 f%2 >f%2 ?FB4 ?FB0 o2 g%2 >g%2 ?FB4 ?FB0 o2 e%2 >e%2 ?FB4
-SCCE    ?FB0 o2 a%2 >a%2 ?FB4 ?FB0 o2 f%2 >f%2 ?FB4 ?FB0 o2 d%2 >d%2 ?FB4 ?FB0 o2 e%2 >e%2 ?FB4 ?FJ5
+SCCE L [o2 a%2 >a%2]4 | [o2 f%2 >f%2]4 | [o2 g%2 >g%2]4 | [o2 e%2 >e%2]4
+SCCE   [o2 a%2 >a%2]4 | [o2 f%2 >f%2]4 | [o2 d%2 >d%2]4 | [o2 e%2 >e%2]4 !

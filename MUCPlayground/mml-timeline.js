@@ -136,6 +136,9 @@ function parse(s, msx = false, lex = null) {
         if (name === 'FD') { if (n !== null) top().push({ t: 'label', id: n }); }
         else { while (i < s.length && peek() !== '}') i++; i++; }   // effects are not played
       } else if (name === 'XU' && n) top().push({ t: 'unit', v: n });
+      // MSX-MUSIC instruments as @n numbers them: ?IRn = @n, ?IU0 = @0, ?IUn = @(16 + n)
+      else if (name === 'IR' && n !== null) top().push({ t: '@', v: n });
+      else if (name === 'IU' && n !== null) top().push({ t: '@', v: n ? 16 + n : 0 });
       else if (name === 'XT' && n !== null) top().push({ t: 'type', v: n });
       else if (name === 'XM' && n !== null) top().push({ t: 'xm', mode: n, v: typeof args[1] === 'number' ? args[1] : null });
       else if (name === 'XS' && n !== null) top().push({ t: 'step', v: n & 255, src: { at: s[start], letterLen: i - start, len: i - start } });

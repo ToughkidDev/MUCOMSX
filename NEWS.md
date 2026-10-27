@@ -4,6 +4,7 @@ Newest first. The latest few are also shown on the [MUCOMSX](https://toughkiddev
 
 | Date | Type | News |
 |---|---|---|
+| 2026-10-27 | WEB | **[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)** follows MDPlayer4Mac v0.2.6: compact MSX rows take `|`, `[ ]n` and `L`, OPLL repeats and drum-track rests are fixed, and **New** offers [templates written with the MucoMSX chip extension commands](Samples/Muc/Templates/7_MSX_Extension) (all MSX chips, OPNA + MSX chips, SCC, PSG, MSX-MUSIC). |
 | 2026-10-27 | WEB | **[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)** follows MDPlayer4Mac v0.2.5: MUC with the MucoMSX chip extension commands (`?EP`, `?FD`, `?WD` …, packed msPb0103–010A) compiles and plays, and the manual has a third book, *MucoMSX chip extensions*, with an example for every command; the editor suggests the `?` commands for each MSX chip and the manual follows the caret to them. |
 | 2026-10-21 | SAMPLES | [Midnight Pier](Samples/Muc/Templates/6_Demos) — a city pop demo on every chip: OPNA FM, SSG and rhythm, MSX-MUSIC, MSX PSG and SCC (28 channels), commented in English and Japanese. |
 | 2026-10-19 | WEB | **[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)** — write MUC in the browser and hear it right away. Uses MDPlayer4Mac's compiler and chip emulation (YM2608, MSX-MUSIC, PSG, SCC/SCC+); the repository samples load from a menu. [Source](MUCPlayground) |

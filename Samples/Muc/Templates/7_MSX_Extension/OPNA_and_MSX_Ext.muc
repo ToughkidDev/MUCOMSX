@@ -13,14 +13,14 @@
 ;        SCC / SCC+   SCCA arpeggios, SCCB a harmony under the lead
 ;        MSX-MUSIC    MSXA MSXB piano on the off-beats
 ;        MSX PSG      MSXD a bell that answers the lead
-;      Needs MDPlayer4Mac v0.2.4 or later.
+;      Needs MDPlayer4Mac v0.2.6 or later.
 ; [JA] 普通のOPNA(YM2608)パートA-Kが、チップ拡張(?で始まる2文字の
 ;      コマンド)で書いたMSXパートと一緒に鳴ります。ここでは:
 ;        OPNA         Aリード、Bベース、Cストリングス、Gリズム
 ;        SCC / SCC+   SCCAアルペジオ、SCCBリードの下のハーモニー
 ;        MSX-MUSIC    MSXA MSXB 裏拍のピアノ
 ;        MSX PSG      MSXDリードに応えるベル
-;      MDPlayer4Mac v0.2.4以降が必要です。
+;      MDPlayer4Mac v0.2.6以降が必要です。
 ;
 ; [EN] Keeping them together: the MSX parts are compact rows (?XU7: %1
 ;      is 7 clocks, a sixteenth note; %16 = 112 clocks, one bar). The
@@ -98,6 +98,10 @@ G L [@9c8 @8c8 @10c8 @8c8 @9c8 @9c8 @10c8 @8c8]3 @9c8 @8c8 @10c8 @8c8 @18c16 @16
 G   [@9c8 @8c8 @10c8 @8c8 @9c8 @9c8 @10c8 @8c8]3 @9c8 @8c8 @10c8 @8c8 @18c16 @16c16 @16c16 @16c16 @2c8 @3c8
 
 ; ---- SCC (chip extension) / SCC(チップ拡張) ----
+; [EN] On the compact MSX rows below, L marks the loop that the ! at the end goes
+;      back to, [ ]n repeats and | is a bar line, as on the OPNA rows above.
+; [JA] 下のコンパクトなMSX行でも、上のOPNA行と同じくLは最後の!が戻るループ位置、
+;      [ ]nは繰り返し、|は小節線です。
 ; arpeggios, one bar each; ?FD34 is half F, half G
 ; アルペジオ、各1小節。?FD34は前半F、後半G
 SCCS ?FD30={ o4 c%2 e%2 g%2 >c%2 <g%2 e%2 c%2 g%2 ?FR }
@@ -106,22 +110,20 @@ SCCS ?FD32={ o3 a%2 >c%2 e%2 a%2 e%2 c%2 <a%2 >e%2 ?FR }
 SCCS ?FD33={ o3 f%2 a%2 >c%2 f%2 c%2 <a%2 f%2 >c%2 ?FR }
 SCCS ?FD34={ o3 f%2 a%2 >c%2 f%2 <g%2 b%2 >d%2 g%2 ?FR }
 SCCA ?XU7 ?XT1 @1 ?EP2,$73,$23 v7
-SCCA :1 ?FC30 ?FC31 ?FC32 ?FC33 ?FC30 ?FC31 ?FC34 ?FC30 ?FJ1
+SCCA L ?FC30 ?FC31 ?FC32 ?FC33 | ?FC30 ?FC31 ?FC34 ?FC30 !
 ; harmony a third under the OPNA lead / OPNAリードの3度下のハーモニー
 SCCB ?XU7 ?XT1 @0 ?EP0,$81,$32 ?MW16 ?MV0,$53 v6
-SCCB :2 o4 c%2 e%2 g%4 g%2 a%2 b%4 g%12 r%4 a%2 g%2 e%4 c%4 e%2 g%2 a%8 f%4 r%4
-SCCB    c%2 e%2 g%4 g%2 a%2 >c%4 <b%12 r%4 a%4 f%4 g%4 b%4 e%12 r%4 ?FJ2
+SCCB L o4 c%2 e%2 g%4 g%2 a%2 b%4 | g%12 r%4 | a%2 g%2 e%4 c%4 e%2 g%2 | a%8 f%4 r%4
+SCCB   c%2 e%2 g%4 g%2 a%2 >c%4 | <b%12 r%4 | a%4 f%4 g%4 b%4 | e%12 r%4 !
 
 ; ---- MSX-MUSIC (chip extension) / MSX-MUSIC(チップ拡張) ----
-; piano (@3), short notes (?QP128) on the off-beat eighths / ピアノ(@3)、裏拍の8分で短く(?QP128)
-MSXA ?XU7 ?XT1 @3 ?QP128 v14
-MSXA :3 o4 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2 r%2 c%2
-MSXA    r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 d%2 r%2 c%2 r%2 c%2 r%2 d%2 r%2 d%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 ?FJ3
-MSXB ?XU7 ?XT1 @3 ?QP128 v14
-MSXB :4 o4 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 e%2 r%2 a%2 r%2 a%2 r%2 a%2 r%2 a%2
-MSXB    r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 b%2 r%2 a%2 r%2 a%2 r%2 b%2 r%2 b%2 r%2 g%2 r%2 g%2 r%2 g%2 r%2 g%2 ?FJ4
+; piano (?IR3), short notes (?QP128) on the off-beat eighths / ピアノ(?IR3)、裏拍の8分で短く(?QP128)
+MSXA ?XU7 ?XT1 ?IR3 ?QP128 v14
+MSXA L o4 [r%2 e%2]4 | [r%2 d%2]4 | [r%2 c%2]8 | [r%2 e%2]4 | [r%2 d%2]4 | [r%2 c%2]2 [r%2 d%2]2 | [r%2 e%2]4 !
+MSXB ?XU7 ?XT1 ?IR3 ?QP128 v14
+MSXB L o4 [r%2 g%2]4 | [r%2 b%2]4 | [r%2 e%2]4 | [r%2 a%2]4 | [r%2 g%2]4 | [r%2 b%2]4 | [r%2 a%2]2 [r%2 b%2]2 | [r%2 g%2]4 !
 
 ; ---- MSX PSG (chip extension) / MSX PSG(チップ拡張) ----
 ; a bell answering the lead in bars 2 and 6 / 2小節目と6小節目でリードに応えるベル
 MSXD ?XU7 ?XT1 ?EP0,$84,$76 v15
-MSXD :5 r%16 r%8 o5 d%2 <b%2 g%2 d%2 r%16 r%16 r%16 r%8 g%2 b%2 >d%2 g%2 r%16 r%16 ?FJ5
+MSXD L r%16 | r%8 o5 d%2 <b%2 g%2 d%2 | r%16 | r%16 | r%16 | r%8 g%2 b%2 >d%2 g%2 | r%16 | r%16 !

@@ -35,7 +35,8 @@ Compose in MML · Compile on the MSX itself · Play on real hardware · Export M
 
 | Date | | |
 |---|---|---|
-| **2026-10-27** | `WEB` | [MUCPlayground plays the MucoMSX chip extension commands (MDPlayer4Mac v0.2.5) and adds their manual](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) **NEW** |
+| **2026-10-27** | `WEB` | [MUCPlayground follows MDPlayer4Mac v0.2.6 and offers chip extension templates in New](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) **NEW** |
+| 2026-10-27 | `WEB` | [MUCPlayground plays the MucoMSX chip extension commands (MDPlayer4Mac v0.2.5) and adds their manual](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) |
 | 2026-10-19 | `WEB` | [MUCPlayground — write MUC in the browser and hear it right away](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) |
 | 2026-10-15 | `RELEASE` | [MucoMSX v1.0-Stable released — SCC/SCC+ SSG extension, PCMInvert, rhythm/session fixes and MUCVOICE v0.5beta](https://github.com/ToughkidDev/MUCOMSX/releases/tag/v1.0-stable) |
 | 2026-10-15 | `DOCS` | [Five-tool multilingual manuals and MUCVOICE v0.5beta](MUCVoice/mucvoice.en.md) |
