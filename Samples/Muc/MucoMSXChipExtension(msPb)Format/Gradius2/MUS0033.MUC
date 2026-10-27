@@ -1,0 +1,65 @@
+; Current MucoMSX MUC. Compilation checked; 
+; Gradius 2 
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0103).
+; muc by ToughkidCST
+
+#title Don't Leave Me Alone (Fortress Planet Theme)
+#sccvoice GRA2.DAT
+?WS0,0,1
+?WS1,8,1
+?WS2,1,1
+?WS3,4,1
+?WS4,5,1
+MSXD ?XU1 ?FJ31
+MSXE ?XU1 ?FJ2
+MSXF ?XU1 ?FJ4
+SCCA ?XU1 ?FJ31
+SCCB ?XU1 ?FJ13
+SCCC ?XU1 ?FJ17
+SCCD ?XU1 ?FJ21
+SCCE ?XU1 ?FJ29
+PSGS ?XD0={ :0 ?XM1,1 ?NP0 ?XS$07 ! }
+PSGS ?XD1={ :1 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+SCCS ?FD2={ ?XT4 ?XU4 }
+SCCS ?FD3={ c%2 c%2 c+%2 c%2 ?FJ3 }
+SCCS ?FD4={ ?XT1 ?DB1 @4 ?XU4 ?EP0,$02,$30 }
+SCCS ?FD5={ v13 o2 a%2 v10 o4 a%2 ?FB31,5 v11 o2 g%2 o3 g%2 }
+SCCS ?FD6={ ?FC38 ?FB16,6 }
+SCCS ?FD7={ ?FC39 ?FB16,7 }
+SCCS ?FD8={ ?FC38 ?FB16,8 }
+SCCS ?FD9={ v13 o2 d%2 v10 o4 d%2 ?FB4,9 }
+SCCS ?FD10={ ?FC39 ?FB4,10 }
+SCCS ?FD11={ o2 e%2 v10 o4 e%2 ?FB8,11 }
+SCCS ?FD12={ ?EP0,$01,$30 v12 o2 a%2 o3 e%2 a%2 o2 a%2 o3 e%2 a%2 o2 a%2 o3 a%2 o2 f%2 o3 c%2 f%2 o2 f%2 o3 c%2 f%2 o2 f%2 o3 f%2 o2 g%2 o3 d%2 g%2
+SCCS o2 g%2 o3 d%2 g%2 o2 g%2 o3 g%2 o2 e%2 b%2 o3 e%2 o2 e%2 b%2 o3 e%2 o2 e%2 o3 e%2 ?FB2,12 ?FJ4 }
+SCCS ?FD13={ ?XT1 @3 ?XU4 v9 ?FC35 ?EP0,$03,$33 ?XU4 ?FC16 }
+SCCS ?FD14={ v10 ?EP0,$01,$40 o5 d%2 e%2 f%2 e%4 c%2 d%4 o4 d%2 e%2 f%2 e%4 c%2 d%4 o5 d%2 e%2 f%2 g%4 a%2 o6 d%14 c o5 a+ a g f e @2 ?EP0,$03,$33 ?XU4 v9
+SCCS ?FC16 }
+SCCS ?FD15={ v11 o4 d%6 d e f%6 f g a%6 a a+ o5 c%3 o4 a+%3 e%2 a%10 a%2 b%2 o5 e%16 r%2 @0 v7 ?EP0,$03,$30 ?FC34 v7 ?EP0,$02,$40 o5 ?FC36 g+%4 ?FJ13 }
+SCCS ?FD16={ o4 a%2 b%2 o5 c%2 o4 b%4 g%2 a%4 o3 a%2 b%2 o4 c%2 o3 b%4 g%2 a%4 o4 a%2 b%2 o5 c%2 o4 b%4 g%2 o5 e%4 o3 a%2 b%2 o4 c%2 o3 b%4 g%2 o4 e%4 ?FR }
+SCCS ?FD17={ ?XT1 ?DB1 @1 ?XU4 v10 ?FC35 ?XU4 v9 }
+SCCS ?FD18={ ?FC37 ?FB2,18 }
+SCCS ?FD19={ v8 o3 a+%6 o4 c%10 d%6 c%10 ?FB2,19 }
+SCCS ?FD20={ ?FC37 ?FB2,20 v10 ?EP0,$01,$40 o4 d%6 o3 a+ o4 c d%6 d e f%6 f g g%3 g%3 c%2 e%10 e%2 f+%2 a%10 g+%8 @0 ?XU4 v10 ?EP0,$03,$30 o4 ?FC36 b%4 @0 ?XU4
+SCCS v9 ?EP0,$03,$30 o5 ?FC34 ?FJ17 }
+SCCS ?FD21={ ?XT1 @4 ?XU4 ?EP0,$01,$40 v9 }
+SCCS ?FD22={ o1 a%2 o2 a%2 ?FB31,22 o1 g%2 o2 g%2 }
+SCCS ?FD23={ v8 o2 f%2 o3 f%2 ?FB16,23 }
+SCCS ?FD24={ o1 a+%2 o2 a+%2 ?FB16,24 }
+SCCS ?FD25={ o2 f%2 o3 f%2 ?FB16,25 }
+SCCS ?FD26={ o2 d%2 o3 d%2 ?FB4,26 }
+SCCS ?FD27={ o1 a+%2 o2 a+%2 ?FB4,27 }
+SCCS ?FD28={ o2 e%2 o3 e%2 ?FB8,28 @2 ?EP0,$08,$30 v9 ?FC33 g+%4 ?FJ21 }
+SCCS ?FD29={ ?XT1 ?DB1 @0 ?XU4 v5 o4 c%16 d%16 e%16 f+%16 f%16 ?EP0,$05,$30 v8 o3 f%4 a%4 o4 c%4 f%4 g%16 o3 g%4 b%4 o4 d%4 g%4 @3 v5 o4 ?EP0,$06,$50 }
+SCCS ?FD30={ f%6 g%10 a%6 g%10 ?FB6,30 @1 v5 ?EP0,$05,$20 d%16 a+%16 e%16 e%16 @2 ?EP0,$08,$30 v7 ?FC33 g+%4 ?FJ29 }
+SCCS ?FD31={ ! }
+SCCS ?FD32={ ?EP0,$01,$50 o3 a%2 o4 c%2 e%2 a%10 o3 b%2 o4 d%2 g%2 b%10 c%2 e%2 a%2 o5 c%10 o4 d%2 f+%2 a%2 o5 d%10 o4 f%2 a%2 o5 c%2 ?XU8 f%13 ?XU4 ?FR }
+SCCS ?FD33={ o5 e%6 o4 a%6 o5 e%4 e%6 o4 a%6 o5 e%4 d%6 o4 g%6 o5 d%4 d%6 o4 b%6 o5 g+%4 a%6 e%6 a%4 a%6 e%6 a%4 g%6 d%6 g%4 g+%6 e%6 ?FR }
+SCCS ?FD34={ e%6 o4 a%10 o5 e%6 o4 a%10 o5 d%6 o4 g%10 o5 d%6 o4 b%10 ?FR }
+SCCS ?FD35={ ?EP0,$01,$50 o3 a%2 o4 c%2 e%2 a%10 o3 b%2 o4 d%2 g%2 b%10 c%2 e%2 a%2 o5 c%10 o4 d%2 f+%2 a%2 o5 d%10 o4 f%2 a%2 o5 c%2 ?XU8 f%13 ?XU4 o4 g%2 b%2 o5 d%2 ?XU8 g%13 @2 ?FR }
+SCCS ?FD36={ a%6 e%6 a%4 a%6 e%6 a%4 g%6 d%6 g%4 g+%6 e%6 ?FR }
+SCCS ?FD37={ o3 ?EP0,$05,$80 a%6 b%10 o4 c%6 o3 b%10 ?FR }
+SCCS ?FD38={ v12 o2 f%2 v10 o4 f%2 ?FR }
+SCCS ?FD39={ v13 o2 a+%2 v10 o4 a+%2 ?FR }
+SCCS ?FD40={ o4 a%2 b%2 o5 c%2 o4 b%4 g%2 ?FR }
+SCCS ?FD41={ o3 a%2 b%2 o4 c%2 o3 b%4 g%2 ?FR }

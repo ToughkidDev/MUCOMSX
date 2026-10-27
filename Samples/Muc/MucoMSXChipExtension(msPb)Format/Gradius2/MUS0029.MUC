@@ -1,0 +1,95 @@
+; Current MucoMSX MUC. Compilation checked; 
+; Gradius 2 
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0103).
+; muc by ToughkidCST
+
+#title Moonspin (Large Battleship Venom Theme)
+#sccvoice GRA2.DAT
+?WS0,0,1
+?WS1,1,1
+?WS2,2,1
+?WS3,3,1
+?WS4,4,1
+?WS5,5,1
+MSXD ?XU1 ?FJ72
+MSXE ?XU1 ?FJ5
+MSXF ?XU1 ?FJ14
+SCCA ?XU1 ?FJ72
+SCCB ?XU1 ?FJ28
+SCCC ?XU1 ?FJ37
+SCCD ?XU1 ?FJ46
+SCCE ?XU1 ?FJ53
+PSGS ?XD0={ :0 ?XM1,1 ?NP0 ?XS$07 ! }
+PSGS ?XD1={ :1 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+PSGS ?XD2={ :2 ?XM3,1 ?NP6 ?XP416,8 ?XM2,1 ?XP512,8 ?XP624,5 ?XP816,3 ! }
+PSGS ?XD4={ :3 ?XM2,1 ?GS$0A ?XP66,0 ?XP432,12 ?GS- ?XM1,1 ?NP8 ?XS$08 ?XS$07 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ?XS$02 ?XS$01 ?XS$01 ?XS$00 ! }
+PSGS ?XD8={ :4 ?XM2,1 ?GS$09 ?XP768,0 ?XP976,9 ?XP1536,9 ?XP1792,9 ?XP2048,9 ! }
+SCCS ?FD5={ ?XT4 ?XU5 }
+SCCS ?FD6={ c%2 ?FB28,6 g+ d d d g+ d g+ d }
+SCCS ?FD7={ g+%4 c+%4 g+%2 g+%2 d%2 g+%2 ?FB7,7 g+%4 c+%4 g+%2 d%2 d%2 d%2 }
+SCCS ?FD8={ ?FC60 }
+SCCS ?FD9={ g+ g+ e%2 c+%2 ?FB3,8 ?FC60 }
+SCCS ?FD10={ e%2 e%2 e%2 }
+SCCS ?FD11={ ?FC61 }
+SCCS ?FD12={ g+%2 ?FB3,11 ?FC61 }
+SCCS ?FD13={ e e ?FJ7 }
+SCCS ?FD14={ ?XT1 ?DB1 ?XU5 v12 ?EP0,$01,$50 o3 }
+SCCS ?FD15={ a%2 ?FB28,15 }
+SCCS ?FD16={ o2 f o3 f ?FB2,16 }
+SCCS ?FD17={ o1 a+ o2 a+ ?FB2,17 }
+SCCS ?FD18={ v12 ?EP0,$01,$50 }
+SCCS ?FD19={ o2 a%2 o3 a%2 ?FB32,19 v13 ?EP0,$01,$33 }
+SCCS ?FD20={ o2 f%2 o3 c%2 f%2 o2 f%4 }
+SCCS ?FD21={ f%2 ?FB11,21 ?FB2,20,2 g%2 o3 d%2 g%2 o2 g%4 }
+SCCS ?FD22={ g%2 ?FB10,22 d%2 g%2 o3 d%2 g%2 o2 g%4 }
+SCCS ?FD23={ g%2 ?FB9,23 o3 d%2 o2 g%2 g+%2 o3 c%2 d+%2 o2 g+%4 }
+SCCS ?FD24={ g+%2 ?FB11,24 f%2 a%2 o3 c%2 o2 f%4 }
+SCCS ?FD25={ f%2 ?FB11,25 }
+SCCS ?FD26={ g%2 ?FB13,26 b%2 o3 d%2 }
+SCCS ?FD27={ g%4 g%2 g%2 g%2 g%2 g%2 d%2 ?FB2,27 g%2 ?FJ18 }
+SCCS ?FD28={ ?XT1 ?DB1 ?XU5 @0 v9 ?EP0,$01,$A0 }
+SCCS ?FD29={ o4 a%2 a%2 v10 ?FB14,29 o2 f%2 f%2 o1 a+%2 a+%2 }
+SCCS ?FD30={ @5 v11 ?XU5 ?EP0,$01,$50 }
+SCCS ?FD31={ o1 a%2 o2 a%2 ?FB32,31 @0 v10 o4 ?EP0,$81,$32 }
+SCCS ?FD32={ ?FC63 }
+SCCS ?FD33={ ?FC73 c%4 ?FB3,32 ?FC63 }
+SCCS ?FD34={ b%2 o5 c%2 f%4 e%4 d%4 c%6 v9 ?FC64 }
+SCCS ?FD35={ c%6 ?FC64 }
+SCCS ?FD36={ c%2 d%2 d+%2 ?XU10 d%12 o4 a o5 c f g%5 d%2 c o4 b%9 ?FJ30 }
+SCCS ?FD37={ ?XT1 @0 ?XU5 v9 ?EP0,$01,$40 ?FC66 }
+SCCS ?FD38={ d%2 }
+SCCS ?FD39={ ?FC70 }
+SCCS ?FD40={ r%2 a%14 a%16 a%16 a%16 @4 ?FB2,40 @3 v7 ?EP0,$81,$32 }
+SCCS ?FD41={ ?FC62 }
+SCCS ?FD42={ ?FC73 c%3 ?FB3,41 ?FC62 }
+SCCS ?FD43={ b%2 o5 c d%4 c%4 o4 b%4 a%6 @3 v7 o5 d ?FC64 }
+SCCS ?FD44={ c%6 ?FC64 }
+SCCS ?FD45={ c%2 d%2 d+ ?XU10 @0 v8 o4 b%12 f a o5 c d%5 d%2 c o4 g%9 ?FJ39 }
+SCCS ?FD46={ ?XT1 ?DB1 @1 ?XU4 v8 ?EP0,$A1,$50 r ?XU5 ?FC66 }
+SCCS ?FD47={ d ?XU1 r }
+SCCS ?FD48={ ?FC70 }
+SCCS ?FD49={ r e%14 d+%16 d%16 c%16 r ?FB2,49 @2 v7 o3 ?EP0,$81,$1E }
+SCCS ?FD50={ ?XU10 f%15 ?XU5 f f ?FB2,50 ?XU10 g%15 ?XU5 g g ?XU10 g%12 g g g g ?FC65 }
+SCCS ?FD51={ g+%8 g+%2 g+%2 r%2 g+%10 r%2 g+%4 g+%2 f%8 f%2 f%2 r%2 f%10 r%2 f%4 f%2 g%14 g g g%14 g g g%8 g%2 g%2 r%2 g%4 }
+SCCS ?FD52={ g%2 ?FB7,52 ?FJ48 }
+SCCS ?FD53={ ?XT1 @1 ?DB1 ?XU5 v3 o5 a%16 v4 a%8 v5 a%8 v6 a%8 v7 a%8 ?EP0,$01,$C5 v11 }
+SCCS ?FD54={ a ?FB8,54 v12 ?EP0,$01,$C1 a g+ g f+ f e d+ d }
+SCCS ?FD55={ ?FC71 }
+SCCS ?FD56={ o5 c%14 o4 b%16 a+%16 a%16 r%2 ?FB2,56 @2 v8 o5 ?EP0,$81,$1E }
+SCCS ?FD57={ ?XU10 c%15 ?XU5 c c ?FB2,57 ?XU10 d%15 ?XU5 d d ?XU10 d%12 d d d d ?FC65 }
+SCCS ?FD58={ d+%8 d+%2 d+%2 r%2 d+%10 r%2 d+%4 d+%2 c%8 c%2 c%2 r%2 c%10 r%2 c%4 c%2 d%14 d d d%14 d d d%8 d%2 d%2 r%2 d%4 }
+SCCS ?FD59={ d%2 ?FB7,59 ?FJ55 }
+SCCS ?FD60={ g+%2 c%2 e%2 c%2 g+%2 g+%2 e%2 c%2 g+%2 c%2 e%2 c%2 g+%2 ?FR }
+SCCS ?FD61={ e%2 g+%2 e%2 g+%2 e%2 g+%2 e%2 e%2 e%2 g+%2 e%2 g+%2 e%2 g+ g+ e e ?FR }
+SCCS ?FD62={ o4 b }
+SCCS ?FD63={ o4 b%2 o5 c%2 d%2 o4 a%4 ?FR }
+SCCS ?FD64={ d%2 d+%2 c%2 d+%2 d%4 d+%2 c%4 f%4 d+%4 ?FR }
+SCCS ?FD65={ @2 ?XU5 v10 o3 ?EP0,$81,$3A ?FR }
+SCCS ?FD66={ o4 a%2 o5 c%2 e%2 ?FB3,66 }
+SCCS ?FD67={ o4 g%2 o5 c%2 e%2 ?FB2,67 }
+SCCS ?FD68={ o4 f+%2 a%2 o5 d%2 ?FB3,68 }
+SCCS ?FD69={ o4 f%2 a%2 o5 d%2 ?FB2,69 o4 f%2 o5 ?FR }
+SCCS ?FD70={ ?XU5 o5 }
+SCCS ?FD71={ @0 v11 ?EP0,$1B,$60 ?FR }
+SCCS ?FD72={ ! }
+SCCS ?FD73={ o5 c%4 o4 b%4 g%4 a%4 b%2 o5 ?FR }

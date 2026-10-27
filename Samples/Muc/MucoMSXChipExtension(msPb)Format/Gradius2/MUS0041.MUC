@@ -1,0 +1,148 @@
+; Current MucoMSX MUC. Compilation checked; 
+; Gradius 2 
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0103).
+; muc by ToughkidCST
+
+#title A Dream of Dreamer (Ending Theme)
+#sccvoice GRA2.DAT
+?WS0,0,1
+?WS1,1,1
+?WS2,2,1
+?WS3,6,1
+?WS4,3,1
+?WS5,4,1
+?WS6,22,1
+?WS7,23,1
+MSXD ?XU1 ?FJ6
+MSXE ?XU1 ?FJ18
+MSXF ?XU1 ?FJ36
+SCCA ?XU1 ?FJ47
+SCCB ?XU1 ?FJ64
+SCCC ?XU1 ?FJ77
+SCCD ?XU1 ?FJ90
+SCCE ?XU1 ?FJ104
+PSGS ?XD0={ :0 ?XM1,1 ?NP0 ?XS$07 ! }
+PSGS ?XD1={ :1 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+PSGS ?XD3={ :2 ?XM1,1 ?NP20 ?XS$07 ?XM2,1 ?XP512,7 ?XM1,2 ?NP16 ?XS$03 ?XS$02 ?XM1,1 ?NP6 ?XS$02 ! }
+PSGS ?XD4={ :3 ?XM2,1 ?GS$0A ?XP66,0 ?XP432,12 ?GS- ?XM1,1 ?NP8 ?XS$08 ?XS$07 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ?XS$02 ?XS$01 ?XS$01 ?XS$00 ! }
+PSGS ?XD8={ :4 ?XM2,1 ?GS$09 ?XP768,0 ?XP976,9 ?XP1536,9 ?XP1792,9 ?XP2048,9 ! }
+PSGS ?XD9={ :5 ?XM2,1 ?XP384,10 ?GS$0A ?XP184,0 ?XM1,1 ?NP4 ?XS$07 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ?XS$01 ! }
+SCCS ?FD6={ ?XT4 ?XU5 ?FC121 a%2 a%2 e%2 e%2 e%2 c c c%2 c%2 c%2 c%2 c+%2 ?FC121 e%2 e%2 g+%2 g+%2 g+%2 e%2 c%2 c+%2 e%2 e%2 e%2 }
+SCCS ?FD7={ ?FC16 }
+SCCS ?FD8={ ?FB22,7 g+%6 c%6 c+%4 c+%4 c%2 c+%2 }
+SCCS ?FD9={ ?FC17 }
+SCCS ?FD10={ c%6 ?FB2,9 ?FC17 }
+SCCS ?FD11={ e%2 e%2 e%2 ?FB2,9,2 g+%2 c c c%2 e%2 c%2 c%2 ?FC16 }
+SCCS ?FD12={ g+%2 c%2 c%2 c%2 c%2 c%2 d+%2 d+%2 d+%2 a a e%2 e%2 }
+SCCS ?FD13={ ?FC16 }
+SCCS ?FD14={ ?FB23,13 g+%2 c%2 c%2 d+ a e%2 e%2 }
+SCCS ?FD15={ e%2 d+%2 d+%2 ?FB6,15 d+ d+ d+ a a a e e e e c+%2 ?FB3,15,2 e%2 d+%2 d+%2 e%2 d+%2 d+%2 ?XU6 e%2 d+%2 d+%2 e e g+%2 g+%2 g+%2 ! }
+SCCS ?FD16={ g+%2 c%2 c%2 e%2 c%2 c+%2 ?FR }
+SCCS ?FD17={ g+%6 c%6 c%6 c%2 c%2 c+%2 g+%6 c%6 c%6 ?FR }
+SCCS ?FD18={ ?XT1 ?XU5 v12 o3 ?EP0,$01,$15 ?FC32 }
+SCCS ?FD19={ o2 ?FC29 }
+SCCS ?FD20={ g%6 g%6 g%6 g%6 ?XU10 v10 g%12 ?XU5 v12 }
+SCCS ?FD21={ ?FC35 }
+SCCS ?FD22={ o3 c%4 d%4 e%10 o2 e%2 a%12 f+%12 f+%6 ?FC34 }
+SCCS ?FD23={ ?FB2,21 ?FC33 }
+SCCS ?FD24={ v12 ?FC29 }
+SCCS ?FD25={ g%2 ?FB12,25 o3 }
+SCCS ?FD26={ g%2 ?FB12,26 }
+SCCS ?FD27={ c%2 ?FB46,27 e%2 g%2 }
+SCCS ?FD28={ o4 c%2 ?FB30,28 ?XU6 c%6 c%2 o3 g%2 e%2 ?XU12 c%14 ! }
+SCCS ?FD29={ f%6 ?FB8,29 e%6 e%6 e%6 e%6 d+%6 d+%6 d+%6 d+%2 g%2 d+%2 }
+SCCS ?FD30={ g+%6 ?FB8,30 g%6 g%6 g%4 g%4 g%4 f+%6 f+%6 f+%4 f+%4 f+%4 }
+SCCS ?FD31={ f%6 ?FB7,31 f%2 f%2 f%2 ?FR }
+SCCS ?FD32={ c%2 ?FB35,32 c%14 c%12 ?FR }
+SCCS ?FD33={ g+%6 g+%6 g+%6 g+%6 v9 a+%2 a+%2 a+%2 v11 a+%2 a+%2 a+%2 v12 a+%2 a+%2 a+%2 v13 a+%2 a+%2 a+%2 ?FR }
+SCCS ?FD34={ f+%2 d%2 f+%2 f%12 f%4 f%4 f%4 f%16 f%2 f%2 g%2 a%2 ?FR }
+SCCS ?FD35={ g+%16 g+%2 g+%2 d+%2 g+%2 g+%12 g+%4 ?FR }
+SCCS ?FD36={ ?XT1 ?XU5 v11 o2 ?EP0,$01,$15 ?FC32 }
+SCCS ?FD37={ ?EP0,$01,$25 o1 ?FC29 }
+SCCS ?FD38={ g%6 g%6 g%6 g%6 ?XU10 v9 g%12 ?XU5 v11 }
+SCCS ?FD39={ ?FC35 }
+SCCS ?FD40={ o2 c%4 d%4 e%10 o1 e%2 a%12 f+%12 f+%6 ?FC34 }
+SCCS ?FD41={ ?FB2,39 ?FC33 }
+SCCS ?FD42={ ?FC29 }
+SCCS ?FD43={ g%2 ?FB12,43 }
+SCCS ?FD44={ o2 g%2 ?FB12,44 }
+SCCS ?FD45={ c%2 ?FB46,45 e%2 g%2 }
+SCCS ?FD46={ o3 c%2 ?FB30,46 ?XU6 c%6 c%2 o2 g%2 e%2 ?XU12 c%14 ! }
+SCCS ?FD47={ ?XT1 ?FC120 }
+SCCS ?FD48={ c%14 v9 ?FC59 }
+SCCS ?FD49={ o5 g+ ?DR ?FC117 }
+SCCS ?FD50={ ?FC61 }
+SCCS ?FD51={ f%12 e%12 v7 d%10 o4 b%14 ?MV- @0 ?DB1 ?XU5 v9 o4 ?EP0,$81,$25 ?MV0,$53 ?MW24 }
+SCCS ?FD52={ c%12 o3 g%4 o4 ?FC63 }
+SCCS ?FD53={ o3 a%12 a%4 b%4 o4 c%4 f%6 e%6 c%6 d%6 ?FB2,52 c%12 c%4 d%4 d+%4 c%12 @6 v8 d%4 f%4 a+%4 ?DR ?MV- ?FC117 }
+SCCS ?FD54={ ?FC61 }
+SCCS ?FD55={ f%12 e%12 d%10 o4 b%14 ?MV- ?FC120 }
+SCCS ?FD56={ c%14 v8 ?FC59 }
+SCCS ?FD57={ o5 g+ v10 ?FC123 d%4 c%12 c%16 ! }
+SCCS ?FD58={ c%4 c%4 d%2 e%2 f%6 e%2 d%2 c%14 d+ d+ g+%2 o5 c%2 o4 f%2 a+%2 o5 d%2 c%8 d%2 e%2 f%6 e%2 d%2 ?FR }
+SCCS ?FD59={ o3 d+ g+ o4 c d+ g+ o5 c d+ g+ o6 c d+ c ?FR }
+SCCS ?FD60={ d%12 o4 b%4 o5 c%4 d%4 d%12 c%4 o4 b%8 o5 g%12 d%12 g%12 d%12 g%12 f%12 c%12 d%12 e%12 ?FR }
+SCCS ?FD61={ o4 g%4 o5 c%4 e%4 e%12 o4 a%4 o5 c%4 e%4 f%12 e%12 c%10 d%14 ?FR }
+SCCS ?FD62={ c%12 o4 g%4 o5 }
+SCCS ?FD63={ c%4 d%4 g%6 f%6 f%4 g%4 f%4 e%12 d%4 c%8 e%6 c%6 d%4 e%8 ?FR }
+SCCS ?FD64={ ?XT1 ?FC118 }
+SCCS ?FD65={ c%14 @7 ?EP0,$81,$15 v5 ?FC59 }
+SCCS ?FD66={ ?DR ?FC115 }
+SCCS ?FD67={ ?FC61 }
+SCCS ?FD68={ ?DR d%12 c%12 o4 v6 b%10 g+%14 ?DR ?MV- @5 ?XU5 v7 o5 ?EP0,$81,$25 ?MV0,$53 ?MW24 }
+SCCS ?FD69={ ?FC62 }
+SCCS ?FD70={ ?FC76 }
+SCCS ?FD71={ d%6 ?FB2,69 c%12 c%4 d%4 d+%4 c%12 v6 @0 d%4 f%4 a+%4 ?MV- ?FC115 }
+SCCS ?FD72={ ?FC61 }
+SCCS ?FD73={ ?DR d%12 c%12 o4 b%10 g+%14 ?DR ?MV- ?FC118 }
+SCCS ?FD74={ c%14 @7 ?EP0,$81,$15 v4 ?FC59 }
+SCCS ?FD75={ o5 g+ @3 v8 ?EP0,$81,$35 c%4 c%4 d%2 e%2 f%6 e%2 d%2 c%14 o4 d+ d+ g+%2 o5 c%2 o4 f%2 a+%2 o5 d ?DR e%8 f%2 g%2 ?XU6 a+%6 a%2 g%4 f%12 e%16 ! }
+SCCS ?FD76={ o4 a%12 a%4 b%4 o5 c%4 f%6 e%6 c%6 ?FR }
+SCCS ?FD77={ ?XT1 ?FC119 }
+SCCS ?FD78={ c%11 v5 ?DB2 ?FC59 }
+SCCS ?FD79={ o5 g+ ?DR ?FC116 }
+SCCS ?FD80={ ?FC89 }
+SCCS ?FD81={ e%9 v6 d%10 o4 b%14 ?DR ?MV- @5 ?DB1 ?XU5 v6 o5 ?EP0,$00,$15 ?MV0,$53 ?MW24 }
+SCCS ?FD82={ c%2 ?FC62 }
+SCCS ?FD83={ ?FC76 }
+SCCS ?FD84={ d%4 ?FB2,82 c%12 ?DR o4 g+%4 a+%4 o5 c%4 o4 g+%12 @6 v7 a+%4 o5 d%4 f%4 ?MV- ?FC116 }
+SCCS ?FD85={ ?FC89 }
+SCCS ?FD86={ e%12 d%10 o4 b%11 ?DR ?MV- ?FC119 }
+SCCS ?FD87={ c%11 v4 ?DB2 ?FC59 }
+SCCS ?FD88={ o5 g+ ?DB3 @3 v6 c%3 ?FC123 d%2 c%12 c%16 ! }
+SCCS ?FD89={ @5 v9 o4 g%4 o5 c%4 e%4 @3 v6 e%12 @5 v9 o4 a%4 o5 c%4 e%4 @3 v6 f%12 e%12 c%10 d%14 f%12 ?FR }
+SCCS ?FD90={ ?FC98 }
+SCCS ?FD91={ ?FC99 }
+SCCS ?FD92={ ?EP0,$82,$34 ?FC100 }
+SCCS ?FD93={ o3 b%12 o4 d%12 ?XU10 f%12 @1 ?XU10 }
+SCCS ?FD94={ g%12 g%12 g%12 a%12 a%12 a%12 ?FB2,94 g%12 a+%12 ?XU5 ?FC100 }
+SCCS ?FD95={ o3 ?EP0,$81,$54 b%2 b%2 b%2 b%2 b%2 b%2 o4 ?FC103 }
+SCCS ?FD96={ d%2 d%2 d%2 d%2 d%2 d%2 ?DR @4 ?EP0,$82,$34 ?FC99 }
+SCCS ?FD97={ ?EP0,$82,$34 c%4 c%4 c%4 o4 a+%6 a+%4 g+%14 g+%6 a+%6 o5 c%4 c%4 c%4 o4 ?XU6 a+%6 a%6 ?EP0,$88,$71 g%12 g%16 ! }
+SCCS ?FD98={ ?XT1 @4 ?XU5 v8 o4 ?EP0,$82,$34 ?FR }
+SCCS ?FD99={ o5 c%4 c%4 c%4 o4 a+%6 a+%4 g+%14 g+%6 a+%6 o5 c%4 c%4 c%4 o4 a+%6 a+%4 g+%14 ?EP0,$88,$91 o5 c%12 ?FR }
+SCCS ?FD100={ @2 o3 }
+SCCS ?FD101={ b%12 ?FB6,101 a+%12 a+%12 }
+SCCS ?FD102={ o4 c%12 ?FB12,102 ?FR }
+SCCS ?FD103={ d%2 d%2 d%2 d%2 d%2 d%2 f%2 f%2 f%2 f%2 f%2 f%2 ?FR }
+SCCS ?FD104={ ?FC98 }
+SCCS ?FD105={ ?FC112 }
+SCCS ?FD106={ @2 v9 ?EP0,$82,$44 ?FC113 }
+SCCS ?FD107={ d%12 f%12 ?XU10 g+%12 @1 v8 ?EP0,$82,$34 }
+SCCS ?FD108={ c%12 ?FB13,108 d%12 @2 ?XU5 v9 o4 ?EP0,$82,$44 ?FC113 }
+SCCS ?FD109={ ?EP0,$81,$54 ?FC103 }
+SCCS ?FD110={ g+%2 g+%2 g+%2 g+%2 g+%2 g+%2 f%2 f%2 f%2 f%2 f%2 f%2 ?DR @4 v8 ?EP0,$83,$34 ?FC112 }
+SCCS ?FD111={ ?EP0,$82,$34 e%4 e%4 e%4 d%6 d%4 c%14 c%6 d%6 e%4 e%4 e%4 ?XU6 d%6 c%6 ?EP0,$88,$91 f%12 e%16 ! }
+SCCS ?FD112={ e%4 e%4 e%4 d%6 d%4 c%14 c%6 d%6 e%4 e%4 e%4 d%6 d%4 c%14 ?EP0,$88,$91 d+%12 ?FR }
+SCCS ?FD113={ d%12 ?FB8,113 d+%12 d+%12 d+%12 d+%12 e%12 e%12 e%12 e%12 f%12 f%12 f%12 f%12 ?FR }
+SCCS ?FD114={ c%4 c%4 d%2 e%2 f%6 e%2 d%2 c%14 o4 d+ d+ g+%2 o5 c%2 o4 f%2 a+%2 o5 ?FR }
+SCCS ?FD115={ ?DB1 @4 ?XU5 v7 o5 ?EP0,$81,$15 ?MV0,$55 ?MW24 d%12 o4 b%4 o5 c%4 d%4 d%12 c%4 o4 b%8 o5 g%12 d%12 g%12 d%12 g%12 f%12 c%12 d%12 e%12 ?FR }
+SCCS ?FD116={ ?DB2 ?MV0,$55 @3 ?XU5 v6 o5 ?EP0,$81,$15 d%3 d%12 o4 b%4 o5 c%4 d%4 d%12 c%4 o4 b%8 o5 g%12 d%12 g%12 d%12 g%12 f%12 c%12 d%12 e%12 ?FR }
+SCCS ?FD117={ @3 ?XU5 v8 o5 ?EP0,$81,$25 ?MV0,$53 ?MW24 d%12 o4 b%4 o5 c%4 d%4 d%12 c%4 o4 b%8 o5 g%12 d%12 g%12 d%12 g%12 f%12 c%12 d%12 e%12 ?FR }
+SCCS ?FD118={ @3 ?DB2 ?XU5 v8 o4 ?EP0,$81,$35 c c%4 c%4 d%2 e%2 f%6 e%2 d%2 c%14 d+ d+ g+%2 o5 c%2 o4 f%2 a+%2 o5 d%2 c%8 d%2 e%2 f%6 e%2 d%2 ?FR }
+SCCS ?FD119={ ?DB3 @3 ?XU5 v6 o4 ?EP0,$81,$35 c%3 c%4 c%4 d%2 e%2 f%6 e%2 d%2 c%14 d+ d+ g+%2 o5 c%2 o4 f%2 a+%2 o5 d%2 c%8 d%2 e%2 f%6 e%2 d%2 ?FR }
+SCCS ?FD120={ @0 ?DB1 ?XU5 v10 o4 ?EP0,$81,$35 c%4 c%4 d%2 e%2 f%6 e%2 d%2 c%14 d+ d+ g+%2 o5 c%2 o4 f%2 a+%2 o5 d%2 c%8 d%2 e%2 f%6 e%2 d%2 ?FR }
+SCCS ?FD121={ c%2 c%2 c+%2 c%2 c%2 c%2 c%2 c%2 c%2 c%2 c%2 c+%2 c c ?FR }
+SCCS ?FD122={ c%4 c%4 c%4 o4 a+%6 a+%4 g+%14 g+%6 a+%6 o5 c%4 c%4 c%4 o4 ?FR }
+SCCS ?FD123={ c%4 c%4 d%2 e%2 f%6 e%2 d%2 c%14 o4 d+ d+ g+%2 o5 c%2 o4 f%2 a+%2 o5 d%2 c%8 d%2 e%2 ?XU6 f%6 e%2 ?FR }
+SCCS ?FD124={ e%4 e%4 e%4 d%6 d%4 c%14 c%6 d%6 e%4 e%4 e%4 ?FR }
