@@ -196,6 +196,11 @@ function parse(s, msx = false, lex = null) {
       const after = length();
       if (first && (after.div !== undefined || after.clocks !== undefined)) first.len = after;
       top().push({ t: 'porta', inner });
+    } else if (msx && (c === '[' || c === '/' || c === ']')) {
+      // MSX rows are played by following the code (msxTracks), where a repeat may open on
+      // one line and close on another: flat markers instead of a nested loop.
+      i++;
+      top().push(c === '[' ? { t: 'lstart' } : c === '/' ? { t: 'lexit' } : { t: 'lend', count: num() ?? 2 });
     } else if (c === '[') { i++; const loop = { t: 'loop', body: [], exit: -1, count: 2 }; top().push(loop); stack.push(loop); }
     else if (c === '/') { i++; if (stack.length > 1) stack[stack.length - 1].exit = top().length; }
     else if (c === ']') {
@@ -433,7 +438,7 @@ function msxTracks(rows, macros) {
     if (!own.length) continue;
     const st = { ext: true, compact: compact.get(ch), base: MSX_ORDER.indexOf(ch) < 8, type: null, stepLen: 1, stepNext: false, unit: 1, shuffle: 0, tick: 0,
       oct: compact.get(ch) ? 4 : 6, count: compact.get(ch) ? 1 : 24, clock: 128, inst: null, vol: null, tie: false, loopTick: null, ended: false, last: 0, history: [], echo: 0 };
-    const events = [], played = new Map(), counters = new Map(), calls = [];
+    const events = [], played = new Map(), counters = new Map(), calls = [], loops = [];
     let pc = routes.has(ch) ? routes.get(ch) + 1 : code.length, mark = pc, steps = 0;
     while (pc < code.length && !st.ended && steps++ < 200000 && st.tick < 1e7) {
       const node = code[pc], again = played.has(pc);
@@ -452,6 +457,19 @@ function msxTracks(rows, macros) {
         if (played.has(to) && !calls.length) { st.loopTick = played.get(to); break; }
         pc = to;
         continue;
+      } else if (node.t === 'lstart') loops.push({ at: pc, pass: 1 });
+      else if (node.t === 'lend' || node.t === 'lexit') {
+        const loop = loops[loops.length - 1];
+        if (loop && node.t === 'lend' && loop.pass < node.count) { loop.pass++; pc = loop.at + 1; continue; }
+        if (loop && node.t === 'lexit') {
+          // [A / B]n: on the last pass, leave at / (to after the matching ])
+          let depth = 0, k = pc + 1, count = null;
+          for (; k < code.length; k++) {
+            if (code[k].t === 'lstart') depth++;
+            else if (code[k].t === 'lend') { if (!depth) { count = code[k].count; break; } depth--; }
+          }
+          if (count !== null && loop.pass >= count) { loops.pop(); pc = k + 1; continue; }
+        } else loops.pop();
       } else if (node.t === 'mark') mark = pc;
       else if (node.t === 'fb') {
         const to = node.target === null ? mark : labels.get(node.target);

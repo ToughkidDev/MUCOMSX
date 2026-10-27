@@ -57,7 +57,7 @@ The sound engine is not a new implementation. It is **[MDPlayer4Mac](https://git
 |---|---|
 | MUC compiler | mucomDotNET compiler with MDPlayer4Mac's MUCOMSX changes |
 | MUCOM88 driver | mucomDotNET driver with MDPlayer4Mac's MSX overlay |
-| MSX parts | MDPlayer4Mac's `MucoNative` (`NativeMucCompiler`, `MsxMucCompiler`, `MsxMusicalCompiler`, `NativeMucomSession`, `PackedMusicPlayer` …) |
+| MSX parts | MDPlayer4Mac's `MucoNative` (`NativeMucCompiler`, `MsxMucCompiler`, `MsxMusicalCompiler`, `NativeMucomSession`, `PackedMusicPlayer` …), with `src/mdplayer4mac.patch` |
 | Chip emulation | MDSound (fmgen YM2608/YM2610/PSG, emu2413, K051649, YM2151) |
 
 `src/Engine/MucEngine.cs` is the only new engine code: it wires those pieces together the
@@ -129,11 +129,37 @@ dotnet workload install wasm-tools   # .NET 8 SDK
 MUCPlayground/src/build.sh
 ```
 
-`build.sh` checks out MDPlayer4Mac at the pinned commit, publishes `src/Web` and
+`build.sh` checks out MDPlayer4Mac at the pinned commit, applies `src/mdplayer4mac.patch`, publishes `src/Web` and
 `src/VgmWeb`, and copies only the files the browser loads into `engine/` (about 11 MB, 4.2 MB
 compressed) and `engine-vgm/` (about 20 MB, 7.3 MB compressed); AOT compilation takes a
 few minutes. Run it again after
 adding samples to refresh `samples.json`.
+
+### Changes to the MucoMSX native core (`src/mdplayer4mac.patch`)
+
+Fixes and additions to MDPlayer4Mac's `MucoNative` that the pinned commit does not have yet,
+with their tests (`macos/MucoNativeTests/CompactRowTests.cs`; the native test suite passes, and
+all 261 sample MUCs render the same chip writes as before except where a fix applies):
+
+- **`?FB0 … ?FBn` on MSX-MUSIC and `MSXG`:** compiled, but the OPLL player stopped at the
+  repeat ("unknown opcode DE"). It now repeats as on PSG and SCC.
+- **`r` on `?XT4` effect tracks and `?XT64` drum tracks:** a rest was played as note value 12:
+  on `?XT4` playback stopped ("Undefined shared rhythm/effect phrase"), on `MSXG` it hit snare
+  and tom. It is now a rest. This removes a stray snare + tom hit at the start of six of the
+  F-1 Spirit 3D Special samples, which start their drums with `r%1`.
+- **`?ID` hits** now apply a pending `?IT` kit, `v` and `?IB`, as note hits do (before, only a
+  note hit or `?ID-` did, so the first `?ID` hits used the default kit at full volume).
+- **Compact (`?XU`) rows** take `|` (bar line), `[ ]n` (two levels, over several lines) and `L`
+  (the `!` at the end jumps back to it), as ordinary rows do. `/` is refused with a hint.
+- **Compact MSX-MUSIC rows** take `?IRn` (= `@n`) and `?IUn` (custom voice n).
+- **PSG-only songs** no longer need an SCC wave (`?WD`): a silent one is added. A compact SCC row
+  without waves gets a clear message.
+- **Wave morph (`?WM`)** reads the wave data with a stride that grows to 31 bytes; where that ran
+  past the last wave, playback stopped. It now wraps to the first wave (the page warns, PG04).
+- **Messages** name the two-letter command (`?IR`, `?WM` …) instead of its internal letter.
+
+These features are not in MDPlayer4Mac v0.2.5 itself: a song that uses them plays in
+MUCPlayground but not yet in the desktop player.
 
 To compare against MDPlayer4Mac on the desktop:
 
@@ -153,5 +179,5 @@ dotnet run -c Release --project MUCPlayground/src/NativeCheck -p:Mdp4MacDir=<MDP
 
 MUCPlayground's engine (`engine/` and `src/`) is distributed under GPL-3.0. Its
 corresponding source is `src/` together with MDPlayer4Mac at the commit pinned in
-`src/build.sh`. The YM2608 rhythm samples are the same `2608_*.WAV` files MDPlayer4Mac
+`src/build.sh` with `src/mdplayer4mac.patch` applied. The YM2608 rhythm samples are the same `2608_*.WAV` files MDPlayer4Mac
 ships.

@@ -20,13 +20,15 @@
 ; [EN] Compact rows: ?XUn makes a row a compact stream, n clocks per
 ;      unit. A length is written %1-%16 units. Here ?XU7: %1 is a
 ;      sixteenth note, %4 a quarter, %16 a whole note (one bar).
-;      A compact row has no L, | or [ ]: it repeats with ?FB and
-;      loops with ?FJ (see below).
+;      It repeats with ?FB and loops with :n and ?FJn (see below), as
+;      MDPlayer4Mac v0.2.4 and later play them. MUCPlayground's engine
+;      also takes |, [ ]n and L on these rows, as on ordinary rows.
 ; [JA] コンパクト行: ?XUnでその行がコンパクトストリームになり、1単位が
 ;      nクロックです。音長は%1-%16単位で書きます。ここでは?XU7:
 ;      %1が16分音符、%4が4分音符、%16が全音符(1小節)です。
-;      コンパクト行にはL、|、[ ]がありません。繰り返しは?FB、
-;      ループは?FJで書きます(下を参照)。
+;      繰り返しは?FB、ループは:nと?FJnで書きます(下を参照)。
+;      MDPlayer4Mac v0.2.4以降で鳴る書き方です。MUCPlaygroundの
+;      エンジンでは通常の行と同じく|、[ ]n、Lも使えます。
 ;
 ; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
 ;      and keep what you like. Save makes a .muc on your computer.

@@ -96,3 +96,26 @@ export function silentParts(text) {
   });
   return found;
 }
+
+// ?WMn,rate morphs read 32 samples from wave n on with a step that grows to 31 bytes, so
+// they walk through about 31 waves after n (Konami's effect). With fewer defined, the
+// reading wraps to the first waves. [{ row, col, wave, have }] for each such ?WM.
+export function shortMorphs(text) {
+  const lines = text.split(/\r\n|\r|\n/);
+  const waves = new Set();
+  for (const line of lines) {
+    const m = /^[ \t]*\?WD[ \t]*(\d+)[ \t]*=/.exec(line) || /^[ \t]*\?WS[ \t]*(\d+)[ \t]*,/.exec(line) || /^[ \t]+@W(\d+)/.exec(line);
+    if (m) waves.add(+m[1]);
+  }
+  const count = waves.size ? Math.max(...waves) + 1 : 0;
+  const found = [];
+  lines.forEach((line, row) => {
+    if (!/^(?:SCC[A-E]|SCCS)[ \t]/.test(line)) return;
+    const code = line.split(';')[0];
+    for (const m of code.matchAll(/\?WM[ \t]*(\d+)[ \t]*,[ \t]*(\d+)/g)) {
+      const wave = +m[1], rate = +m[2];
+      if (rate > 0 && count - wave < 31) found.push({ row: row + 1, col: m.index + 1, wave, have: Math.max(0, count - wave) });
+    }
+  });
+  return found;
+}

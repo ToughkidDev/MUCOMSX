@@ -21,10 +21,12 @@
 ;
 ; [EN] Compact rows: ?XU7 makes %1 a sixteenth note, %4 a quarter and
 ;      %16 a whole note (one bar). They loop with :n and ?FJn and
-;      repeat with ?FB, as there is no L or [ ] on these rows.
+;      repeat with ?FB, as MDPlayer4Mac v0.2.4 and later play them.
+;      MUCPlayground's engine also takes |, [ ]n and L on these rows.
 ; [JA] コンパクト行: ?XU7で%1が16分音符、%4が4分音符、%16が全音符
-;      (1小節)。この行にはLや[ ]がないので、:nと?FJnでループし、
-;      ?FBで繰り返します。
+;      (1小節)。:nと?FJnでループし、?FBで繰り返します(MDPlayer4Mac
+;      v0.2.4以降で鳴る書き方)。MUCPlaygroundのエンジンではこの行でも
+;      |、[ ]n、Lが使えます。
 ;
 ; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
 ;      and keep what you like. Save makes a .muc on your computer.
@@ -68,17 +70,20 @@
 ;      2 top cymbal, 1 hi-hat (?ID17 = bass drum + hi-hat).
 ;      ?ITn={6 bytes} is a kit: the pitches of the drum channels
 ;      (YM2413 registers $16-$18 and $26-$28); this one is from Konami's
-;      F-1 Spirit 3D Special. ?ITn and v take effect at the next ?ID-,n
-;      (a rest with the drums off), so the drums start with ?ID-,1 and
-;      every part starts with a sixteenth rest (r%1) to stay together.
+;      F-1 Spirit 3D Special. In MDPlayer4Mac v0.2.5 ?ITn and v take
+;      effect only at the next ?ID-,n (a rest with the drums off), so the
+;      drums start with ?ID-,1 and every part starts with a sixteenth
+;      rest (r%1) to stay together. (MUCPlayground's engine applies them
+;      at the first hit as well.)
 ; [JA] ?XT64のMSXGがドラムを鳴らします。?IDmask,lengthで叩いて
 ;      length単位待ちます。maskは16バスドラム、8スネア、4タム、
 ;      2トップシンバル、1ハイハットの和です(?ID17 = バスドラム+
 ;      ハイハット)。?ITn={6バイト}はキット: ドラムチャンネルの音程
 ;      (YM2413のレジスタ$16-$18と$26-$28)。これはコナミの
-;      F-1スピリット3Dスペシャルのものです。?ITnとvは次の?ID-,n
-;      (ドラムを止める休み)で有効になるので、ドラムは?ID-,1で始め、
-;      全パートを16分休符(r%1)で始めてそろえます。
+;      F-1スピリット3Dスペシャルのものです。MDPlayer4Mac v0.2.5では
+;      ?ITnとvは次の?ID-,n(ドラムを止める休み)でしか有効にならないので、
+;      ドラムは?ID-,1で始め、全パートを16分休符(r%1)で始めてそろえます。
+;      (MUCPlaygroundのエンジンは最初の打音でも反映します。)
 ?IT1={224,4,190,3,5,1}
 
 ; ---- Parts / パート ----
@@ -103,10 +108,12 @@ MSXH    f%4 a%4 >c%4 <a%4 e%4 g%4 b%4 g%4 d%4 f%4 g%4 b%4 c%4 g%4 >c%8 ?FJ5
 ; MSXJ strings with sustain, one note a bar / サステイン付きストリングス、1小節に1音
 MSXJ ?XU7 ?XT1 @1 ?IS1 v10 r%1
 MSXJ :6 o5 e%16 d%16 c%16 <b%16 >e%16 d%16 c%8 <b%8 >c%16 ?FJ6
-; MSXG drums: 3 bars of beat and a fill, twice. On MSXG, repeats go back
-; to a label: ?FB3,7 plays from :7 three times in all.
-; ドラム: 3小節のビートとフィルを2回。MSXGの繰り返しはラベルへ戻ります:
-; ?FB3,7は:7から合計3回演奏します。
+; MSXG drums: 3 bars of beat and a fill, twice. ?FB3,7 plays from :7
+; three times in all (MDPlayer4Mac v0.2.5 needs this label form on
+; MSX-MUSIC rows; MUCPlayground's engine takes ?FB0 ... ?FB3 too).
+; ドラム: 3小節のビートとフィルを2回。?FB3,7は:7から合計3回演奏します
+; (MDPlayer4Mac v0.2.5のMSX-MUSIC行ではこのラベル形式が必要。
+; MUCPlaygroundのエンジンは?FB0 … ?FB3も使えます)。
 MSXG ?XU7 ?XT64 ?IT1 v14 ?ID-,1
 MSXG :7 ?ID17,2 ?ID1,2 ?ID9,2 ?ID1,2 ?ID17,2 ?ID17,2 ?ID9,2 ?ID1,2 ?FB3,7
 MSXG    ?ID17,2 ?ID1,2 ?ID9,2 ?ID1,2 ?ID4,1 ?ID4,1 ?ID8,1 ?ID8,1 ?ID12,2 ?ID18,2

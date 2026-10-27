@@ -19,10 +19,12 @@
 ;
 ; [EN] Compact rows: ?XU7 makes %1 a sixteenth note, %4 a quarter and
 ;      %16 a whole note (one bar). They loop with :n and ?FJn and
-;      repeat with ?FB, as there is no L or [ ] on these rows.
+;      repeat with ?FB, as MDPlayer4Mac v0.2.4 and later play them.
+;      MUCPlayground's engine also takes |, [ ]n and L on these rows.
 ; [JA] コンパクト行: ?XU7で%1が16分音符、%4が4分音符、%16が全音符
-;      (1小節)。この行にはLや[ ]がないので、:nと?FJnでループし、
-;      ?FBで繰り返します。
+;      (1小節)。:nと?FJnでループし、?FBで繰り返します(MDPlayer4Mac
+;      v0.2.4以降で鳴る書き方)。MUCPlaygroundのエンジンではこの行でも
+;      |、[ ]n、Lが使えます。
 ;
 ; [EN] Press Play (Ctrl+Enter) to listen. Change one thing, play again,
 ;      and keep what you like. Save makes a .muc on your computer.
@@ -44,16 +46,17 @@
 ;        ?EP0,$81,$38   falls quickly to a third, fades at the note end
 ;        ?EP0,$84,$76   a pluck that dies away during the note
 ;        ?EP0,$8F,$5F   a slow fade through the note
-;        ?EP-           flat; the note keeps sounding through rests
+;        ?EP-           flat, like an organ
 ;      In b, the first digit is how low the level falls and the second
-;      how fast it fades after the note ($x0 holds it: avoid it here).
+;      how early it fades out before the note ends (0 not at all, F
+;      earliest). Every note stops at a rest.
 ; [JA] ?EP0,a,bは各音の音量の形を決めます。PSGで測った例:
 ;        ?EP0,$81,$38   すぐ1/3に下がり、音の終わりで消える
 ;        ?EP0,$84,$76   音の間に消えていく撥弦音
 ;        ?EP0,$8F,$5F   音の間ゆっくり消えていく
-;        ?EP-           平ら。休符の間も鳴り続けます
-;      bの1桁目は下がる先の高さ、2桁目は音の後に消える速さです
-;      ($x0は鳴らし続けるので、ここでは使いません)。
+;        ?EP-           平ら、オルガンのよう
+;      bの1桁目は下がる先の高さ、2桁目は音の終わりのどれくらい前から
+;      消えていくか(0は消えない、Fが一番早い)。どの音も休符で止まります。
 
 ; ---- Drum effects / ドラムのエフェクト ----
 ; [EN] ?XDn={ ... !} defines effect n (0-9), a little program of steps:

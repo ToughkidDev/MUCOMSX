@@ -1,0 +1,324 @@
+diff --git a/macos/MucoNative/MsxMmlSyntax.cs b/macos/MucoNative/MsxMmlSyntax.cs
+index 3ac59f2..2ce5ba3 100644
+--- a/macos/MucoNative/MsxMmlSyntax.cs
++++ b/macos/MucoNative/MsxMmlSyntax.cs
+@@ -13,6 +13,8 @@ internal static class MsxMmlSyntax
+     {
+         ["DB"]="d",["DS"]="g",["MW"]="h",["QP"]="q",["NP"]="n",["GH"]="H",["GL"]="L",["WM"]="w",["IR"]="I",["IU"]="O",["IT"]="T",["IS"]="s",["ID"]="D",["IB"]="B",["FC"]="p",["FR"]="r",["FJ"]="j",["FB"]="b",["XM"]="x",["XI"]="i",["XS"]="z",["XP"]="f",["XT"]="k",["XU"]="u"
+     };
++    // The two-letter name of an internal one-letter command, for messages (?I -> ?IR).
++    internal static string NameOf(char c)=>"?"+(Simple.FirstOrDefault(x=>x.Value==c.ToString()).Key??c.ToString());
+     internal static string NormalizeHex(string text,bool resources=false)
+     {
+         var replacements=new SortedDictionary<int,(int End,string Value)>();
+diff --git a/macos/MucoNative/MsxMusicalCompiler.cs b/macos/MucoNative/MsxMusicalCompiler.cs
+index 22ea246..55037ff 100644
+--- a/macos/MucoNative/MsxMusicalCompiler.cs
++++ b/macos/MucoNative/MsxMusicalCompiler.cs
+@@ -34,7 +34,9 @@ internal static class MsxMusicalCompiler
+         internal readonly HashSet<string> Standard=new();
+         internal readonly Dictionary<string,(int Default,int Octave,int Clock)> Defaults=new();
+         internal byte[] Voice=new byte[8192];internal string Title="Packed note score";
+-        internal bool InBlock,Stage1,Pn6,HasWave,Carrier,Pn6Source;internal int Timer=198,Serial;
++        internal bool InBlock,Stage1,Pn6,HasWave,Carrier,Pn6Source,NeedsWave;internal int Timer=198,Serial,BlockLoops;
++        // Compact rows are parsed line by line: their [ ] repeats and L loop carry over to the next line.
++        internal readonly Dictionary<string,(List<(string Target,int? Escape)> Loops,string LoopPoint)> Compact=new();
+         internal (bool Normal,int Default,int Octave,int Clock,int Volume,bool Direct)? ProgramContext;
+     }
+     internal static Compilation Parse(string source,Func<string,Stream> asset,byte[] voiceBank=null)
+@@ -109,6 +111,9 @@ internal static class MsxMusicalCompiler
+             new Parser(b,row.Groups[1].Value,row.Groups[2].Value).Run();
+         }
+         if(b.InBlock)throw new FormatException("Unclosed MSX definition.");
++        foreach(var (ch,state) in b.Compact)if(state.Loops.Count>0)throw new FormatException(ch+": Unclosed [ ] repeat.");
++        // Compact PSG rows need the wave table even when no SCC part plays: a silent wave 0.
++        if(b.NeedsWave&&!b.HasWave)b.Waves.Insert(0,"wave 0 "+string.Join(',',new int[32]));
+         string[] channels=b.Stage1||b.Standard.Count>0||b.Pn6?Channels:opll?Channels:BaseChannels;
+         foreach(string ch in channels)if(!b.Routes.ContainsKey(ch))b.Routes[ch]="EMPTY";
+         if(b.Routes.Values.Contains("EMPTY"))b.Body.AddRange(new[]{"EMPTY:","end"});
+@@ -239,9 +244,13 @@ internal static class MsxMusicalCompiler
+     {
+         private readonly Build b;private readonly string ch,text;private int pos,def,octave,clock,volume,rhythmMask;private int[] rhythmLevels=new int[6];
+         private bool normal,direct,closed,pendingTie;private int? lastNote,programId;private string loopPoint;
+-        private readonly List<(string Target,int? Escape)> loops=new();
++        private List<(string Target,int? Escape)> loops=new();
+         private bool Ol=>OpllChannels.Contains(ch);private bool Base=>BaseChannels.Contains(ch);
+-        internal Parser(Build build,string channel,string source){b=build;ch=channel;text=source;(def,octave,clock)=b.Defaults[ch];normal=b.Standard.Contains(ch);}
++        internal Parser(Build build,string channel,string source)
++        {
++            b=build;ch=channel;text=source;(def,octave,clock)=b.Defaults[ch];normal=b.Standard.Contains(ch);
++            if(!normal&&b.Compact.TryGetValue(ch,out var state))(loops,loopPoint)=state;
++        }
+         private void Error(string msg)=>throw new FormatException(ch+": "+msg+" (column "+(pos+1)+")");
+         private void Spaces(){while(pos<text.Length&&char.IsWhiteSpace(text[pos]))pos++;}
+         private int Num(int min=0,int max=255)
+@@ -279,7 +288,11 @@ internal static class MsxMusicalCompiler
+         }
+         internal void Run()
+         {
+-            if(!normal&&!b.HasWave&&!Ol&&!(b.Pn6Source&&Array.IndexOf(BaseChannels,ch)<3))Error("Define SCC wave data before compact PSG/SCC rows");
++            if(!normal&&!b.HasWave&&!Ol&&!(b.Pn6Source&&Array.IndexOf(BaseChannels,ch)<3))
++            {
++                if(ch.StartsWith("SCC",StringComparison.Ordinal)&&!Regex.IsMatch(text,@"^\s*[@?][RP]"))Error("Define SCC waves (?WDn={...}) before compact SCC rows");
++                b.NeedsWave=true;
++            }
+             bool definition=b.InBlock||Regex.IsMatch(text,@"^[@?][RP]");if(!definition)Route();
+             while(pos<text.Length)
+             {
+@@ -287,9 +300,9 @@ internal static class MsxMusicalCompiler
+                 Spaces();if(pos==text.Length)break;
+                 if(!b.InBlock&&!b.Routes.ContainsKey(ch)&&!Regex.IsMatch(text[pos..],@"^[@?][RP]"))Route();
+                 char c=text[pos++];
+-                if(c=='}') {if(!b.InBlock)Error("Unmatched }");b.InBlock=false;programId=null;if(b.ProgramContext is {} saved){(normal,def,octave,clock,volume,direct)=saved;b.ProgramContext=null;}continue;}
++                if(c=='}') {if(!b.InBlock)Error("Unmatched }");if(!normal&&loops.Count!=b.BlockLoops)Error("A [ ] repeat cannot cross the end of a definition");b.InBlock=false;programId=null;if(b.ProgramContext is {} saved){(normal,def,octave,clock,volume,direct)=saved;b.ProgramContext=null;}continue;}
+                 if(c==':'){Emit("L"+Num()+":");continue;}
+-                if(c=='!') {if(programId.HasValue&&!b.TablePrograms.Contains(programId.Value))Error("Use ?FR to end an instrument-map program");if(normal&&b.InBlock)Error("Use ?FR to end a runtime phrase");if(normal&&loopPoint!=null)Emit("jump "+loopPoint);Emit("end");if(normal)closed=true;continue;}
++                if(c=='!') {if(programId.HasValue&&!b.TablePrograms.Contains(programId.Value))Error("Use ?FR to end an instrument-map program");if(normal&&b.InBlock)Error("Use ?FR to end a runtime phrase");if(loopPoint!=null&&(normal||!b.InBlock)){if(!normal&&loops.Count>0)Error("! inside a [ ] repeat");Emit("jump "+loopPoint);if(!normal)loopPoint=null;}Emit("end");if(normal)closed=true;continue;}
+                 if("abcdefgr".Contains(c)){Note(c);continue;}
+                 if(c=='o'){octave=Num(1,normal||Ol?8:6);if(!normal)Emit("octave "+((Ol?8:6)-octave));continue;}
+                 if(c is '<' or '>'){octave+=c=='>'?1:-1;if(octave<1||octave>(normal||Ol?8:6))Error("Octave outside channel range");if(!normal)Emit("octave "+((Ol?8:6)-octave));continue;}
+@@ -308,6 +321,7 @@ internal static class MsxMusicalCompiler
+                 if(c is 't' or 'T'&&(normal||c=='t')){int value=Num(c=='T'?1:0);if(c=='T')value=(-(14483/value))&255;if(normal)Emit("standard-tempo "+value);else b.Timer=value;continue;}
+                 if(c=='C'){if(normal){int value=Num();if(value!=0)clock=value;}else if(Num(1,192)!=192)Error("Compact duration base is C192");continue;}
+                 if(normal&&Common(c))continue;
++                if(!normal&&CompactStructure(c))continue;
+                 if(c is not('@' or '?'))Error("Unsupported extended-channel command "+c);
+                 if(c=='?'&&(pos==text.Length||!char.IsAsciiLetter(text[pos])))Error("? requires an MSX extension letter; numeric voice selection uses @N");
+                 if(pos<text.Length&&char.IsAsciiDigit(text[pos])){Voice();continue;}
+@@ -320,6 +334,7 @@ internal static class MsxMusicalCompiler
+                 if(loops.Count!=0)Error("Unclosed repeat");if(pendingTie)Error("Tie has no following note");
+                 if(!closed&&b.Body.Count>0&&!Regex.IsMatch(b.Body[^1],@"(?:end|return)$")){if(loopPoint!=null)Emit("jump "+loopPoint);Emit("end");}
+             }
++            if(!normal)b.Compact[ch]=(loops,loopPoint);
+             b.Defaults[ch]=(def,octave,clock);
+         }
+         private void Note(char c)
+@@ -380,6 +395,25 @@ internal static class MsxMusicalCompiler
+                 default:return false;
+             }
+         }
++        // | [ ]n and L on compact rows, written as on ordinary rows. A repeat becomes a labelled
++        // repeat (two levels, as ?FBn,label and ?FBn,label,2); L becomes a label that ! jumps back to.
++        private bool CompactStructure(char c)
++        {
++            switch(c)
++            {
++                case '|':return true;
++                case '[':
++                    if(loops.Count>=2)Error("At most two nested repeats");string target=$"S_{ch}_{++b.Serial}";Emit(target+":");loops.Add((target,null));return true;
++                case ']':
++                    if(loops.Count==0||loops.Count==b.BlockLoops&&b.InBlock)Error("Unmatched ]");int count=Num(1,255);var loop=loops[^1];loops.RemoveAt(loops.Count-1);
++                    if(count>1)Emit((loops.Count>0?"repeat2 ":"repeat ")+$"{count},{loop.Target}");return true;
++                case '/':Error("/ is not available on compact rows: write [A B]n-1 A instead of [A / B]n");return true;
++                case 'L':
++                    if(b.InBlock)Error("L marks the loop of a channel's own row, not of a definition");if(loopPoint!=null)Error("Duplicate song loop");
++                    loopPoint=$"S_{ch}_{++b.Serial}";Emit(loopPoint+":");return true;
++                default:return false;
++            }
++        }
+         private void Voice()
+         {
+             if(normal&&ch=="MSXG"){rhythmMask=Num(0,31);return;}
+@@ -451,18 +485,18 @@ internal static class MsxMusicalCompiler
+         }
+         private void Extension(char cmd)
+         {
+-            if(normal&&"fzix".Contains(cmd))Error("?"+cmd+" requires an explicit ?XU compact channel");
++            if(normal&&"fzix".Contains(cmd))Error(MsxMmlSyntax.NameOf(cmd)+" requires an explicit ?XU compact channel");
+             if(Ol)
+             {
+-                if(normal&&cmd is 'I' or 'O'&&ch!="MSXG"){int id=Num(cmd=='I'?1:0,15);direct=true;Emit("voice "+(cmd=='I'?id*16:id));return;}
++                if(cmd is 'I' or 'O'&&ch!="MSXG"){int id=Num(cmd=='I'?1:0,15);if(normal)direct=true;Emit("voice "+(cmd=='I'?id*16:id));return;}
+                 if(cmd=='q'){int q=Num();if(CommaAhead()){if(normal)Error("?QP mode requires compact OPLL");pos++;Emit($"gate-mode {q},{Num(0,1)}");}else Emit("gate "+q);return;}if(cmd=='s'){Emit(Num(0,1)==1?"sustain":"sustain-off");return;}
+                 if(cmd=='T'){Emit("drum-preset "+Num(0,15));if(CommaAhead()){if(ch!="MSXG")Error("?IT bias requires MSXG");pos++;Emit("drum-bias "+Num(0,15));}return;}if(cmd=='B'){Emit("bass");return;}
+                 if(cmd=='D'){if(ch!="MSXG")Error("?ID requires MSXG");Spaces();int mask;if(Off){pos++;mask=32;}else mask=Num(0,31);Comma();Emit($"drum {mask},{Num(1,16)-1}");return;}
+-                if(!"Ppjbrudmhkea".Contains(cmd))Error("Unsupported OPLL extension "+cmd);
++                if(!"Ppjbrudmhkea".Contains(cmd))Error(MsxMmlSyntax.NameOf(cmd)+" is not available on "+(ch=="MSXG"?"MSXG":"MSX-MUSIC channels"));
+             }
+             if(cmd is 'R' or 'P')
+             {
+-                int id=Num(0,cmd=='R'?9:255);Spaces();if(pos==text.Length||text[pos]!='{'||b.InBlock)Error("Definition requires { ... }");pos++;b.InBlock=true;
++                int id=Num(0,cmd=='R'?9:255);Spaces();if(pos==text.Length||text[pos]!='{'||b.InBlock)Error("Definition requires { ... }");pos++;b.InBlock=true;b.BlockLoops=loops.Count;
+                 if(cmd=='R'){if(!b.Rhythms.TryAdd(id,"R"+id))Error("Duplicate rhythm definition");Emit("R"+id+":");}
+                 else{Emit("L"+id+":");if(b.ProgramLabels.Contains(id))programId=id;if(normal&&b.ProgramLabels.Contains(id)){b.ProgramContext=(normal,def,octave,clock,volume,direct);normal=false;}}return;
+             }
+@@ -523,7 +557,7 @@ internal static class MsxMusicalCompiler
+                 case 'u':name="unit";argc=1;break;case 'h':name="vibrato-delay";argc=1;break;case 'k':name="type";argc=1;break;
+                 case 'n':name="noise";argc=1;break;case 's':name="shape";argc=1;break;case 'H':name="env-high";argc=1;break;case 'L':name="env-low";argc=1;break;
+                 case 'z':name="step";argc=1;break;case 'f':name="pitch";argc=2;break;case 'p':name="call";argc=1;break;case 'j':name="jump";argc=1;break;case 'r':name="return";argc=0;break;case 'q':name="gate-normal";argc=0;break;
+-                default:Error("Unknown extension "+cmd);return;
++                default:Error("Unknown extension "+MsxMmlSyntax.NameOf(cmd));return;
+             }
+             int[] values=new int[argc];for(int i=0;i<argc;i++){if(i>0)Comma();values[i]=Num(cmd=='u'?1:0,cmd=='f'&&i==0?4095:255);}
+             if(cmd=='k')
+diff --git a/macos/MucoNative/PackedMusicPlayer.cs b/macos/MucoNative/PackedMusicPlayer.cs
+index 8b6320d..ee8ce44 100644
+--- a/macos/MucoNative/PackedMusicPlayer.cs
++++ b/macos/MucoNative/PackedMusicPlayer.cs
+@@ -135,6 +135,8 @@ internal sealed partial class PackedMusicPlayer
+             }
+             if((type&4)!=0)
+             {
++                // Note values 0-9 start ?XD0-?XD9; 12 is the rest, which starts nothing.
++                if(op>>4==12){Duration(c,(op%16+1)*c.W[20]);OnDuration(c);c.Pc=p;return;}
+                 // A score note selects a shared effect phrase; its clock stays
+                 // in the main voice while literal steps advance independently.
+                 c.W[9]=9;Duration(c,(op%16+1)*c.W[20]);OnDuration(c);c.Pc=p;
+@@ -331,9 +333,11 @@ internal sealed partial class PackedMusicPlayer
+     private byte[] WaveSamples(Channel c)
+     {
+         if(Bit(c.M[28],0)||Bit(c.M[28],2)){if(Bit(c.M[28],0)&&c.Index==waveOwner&&(waveFlags&8)!=0&&c.Index<7)channels[c.Index+1].W[15]|=128;return GeneratedWave(c);}
+-        int ptr=c.Word(38),stride=Bit(c.M[5],3)?c.M[10]:1;
+-        if(ptr<score.U16(26)||ptr+31*stride>=score.U16(8))throw new FormatException("Wave morph reads beyond shared waveform data.");
+-        var wave=new byte[32];for(int n=0;n<32;n++)wave[n]=score.Bytes[ptr+n*stride];return wave;
++        int ptr=c.Word(38),stride=Bit(c.M[5],3)?c.M[10]:1,start=score.U16(26),end=score.U16(8);
++        if(ptr<start||ptr>=end)throw new FormatException("Wave morph reads beyond shared waveform data.");
++        // A morph steps through the wave data with a stride of up to 31 bytes. Where that runs
++        // past the last wave (the original driver read whatever followed), it wraps to the first.
++        var wave=new byte[32];for(int n=0;n<32;n++)wave[n]=score.Bytes[start+(ptr-start+n*stride)%(end-start)];return wave;
+     }
+     private int GateFlags(Channel c)
+     {
+diff --git a/macos/MucoNative/PackedOpll.cs b/macos/MucoNative/PackedOpll.cs
+index 42b2bff..768252d 100644
+--- a/macos/MucoNative/PackedOpll.cs
++++ b/macos/MucoNative/PackedOpll.cs
+@@ -57,7 +57,9 @@ internal sealed partial class PackedMusicPlayer
+                 if(op==0xd8)
+                 {
+                     if(c.Index!=14)throw new FormatException("OPLL drum hit outside MSXG.");int mask=score.Read(ref p),length=score.Read(ref p);
+-                    if(mask>32||length>15)throw new FormatException("Invalid OPLL drum hit.");Duration(c,B((length+1)*c.W[20]));c.Pc=p;if(mask==32){FlushOpllDrums(c);Opll(14,0);}else OpllDrumHit(mask);return;
++                    if(mask>32||length>15)throw new FormatException("Invalid OPLL drum hit.");Duration(c,B((length+1)*c.W[20]));c.Pc=p;FlushOpllDrums(c);
++                    // A hit applies the pending kit, volume and ?IB bass drum, as a note hit does.
++                    if(mask==32)Opll(14,0);else{if(bassPending){mask|=16;bassPending=false;}OpllDrumHit(mask);}return;
+                 }
+                 OpllControl(c,op,ref p,start);
+                 if(!c.Active)return;if(c.Standard){ParseStandard(c,ref p);return;}continue;
+@@ -66,7 +68,8 @@ internal sealed partial class PackedMusicPlayer
+             if(c.Index==14||c.W[31]==64)
+             {
+                 FlushOpllDrums(c);
+-                int mask=op>>4;if(bassPending){mask|=16;bassPending=false;}OpllDrumHit(mask);return;
++                // Note values 0-11 are drum masks; 12 is the rest, which hits nothing.
++                int mask=op>>4;if(mask>=12)return;if(bassPending){mask|=16;bassPending=false;}OpllDrumHit(mask);return;
+             }
+             if(c.W[31]!=1)throw new FormatException("Unsupported native OPLL track type.");
+             int pitch=op>>4;
+@@ -92,6 +95,10 @@ internal sealed partial class PackedMusicPlayer
+         {
+             case 0xe7:
+                 int drum=score.Read(ref p);if(drum>15||score.Drums[drum]==null)throw new FormatException("Undefined OPLL drum preset.");c.Word(34,drum);c.W[15]|=64;return;
++            case 0xde:c.Mark=p;return;
++            case 0xdf:
++                int marked=score.Read(ref p);if(marked==0||c.Mark<0)throw new FormatException("Compact repeat has no loop mark.");
++                int pass=B(c.W[5]+1);c.W[5]=pass==marked?(byte)0:B(pass);if(pass!=marked)p=c.Mark;return;
+             case 0xe8:c.W[36]=B(score.Read(ref p));return;
+             case 0xe9:
+                 c.W[20]=B(score.Read(ref p));if(c.W[20] is 0 or >15)throw new FormatException("OPLL duration unit must be 1..15.");return;
+diff --git a/macos/MucoNativeTests/CompactRowTests.cs b/macos/MucoNativeTests/CompactRowTests.cs
+new file mode 100644
+index 0000000..7e00c80
+--- /dev/null
++++ b/macos/MucoNativeTests/CompactRowTests.cs
+@@ -0,0 +1,89 @@
++using MDPlayer.MucoNative;
++
++// Compact-row structure (| [ ] L), OPLL repeats and rests on effect/drum tracks, ?ID kit
++// application, ?IR/?IU on compact OPLL rows, PSG-only songs without waves and morph reads.
++internal static class CompactRowTests
++{
++    internal static void Run(Action<bool,string> check)
++    {
++        const string wave="?WD0={0,25,49,71,90,106,117,125,127,125,117,106,90,71,49,25,0,-25,-49,-71,-90,-106,-117,-125,-128,-125,-117,-106,-90,-71,-49,-25}\n";
++        (PackedMusicPlayer P,List<NativeChipWrite> E) Make(string s)
++        {
++            var o=MsxMusicalCompiler.Parse(s,_=>null);var e=new List<NativeChipWrite>();
++            return(new(new(o.Object),e.Add,_=>{}),e);
++        }
++        byte[] Bytes(string s)=>MsxMusicalCompiler.Parse(s,_=>null).Object;
++        bool Rejected(string s,string text=null)
++        {
++            try{Bytes(s);return false;}catch(FormatException e){return text==null||e.Message.Contains(text);}
++        }
++        // Key-on ticks of an OPLL melody channel, or rhythm hits (register $0E) with their masks.
++        List<int> OpllKeys(List<NativeChipWrite> e,List<int> ticks,int channel)
++        {
++            var on=new List<int>();bool keyed=false;
++            for(int i=0;i<e.Count;i++)if(e[i].Chip==NativeChip.Opll&&e[i].Address==0x20+channel){bool k=(e[i].Value&16)!=0;if(k&&!keyed)on.Add(ticks[i]);keyed=k;}
++            return on;
++        }
++        (List<NativeChipWrite> E,List<int> T) Play(string s,int frames)
++        {
++            var m=Make(s);var ticks=new List<int>();
++            for(int t=0;t<frames&&!m.P.Ended;t++){m.P.Tick();while(ticks.Count<m.E.Count)ticks.Add(t);}
++            return(m.E,ticks);
++        }
++        List<(int Tick,int Mask)> Hits((List<NativeChipWrite> E,List<int> T) r)
++        {
++            var hits=new List<(int,int)>();
++            for(int i=0;i<r.E.Count;i++)if(r.E[i].Chip==NativeChip.Opll&&r.E[i].Address==14&&(r.E[i].Value&31)!=0)hits.Add((r.T[i],r.E[i].Value&31));
++            return hits;
++        }
++
++        // ?FB0 ... ?FBn on OPLL melody and MSXG play the marked part n times in all.
++        var fb=Play("MSXA ?XU1 ?XT1 @3 v12 o4 ?FB0 c%2 d%2 ?FB3 e%2 !\n",40);
++        check(OpllKeys(fb.E,fb.T,0).Count==7,"OPLL ?FB0/?FB3 did not play the marked notes three times.");
++        var fbDrum=Hits(Play("MSXG ?XU1 ?XT64 v14 ?FB0 ?ID16,2 ?ID8,2 ?FB2 !\n",40));
++        check(fbDrum.Count==4&&fbDrum[0].Mask==16&&fbDrum[1].Mask==8,"MSXG ?FB0/?FB2 did not repeat the drum hits.");
++
++        // A rest on MSXG hits nothing; on a ?XT4 track it starts no effect and does not stop playback.
++        var rest=Hits(Play("MSXG ?XU1 ?XT64 v14 r%2 c+%2 r%2 g+%2 !\n",20));
++        check(rest.Count==2&&rest[0]==(2,1)&&rest[1]==(6,8),"An MSXG rest hit drums or moved the following hits.");
++        var fx=Make(wave+"PSGS ?XD0={ :90 ?XM1,1 ?NP0 ?XS$07 ! }\nMSXD ?XU1 ?XT4 v12 o4 r%2 c%2 r%2 c%2 !\n");
++        for(int t=0;t<12;t++)fx.P.Tick();
++        check(fx.E.Count(x=>x.Chip==NativeChip.Psg&&x.Address==6)>=2,"A ?XT4 rest stopped the effect track.");
++
++        // ?ID hits apply the pending kit and volume, as note hits do, and a pending ?IB.
++        string kit="?IT0={224,4,190,3,5,1}\n";
++        var id=Play(kit+"MSXG ?XU1 ?XT64 ?IT0 v10 ?ID1,2 ?IB ?ID8,2 !\n",8);
++        int firstHit=id.E.FindIndex(x=>x.Chip==NativeChip.Opll&&x.Address==14&&(x.Value&31)!=0);
++        check(firstHit>0&&id.E.Take(firstHit).Any(x=>x.Chip==NativeChip.Opll&&x.Address==0x16&&x.Value==224)&&id.E.Take(firstHit).Any(x=>x.Chip==NativeChip.Opll&&x.Address==0x36&&x.Value!=0),
++            "The first ?ID hit did not apply the pending kit and volume.");
++        check(Hits(id).Any(h=>h.Mask==(16|8)),"?IB before ?ID did not add the bass drum.");
++
++        // | is a bar line; [ ]n repeats (two levels, across lines); L loops back from !.
++        check(Bytes(wave+"SCCA ?XU1 ?XT1 @0 v12 o4 c%2 | d%2 !\n").SequenceEqual(Bytes(wave+"SCCA ?XU1 ?XT1 @0 v12 o4 c%2 d%2 !\n")),"| changed a compact row.");
++        var nested=Play("MSXA ?XU1 ?XT1 @3 v12 o4 [c%2 [d%2]2]3 e%2 !\n",60);
++        check(OpllKeys(nested.E,nested.T,0).Count==10,"Nested compact repeats did not play 3 x (1 + 2) + 1 notes.");
++        var lines=Play("MSXA ?XU1 ?XT1 @3 v12 o4 [c%1\nMSXA d%1]3 !\n",20);
++        check(OpllKeys(lines.E,lines.T,0).Count==6,"A compact repeat across two lines did not play three times.");
++        var loop=Make("MSXA ?XU1 ?XT1 @3 v12 o4 c%1 L d%1 e%1 !\n");for(int t=0;t<40;t++)loop.P.Tick();
++        check(!loop.P.Ended,"Compact L did not loop.");
++        check(Rejected(wave+"SCCA ?XU1 ?XT1 @0 v12 o4 [c%1 d%1 !\n","Unclosed"),"An unclosed compact repeat was accepted.");
++        check(Rejected(wave+"SCCA ?XU1 ?XT1 @0 v12 o4 [c%1 / d%1]2 !\n","/"),"/ on a compact row was not explained.");
++        check(Rejected(wave+"SCCS ?FD20={ [c%1 }\nSCCA ?XU1 ?XT1 @0 v12 o4 ?FC20 d%1] !\n","cross"),"A repeat crossing a definition was accepted.");
++
++        // PSG-only compact songs need no wave; SCC rows still name what they miss.
++        Bytes("MSXD ?XU1 ?XT1 ?EP0,$81,$38 v12 o4 c%4 !\n");
++        check(Rejected("SCCA ?XU1 ?XT1 v12 o4 c%4 !\n","?WD"),"A compact SCC row without waves was accepted or not explained.");
++
++        // ?IR / ?IU select the same instruments on compact OPLL rows as @n / @0.
++        string patch="?IU0={33,97,29,7,130,143,16,7}\n";
++        check(Bytes("MSXA ?XU1 ?XT1 ?IR3 v12 o4 c%4 !\n").SequenceEqual(Bytes("MSXA ?XU1 ?XT1 @3 v12 o4 c%4 !\n")),"Compact ?IR differs from @n.");
++        check(Bytes(patch+"MSXA ?XU1 ?XT1 ?IU0 v12 o4 c%4 !\n").SequenceEqual(Bytes(patch+"MSXA ?XU1 ?XT1 @0 v12 o4 c%4 !\n")),"Compact ?IU differs from @0.");
++        check(Rejected("MSXA ?XU1 ?XT1 ?WM0,1,1 v12 o4 c%4 !\n","?WM"),"An OPLL error did not name the two-letter command.");
++
++        // A morph that steps past the last wave keeps playing.
++        var morph=Make(wave+"SCCA ?XU1 ?XT1 @0 ?WM0,63,1 v12 o4 c%16 c%16 !\n");
++        for(int t=0;t<40&&!morph.P.Ended;t++)morph.P.Tick();
++        check(morph.P.Ended,"A long morph over one wave did not play to the end.");
++        Console.WriteLine("PASS compact rows: | [ ] L, OPLL ?FB0, rests on drum/effect tracks, ?ID kit, ?IR/?IU, PSG without waves, morph wrap");
++    }
++}
+diff --git a/macos/MucoNativeTests/Program.cs b/macos/MucoNativeTests/Program.cs
+index 6669a00..0102334 100644
+--- a/macos/MucoNativeTests/Program.cs
++++ b/macos/MucoNativeTests/Program.cs
+@@ -23,6 +23,7 @@ WmStateTests.Run(Check);
+ SourceControlTests.Run(Check);
+ WaveGateTests.Run(Check);
+ ToolchainSyncTests.Run(Check);
++CompactRowTests.Run(Check);
+ var names=typeof(NativeMucomSession).Assembly.GetReferencedAssemblies().Select(x=>x.Name).ToArray();
+ Check(!names.Any(x=>x is "MDPlayerCore" or "MDSound" or "Z80dotNet"),"Native core depends on a host or CPU emulator.");
+ var results=new List<object>();

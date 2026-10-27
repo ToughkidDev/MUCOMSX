@@ -3,7 +3,7 @@
 
 import { Highlighter, suggestionsAt, PART_LETTERS, PART_COLORS } from './editor-assist.js';
 import { explain, readableText } from './diagnostics.js';
-import { silentParts } from './silence-check.js';
+import { silentParts, shortMorphs } from './silence-check.js';
 import { waveAt, globalWave, drawWave } from './wave-preview.js';
 import { voiceAt, drawVoice, OP_COLORS, ALGS } from './fm-preview.js';
 import { WaveEditor } from './wave-editor.js';
@@ -152,6 +152,7 @@ const T = {
     folderTitle: (n) => `Folder: ${n}`, folderSource: (songs, all) => `${songs} songs among ${all} files. Opening one attaches the voice / PCM files it names from the folder.`,
     folderOpened: (n) => `Opened ${n} from the folder`, attachedFiles: (list) => `attached ${list}`, stillMissing: (list) => `still missing: ${list}`,
     missingFile_pcm: (f) => `${f} (#pcm) is not attached, so the ADPCM part K plays nothing.`, missingFile_voice: (f) => `${f} (#voice) is not attached, so voices the MUC does not define itself cannot be found.`,
+    shortMorph: (n, k) => `?WM${n}: the morph reads about 31 waves from wave ${n} on; ${k} are defined, so it wraps to the first ones.`,
     missingFile_sccvoice: (f) => `${f} (#sccvoice) is not attached, so SCC waves the MUC does not define itself cannot be found.`, missingFile_atpcm: (f, n) => `${f} (#@pcm ${n}) is not attached, so PCM sample @${n} is silent.`,
     missingAttach: 'Attach file…', missingAttachTip: (f) => `Pick ${f} (and any other files the song needs) from your computer; several can be picked at once`,
     missingFolder: 'Find in folder', missingFolderTip: (f) => `Look for ${f} in the song's folder: the folder opened with Folder… (or the one remembered), else pick the folder the song is in; every file the song names is attached from there`,
@@ -302,6 +303,7 @@ const T = {
     folderTitle: (n) => `폴더: ${n}`, folderSource: (songs, all) => `파일 ${all}개 중 곡 ${songs}개. 곡을 열면 그 곡이 쓰는 음색·PCM 파일을 폴더에서 찾아 함께 첨부합니다.`,
     folderOpened: (n) => `폴더에서 ${n}을 열었습니다`, attachedFiles: (list) => `첨부: ${list}`, stillMissing: (list) => `아직 없음: ${list}`,
     missingFile_pcm: (f) => `${f}(#pcm)가 첨부되지 않아 ADPCM 파트 K가 소리 나지 않습니다.`, missingFile_voice: (f) => `${f}(#voice)가 첨부되지 않아 MUC에 정의되지 않은 음색을 찾을 수 없습니다.`,
+    shortMorph: (n, k) => `?WM${n}: 모핑은 파형 ${n}부터 약 31개 파형을 읽는데 ${k}개만 정의되어 있어 처음 파형으로 돌아가 읽습니다.`,
     missingFile_sccvoice: (f) => `${f}(#sccvoice)가 첨부되지 않아 MUC에 정의되지 않은 SCC 파형을 찾을 수 없습니다.`, missingFile_atpcm: (f, n) => `${f}(#@pcm ${n})가 첨부되지 않아 PCM 샘플 @${n}이 소리 나지 않습니다.`,
     missingAttach: '파일 첨부…', missingAttachTip: (f) => `내 컴퓨터에서 ${f}(와 곡에 필요한 다른 파일)를 고릅니다. 여러 개를 한 번에 고를 수 있습니다`,
     missingFolder: '폴더에서 찾기', missingFolderTip: (f) => `곡의 폴더에서 ${f}를 찾습니다. 폴더…로 연 폴더(또는 기억된 폴더)를 쓰고, 없으면 곡이 있는 폴더를 고르게 합니다. 곡이 쓰는 파일을 모두 거기서 첨부합니다`,
@@ -452,6 +454,7 @@ const T = {
     folderTitle: (n) => `フォルダ: ${n}`, folderSource: (songs, all) => `${all}ファイル中${songs}曲。曲を開くと、その曲が使う音色・PCMファイルをフォルダから探して一緒に添付します。`,
     folderOpened: (n) => `フォルダから${n}を開きました`, attachedFiles: (list) => `添付: ${list}`, stillMissing: (list) => `まだない: ${list}`,
     missingFile_pcm: (f) => `${f}（#pcm）が添付されていないため、ADPCMパートKが鳴りません。`, missingFile_voice: (f) => `${f}（#voice）が添付されていないため、MUCで定義していない音色が見つかりません。`,
+    shortMorph: (n, k) => `?WM${n}: モーフィングは波形${n}から約31個の波形を読みますが、${k}個しか定義されていないため最初の波形に戻って読みます。`,
     missingFile_sccvoice: (f) => `${f}（#sccvoice）が添付されていないため、MUCで定義していないSCC波形が見つかりません。`, missingFile_atpcm: (f, n) => `${f}（#@pcm ${n}）が添付されていないため、PCMサンプル@${n}が鳴りません。`,
     missingAttach: 'ファイルを添付…', missingAttachTip: (f) => `自分のパソコンから${f}（と曲に必要な他のファイル）を選びます。複数まとめて選べます`,
     missingFolder: 'フォルダから探す', missingFolderTip: (f) => `曲のフォルダで${f}を探します。フォルダ…で開いたフォルダ（または記憶したフォルダ）を使い、なければ曲のあるフォルダを選びます。曲が使うファイルをすべてそこから添付します`,
@@ -870,6 +873,7 @@ function withSilenceWarnings(result) {
   })));
   // Files the song names that are not attached.
   for (const m of missingFileRefs()) extra.push({ row: m.row, col: 0, code: 'PG03', text: t('missingFile_' + m.tag, m.file, m.n), missingFile: m.file });
+  for (const m of shortMorphs(code.value)) extra.push({ row: m.row, col: m.col, code: 'PG04', text: t('shortMorph', m.wave, m.have) });
   return extra.length ? { ...result, warnings: [...result.warnings, ...extra] } : result;
 }
 function missingFileRefs() {
