@@ -472,7 +472,7 @@ export class WaveEditor {
   render() {
     const q = (s) => this.root.querySelector(s);
     if (!this.def) return;
-    q('.we-title').textContent = `@W${this.def.id} · ${this.t('title')} (${this.values.length} × 8 bit)`;
+    q('.we-title').textContent = `${this.def.form === 'wd' ? '?WD' : '@W'}${this.def.id} · ${this.t('title')} (${this.values.length} × 8 bit)`;
     q('.we-ssg').textContent = this.values.length === 64 ? this.t('ssgNote') : '';
     this.root.querySelectorAll('[data-style]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.style === this.style)));
     this.root.querySelectorAll('[data-radix]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.radix === 'hex') === this.hex)));
@@ -492,6 +492,8 @@ export class WaveEditor {
       for (let r = 0; r < 4; r++) rows.push(indent + ' ' + v.slice(r * 16, r * 16 + 16).join(','));
       return [`${indent}@W${this.def.id}`, ...rows].join('\n');
     }
+    // MucoMSX's ?WDn={…} has to stay on one line, closed by }.
+    if (this.def.form === 'wd') return `${indent}?WD${this.def.id}={${v.join(',')}}`;
     return `${indent}@W${this.def.id}:{ ${v.join(',')} }`;
   }
 

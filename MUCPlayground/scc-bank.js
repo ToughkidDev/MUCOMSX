@@ -62,6 +62,16 @@ export function mucWaves(text) {
   const lines = text.split('\n');
   const out = [];
   for (let i = 0; i < lines.length; i++) {
+    // MucoMSX's ?WDn={…}: one line, decimal or $hex samples.
+    const g = /^[ \t]*\?WD[ \t]*(\d+)[ \t]*=[ \t]*\{([^};]*)\}/.exec(lines[i]);
+    if (g) {
+      const vals = g[2].split(',').map((x) => {
+        const hex = /^([+-]?)\$([0-9a-f]+)$/i.exec(x.trim());
+        return hex ? (hex[1] === '-' ? -1 : 1) * parseInt(hex[2], 16) : /^[+-]?\d+$/.test(x.trim()) ? +x : NaN;
+      });
+      if (vals.length === 32 && vals.every((v) => v >= -128 && v <= 127)) out.push({ n: +g[1], wave: vals, row: i + 1, endRow: i + 1 });
+      continue;
+    }
     const m = /^[ \t]+@W(\d+)[ \t]*(?:[:=][ \t]*)?(\{)?(.*)$/i.exec(lines[i]);
     if (!m) continue;
     const braces = !!m[2];
@@ -82,7 +92,8 @@ export function mucWaves(text) {
   return out;
 }
 
-export const waveLine = (n, wave) => `  @W${n}:{ ${wave.join(',')} }`;
+// form 'wd': MucoMSX's ?WDn={…}.
+export const waveLine = (n, wave, form) => (form === 'wd' ? `?WD${n}={${wave.join(',')}}` : `  @W${n}:{ ${wave.join(',')} }`);
 export const waveKey = (wave) => wave.join(',');
 
 // ---------- what a wave sounds like ----------

@@ -5,10 +5,15 @@
 //     on one line or several, closed by "}" (or ending at the 32nd sample without braces)
 //   #SSGExtend (D E F on SCC/SCC+): "  @Wn" alone, then rows of samples until there are
 //     64; decimal -128..127 or $00-$FF. The player averages neighbours down to 32.
-// ";" starts a comment in both.
+//   MucoMSX chip extension (msPb): "?WDn={…}" on its own line (leading blanks allowed),
+//     32 samples -128..127 separated by commas, decimal or $hex, closed on the same line.
+//     "?WSn,m" makes wave n a copy of wave m; "?WSn,m,1" loads wave m of the #sccvoice file.
+// ";" starts a comment in all of them.
 
 const HEAD = /^([ \t]+)@W(\d+)/;
 const SCC_PART = /^SCC(?:[A-E][0-9]?)+[ \t]/m;
+const GLOBAL = /^([ \t]*)\?WD[ \t]*(\d+)[ \t]*=[ \t]*\{/;
+const SHARE = /^([ \t]*)\?WS[ \t]*(\d+)[ \t]*,[ \t]*(\d+)[ \t]*(,[ \t]*1[ \t]*)?$/;
 const MAX_ROWS = 12;   // how far a definition is followed / searched for
 
 // One sample: a number, or NaN when it is not one the compiler accepts.
@@ -54,10 +59,45 @@ function readDefinition(lines, head, scc) {
   return { id: Number(h[2]), values, expected: scc ? 32 : 64, row: head, endRow: end, col: h[1].length, closed };
 }
 
+// A "?WDn={…}" line (MucoMSX): one row, the samples between the braces.
+function readGlobal(lines, row) {
+  const line = lines[row - 1];
+  const h = GLOBAL.exec(line);
+  let body = line.slice(h[0].length).split(';')[0];
+  const close = body.indexOf('}');
+  if (close >= 0) body = body.slice(0, close);
+  const values = body.trim() === '' ? [] : body.split(',').map((s) => {
+    const token = s.trim();
+    const hex = /^([+-]?)\$([0-9a-f]+)$/i.exec(token);
+    if (hex) return (hex[1] === '-' ? -1 : 1) * parseInt(hex[2], 16);
+    return /^[+-]?\d+$/.test(token) ? Number(token) : NaN;
+  });
+  return { id: Number(h[2]), values, expected: 32, row, endRow: row, col: h[1].length, closed: close >= 0, form: 'wd' };
+}
+
+// The "?WDn={…}" definition of wave `id` in the song, or null.
+export function globalWave(lines, id) {
+  for (let i = 0; i < lines.length; i++) {
+    const h = GLOBAL.exec(lines[i]);
+    if (h && Number(h[2]) === id) return readGlobal(lines, i + 1);
+  }
+  return null;
+}
+
 // The wave definition the 1-based `row` belongs to, or null.
-// { id, values, expected (32 or 64), row, endRow, col (index of @), closed }
+// { id, values, expected (32 or 64), row, endRow, col (index of @ or ?), closed, form }
+// form: undefined for @Wn, 'wd' for ?WDn={…}, 'ws' for ?WSn,m[,1]; a 'ws' line has no
+// values of its own: `source` names the wave it takes (`bank`: from the #sccvoice file).
 export function waveAt(lines, row, text) {
-  if (lines[row - 1] === undefined) return null;
+  const own = lines[row - 1];
+  if (own === undefined) return null;
+  const code = own.split(';')[0];
+  if (GLOBAL.test(code)) return readGlobal(lines, row);
+  const share = SHARE.exec(code.replace(/[ \t]+$/, ''));
+  if (share) {
+    return { id: Number(share[2]), values: [], expected: 32, row, endRow: row, col: share[1].length, closed: true,
+      form: 'ws', source: Number(share[3]), bank: !!share[4] };
+  }
   const hasScc = SCC_PART.test(text);
   const ssgExtend = /^#SSGExtend[ \t]+On\b/im.test(text);
   for (let head = row; head >= Math.max(1, row - MAX_ROWS); head--) {

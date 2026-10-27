@@ -4,7 +4,7 @@
 import { Highlighter, suggestionsAt, PART_LETTERS, PART_COLORS } from './editor-assist.js';
 import { explain, readableText } from './diagnostics.js';
 import { silentParts } from './silence-check.js';
-import { waveAt, drawWave } from './wave-preview.js';
+import { waveAt, globalWave, drawWave } from './wave-preview.js';
 import { voiceAt, drawVoice, OP_COLORS, ALGS } from './fm-preview.js';
 import { WaveEditor } from './wave-editor.js';
 import { FmEditor, formatVoice, INIT as INIT_VOICE } from './fm-editor.js';
@@ -71,8 +71,9 @@ const T = {
     silentVol: (p) => `Part ${p} has no v before its first note, so it makes no sound.`,
     sjisLoss: (chars, n) => `${n} kind(s) of character cannot be written in Shift-JIS and will be saved as "?": ${chars}\nMUC files for the MSX can hold English and Japanese only. Save anyway?`,
     waveInfo: (n, e, lo, hi) => `${n}/${e} samples · min ${lo} · max ${hi}`, wave64: ' · played as 32 (averaged)',
+    waveFromFile: (m, f) => ` · wave ${m} of ${f}`, waveCopyOf: (m) => ` · a copy of ?WD${m}`, waveNoSource_file: (m, f) => `${f} has no wave ${m}, or the file is not attached.`, waveNoSource_muc: (m) => `?WD${m} is not defined in this song.`, waveShareTip: 'Edit the wave this one takes, not this line',
     waveCount: (n, e) => `${e} samples are needed; this has ${n}.`, waveRange: 'Samples must be -128 to 127 (shown in red).',
-    waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
+    waveBad: 'Some samples are not numbers (shown in red).', waveOpen: 'The closing } is missing.', waveTail: 'Only a comment may follow the closing }.', waveEdit: '✎ Edit', waveEditTip: 'Edit this wave in the wave editor (Furnace style)', fmEditTip: 'Edit this voice in the FM voice editor (Furnace style)',
     bankTitle: 'Voice bank', bankTip: 'FM voice bank: the song\'s FM voices (voice file and MUC) next to the text', bankTo: 'To',
     bankFmButton: 'FM bank', bankSccButton: 'SCC bank', bankSccTip: 'SCC wave bank: the song\'s SCC waves (wave file and MUC) next to the text',
     bankPcmButton: 'PCM bank', bankPcmTip: 'ADPCM sample bank: the song\'s PCM samples (#pcm bank file or #@pcm WAVs in the MUC) next to the text',
@@ -212,8 +213,9 @@ const T = {
     silentVol: (p) => `${p} 파트는 첫 음표 앞에 v가 없어서 소리가 나지 않습니다.`,
     sjisLoss: (chars, n) => `Shift-JIS로 쓸 수 없는 문자 ${n}종류가 "?"로 저장됩니다: ${chars}\nMSX용 MUC에는 영어와 일본어만 쓸 수 있습니다. 그래도 저장할까요?`,
     waveInfo: (n, e, lo, hi) => `샘플 ${n}/${e} · 최소 ${lo} · 최대 ${hi}`, wave64: ' · 평균 내어 32개로 연주',
+    waveFromFile: (m, f) => ` · ${f}의 파형 ${m}`, waveCopyOf: (m) => ` · ?WD${m}의 복사`, waveNoSource_file: (m, f) => `${f}에 파형 ${m}이 없거나 파일이 첨부되지 않았습니다.`, waveNoSource_muc: (m) => `이 곡에 ?WD${m}이 정의되어 있지 않습니다.`, waveShareTip: '이 줄이 아니라 가져오는 원래 파형을 편집',
     waveCount: (n, e) => `샘플이 ${e}개 필요한데 ${n}개입니다.`, waveRange: '샘플은 -128~127이어야 합니다(빨간색).',
-    waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
+    waveBad: '숫자가 아닌 샘플이 있습니다(빨간색).', waveOpen: '닫는 }가 없습니다.', waveTail: '닫는 } 뒤에는 주석만 올 수 있습니다.', waveEdit: '✎ 편집', waveEditTip: '이 파형을 파형 편집기에서 편집 (Furnace 방식)', fmEditTip: '이 음색을 FM 음색 편집기에서 편집 (Furnace 방식)',
     bankTitle: '음색 뱅크', bankTip: 'FM 음색 뱅크: 곡의 FM 음색(음색 파일과 MUC)을 텍스트 옆에 표시', bankTo: '대상',
     bankFmButton: 'FM 뱅크', bankSccButton: 'SCC 뱅크', bankSccTip: 'SCC 파형 뱅크: 곡의 SCC 파형(파형 파일과 MUC)을 텍스트 옆에 표시',
     bankPcmButton: 'PCM 뱅크', bankPcmTip: 'ADPCM 샘플 뱅크: 곡의 PCM 샘플(#pcm 뱅크 파일 또는 MUC의 #@pcm WAV)을 텍스트 옆에 표시',
@@ -353,8 +355,9 @@ const T = {
     silentVol: (p) => `${p}パートは最初の音符の前にvが無いため、鳴りません。`,
     sjisLoss: (chars, n) => `Shift-JISで書けない文字${n}種類が「?」として保存されます: ${chars}\nMSX用のMUCに使えるのは英語と日本語だけです。それでも保存しますか？`,
     waveInfo: (n, e, lo, hi) => `サンプル ${n}/${e} · 最小 ${lo} · 最大 ${hi}`, wave64: ' · 平均して32個で演奏',
+    waveFromFile: (m, f) => ` · ${f}の波形${m}`, waveCopyOf: (m) => ` · ?WD${m}のコピー`, waveNoSource_file: (m, f) => `${f}に波形${m}がないか、ファイルが添付されていません。`, waveNoSource_muc: (m) => `この曲に?WD${m}が定義されていません。`, waveShareTip: 'この行ではなく取り込む元の波形を編集',
     waveCount: (n, e) => `サンプルが${e}個必要ですが、${n}個です。`, waveRange: 'サンプルは-128~127にします（赤）。',
-    waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
+    waveBad: '数でないサンプルがあります（赤）。', waveOpen: '閉じる}がありません。', waveTail: '閉じる}の後にはコメントしか書けません。', waveEdit: '✎ 編集', waveEditTip: 'この波形を波形エディタで編集（Furnace風）', fmEditTip: 'この音色をFM音色エディタで編集（Furnace風）',
     bankTitle: '音色バンク', bankTip: 'FM音色バンク: 曲のFM音色（音色ファイルとMUC）をテキストの横に表示', bankTo: '追加先',
     bankFmButton: 'FMバンク', bankSccButton: 'SCCバンク', bankSccTip: 'SCC波形バンク: 曲のSCC波形（波形ファイルとMUC）をテキストの横に表示',
     bankPcmButton: 'PCMバンク', bankPcmTip: 'ADPCMサンプルバンク: 曲のPCMサンプル（#pcmバンクファイルまたはMUCの#@pcm WAV）をテキストの横に表示',
@@ -650,7 +653,7 @@ function updateWave(row) {
   if (row === undefined) row = code.value.slice(0, code.selectionStart).split('\n').length;
   updateLinePlay(row);
   const active = document.activeElement === code && !suggest.open && viewMode !== 'channels';
-  const def = active ? waveAt(lines, row, code.value) || voiceAt(lines, row) : null;
+  const def = active ? waveDef(row) || voiceAt(lines, row) : null;
   if (!def) { hideWave(); return; }
   if (box.parentElement !== pane.area) pane.area.appendChild(box);
   const fm = def.ops !== undefined;
@@ -665,9 +668,11 @@ function updateWave(row) {
   // Keep the caret (and so the preview) in the text while the button is pressed.
   edit.addEventListener('pointerdown', (e) => e.preventDefault());
   edit.addEventListener('mousedown', (e) => e.preventDefault());
-  edit.addEventListener('click', () => (fm ? openFmEditor(def) : openWaveEditor(def)));
+  edit.addEventListener('click', () => (fm ? openFmEditor(def) : openWaveEditor(def.form === 'ws' ? globalWave(lines, def.source) : def)));
+  if (def.form === 'ws') edit.title = t('waveShareTip');
   // The FM editor writes the usual form; a 25-byte @% voice is shown but edited in the text.
-  if (def.format !== 25) head.prepend(edit);
+  // A ?WSn,m line edits the ?WDm it copies; one taking a #sccvoice wave is edited in the SCC bank.
+  if (def.format !== 25 && !(def.form === 'ws' && (def.bank || !def.values.length))) head.prepend(edit);
   const notes = [];
   const colors = {
     line: cssColor('--accent2'), fill: cssColor('--accent2', 0.22), axis: cssColor('--muted'), grid: cssColor('--line'),
@@ -688,13 +693,16 @@ function updateWave(row) {
     }
   } else {
     const nums = def.values.filter(Number.isFinite);
-    head.querySelector('b').textContent = `@W${def.id}`;
+    head.querySelector('b').textContent = `${{ wd: '?WD', ws: '?WS' }[def.form] || '@W'}${def.id}`;
     head.querySelector('span').textContent = t('waveInfo', def.values.length, def.expected,
-      nums.length ? Math.min(...nums) : '-', nums.length ? Math.max(...nums) : '-') + (def.expected === 64 ? t('wave64') : '');
-    if (def.values.length !== def.expected) notes.push(t('waveCount', def.values.length, def.expected));
+      nums.length ? Math.min(...nums) : '-', nums.length ? Math.max(...nums) : '-') + (def.expected === 64 ? t('wave64') : '')
+      + (def.form === 'ws' ? (def.bank ? t('waveFromFile', def.source, def.file) : t('waveCopyOf', def.source)) : '');
+    if (def.form === 'ws' && !def.values.length) notes.push(def.bank ? t('waveNoSource_file', def.source, def.file) : t('waveNoSource_muc', def.source));
+    else if (def.values.length !== def.expected) notes.push(t('waveCount', def.values.length, def.expected));
     if (def.values.some((v) => !Number.isFinite(v))) notes.push(t('waveBad'));
     if (nums.some((v) => v < -128 || v > 127)) notes.push(t('waveRange'));
     if (def.expected === 32 && !def.closed && def.values.length <= 32 && /\{/.test(lines[def.row - 1])) notes.push(t('waveOpen'));
+    if (def.form === 'wd' && def.values.length === 32 && /\}[ \t]*[^ \t;]/.test(lines[def.row - 1])) notes.push(t('waveTail'));
   }
   box.querySelector('.wave-note').textContent = notes.join(' ');
   box.hidden = false;
@@ -2401,10 +2409,26 @@ function startEdit(def, fm) {
   $('panes').hidden = true;
   document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = true; });
 }
+// The wave definition at `row` (waveAt), with the wave a ?WS line takes filled in.
+function waveDef(row) {
+  const def = waveAt(lines, row, code.value);
+  if (def?.form !== 'ws') return def;
+  if (def.bank) {
+    const f = attachedTagFile('sccvoice', 'SCCVOICE.DAT');
+    const bytes = f.file ? new Uint8Array(f.file.data) : null;
+    const w = bytes && isScwd(bytes) ? (readScwd(bytes) || []).find((x) => x.n === def.source) : null;
+    def.file = f.name;
+    if (w) def.values = w.wave.slice();
+  } else {
+    const src = globalWave(lines, def.source);
+    if (src) def.values = src.values;
+  }
+  return def;
+}
 function openWaveEditor(def) {
   startEdit(def, false);
   const header = lines[def.row - 1] || '';
-  waveEditor.open({ ...def, indent: header.slice(0, def.col) || '  ' });
+  waveEditor.open({ ...def, indent: header.slice(0, def.col) || (def.form === 'wd' ? '' : '  ') });
   $('waveEditor').querySelector('.we-canvas').focus?.();
 }
 function openFmEditor(def) {
@@ -2452,7 +2476,7 @@ function writeWave(values) {
   // Keep a comment after the definition's last value.
   const last = lines[def.endRow - 1] || '';
   const comment = /;.*$/.exec(last.replace(/^[^;]*?\}/, ''))?.[0] || '';
-  const indent = (lines[def.row - 1] || '').slice(0, def.col) || '  ';
+  const indent = (lines[def.row - 1] || '').slice(0, def.col) || (def.form === 'wd' ? '' : '  ');
   const text = waveEditor.serialize(indent) + (comment ? ' ' + comment : '');
   const starts = [0];
   for (let i = 0; i < lines.length; i++) starts.push(starts[i] + lines[i].length + 1);
@@ -2604,10 +2628,9 @@ function inlineVoices() {
 
 function songWaves() {
   const found = new Map();
-  const text = code.value;
   lines.forEach((l, i) => {
-    if (!/^[ \t]+@W\d+/.test(l)) return;
-    const w = waveAt(lines, i + 1, text);
+    if (!/^[ \t]+@W\d+|^[ \t]*\?W[DS]/.test(l)) return;
+    const w = waveDef(i + 1);
     if (!w || found.has(w.id) || w.values.length !== w.expected || !w.values.every(Number.isFinite)) return;
     // A 64-sample #SSGExtend wave is played as 32, averaging pairs like the player.
     const v = w.expected === 64 ? Array.from({ length: 32 }, (_, k) => (w.values[2 * k] + w.values[2 * k + 1]) / 2) : w.values;
@@ -3172,7 +3195,7 @@ const bank = new BankView($('bank'), {
       preview: (w) => previewInst({ kind: 'wave', table: w.map((x) => x / 128) }),
       initData: () => Array.from({ length: 32 }, (_, i) => Math.round(127 * Math.sin((2 * Math.PI * (i + 0.5)) / 32))),
       removeMuc: (m) => replaceRows(m.row, m.endRow, null),
-      addMuc: (n, w) => addDefinition([waveLine(n, w)], mucWaves(code.value), true),
+      addMuc: (n, w) => addDefinition([waveLine(n, w, /^[ \t]*\?W[DS]/m.test(code.value) ? 'wd' : '')], mucWaves(code.value), true),
       editMuc: (m) => { const def = waveAt(lines, m.row, code.value); if (def) openWaveEditor(def); },
       editFile: (n, w) => {
         startEdit({ row: 0 }, false);
