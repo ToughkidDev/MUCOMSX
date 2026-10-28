@@ -1,0 +1,35 @@
+#mucom88 1.7
+#title Destiny (Path Selection)
+#composer
+#author ToughkidCST
+#comment Akumajou Densetsu
+#pcm AKUMAJOU.BIN
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+; SCCA=2A03-pulse1 SCCB=2A03-pulse2 SCCC=VRC6-pulse1 SCCD=VRC6-pulse2
+; SCCE=VRC6-saw MSXD=noise K=DMC
+  @W0:{ 122,122,122,122,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18,-18 }
+  @W1:{ 70,70,70,70,70,70,70,70,70,70,70,70,70,70,-55,-55,-55,-55,-55,-55,-55,-55,-55,-55,-55,-55,-55,-55,-55,-55,-55,-55 }
+  @W2:{ -114,-114,-114,-114,-114,-76,-76,-76,-76,-76,-38,-38,-38,-38,0,0,0,0,0,38,38,38,38,76,76,76,76,76,114,114,114,114 }
+#*1{ f%54 f%54 q3 e%36 e%36 q0 e q2 e%27 D-11 g+%27 q0 g+ q3 [ g+%36 ]2 }
+#*2{ g E224,31,32,96,0,255 v7 g+ g E228,27,32,114,0,255 v8 g+ g }
+#*3{ c%1 r%8 }
+#*4{ @1 E205,50,128,103,0,1 v4 q0 MF0 }
+#*5{ @1 E228,27,28,86,0,1 v8 q0 MF0 }
+#*6{ E220,35,48,74,0,255 v6 }
+#*7{ < g+ q1 e%36 q0 }
+SCCA t198 L @0 E214,41,48,43,0,255 v5 q0 MF0 D-12 o4 l%18 g+%234 D-13 g g+ g g+
+SCCA g *6 g+ *2 > g+%234 *6 *2 g+ e c%36 D-14 c+%9 d%9 d+%9 e%9
+SCCB L @0 E192,63,2,192,0,255 v3 q0 MF0 D-13 o4 l%108 f f f E192,63,2,192,0,23
+SCCB q5 f E205,50,2,205,0,255 v4 q0 D-21 > f f E205,50,2,207,0,35 q5 f q0 e%18
+SCCB c%18 q1 D-12 < g+%36 q0 a%9 a+%9 b%9 D-14 > c+%9
+SCCC L *5 D-8 o5 l%18 c D-10 [ < b > c ]11 < b [ *5 D-24 o6 l%18 c < b ]9 > c
+SCCC *7 f%9 f+%9 g%9 g+%9
+SCCD l%18 r%9 L *4 D-24 o5 l%18 [ c < b > ]11 c < b [ *4 D-56 o6 l%18 c < b ]9
+SCCD > c D-28 *7 D-37 f%9 D-38 f+%9 g%9 g+%9
+SCCE L @2 E235,20,24,171,0,6 v11 q5 MF0 D-6 o1 l%9 *1 D-7 c+%36 q0 D-11 g+ q4
+SCCE D-7 c+%45 q0 D-6 d+ e q5 *1 q1 D-7 c+%18 D-6 f%18 q3 D-7 c+%36 q0 D-6 d+ e
+SCCE f f+
+MSXD L P2 E240,0,0,0,0,45 v10 q0 o4 w7 l%9 [ [ *3 ]2 r r *3 r r%1 c%1 r%15 r%1
+MSXD r *3 c%1 r%15 r%2 ]7 [ *3 r ]3 r%1 c%1 r%7 *3 r *3 r%1 c%1 r%7 *3
+K L l%9 [ r ]6 @1 v242 D8619 o1 [ b%4 r%13 r%1 r r r%16 r%2 [ r ]6 ]7 [ b%4 r%5
+K r ]3
