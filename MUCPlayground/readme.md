@@ -47,7 +47,7 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
 - What you type is kept in your browser between visits. Nothing is uploaded anywhere.
 - Plays YM2608 (FM, SSG, rhythm, ADPCM), the extended `muPb` layouts, and the MUCOMSX native MSX parts: MSX-MUSIC, PSG, SCC/SCC+, including the five dedicated SCC/SCC+ parts `SCCA`–`SCCE` of msPb0102 (MDPlayer4Mac v0.2.3) with inline `@Wn:{…}` waves and `#sccvoice` wave banks, and the MucoMSX chip extension commands of MDPlayer4Mac v0.2.4 and later (`?EP`, `?FD`, `?WD` … compiled into the packed msPb0103–010A score and played by MDPlayer4Mac's native MSX session, alone or together with OPNA).
 
-**iPhone / iPad:** sound starts with a tap (Play, or a tap anywhere when the page asks). The page registers as a media player, so it plays even with the ringer switch or iPad silent mode on (Safari 17's `navigator.audioSession`, or a silent looping track on older iOS). The engine needs iOS / iPadOS 16.4 or later (WebAssembly SIMD and exception handling).
+**iPhone / iPad:** sound starts with a tap (Play, or a tap anywhere when the page asks). The page registers as a media player, so it plays even with the ringer switch or iPad silent mode on (Safari 17's `navigator.audioSession`, or a silent looping track on older iOS). The engine needs iOS / iPadOS 16.4 or later (WebAssembly SIMD and exception handling). Buttons are pressed on the tap itself: Safari turns a tap into a mere hover when the page changes under the finger, which it does every frame while a song plays, so `touch-tap.js` presses the tapped control at touchend and drops the browser's late click for it.
 
 ## How it works
 
@@ -106,6 +106,7 @@ the heaviest chip); the interpreter managed 2.2× and 0.6×.
 | `pcm-bank.js` | ADPCM-B encoder / decoder (mucomDotNET's encoder), MUCOM88 / `mda ` PCM banks, WAV read / write, resampling, `#@pcm` lines, importing samples from WAV / banks / MUB / VGM |
 | `local-folder.js` | Folders on this computer: picking one (File System Access or `webkitdirectory`), a dropped folder, the remembered folder, finding a song's files in it |
 | `chview/mixer-strip.js` | The channel view's per-channel faders (MDPlayer4Mac's rFader and rFont_03) |
+| `touch-tap.js` | Taps on iPad / iPhone: presses the tapped button at touchend, so taps work while the page redraws |
 | `tooltips.js` | The tooltips of every button and control (en / ko / ja), and the bank's per tab |
 | `pcm-editor.js` | The PCM sample editor (Furnace-style selection, tools, resampling, listening) |
 | `keyboard.js` | The keys mode piano (drawing, mouse / touch, computer keyboard mapping) |

@@ -25,6 +25,10 @@ import { pickFolder, fromDropEntries, findRef, findSong, openRemembered } from '
 import { timeline } from './mml-timeline.js';
 import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
+import { installTouchTaps } from './touch-tap.js';
+
+// iPad / iPhone: a tap on a button presses it even while the page is busy redrawing.
+installTouchTaps();
 
 const SAMPLE_RATE = 44100;
 const STORE_SOURCE = 'mucplayground.source';
