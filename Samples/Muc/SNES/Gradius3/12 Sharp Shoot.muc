@@ -1,0 +1,59 @@
+#mucom88 1.7
+#title Sharp Shoot
+#composer Kazuki Muraoka, Kazuhiko Uehara, Harumi Ueko, Yukie Morimoto
+#author ToughkidCST
+#comment Gradius 3
+#voice GRADIUS3.DAT
+#pcm 12SHARPS.BIN
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ 63,27,-13,27,95,13,-8,57,55,-77,-127,-22,13,-50,-87,-17,19,-71,-123,-25,26,-29,-57,15,47,-32,-17,88,57,-13,58,111 }
+  @W1:{ 46,-16,-68,-63,-80,-6,30,64,53,-7,-52,-62,-19,22,61,41,47,-24,-69,-65,-79,50,77,125,78,-27,-87,-127,-38,25,100,69 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{>g8 e8 <b8 >f+8 d8 <a8 b8 >e8 <b8 >d8 e8 f+8}
+#*2{a8 f+8 d8 g8 e8 <b8 a8 >d8}
+#*3{d8 a8 f8 c8 d8 g8 d8 f8 g8}
+#*4{D-40>c8 D-11<a8 f8 D8o1d8}
+#*5{g8 D-40>c8 D-11<a8 f8 a+8 g8 D0d8 c8 D-13f8}
+#*6{*4 v13D-10o5a+8 *5}
+#*7{D0d8 D-11a8 f8 D0c8 d8 g8 d8 D-13f8 D0g8 D-11a8}
+#*8{*1 g8 a8 f+8 d8 b8 g8 e8 *2}
+#*9{a+8 *4 D-10o5a+8 *5}
+#*10{v3>d8.&v5d8&v6d16&v7d8&v9d8&v11d16&v12d16&v13d16&v14d8. r1}
+#*11{v123>d8 e8 q0<a8 q2b8 >d8 <b8 >e8}
+#*12{>d8 e8 <a8 b8 g8 a8 v126e4}
+#*13{v123>f8 g8 q0c8 q2d8 f8 d8 g8}
+#*14{g8 c8 d8 <a+8 >c8 v127<g4}
+#*15{@1v171c8 c8 @2v159c8 @16v83c48 r%5 @3v171c4}
+#*16{@2v159c8 *15}
+#*17{@2v159c8 @1v171c8 c8}
+
+; whole note = 48 clocks (C48), 1 clock(s) per driver tick
+A C48 L [ t192 r8 t193 r%10 ]48
+B C48 vm2 L @48v126q2MF0D0o2e4 *11 <e8 *12 v123q0>d8 q2e8 d8 e8 a8 e8 g8 e8 f+8
+B g8 f+8 d8 <a8 b8 v126e4 *11 <b8 *12 v123>d8 e8 q0a8 q2b8 q0g8 q2a8 e8 g8 d8
+B e8 q0<a8 q2b8 g8 e8 v127g4 *13 <g8 >f8 *14 v123q0>f8 q2g8 f8 g8 >c8 <g8 a+8
+B g8 a8 a+8 a8 f8 c8 d8 v127<g4 *13 d8 f8 *14 v123>f8 g8 q0>c8 q2d8 q0<a+8
+B q2>c8 <g8 a+8 f8 g8 q0c8 q2d8 <a+8 g8
+K C48 L @4D-169v242q0o1c%30 *16 @13v226c2 @10v242c%30 *16 @15v236c8 *17
+K @4v242c%30 *16 @14v226c2 @11v242c%30 *17 @6v242c1 @9c2. *15 @7v242c2 @5c%30
+K *16 @15v236c8 *17 @12v242c%30 *16 @7v242c2 @5c%30 *17 @8v186c1
+SCCA C48 L @0E255,0,0,255,10,255v11q2MF0D-14o5f+8 D0d8 D-6<b8 *1 v12g8 a8 f+8
+SCCA v11d8 b8 g8 e8 *2 g8 a8 f+8 d8 <b8 *1 v12g8 v11a8 v12f+8 d8 b8 g8 v11e8 *2
+SCCA g8 a8 v13a8 v14f8 d8 a+8 v13g8 *3 v14a8 a+8 *6 v14a+8 D-40>c8 v13D-11<a8
+SCCA v14f8 D0d8 D-10a+8 v13g8 *7 v14a+8 *6 a+8 v14D-40>c8
+SCCB C48 L @0E255,0,0,255,6,255v6q0MF0D-14o5f+4. D0d8 D-6<b8 *8 f+4. d8 <b8 *8
+SCCB r%30 a+8 g8 *3 a8 *9 a4. f8 D0d8 D-10a+8 g8 *7 *9
+SCCC C48 L r2 @1E255,0,0,255,0,255v3q0MF0D0o4d8.&v5d8&v6d16&v7d8&v9d8&v11d16&
+SCCC v12d16&v14d4 r1 v2<b12&v3b6&v4b12&v5b12&v6b12&v7b12&v8b12&v10b12&v11b2. r2
+SCCC *10 v13<b2 r1. v3D-9>f8.&v5f8&v6f16&v7f8&v9f8&v11f16&v12f16&v13f16&v14f8.
+SCCC r1 v2d12&v3d6&v4d12&v5d12&v6d12&v7d12&v8d12&v10d12&v11d2. r2 v3f8&v4f8&
+SCCC v6f8&v8f16&v9f16&v10f16&v11f16&v12f16&v14f16&v15f4 r1 v10d2 r1
+SCCD C48 L r2 @1E255,0,0,255,0,255v3q0MF0D0o3b8&v4b8&v5b16&v6b16&v7b8&v9b8&
+SCCD v11b16&v12b16&v14b4 r1 v2D-7g12&v3g12&v4g6&v6g12&v7g12&v8g12&v10g12&
+SCCD v11g12&v13g2. r2 v3b8.&v5b8&v6b16&v7b8&v9b8&v11b16&v12b16&v13b16&v14b8. r1
+SCCD v10g2 r1. *10 v2<a+12&v3a+6&v5a+6&v6a+12&v7a+12&v9a+6&v11a+2. r2 v3>d8&
+SCCD v4d8&v5d16&v6d16&v7d8&v9d8&v11d16&v12d16&v14d4 r1 v10<a+2 r1

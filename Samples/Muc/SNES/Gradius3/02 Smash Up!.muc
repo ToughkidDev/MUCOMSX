@@ -1,0 +1,35 @@
+#mucom88 1.7
+#title Smash Up!
+#composer Kazuki Muraoka, Kazuhiko Uehara, Harumi Ueko, Yukie Morimoto
+#author ToughkidCST
+#comment Gradius 3
+#voice GRADIUS3.DAT
+#pcm 02SMASHU.BIN
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -4,6,13,23,29,39,44,55,61,73,76,88,92,107,105,127,61,-90,-95,-98,-96,-98,-96,-97,-84,-59,-50,-41,-36,-26,-19,-9 }
+  @W1:{ 46,-16,-68,-63,-80,-6,30,64,53,-7,-52,-62,-19,22,61,41,47,-24,-69,-65,-79,50,77,125,78,-27,-87,-127,-38,25,100,69 }
+  @W2:{ -41,-56,-30,27,88,121,117,87,52,24,8,2,-7,-31,-69,-103,-117,-112,-97,-80,-72,-82,-95,-75,-8,73,123,127,106,78,44,0 }
+
+; whole note = 48 clocks (C48), 1 clock(s) per driver tick
+A C48 [ t171 r%7 t172 r8. ]15 t171 r%7 t172 r%5
+B C48 vm2 @5v122q0MF0D0o2a4. <a8 >e8 a8 g4 g4 g8 g8 @6v121g6&v117g12&v110g24&
+B v15g12 @5v122>g8 d8 <b8 g4 >d4 g4 @6v121<a6&v117a12&v110a24&v15a12 [ @5v122a8
+B ]3 a4 a4 a8 a8 @6v121a6&v117a12&v110a24&v15a%22
+C C48 vm2 @4v113q0MF0D0o4e4. v0<a8 v112>c+8 e8 d2. @7v126D-3o2g4. @4v112D-9o4c8
+C D0d8 g8 v113b4 b4 v112q2g4 @8v117a%108
+K C48 @7D-169v153q0o1c4. @4v175c%30 @8v153c8. r16 @5v175c2 @9v142c8 @8v153c8
+K @1v175c1 @2v189c1 @3v183c1 @6v3c4
+SCCA C48 @0E255,0,0,255,0,255v13q0MF0D0o5c+4. <e8 D-7a8 >c+8 <b2.
+SCCA @1E0,99,16,191,1,255v15f+4. @0E255,0,0,255,0,255v13g8 b8 >d8 g4 f+4 d4
+SCCA E255,0,64,191,2,255v11e%108
+SCCB C48 @2E255,0,0,255,0,255v9q0MF0D-7o4a4. c+8 e8 v10a8 v9g2. r4. d8 g8 v10b8
+SCCB v9>d4 d4 <b4 E255,0,64,191,2,255v8D-22>c+%108
+SCCC C48 @1E0,99,12,191,2,255v14q0MF0D0o4c+2. <b2. >d2. <b4 >c+4 q2d4 r%108
+SCCD C48 @1E0,99,12,191,2,255v13q0MF0D0o3a2. v14D-7g2 v15g8 a8 v14b2. g4 b4
+SCCD q2d4 r%108
+SCCE C48 @0E255,0,0,255,0,255v6q0MF0D0o5c+%30 <e8 a8 >c+8 <b2.
+SCCE @1E0,99,16,191,1,255v7f+4. @0E255,0,0,255,0,255v6g8 b8 D16>d8 D0g4 f+4
+SCCE D16d4 E255,0,64,191,2,255v5D0e%96

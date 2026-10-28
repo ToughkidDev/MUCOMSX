@@ -1,0 +1,33 @@
+#mucom88 1.7
+#title Press Start
+#composer Kazuki Muraoka, Kazuhiko Uehara, Harumi Ueko, Yukie Morimoto
+#author ToughkidCST
+#comment Gradius 3
+#voice GRADIUS3.DAT
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -30,-56,-58,-61,-73,-74,-75,-93,-108,-95,-50,5,51,90,124,127,101,86,89,83,58,48,39,4,-42,-60,-41,-18,-2,10,18,5 }
+
+; whole note = 96 clocks (C96), 1 clock(s) per driver tick
+A C96 [ t198 r24 t199 r8 ]7 t198 r24
+B C96 vm2 @120v99q0MF0D15o6g16 v102D10>c16 v104d16 c16 D13f16 v102D17a+16
+B @121v95D10>c24&v87c6&v78c12&v83c24&v77c24&v71c24&v76c12&v66c8&v59c24&v43c24&
+B v8c24&v0c12
+C C96 vm2 @122v0q0MF0D6o6g32 v108g16 v110>c16 v112d16 c16 f16 v110a+16
+C @121v103>c24&v96c6&v88c6&v80c8&v75c8&v67c24&v52c24&v13c24&v0c%5
+H C96 vm2 @123v0q0MF0D15o6g16 v99g16 v101D10>c16 v103d16 v105c16 v107D13f16
+H v105D17a+16 @124v102D10>c24&v96c6&v87c6&v79c6&v72c12&v66c24&v51c24&v7c24&
+H v0c48
+SCCA C96 @0E255,0,5,32,0,255v1q0MF0D0o5g16 v9D-40>c8.
+SCCA E255,0,0,255,0,255v15q2D0f%5&v8f%5&v9f%5&v7f%5&v3f%15&v2f%15&v1f%15&v0f%27
+SCCB C96 @0E255,0,5,32,0,255v9q0MF0D0o5g8. v13D-40>c8.
+SCCB E255,0,0,255,0,255v12q2D8>c24&v7c24&v5c24&v7c24&v6c24&v3c12&v4c24&v3c24&
+SCCB v2c6&v1c6&v0c8
+SCCC C96 @0E255,0,6,32,0,255v1q0MF0D0o5g8 v11>d8. v13D-18a+16
+SCCC E255,0,0,255,0,255v10q2D-40c24&v6c24&v5c24&v6c12&v3c6&v2c8&v1c%20&v0c8
+SCCD C96 @0E255,0,0,255,0,255v0q0MF0D0o5g8. E255,0,8,32,0,255v2g16 v3>c16 d16
+SCCD v5c16 f16 v4D-18a+16 E255,0,0,255,0,255>c24&v2c%28&v1c%30
+SCCE C96 @0E255,0,10,32,0,255v1q0MF0D11o5g8 v3g16 >c16 v4d16 c16 v5D27f16 a+16
+SCCE E255,0,0,255,0,255v4>c24&v2c%28&v1c3&v0c24
