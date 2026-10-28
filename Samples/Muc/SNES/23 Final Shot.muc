@@ -1,0 +1,84 @@
+#mucom88 1.7
+#title Final Shot
+#composer Kazuki Muraoka, Kazuhiko Uehara, Harumi Ueko, Yukie Morimoto
+#author ToughkidCST
+#comment Gradius 3
+#voice GRADIUS3.DAT
+#pcm 23FINALS.BIN
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ 46,-16,-68,-63,-80,-6,30,64,53,-7,-52,-62,-19,22,61,41,47,-24,-69,-65,-79,50,77,125,78,-27,-87,-127,-38,25,100,69 }
+  @W1:{ -4,6,13,23,29,39,44,55,61,73,76,88,92,107,105,127,61,-90,-95,-98,-96,-98,-96,-97,-84,-59,-50,-41,-36,-26,-19,-9 }
+  @W2:{ 116,-14,54,25,-48,127,105,84,84,-25,-13,-82,-65,-116,-43,-32,-97,-65,124,-15,-40,-34,-58,-51,-108,113,10,104,17,-2,-36,-18 }
+  @W3:{ 63,27,-13,27,95,13,-8,57,55,-77,-127,-22,13,-50,-87,-17,19,-71,-123,-25,26,-29,-57,15,47,-32,-17,88,57,-13,58,111 }
+
+; whole note = 96 clocks (C96), 1 clock(s) per driver tick
+A C96 L [ t185 r%255 r%255 r%162 ]2 t185 r4 t185 r%255 r%255 r%114
+B C96 vm2 L [ @15v115q0MF0D0o2g8 q2>g16 q0<g16 [ q0>c16 d16 q2<g16 ]2 q0>c16
+B d16 <g16 >c16 ]2 [ <g+8 q2>g+16 q0<g+16 >c+16 d+16 q2<g+16 [ q0>c+16 d+16
+B <g+16 ]2 >c+16 ]2 [ <g8 q2>g16 q0<g16 [ q0>c16 d16 q2<g16 ]2 q0>c16 d16 <g16
+B >c16 ]2 [ <g+8 q2>g+16 [ q0<g+16 >c+16 d+16 ]3 <g+16 >c+16 ]2 [ <g8 q2>g16
+B q0<g16 [ q0>c16 d16 q2<g16 ]3 q0>c16 ]2 [ <g+8 q2>g+16 [ q0<g+16 >c+16 d+16
+B ]3 <g+16 >c+16 ]2 [ <g8 q2>g16 [ q0<g16 >c16 d16 ]3 <g16 >c16 ]2 [ <g+8
+B q2>g+16 [ q0<g+16 >c+16 d+16 ]3 <g+16 >c+16 ]2 [ <g16 g16 q2>g16 q0g16 ]3 [
+B q0<g+16 g+16 q2>g+16 g+16 ]3 [ q0<a16 a16 q2>a16 a16 ]3 q0<a+16 a+16 q2>a+16
+B a+16 q0<a+16 a+16 g+16 g+16 q2>g+16 g+16 q0<g+16 g+16 [ q0g16 g16 q2>g16 g16
+B ]3 [ q0<g+16 g+16 q2>g+16 q0g+16 ]2 <g+16 g+16 q2>g+16 g+16 [ q0<a16 a16
+B q2>a16 a16 ]3 q0<a+16 a+16 q2>a+16 a+16 q0<a+16 a+16 b16 q2>b16 q0c16 q2>c16
+B q0<c+16 q2>c+16 @75q0<d%30&D-19d48&D-8c+96&D10c96&D-8c48&D0<b96&D-31b96&
+B D0a+48&D17a96&D-13a96&D16g+48&D-26g+96&D0g96&D-24g48&D-11f+96&D14f96&D-10f48&
+B D0e96&D-21e48&D-9d+96&D11d96&D-9d96&D11c+48&D-17c+96&D0c48&<b48&D18a+96&
+B D-14a+48&D0a96&D-28a32
+C C96 vm2 L @76v105q2MF0D0o2g%156 >d8 c+4. <g+%108 a+8 g+8 g%156 >d8 d+%84
+C g+%60 c+8 <g+8 g%156 >d8 c+4. <g+%108 a+8 g+8 g%156 >d8 d+%84 g+%60
+C v112q0>c+8 <g+8 r4. @77v116q2>g4. r4. g+4. r4. a4. r%108 g4. r4. g+4. r4. a4.
+C r2. @78v120d2.
+H C96 vm2 L r2. @79v119q2MF0D0o4g2. r1 v118g+2. r1 v117q0g2. r1 v118g+2. r1
+H v117q2g2. r1 v118g+2. r1 v117q0g2. r1 v118g+2. r%255 r%255 r%162
+I C96 vm2 L r2. @79v117q2MF0D0o4d2. r1 d+2. r1 v119q0d2. r1 v117d+2. r1 q2d2.
+I r1 d+2. r1 q0d2. r1 d+2. r%255 r%255 r%162
+K C96 L @8D-169v86q0o1c2. @1v88c8 @2v82c8 c8 @1v88c8 [ @26v43c96 r48 ]4 c96 r%5
+K @27v29c%5 r96 @13v94c2 @15v91c2 @1v88c8 @2v82c8 c8 @1v88c8 @28v70c%5 [ r96
+K c48 ]2 r96 @18v71c16 c16 @5v119c2. @22v81c4 @1v88c8 @2v82c8 c8 @1v88c8 [
+K @26v43c96 r48 ]4 c96 r%5 @27v29c%5 r96 @3v93c1 @1v88c8 @2v82c8 c8 @1v88c8
+K @28D3417v70c%5 [ r96 c48 ]2 [ r96 @29D3400v71c%5 ]2 r96 @20D-169v114c4
+K @9v86c2. @1v88c8 @2v82c8 c8 @1v88c8 [ @26v43c96 r48 ]6 @12v94c%54 @16v91c2
+K @1v88c8 @2v82c8 c8 @1v88c8 @28v70c%5 [ r96 c48 ]2 r96 @18v71c16 c16 @6v123c2.
+K @23v81c4 @1v88c8 @2v82c8 c8 @1v88c8 [ @26v43c96 r48 ]4 c96 r%5 @27v29c%5 r96
+K @4v94c1 @1v88c8 [ @25v51c32 r96 ]2 v65c32 r96 @1v88c8 @25v44c32 r96 v57c32
+K r96 v73c32 r96 @28v70c%11 r96 @18v71c16 c16 @21v95c4 @17v91c2 [ @26v43c96 r%5
+K ]4 @14v86c4 @26v43c16 @24D18781v7c%5 r96 @26D-169v43c96 r%11 @1v88c8 @2v82c8
+K @11v88c4. @26v43c96 r%11 @1v88c8 @2v82c8 @7v87c2. @19v82c4. @26v43c96 r%11
+K @1v88c8 @2v82c8 @14v86c4 @26v43c16 @24D18781v7c%5 r96 @26D-169v43c96 r%11
+K @1v88c8 @2v82c8 @11v88c4. @26v43c96 r%11 @1v88c8 @2v82c8 @10v91c2. @31v60c%35
+K [ r96 @28v70c%5 ]2 r96 @18v71c16 c16 [ @30v70c%5 r96 ]2
+SCCA C96 L r%255 r%255 r%255 r%255 r%255 r%69 @1E255,0,0,255,0,255v9q0MF0D0o3g8
+SCCA >c8 d8 [ D-9g8 D0<g8 >c8 d8 <g8 >c8 ]3 <g16 >c16 d16 v10D-9g16 >c16 D0d16
+SCCA v8D-9<g8 >c8 D0d8 g8 [ D-9<g8 >c8 D0d8 D-9<g8 >c8 g8 ]2 [ D-9<g8 >c8 D0d8
+SCCA ]2 g8 D-40>c8 M30,1,38,4D0d%67&D-45<f96&D-9<g96&d96&<a96&e96
+SCCB C96 L r%255 r%255 r%255 r%255 r%255 r%69 @2E255,0,0,255,0,255v6q0MF0D0o1g4
+SCCB @1D12o4c8 d8 [ g8 <g8 >c8 d8 <g8 >c8 ]3 <g16 >c16 d16 g16 >c16 d16 <g8 >c8
+SCCB d8 [ D0g8 <g8 >c8 D16d8 <g8 >c8 ]3 d8 D0g8 @0E0,83,64,191,1,255v12o3a2.
+SCCC C96 L [ @3E255,0,0,255,12,255v5q0MF0D-9o4g24 v3g48 v5>c24 v3<g48 v5D0>d24
+SCCC v3c48 v5g24 v3d48 ]7 [ v5D-8<g+24 v3g+48 v5>c+24 v3<g+48 v5>d+24 v3c+48
+SCCC v5g+24 v3d+48 ]3 v4<g+24 [ v3g+48 v5>c+24 v3<g+48 v5>d+24 v3c+48 v5g+24
+SCCC v3d+48 v5<g+24 ]3 v3g+48 v5>c+24 v3<g+48 v5>d+24 v3c+48 v5g+24 v3d+48
+SCCC v5<g24 v3g48 v5>c24 v3<g48 [ v5D0>d24 v3c48 v5g24 v3c48 v5D-9<g24 v3g48
+SCCC v5>c24 v3<g48 ]2 v5D0>d24 v3c48 v5g24 v3c48 v4D-9<g24 [ v3g48 v5>c24
+SCCC v3<g48 v5D0>d24 v3c48 v5g24 v3c48 v5D-9<g24 ]3 v3g48 v5>c24 v3<g48
+SCCC v5D0>d24 v3c48 v5g24 v3c48 [ v5D-8<g+24 v3g+48 v5>c+24 <g+48 >d+24 v3c+48
+SCCC v5g+24 v3d+48 ]7 v4<g24 v3g48 v5>c24 v3<g48 [ v5D0>d24 v3c48 v5g24 v3d48
+SCCC v5D-9<g24 v3g48 v5>c24 v3<g48 ]6 v5D0>d24 v3c48 v5g24 v3d48 [ v5D-8<g+24
+SCCC v3g+48 v5>c+24 v3<g+48 v5>d+24 v3c+48 v5g+24 v3d+48 ]7 v5<g24 v3g48 v5>c24
+SCCC v3<g48 [ v5D0>d24 v3c48 v5g24 v3c48 v5D-9<g24 v3g48 v5>c24 v3<g48 ]6
+SCCC v5D0>d24 v3c48 v5g24 v3c48 [ v5D-8<g+24 v3g+48 v5>c+24 <g+48 >d+24 v3c+48
+SCCC v5g+24 v3d+48 ]7 v5<g24 v4g48 v6>c24 v4<g48 [ v6D0>d24 v4c48 v6g24 v4d48
+SCCC v6D-9<g24 v4g48 v6>c24 v4<g48 ]2 v6D0>d24 v4c48 v6g24 v4d48 v5D-9<g24 [
+SCCC v4g48 v6>c24 v4<g48 v6D0>d24 v4c48 v6g24 v4d48 v6D-9<g24 ]8 v4g48 v6>c24
+SCCC v4<g48 v6D0>d24 v4c48 v6g24 v4d48 v5D-9<g24 [ v4g48 v6>c24 v4<g48 v6D0>d24
+SCCC v4c48 v6g24 v4d48 v6D-9<g24 ]5 [ v4g48 v6>c24 v4<g48 v6D0>d24 v4c48 v6g24
+SCCC v4d48 v5D-9<g24 [ v4g48 v6>c24 v4<g48 v6D0>d24 v4c48 v6g24 v4d48 v6D-9<g24
+SCCC ]2 ]2 v4g48 v6>c24 v4<g48 v6D0>d24 v4c48 v6g24 v4d48 v6D-9<g24 >c24 D0d24
+SCCC g24 c24 d24 [ g24 d24 c24 ]2 D-9<g24 d24 c24 D0<g24 d24 c24
