@@ -9,7 +9,7 @@ const div = (a, b) => Math.trunc(a / b);
 let rFont1, rFont2, rKBD, rVol, rPan, rPSGMode, rPSGEnv, rType, rNESDMC, rWavGraph;
 export const images = {};
 
-const NAMES = ['planeD', 'planeYM2610', 'planeYM2203', 'planeE', 'planeYM2413', 'planeAY8910', 'planeK051649',
+const NAMES = ['planeD', 'planeYM2610', 'planeYM2203', 'planeE', 'planeYM2413', 'planeAY8910', 'planeK051649', 'planeYM2612', 'planeSN76489',
   'rFont_01', 'rFont_02', 'rFont_03', 'rFont_04', 'rKBD_01', 'rVol_01', 'rPan_01', 'rPSGMode_01', 'rPSGMode_02',
   'rPSGEnv', 'rType_01', 'rType_02', 'rNESDMC', 'rWavGraph', 'rFader'];
 

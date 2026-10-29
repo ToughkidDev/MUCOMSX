@@ -14,6 +14,8 @@ const PANELS = {
   YM2610: ['./ym2610.js', 'YM2610'],
   YM2203: ['./ym2203.js', 'YM2203'],
   YM2151: ['./ym2151.js', 'YM2151'],
+  YM2612: ['./ym2612.js', 'YM2612'],
+  SN76489: ['./sn76489.js', 'SN76489'],
   YM2413: ['./ym2413.js', 'YM2413'],
   AY8910: ['./ay8910.js', 'AY8910'],
   K051649: ['./k051649.js', 'K051649'],
@@ -23,6 +25,7 @@ const PANELS = {
 const COMMANDS = {
   0x51: ['YM2413', 0, 0], 0xa1: ['YM2413', 1, 0],
   0x54: ['YM2151', 0, 0], 0xa4: ['YM2151', 1, 0],
+  0x52: ['YM2612', 0, 0], 0x53: ['YM2612', 0, 1], 0xa2: ['YM2612', 1, 0], 0xa3: ['YM2612', 1, 1],
   0x55: ['YM2203', 0, 0], 0xa5: ['YM2203', 1, 0],
   0x56: ['YM2608', 0, 0], 0x57: ['YM2608', 0, 1], 0xa6: ['YM2608', 1, 0], 0xa7: ['YM2608', 1, 1],
   0x58: ['YM2610', 0, 0], 0x59: ['YM2610', 0, 1], 0xa8: ['YM2610', 1, 0], 0xa9: ['YM2610', 1, 1],
@@ -30,7 +33,7 @@ const COMMANDS = {
 
 // VGM header clocks: offset -> chip type (bit 30 of the clock means two chips).
 const VGM_CLOCKS = [
-  [0x10, 'YM2413'], [0x30, 'YM2151'], [0x44, 'YM2203'], [0x48, 'YM2608'], [0x4c, 'YM2610'],
+  [0x0c, 'SN76489'], [0x10, 'YM2413'], [0x2c, 'YM2612'], [0x30, 'YM2151'], [0x44, 'YM2203'], [0x48, 'YM2608'], [0x4c, 'YM2610'],
   [0x74, 'AY8910'], [0x9c, 'K051649'],
 ];
 // The exact part a VGM header names, for the chip list: bit 31 marks YM2610B and SCC+
@@ -42,7 +45,7 @@ const VGM_LABELS = {
   AY8910: (raw, u32) => AY_TYPES[u32(0x78) & 0xff] || 'AY8910',
 };
 const VGM_OTHER = [
-  [0x0c, 'SN76489'], [0x2c, 'YM2612'], [0x38, 'SegaPCM'], [0x40, 'RF5C68'], [0x50, 'YM3812'],
+  [0x38, 'SegaPCM'], [0x40, 'RF5C68'], [0x50, 'YM3812'],
   [0x54, 'YM3526'], [0x58, 'Y8950'], [0x5c, 'YMF262'], [0x60, 'YMF278B'], [0x64, 'YMF271'],
   [0x68, 'YMZ280B'], [0x6c, 'RF5C164'], [0x70, 'PWM'], [0x80, 'GB DMG'], [0x84, 'NES APU'],
   [0x88, 'MultiPCM'], [0x8c, 'uPD7759'], [0x90, 'OKIM6258'], [0x98, 'OKIM6295'], [0xa0, 'K054539'],
@@ -86,6 +89,10 @@ class VgmReader {
       if (offset + 4 <= headerEnd && (u32(offset) & 0x3fffffff)) this.others.push(name);
     }
     this.ended = false;
+    // YM2612 DAC samples (data blocks of type 0) and where 0x8n reads them.
+    this.pcm = new Uint8Array(0);
+    this.pcmPos = 0;
+    this.dacAt = -Infinity;
   }
 
   // Calls emit(frame, type, id, port, addr, data) for every write up to `until`.
@@ -96,7 +103,8 @@ class VgmReader {
       if (this.pos >= d.length) { this.ended = true; break; }
       const c = d[this.pos];
       if (c === 0x66) {
-        if (this.loop && this.loop < d.length && guard++ < 4) { this.pos = this.loop; continue; }
+        // Data blocks before the loop point are not read twice.
+        if (this.loop && this.loop < d.length && guard++ < 4) { this.pos = this.loop; this.pcmLoaded = true; continue; }
         this.ended = true;
         break;
       }
@@ -108,6 +116,37 @@ class VgmReader {
         const a = d[this.pos + 1];
         emit(this.frame, 'AY8910', a >> 7, 0, a & 0x7f, d[this.pos + 2]);
         this.pos += 3;
+      } else if (c === 0x50 || c === 0x30) {
+        emit(this.frame, 'SN76489', c === 0x30 ? 1 : 0, 0, 0, d[this.pos + 1]);
+        this.pos += 2;
+      } else if (c === 0x4f || c === 0x3f) {
+        // Game Gear stereo
+        emit(this.frame, 'SN76489', c === 0x3f ? 1 : 0, 1, 0, d[this.pos + 1]);
+        this.pos += 2;
+      } else if (c >= 0x80 && c <= 0x8f) {
+        // YM2612 DAC: the next sample to register 0x2A, then wait. The panel only shows
+        // its level, so one sample in 64 frames is plenty.
+        if (this.frame - this.dacAt >= 64 && this.pcmPos < this.pcm.length) {
+          emit(this.frame, 'YM2612', 0, 0, 0x2a, this.pcm[this.pcmPos]);
+          this.dacAt = this.frame;
+        }
+        this.pcmPos++;
+        this.frame += c & 15;
+        this.pos += 1;
+      } else if (c === 0xe0) {
+        this.pcmPos = this.v.getUint32(this.pos + 1, true);
+        this.pos += 5;
+      } else if (c === 0x67 && d[this.pos + 2] === 0x00) {
+        // A YM2612 PCM data block: kept for the DAC writes above.
+        const size = this.v.getUint32(this.pos + 3, true) & 0x7fffffff;
+        const block = d.subarray(this.pos + 7, this.pos + 7 + size);
+        if (!this.pcmLoaded) {
+          const joined = new Uint8Array(this.pcm.length + block.length);
+          joined.set(this.pcm);
+          joined.set(block, this.pcm.length);
+          this.pcm = joined;
+        }
+        this.pos += 7 + size;
       } else if (c === 0xd2) {
         const p = d[this.pos + 1];
         emit(this.frame, 'K051649', p >> 7, p & 0x7f, d[this.pos + 2], d[this.pos + 3]);
@@ -136,8 +175,8 @@ class VgmReader {
 
 // MDPlayer4Mac's ShowVisualizersFor order; VGMs are then grouped FM -> SSG/PSG -> PCM
 // (a stable sort, so chips keep this order within a group).
-const ORDER = ['YM2151', 'AY8910', 'YM2413', 'YM2203', 'YM2608', 'YM2610', 'K051649'];
-const FAMILY = { YM2151: 0, YM2413: 0, YM2203: 0, YM2608: 0, YM2610: 0, AY8910: 1, K051649: 1 };
+const ORDER = ['YM2151', 'YM2612', 'SN76489', 'AY8910', 'YM2413', 'YM2203', 'YM2608', 'YM2610', 'K051649'];
+const FAMILY = { YM2151: 0, YM2612: 0, YM2413: 0, YM2203: 0, YM2608: 0, YM2610: 0, SN76489: 1, AY8910: 1, K051649: 1 };
 // The Size button goes back and forth: fit -> 100 -> 75 -> 50 -> 25 -> 50 -> 75 -> 100 -> fit ...
 // The view opens at 'fit'.
 export const SCALES = [100, 'fit', 100, 75, 50, 25, 50, 75];
