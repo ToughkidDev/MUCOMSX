@@ -1532,6 +1532,8 @@ function onEngineMessage(m, source) {
       clockFrames = 0;
       clockAt = ctx ? ctx.currentTime : 0;
       clearTrace();
+      songParts = source === 'muc' ? partsOf(playedText) : [];
+      renderParts();
       startChannelView(m, source);
       break;
     case 'loop':
@@ -2092,6 +2094,7 @@ let lines = [];
 let traceSession = -1, traceEvents = [], traceIndex = 0, traceStale = false, traceDirty = false, traceMsx = false;
 let clockFrames = 0, clockAt = 0;
 const positions = new Map();     // channel key -> { row, col, len }
+let songParts = [];              // channel keys of every part the playing song has
 let followKey = null;
 const measure = document.createElement('canvas').getContext('2d');
 
@@ -2110,6 +2113,7 @@ function holdFollow(p = pane) { p.holdUntil = performance.now() + 4000; }
 
 function clearTrace() {
   positions.clear();
+  songParts = [];
   for (const p of panes) p.trace.innerHTML = '';
   renderParts();
 }
@@ -2245,10 +2249,21 @@ function renderTrace() {
   }
 }
 
+// Every part the song plays, read from its text before it starts, so the row of parts
+// has its final size from the first note: parts that have not played yet are shown
+// empty instead of being added (and the panels below jumping) while the song plays.
+function partsOf(text) {
+  // Playing some lines: only the parts written on them.
+  const shown = (ev) => !playingRows || (ev.src && ev.src.row >= playingRows[0] && ev.src.row <= playingRows[1]);
+  try {
+    return timeline(text).filter((tr) => tr.events.some(shown)).map((tr) => packedKey(tr.name)).filter((key) => key !== null);
+  } catch { return []; }
+}
+
 function renderParts() {
   const list = $('parts');
   list.innerHTML = '';
-  for (const key of [...positions.keys()].sort((a, b) => a - b)) {
+  for (const key of [...new Set([...songParts, ...positions.keys()])].sort((a, b) => a - b)) {
     const info = partInfo(key);
     const li = document.createElement('li');
     const b = document.createElement('button');
@@ -2258,7 +2273,7 @@ function renderParts() {
     b.title = t('followPart', info.label);
     b.innerHTML = '<b></b><code></code>';
     b.querySelector('b').textContent = info.label;
-    b.querySelector('code').textContent = tokenAt(positions.get(key)).text.trim();
+    b.querySelector('code').textContent = positions.has(key) ? tokenAt(positions.get(key)).text.trim() : '';
     b.addEventListener('click', () => {
       followKey = followKey === key ? null : key;
       for (const p of panes) p.holdUntil = 0;
