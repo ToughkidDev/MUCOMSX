@@ -1,0 +1,39 @@
+#mucom88 1.7
+#title Genocide 2 Stage Clear
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{r4. @29 v111 p3}
+#*2{@14 o1c12 @6 c c @14 c @6}
+
+A C144 l24 vm2 r3 @28 v114 p3 q2 o2a a q0 a12 d+ e g a12 a v119 >e v114 <a >d+
+A d c <a q2 f f f g g g q0 a a4.
+
+B C144 l24 vm2 *1 o5a q6 a12 a12 q0 g a g36& D55 g36& D0 a36 q6 >c12 q0 <b >c8
+B <f8 g8 a a4.
+
+C C144 l24 vm2 *1 o5e q6 e12 e12 q0 e e d36& D41 d36& D85 d36 D0 q6 a12 q0 a a8
+C c8 d8 e e4.
+
+F C144 l24 t190 r72 [ t201 r36 t200 r48 ]34 t201 r
+
+H C144 l24 vm2 *1 o5c q6 c12 c12 q0 c c <a+36& D65 a+36& D0 >c36 q6 e12 q0 e e8
+H <a8 b8 >c c4.
+
+I C144 l24 vm2 r4. @30 v107 p3 o6e c d [ a g e ]2 d+ d c <a g g+ a >c d c d d+
+I g a%42& D-59 a144& D0 g72& f+144& f72& e144& d+72& d144& c72
+
+J C144 l24 vm2 r%60 @30 v101 p2 D6 o6e D5 c D6 d [ D8 a g D6 e ]2 d+ d D5 c D8
+J <a g g+ a [ D5 >c D6 d ]2 d+ D8 g a%42& D-51 a144& D8 g72& D7 f+144& f72& D6
+J e144& d+72& d144& D5 c72
+
+K C144 l24 @1 D31695 p3 v240 o1c48 c48 c c c @2 c c @3 c c @6 c12 *2 c12 c *2 c
+K @1 c48 c48 c @12 c c @2 c @3 c @5 c c%35 r%25

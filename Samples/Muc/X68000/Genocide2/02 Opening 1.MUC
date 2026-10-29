@@ -1,0 +1,64 @@
+#mucom88 1.7
+#title Genocide 2 Opening 1
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; YM2151 FM -> SCC wave+envelope: SCCA=ch7 SCCB=ch8
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ -1,46,90,116,125,118,88,48,2,-49,-89,-115,-127,-117,-88,-50,0,49,87,116,127,115,90,49,-1,-47,-88,-118,-125,-117,-91,-47 }
+  @W1:{ 0,90,127,90,0,-90,-127,-90,0,90,127,90,0,-90,-127,-90,0,90,127,90,0,-90,-127,-90,0,90,127,90,0,-90,-127,-90 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o3c24& D35 c24& D73 c24& D-2}
+#*2{o3d+4 c+ d+}
+#*3{D-3 o2d4. D-4 b24& D65 b24& D-2 >c+24& D-3 d4 D-2}
+#*4{*3 o3c+ D-3 d D-2 <d+4. *1}
+#*5{D1 o3c24& D38 c24& D77 c24& D2}
+#*6{D1 o2d4. D2 b24& D72 b24& D1 >c+24& d4 c+ d}
+#*7{o3c24& D37 c24& D76 c24& D0}
+#*8{o2b24& D69 b24& D0 >c+24& d4 c+ d <d+4. *7}
+#*9{o5d+ c+ d+ d+4.}
+#*10{o4a+ b a+2 b4}
+#*11{D-2 o5c+ D-4 <b4. a+16 a16 D-3 g+4 D-4 *10 D-2}
+#*12{o5d+ c+ D-4 <b a+2 b *11 >c+4}
+#*13{D-4 o4b16 a+16 D-3 g+%120 D-4 a+ b}
+#*14{o4b a+2 b >c+ <b4. a+16 a16 g+4 *10}
+#*15{o3b2. D-2 >c+ D-3 d D-2}
+#*16{@0 E255,255,5,32,1,9 v1}
+#*17{@1 E0,211,9,181,0,13 v2}
+#*18{D-4 o2b2. D-6 >c+ D-8 d D-7}
+
+A C192 l8 vm2 @9 v114 p3 [ D-3 o2g+4. D-2 *1 *2 D-3 <f+4. D-2 *1 *2 D-3 <e4.
+A D-4 a24& D58 a24& D-4 b%56 a+ b D-2 d+4. D-3 g24& D52 g24& D-4 a24& a+2 ]2 *4
+A d+2 *4 d+4 D-3 d D-2 d+ <d+1
+
+B C192 l8 vm2 r @9 v109 p1 D2 [ o2g+4. *5 d+4 D1 c+ D2 d+ <f+4. *5 d+4 D1 c+ D2
+B d+ D1 <e4. D2 a24& D64 a24& D2 b%56 a+ b d+4. g24& D57 g24& D2 a24& a+2 ]2 *6
+B D2 <d+4. *5 d+2 *6 D2 <d+4. *5 d+4 D1 d D2 d+ <d+1
+
+C C192 l8 vm2 r @9 v109 p2 [ o2g+4. *7 *2 <f+4. *7 *2 <e4. a24& D62 a24& D0
+C b%56 a+ b d+4. g24& D55 g24& D0 a24& a+2 ]2 d4. *8 d+2 <d4. *8 d+4 d d+ <d+1
+
+F C192 l8 t231 r192 [ t207 r%17 t206 r32 ]90 t207 r96 [ t205 r192 t204 r192 ]20
+F t205 [ r192 t201 r192 t200 ]215 r192
+
+H C192 l8 vm2 @10 v113 p3 D-2 *9 c+ *12 *9 D-3 f+ D-2 *12 *13 a+2. b D-2 >c+
+H *13 a+1 D-3 g1
+
+I C192 l8 vm2 r @10 v104 p3 *9 c+ d+ c+ *14 >c+4 *9 f+ d+ c+ *14 >c+4 <b16 a+16
+I g+%120 a+ b a+2. b >c+ <b16 a+16 g+%120 a+ b a+1 g1
+
+J C192 l8 vm2 @11 v89 p3 [ D-2 o7d+1 c+1 D-3 <g+1 D-4 a+1 ]2 @12 v101 *15 d+2.
+J D-3 d D-2 c+ D-4 *15 d+1 c+1
+
+SCCA C192 l8 r *16 [ D-23 o6d+1 D-14 c+1 D-12 <g+1 D-2 a+1 ]2 *17 *18 d+2. D-8
+SCCA d D-6 c+ *18 d+1 D-6 c+1
+
+SCCB C192 l8 r4 *16 [ D-23 o6d+1 D-14 c+1 D0 <g+1 D-2 a+1 ]2 *17 D0 o2b2. >c+ d
+SCCB d+2. d c+ <b2. >c+ d d+1 c+1

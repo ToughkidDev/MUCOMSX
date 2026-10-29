@@ -1,0 +1,74 @@
+#mucom88 1.7
+#title Genocide 2 Drains (Stage 2-1)
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o3f+16 q4 f+ f+ q0 f+}
+#*2{o4f+ <f+16 D-3 >d& D81 d D-5 <b16 D-4 g16 D-5}
+#*3{*1 *2 o3a16 D-4 *1 o5f+}
+#*4{*3 o3f+16 D-3 >d& D81 d D-3 c& D73 c D-5}
+#*5{*4 o3b& D64 b D-5 a& b}
+#*6{o3f+& p1 f+& p2 f+& p1 f+& p2 f+& p1 f+& p2}
+#*7{*6 *6 *6}
+#*8{o4f+& v101 f+& v104 f+& v107 f+& v109 f+%42& H1,1,0}
+#*9{o4f+& v75 f+& v83 f+& v89 f+& v94 f+& v98 *8}
+#*10{o4f+& H1,3,0 f+& H1,4,0 f+& H1,5,0 f+16.& H1,6,0}
+#*11{*10 o4f+%84& H1,5,0 f+16.& H1,4,0 f+& H1,3,0 f+& H1,2,0}
+#*12{H1,2,0 *11 o4f+& H1,1,0 f+& H1,0,0}
+#*13{v107 o4f+& v104 f+& v101 f+& v98 f+& v94 f+& v89}
+#*14{o3a%30& H1,5,0 a%132 D-2 H1,0,0 e f+ g8& H1,5,0}
+#*15{o3f+ D-3 *14 g%60 H1,0,0 c+ d e8& H1,5,0}
+#*16{H1,0,0 o3a16 D4 e D5 f+ g16& H1,5,0 g%60& H1,0,0}
+#*17{*16 o3g16 D4 c+ d e16& H1,5,0}
+#*18{o3f+ >f+ <f+ a16.& H1,5,0 a%132& *17}
+#*19{H1,0,0 o3e16 D5 *18 e8& H1,0,0 e16 c+ d D6}
+#*20{o3e4.& *19 <b D4 >c+ D5 <a D6 b}
+#*21{o1c8 @4 c8 r @6 c c @23 c @4 c8 @6}
+#*22{*21 o1c16 c16 @4 c8 @6 c c c @23}
+#*23{*22 o1c @4 c16 @15 c16 @6}
+#*24{*22 o1c @7 p1 c c @8 p3 c @9 p2 c @5}
+#*25{*23 *24 p3 *23 *21 o1c16 c16 @4}
+#*26{o1c c}
+#*27{@5 p1 o1c p2 c16 p3 c @7 p1}
+#*28{@9 p2 o1c @12 p3 c @6}
+#*29{@1 p1 o1c64 c64 c @2 p2 c @3 p3}
+
+A C192 l32 vm2 L MF0 @7 v121 p3 D-4 q0 [ *5 D-4 ]3 *3 o3f+16 o5f+ o3f+16. g16
+A D-5 a16 [ D-4 *5 ]8 [ r2 D-4 *5 ]2 D-4 *3 o3f+ o5f+ o3g o5g D-5 o3a o5a
+A b16& D-70 b192& D-5 a96& D-4 g+192& g96& f+192& D-3 f96& D-4 e192& D-3 d+96
+
+B C192 l32 vm2 L MF0 @42 v108 p3 q0 [ o4f+1 ]12 r2 f+1 r2 f+1 f+%168 f+ r16.
+
+C C192 l32 vm2 L MF0 @42 v108 p3 q0 [ o4c+1 ]12 r2 c+1 r2 c+1 c+%168 c+ r16.
+
+F C192 l32 L t188 r%7 t187 r96
+
+H C192 l32 vm2 L MF0 @4 v98 p2 D4 q0 [ *7 *6 *6 f+& p1 f+ p2 ]11 [ *7 *6 *6
+H f+& p1 f+ r2 p2 ]2 [ f+& p1 f+& p2 ]15 f+& p1 f+ p2 [ f+& p1 f+& p2 ]13
+H f+& p1 f+& p3 f+ r16.
+
+I C192 l32 vm2 L r%255 r%129 MF0 @42 v65 p2 D-2 H0,0,0 q0 *9 f+16& *12
+I f+%60& *13 f+& v83 f+& v75 f+& v65 f+ @12 v117 p3 [ <f+ >f+ *15 e4. H1,0,0 f+
+I >f+ *15 e8 H1,0,0 c+ d D-3 <b D-2 >c+ D-3 <a b D-2 g f+ ]2 r2 >c+ f+ c+ D-3
+I q96 <b%30& H1,5,0 b%240 D-2 H1,0,0 q0 >c+ f+ c+ D-3 b%30& H1,5,0 b4 H1,0,0 b
+I D-2 >c+ D-3 <a b D-2 g D-3 a D-2 f+ g e f+ d e c+ d c+ D-3 <b r1
+
+J C192 l32 vm2 L r%255 r%135 MF0 @42 v65 p1 D5 H0,0,0 q12 *9 f+& *12 f+%66& *13
+J f+& v83 f+& v75 f+16. @12 v111 p2 q0 <f+ >f+ <f+ a%30& H1,5,0 a%120& *17 *20
+J D5 g f+ p1 *18 *20 r%108 p2 D4 >c+ D5 f+ D4 c+ D6 q108 <b16.& H1,5,0 b%252 p1
+J D4 H1,0,0 q0 >c+ D5 f+ D4 c+ D6 b16.& H1,5,0 b4& H1,0,0 b16 b D4 >c+ D5 <a D6
+J b D5 g a f+ g D4 e D5 f+ D4 d e c+ d c+ D6 <b r%180
+
+K C192 l32 L @5 D31695 p3 v240 *25 [ c ]5 @5 c16. @1 p1 *26 @3 p2 *26 @5 p3 *23
+K *24 p3 *23 *22 c @4 [ c ]4 @5 *25 c8 @6 [ c ]4 @4 c16 *26 *27 c64 c64 c *28 [
+K c ]4 @3 [ c ]4 @5 *22 c @4 c8 *27 c c64 c64 *28 [ c ]4 *29 c @5 *22 c @4 c8
+K @5 c8 @4 c @6 *26 c @23 c @6 *26 @23 c @4 c16 @6 c16 c64 c64 *26 c *29 *26 c
+K @1 p2 c @3 p1 c @5 p3 c8

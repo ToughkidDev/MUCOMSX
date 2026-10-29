@@ -1,0 +1,60 @@
+#mucom88 1.7
+#title Genocide 2 Option Mode
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o4d+160& D40 d+%11 D-4 <e20. D-5 a20. a+160& D60 a+80& D-3}
+#*2{o4c%21 q12 d10. q0 d20. q12 d10.}
+#*3{o4e10. p2 e10.}
+#*4{o3e10. e10. e10.}
+#*5{o4d+160& D45 d+%11 D0 <e20. a20. a+160& D66 a+80& D0 *2}
+#*6{[ r%255 ]3 r%27 MF0 @21 v115 p3}
+#*7{D-2 q3 o5b10. a10. D-1}
+#*8{o6d10. q2 <d20. q3 d10. q14 d10. q2 >d20. q27 d5.}
+#*9{o6d10. q2 <d20. q3 d10. q0 d}
+#*10{D-1 q3 o5g10. f+10. D-2 b10. q2 <b20. q3 b10.}
+#*11{*10 q14 o4b10. q2 >b20. q27 b5. *10 q0 b}
+#*12{D-1 q3 o5e10. d10. D-2 a10. q2 <a20. q3 a10.}
+#*13{*12 q14 o4a10. q2 >a20. q27 a5. *12 q0 a}
+#*14{D6 q3 o5b10. D5 a10. D4}
+#*15{o1c10. @4 c20. @6 c20. c20. c20. @4 c20. @6 c10.}
+#*16{@6 o1c10. @4 c10. @6}
+#*17{*15 o1c20. @4 c10. @7 p1 c40. c40. @6 p3 c40. c40.}
+
+A C160 l16 vm2 L MF0 @20 v116 p3 D-4 [ q12 o3e10. D-3 q0 *1 *2 c10. d10. D-4
+A <e10. D-3 q0 *1 *2 @8 v116 p1 D-4 q0 *3 @20 v116 p3 ]4 [ q12 *4 e10. e10. q0
+A >e20. D-5 a20. D-4 <e20. >g10. <e20. ]3 q12 [ e10. ]4 @8 v116 p2 q0 >e10. p1
+A *3 p1 e10.
+
+B C160 l16 vm2 L MF0 [ @7 v118 p3 q12 o3e10. q0 *5 c10. d10. <e10. q0 *5 @8
+B v118 p2 q0 e10. p1 e10. ]4 @7 v118 p3 [ q12 *4 e10. e10. q0 >e20. a20. <e20.
+B D1 >g10. D0 <e20. ]3 q12 [ e10. ]4 @8 v118 p1 q0 *3 p1 *3
+
+C C160 l16 vm2 L *6 *7 *8 *7 *9 r%74 *7 *8 *7 *9 r%50 @22 v114 D-4 q2 [ o7e20.
+C ]16 [ D-5 <a20. D-3 >d20. D-4 e20. ]5 D-3 d+20. [ d20. c20. D-5 <a20. D-3 ]7
+C >d20. c20. D-4 q12 e%108
+
+F C160 l16 L t200 r%13 t199 r80
+
+H C160 l16 vm2 L *6 *11 r%74 *11 r%50 @22 v112 D0 q2 [ o6a20. ]31 g+20. [ a20.
+H g20. e20. ]7 a20. g20. q12 a%108
+
+I C160 l16 vm2 L *6 *13 r%74 *13 r%56 @22 v105 p2 D3 q2 [ o7e20. ]16 [ D4 <a20.
+I D3 >d20. e20. ]5 D4 d+20. [ D3 d20. c20. D4 <a20. ]7 D3 >d20. c20. q3 e%102
+
+J C160 l16 vm2 r40. L [ r%255 ]3 r%27 MF0 @21 v105 p1 *14 *8 *14 *9 r%74 *14 *8
+J *14 *9 r%50 @22 v102 D9 q2 [ >a20. ]31 g+20. [ a20. g20. D7 e20. D9 ]7 a20.
+J g20. q12 a%108
+
+K C160 l16 L @6 D31695 p3 v240 [ *15 c20. @4 c10. *16 ]3 *17 @9 p2 c40. c40. @6
+K p3 c40. c40. [ *15 c20. @4 c10. *16 ]3 *17 @4 [ c40. ]4 [ *16 c10. @4 c10. @6
+K c10. @4 c20. @1 p1 c20. @6 p3 c20. @2 p2 c20. @4 p3 c20. @3 c20. ]3 *16 c20.
+K @3 c20. @4 c10. c10. c10. c20. c20. [ c40. ]4

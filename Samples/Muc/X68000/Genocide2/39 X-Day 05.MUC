@@ -1,0 +1,58 @@
+#mucom88 1.7
+#title Genocide 2 X-Day 05
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch7 J=ch8
+; YM2151 FM -> SCC wave+envelope: SCCA=ch5 SCCB=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ 0,88,-25,52,41,115,41,79,81,88,77,80,-9,127,11,-13,0,14,-10,-127,10,-79,-77,-88,-81,-80,-41,-115,-41,-53,25,-89 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o2a10 a a10. a10. q6 >a10}
+#*2{*1 q12 o2a10. q0 a}
+#*3{*1 q0 o2a >a}
+#*4{D-9 o5a10 a a D-5 >c D-6 d}
+#*5{D-6 o7e10 p3 D-7 g p2 D-9 a10 p3 D-6 e p1 D-7}
+#*6{o1c @16 c40 c40 c24 r120 c24 r%7 c24 r120}
+#*7{*6 @4 o1c10 @16 c24 r120 c24 r%7}
+#*8{@0 E255,255,0,255,4,27 v8}
+#*9{D-3 o4a10 a a D-8 >c D0 d}
+#*10{o4a10 a a D9 >c d D0}
+
+A C120 l20 vm2 @23 v121 p3 D-9 *2 D-7 g10. D-9 a10. b10. *3 [ D-7 g D-6 e ]2 d+
+A D-5 c D-6 d d+ D-9 <a10.
+
+B C120 l20 vm2 r40 @23 v114 p2 *2 g10. a10. b10. *3 g e g e d+ c d d+ <a10.
+
+C C120 l20 vm2 r @23 v114 p1 D4 *2 D5 g10. D4 a10. D5 b10. D4 *3 [ D5 g D3 e ]2
+C D4 d+ D3 c d D4 d+ <a10.
+
+F C120 l20 t184 r60 [ t197 r%7 t196 r120 ]36 t197 r30
+
+H C120 l20 vm2 @70 v111 p3 *4 e d+ d D-5 c D-7 <g D-8 g+ *4 D-9 a D-7 g D-6 e d
+H d+ D-5 c *4 d+ d D-9 a D-6 e d+ D-7 <g D-9 a D-7 g D-6 e D-7 g D-5 >c D-9 <a
+H D-6 >d d+ D-7 g D-9 a10.
+
+I C120 l20 vm2 @73 v122 p2 D-9 [ o7a10 p3 a p1 *5 g10 p3 D-9 a p2 ]3 a10 p3 a
+I p1 *5 g10.
+
+J C120 l20 vm2 @18 v125 p3 D-9 [ q3 o7a10 v117 q2 a v125 ]14 q3 a10 v117 q2 a
+J @19 v117 q0 a%13
+
+K C120 l20 @6 D31695 p3 v240 *7 @4 c @6 *7 @18 c @6 *7 @4 c @6 *6 @13 p1 c p2 c
+K p1 c p3 c5
+
+SCCA C120 l20 r40 *8 *9 D-11 e D-7 d+ D0 d D-8 c D-5 <g D-4 g+ *9 D-3 a D-13 g
+SCCA D-11 e D0 d D-7 d+ D-8 c *9 D-7 d+ D0 d D-3 a D-11 e D-7 d+ D-5 <g D-3 a
+SCCA D-5 g D-3 e D-5 g D-8 >c D-3 <a D0 >d D-7 d+ D-13 g D-3 a10.
+
+SCCB C120 l20 r *8 *10 e d+ D9 d c D0 <g g+ *10 a g e D9 d D0 d+ D9 c D0 *10 d+
+SCCB D9 d D0 a e d+ <g a g D6 e D0 g D9 >c D0 <a D9 >d D0 d+ g a10.

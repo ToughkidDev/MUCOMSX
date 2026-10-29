@@ -1,0 +1,99 @@
+#mucom88 1.7
+#title Genocide 2 Shock '72 (Stage 1 Boss)
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{MF0 @39 v95 p3 q0}
+#*2{o4a20. a20. a%255&a%93 g20. a20.}
+#*3{o4b20. b20. b20 r5 a20. a20. a20 r5}
+#*4{o4g20 r5 f+20. f+20. f+20 r5 f20. f20. f20 r5}
+#*5{o4a >a <a D10 >a+}
+#*6{o5f D7 e d+ D6 d c}
+#*7{*5 o5a+ D9 a g D8 *6 D10 <a+ D9 a}
+#*8{o5d+ e}
+#*9{D7 o4e D8 f D9 g a D10 a+ D7 *8 *8}
+#*10{o5e80& D-79 e80& D6 c+80& c80& D11 <b80& D10 a+80& D9}
+#*11{D-37 *10 o4a80& g+80}
+#*12{o5e20& *11 >g20. a20. D7 e10.& *11 r10 D7 >e D6}
+#*13{o5f+ D7 e D8 f80 f+80 D9 g80 g+80 a D10}
+#*14{o5f+ D7 e D8 f *13 a+ D11 b D6 >c}
+#*15{o6d+ e d+ D6 d c+ c D11 <b D10}
+#*16{D11 o5b D10 a+ D9 a g+ g D8 f+ *6}
+#*17{o4e20. e20. e%255&e%93 D6 d20. D7 e20. D11}
+#*18{o5f e d+ d}
+#*19{o5a+ a g *18 c <a+ a g e}
+#*20{*19 o4f g a a+ *8 *8}
+#*21{D-85 o5e80& D0 c+80& c80& <b80& a+80& a80& g+80}
+#*22{o5e20& D-44 e80& *21 >g20. a20. e10.& D-44 e80& *21}
+#*23{o5b >c <b a+ a g+ g f+ *18}
+#*24{o6d+ d c+ c <b a+ b >c *23}
+#*25{o5a a+ b >c c+ d d+ e *24}
+#*26{o5e f f+ e f80 f+80 g80 g+80 *25}
+#*27{o3a20. a20. a10 q6 a20 q0 a20 q6 >a20}
+#*28{q0 o3a a >f80& D5 g80& D4 a D5 q6 g20 D3}
+#*29{o3a20 *28 q0 e d D4 <a20 D5 g20 D4 a}
+#*30{*29 o3a q6}
+#*31{*29 o3a D5 g20. D4 a20. D3 e10 e q12 e20.}
+#*32{o3d q6 c20 >d20 q0 <e& D50 e& D5 g D3 q6}
+#*33{o4e20 <e *32 e20 q0 >e20 <e}
+#*34{o1c @19 c60 r120}
+#*35{o1c20. c20. c10 @6 *34 @4 c20 @19 c60 r120 c60}
+#*36{o1c @15 c @6 c}
+#*37{@6 o1c @4 c}
+#*38{@6 *36 @19 o1c60 r120 @4 *34 *37 *37 @6 c @15 c}
+#*39{*38 @4 *36 @15 o1c}
+#*40{@6 o1c c *34 @4 *36 @4 c @6}
+#*41{@5 *35 r120}
+#*42{@6 *36 o1c @4 *36 @4 c *37 @6 *34 @4 *34 *37}
+#*43{o1c c}
+#*44{o1c @6 c}
+#*45{@2 p3 *43 @3 p2 *43 @5 p3}
+#*46{o1c20. c20. c20 @23 c}
+
+A C240 l40 vm2 L *1 [ *2 e%255&e%93 ]4 [ *3 ]2 g20. g20. *4 e%255&e%129
+
+B C240 l40 vm2 L *1 [ o4e20. e20. e%255&e%93 d20. e20. <b%255&b%93 ]4 [ >f+20.
+B f+20. f+20 r5 e20. e20. e20 r5 ]2 d20. d20. d20 r5 c+20. c+20. c+20 r5 c20.
+B c20. c20 r5 <b%255&b%129
+
+C C240 l40 vm2 L *1 [ o3a20. a20. a%255&a%93 g20. a20. e%255&e%93 ]4 @2 v102 [
+C *3 ]2 g20. g20. *4 @39 v95 <e%255&e%129
+
+F C240 l40 L t190 r20. t189 r%37
+
+H C240 l40 vm2 L r MF0 @39 v92 p2 D9 q0 *2 D7 e%255&e%93 D9 *2 D7 e%255&e%87 @1
+H v110 p3 D9 a20. D7 >e20. D9 a4 [ *5 D9 ]3 *7 g *9 [ d+80 e80 ]6 *12 d [ D7 *8
+H D8 f ]2 *14 c+ d D7 *15 a+ [ D11 b D6 >c ]2 *16 D9 <a20. D7 >e20. D9 a4 [ *5
+H D9 ]3 *7 g *9 [ d+80 e80 ]6 *12 d [ D7 *8 D8 f ]2 *14 c+ d D7 *15 a+ [ D11 b
+H D6 >c ]2 *16 @2 v102 [ D11 b20. b20. b20 r5 D9 a20. a20. a20 r5 ]2 g20. g20.
+H g20 r5 D8 f+20. f+20. f+20 r5 f20. f20. f20 r5 @40 v106 D9 o2g%255&g%129
+
+I C240 l40 vm2 L r MF0 @39 v92 p1 D7 q0 *17 <b%255&b%93 D7 *17 <b%255&b%87 r @1
+I v104 p2 D0 >a20. >e20. a4 [ <a >a <a >a+ ]4 *20 [ d+80 e80 ]6 *22 r10 >e d [
+I *8 f ]2 f+ *26 c <a20. >e20. a4 [ <a >a <a >a+ ]4 *20 [ d+80 e80 ]6 *22 r10
+I >e d [ *8 f ]2 f+ *26 @2 v102 p3 [ D8 f+20. f+20. f+20 r5 D7 e20. e20. e20 r5
+I ]2 D6 d20. d20. d20 r5 c+20. c+20. c+20 r5 c20. c20. c20 r5 @40 v106 D9 [
+I o2g& p2 g& p3 g& p1 g& p3 ]15 g& p2 g& p3 g& p1 g
+
+J C240 l40 vm2 L MF0 @41 v120 p3 D4 q0 *27 [ *30 ]2 *31 q0 [ *33 ]3 >e20 D4 *27
+J [ *30 ]2 *31 q0 [ *33 ]3 >e20 D4 *27 [ *30 ]2 *31 q0 [ *33 ]3 >e20 D4 *27 [
+J *30 ]2 *31 q0 [ *33 ]3 >e20 [ D5 <b20. b20. b20 r5 D4 a20. a20. a20 r5 ]2 D5
+J g20. g20. g20 r5 D4 f+20. f+20. f+20 r5 f20. f20. f20 r5 D3 e%255&e%129
+
+K C240 l40 L @5 D31695 p3 v240 *35 r120 [ *39 ]2 *40 [ c ]4 @4 [ c ]4 *41 [ *42
+K ]2 *40 [ c ]4 @4 [ c ]4 *41 [ *39 ]2 *40 [ c ]4 @4 [ c ]4 *41 [ *42 ]2 [ c @6
+K *43 @4 ]2 *44 @1 p1 c80 c80 *43 c *45 *35 r120 [ *39 ]2 *40 [ c ]4 @4 [ c ]4
+K *41 [ *42 ]2 *40 [ c ]4 @4 [ c ]4 *41 [ *39 ]2 *40 [ c ]4 @4 [ c ]4 *41 [ *42
+K ]2 *40 [ c ]4 @4 [ c ]4 @5 *46 @2 *43 @3 p2 c @1 p1 *43 @2 p3 c @3 p2 c @5 p3
+K *46 @6 *43 @4 *44 @23 c @4 *43 @5 *46 @1 p1 c80 c80 *43 *45 *46 @6 c c80 c80
+K *43 c @4 *44 @5 *46 @19 c60 r30 c60 r120 c60 r120 @6 c @4 c20 @5 c20. c20.
+K c20 @23 [ c @4 *44 ]2 *43 @5 *46 @6 *34 @4 *36 @4 c20 @5 c%29 r%255 r%52 @19
+K c60 r120 c80 c80 [ c60 r120 ]4 @15 c20

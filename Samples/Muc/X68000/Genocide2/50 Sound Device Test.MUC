@@ -1,0 +1,17 @@
+#mucom88 1.7
+#title Genocide 2 Sound Device Test
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+A C24 l4 vm2 L MF0 @15 v121 p3 D-5 q0 o4c r2. D-6 q6 e2 q0 f r2. D-7 q6 g2 D-9
+A q0 b r2. D-5 q6 >c2 D-9 q0 <b r2. D-7 g r%150
+
+B C24 l4 vm2 L MF0 @15 v115 p3 q0 o4c r2. q6 e2 q0 f r2. q6 g2 q0 b r2. q6 >c2
+B q0 <b r2. g r%150
+
+F C24 l4 L t222 [ r12 t212 r8 t211 ]57 r12 t212 r24

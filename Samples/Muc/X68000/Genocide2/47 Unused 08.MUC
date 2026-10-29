@@ -1,0 +1,110 @@
+#mucom88 1.7
+#title Genocide 2 Unused 08
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o3b b}
+#*2{q2 o3b8 q1 a q2 b8 q1 b}
+#*3{*2 q2 o4c+8 q7 <b8 q2}
+#*4{o4f+ f e d}
+#*5{*2 o4d <b >e <b >d}
+#*6{q2 o3a8 q1 g q2 a8 q1 a}
+#*7{q2 o3f4 q1 f f q2 f8 q1 e q2 f8 q1}
+#*8{*6 o4e <a >d <a *7 f >c <f}
+#*9{*2 o4d <b >e <b >f+ <a8 a a}
+#*10{*6 o4c+ <a >e <a >a}
+#*11{q2 o3g8. q1 g g q2 g8 q1 f+ q2 g8 q1}
+#*12{*9 o3a *10 *11 g b g >d <b}
+#*13{*12 o4c+ d}
+#*14{MF0 @26 v104 p3 q0}
+#*15{q12 o5c%60 q0 c4 c%60 c4 c4 q12 d%60 q0}
+#*16{o4f+8. e1 d%78 d4}
+#*17{q12 o4a%60 q0 a4 a%60 a4 a4 q12 a%60 q0}
+#*18{o5d8. c+1 <b%78 b4}
+#*19{q12 o4e%60 q0 e4 f%60 f4 f4 q12 f%60 q0}
+#*20{o4b8. a1 g%78 g4}
+#*21{o5b >b f+ <b >b f+ <b >b}
+#*22{q0 o4a32 b16. f+8. a8. b8 >c+8. <a8. a4}
+#*23{o3b32& D69 b%15 D0 b8.}
+#*24{o3b32& D69 b%45 D0 *23 >c%60 *23 >c8 d2 d8.}
+#*25{o6c+8 d8 c+8 q0 e8. <a4. a q6 b8 >c+8}
+#*26{o6d q6 *25 d8 q0 c+8. <b%84}
+#*27{*26 o6e4. c+4. <a4 >c+32 d%45 *26}
+#*28{o5b >b D7 f+}
+#*29{D6 o6e D7 f f+ D6 e D8}
+#*30{q0 o4a32 D10 b16. D7 f+8. D8 a8. D10 b8 D5 >c+8.}
+#*31{D10 o3b32& D80 b%15 D10 b8. D5}
+#*32{o3b32& D80 b%45 *31 >c%60 *31 >c8 D6 d2 d8.}
+#*33{o6c+8 D6 d8 D5 c+8 D6 q0 e8. D8 <a4. a D10}
+#*34{q6 *33 q6 o5b8 D5 >c+8 D6 d8 D5 q0 c+8. D10 <b%84}
+#*35{D5 o6c+32 D6 d%45 d D5 *34}
+#*36{D6 o6e4. D5 c+4. D8 <a4 *35}
+#*37{@4 o1c8}
+#*38{@21 o1c c}
+#*39{@19 o1c24 r48}
+#*40{*38 *39}
+#*41{*37 *38 @18 o1c *38}
+#*42{o1c @4 c8 @21 c c8 @4 c @18 c8 @4}
+#*43{o1c c}
+#*44{o1c32 c32}
+#*45{o1c @5 c4}
+#*46{o1c4 *37 *39 @21 c c8 *43 *37}
+#*47{*46 @18 o1c4 @21 c *39 *37 *39 *38 c @18}
+#*48{*37 @21 o1c @18 c8. @21 c *42}
+
+A C96 l16 vm2 L MF0 @44 v116 p3 [ q1 *1 *1 *3 >d8 ]3 q1 [ <b ]4 *2 >d <b *4 [
+A <b ]4 *3 >d8 q1 [ <b ]4 *5 [ <b ]5 *3 >e8 q1 [ <a ]4 *6 >d <a *4 [ <b ]4 *3
+A >d8 q1 [ <b ]4 *5 [ <b ]5 *3 >e8 q1 [ <a+ ]4 q2 a+8 q1 a q2 a+8 q1 a+ >d <a+
+A *4 [ <a ]4 *8 b f >c <b [ a ]4 *6 >d <a >c <a q2 g+4 q1 g+ g+ q2 g+8 q1 g q2
+A g+8 q1 g+ b g+ >d <g+ >d+ e [ <a ]4 *8 b f >c <b [ a ]4 *6 >d <a >c <a q2 b4
+A q1 *1 *2 >e <b a >c+ f f+ [ <b ]4 *13 [ <a ]4 *10 f+ [ <b ]4 *13 [ <a+ ]4 q2
+A a+8 q1 >c+8. c+ e <a >a g f+ <b8 *1 b *13 [ <a ]4 *10 f+ [ <b ]4 *13 [ <a ]4
+A q2 a8 q1 >a8. <a a >a g a f+ f
+
+B C96 l16 vm2 L *14 o5f+%255&f+%129 [ <f+1 e1 g1 f+1 ]2 *15 d4 e%60 e4 d4 *15
+B d4 e%60 e4 e4 <f+2. *16 e1 f+2. *16 e4. >e%54 <f+%78 *16 e1 f+2. *16 e4.
+B >e%60
+
+C C96 l16 vm2 L *14 o5d%255&d%129 [ d1 c+1 ]4 *17 a4 b%60 b4 b4 *17 a4 b%60 b4
+C >c+4 d2. *18 >c+1 d2. *18 a+4. >c+%54 d%78 *18 >c+1 d2. *18 >c+4. c+%60
+
+F C96 l16 L t193 r%21 t192 r%11
+
+H C96 l16 vm2 L *14 o5c+%255&c+%129 [ <b1 a1 ]3 b1 a+1 *19 f4 g+%60 g+4 g+4 *19
+H f4 g+%60 g+4 a4 b2. *20 a1 b2. *20 f+4. a%54 b%78 *20 a1 b2. *20 a4. a%60
+
+I C96 l16 vm2 @32 v116 p2 q5 [ *21 f+ *21 f+ *21 f+ e f f+ e a ]2 L r4. MF0 @24
+I v113 p3 H0,0,0 *22 f+8 b8 q24 >c+4. q12 c+32& D39 c+%21 D0 q0 d32 e%15 f8.
+I f+8 e4. d4. q36 c+%60 *22 >f32 f+%21 q24 c+4. q0 c+32 q12 d%21 q0 a8. g8. a8
+I f+4. c+4. <a4 @12 v118 *24 e8. <b%108 *24 g8. e%108 @32 v116 o6c+32 d%45 *27
+I a+8. q12 b8. q0 >f+4 f8 e8. c+32& D39 c+%51 D0 *27 >f+8. q12 e8. q0 g4 f+8 e8
+I c+8 d2& H1,5,0 d1& H1,6,0 d%240
+
+J C96 l16 vm2 r96 @32 v116 p1 D10 q5 [ *28 D10 ]8 *28 *29 a [ D10 *28 ]9 *29
+J q16 a%17 L r4. MF0 @24 v103 p2 D8 H0,0,0 *30 D8 <a8. a4 D7 f+8 D10 b8 D5 q24
+J >c+4. q12 c+32& D45 c+%21 D6 q0 d32 e%15 D7 f8. f+8 D6 e4. d4. D5 q36 c+%60
+J D8 *30 D8 <a8. a4 D7 >f32 f+%21 D5 q24 c+4. q0 c+32 D6 q12 d%21 D8 q0 a8. g8.
+J a8 D7 f+4. D5 c+4. D8 <a4 @12 v113 p1 D10 *32 e8. D10 <b%108 *32 D8 g8. D6
+J e%108 @32 v109 p2 *35 *36 D9 a+8. D10 q12 b8. D7 q0 >f+4 f8 D6 e8. D5
+J c+32& D45 c+%51 D6 d D5 *34 *36 D7 >f+8. D6 q12 e8. D8 q0 g4 D7 f+8 D6 e8 D5
+J c+8 D6 d2& H1,5,0 d%84& H1,6,0 d%240& H1,0,0 d8
+
+K C96 l16 L @5 D31695 p3 v240 o1c4 *37 [ *40 ]2 *41 *42 c8 *43 @21 [ c ]4 *37 [
+K *40 ]2 *41 *42 [ c ]4 @5 c4 *37 [ *40 ]2 *41 *42 c c8 c @21 [ c ]4 *37 [ *40
+K ]2 *41 *42 *44 *43 *45 *37 [ *40 ]2 *41 *42 *43 c8 @21 [ c ]4 *37 [ *40 ]2
+K *41 c *37 @21 c c8 @4 c @3 *43 @7 p1 *44 c @8 p3 c @9 p2 c @5 p3 *47 c8 *37
+K *39 @15 c @5 *47 c8 @4 [ c ]4 @5 *47 c8 *37 *43 @5 *46 @5 c4 *38 *37 @3 *43
+K @7 p1 *44 *43 c @8 p3 *43 @9 p2 *43 @5 p3 c4 *37 [ *40 ]2 *48 *43 *45 @21 c
+K *37 [ *40 ]2 *37 *38 c8 c *42 *43 @9 *43 @5 c4 *37 [ *40 ]2 *37 @21 *45 @21
+K *42 *43 *45 @12 c *37 [ *40 ]2 *37 *38 c8 c *42 c @3 *44 @4 c @5 c8. *38 *37
+K [ *40 ]2 *48 c @16 c%5 r96 @4 *45 @12 c *37 [ *40 ]2 *37 @21 c @15 c @21 c8 c
+K *42 c @12 c @4 *43 @5 c4 *37 [ *40 ]2 *48 *44 *43 @5 c8. *38 *37 [ *40 ]2 *37
+K *38 c8 *43 *37 @21 c @1 p1 *44 [ c ]4 @2 p3 *43 @3 p2 *43

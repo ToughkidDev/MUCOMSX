@@ -1,0 +1,42 @@
+#mucom88 1.7
+#title Genocide 2 X-Day 01
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch7 J=ch8
+; YM2151 FM -> SCC wave+envelope: SCCA=ch5 SCCB=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ 0,87,-24,55,42,116,44,83,84,90,79,83,-6,127,12,-11,0,11,-11,-127,7,-82,-79,-90,-83,-83,-44,-116,-43,-56,23,-87 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o6e e}
+#*2{o4c q6 >c D-9 q0 o3b q6 >b D-5 q0 c1}
+#*3{r4 @0 E255,255,0,255,6,33 v9}
+
+A C24 l2 vm2 r12 @70 v106 p3 D-6 o6e [ *1 e4 ]2 *1 D-7 g g D-6 f d D-5 c1
+
+B C24 l2 vm2 r12 @70 v106 p3 D-5 o6c [ c c c4 ]2 c c D-6 *1 d D-9 <b D-7 g1
+
+C C24 l2 vm2 r6 @70 v106 p2 o6e [ *1 e4 ]2 *1 g g f d c1
+
+F C24 l2 t239 [ r24 t193 r12 t192 ]57 r24 t193 r12
+
+H C24 l2 vm2 r6 @70 v106 p2 o6c [ c c c4 ]2 c c *1 d <b g1
+
+I C24 l2 vm2 r8 @71 v126 p2 D-5 [ o4c q6 >c q0 ]4 *2
+
+J C24 l2 vm2 r12 @71 v126 p1 D-5 [ o4c q6 >c q0 ]4 *2
+
+K C24 l2 r12 @4 D31695 p3 v240 [ o1c c8 c8 c4 c c ]2 c c4 c4 c8 c8 c4 c4 c4 c24
+K c%25 r12
+
+SCCA C24 l2 *3 o5e [ e e e4 ]2 e e g g f d c1
+
+SCCB C24 l2 *3 o5c [ c c c4 ]2 c c e e d <b g1

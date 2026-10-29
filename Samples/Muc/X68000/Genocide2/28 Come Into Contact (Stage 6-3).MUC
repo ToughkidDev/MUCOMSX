@@ -1,0 +1,51 @@
+#mucom88 1.7
+#title Genocide 2 Come Into Contact (Stage 6-3)
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o3e7 e r2 >d e}
+#*2{*1 D-2 o3a b D-1 f+ g}
+#*3{o3e7 e}
+#*4{*1 D4 o3a D5 b D4 f+ D5 g}
+#*5{o5f+ f+ f+ f+}
+#*6{o5f+28 f+28 f+28 f+28 f+28}
+#*7{o5f+56 f+56 f+56 f+56}
+#*8{o3b%48 D-1 >g7 >f+%255&f+%57 D-2 o3b%48 >a+7 D-1 >f+%255&f+%57}
+#*9{o1c%29 r%19 @4 c7 @19 c%5 r24 c%5 r24 @15 c7 @4}
+#*10{o1c7 @6 c7}
+#*11{o1c7 c7 @15 c7 @4 *10 c7 @4 c7 @15 *10}
+
+A C168 l14 vm2 L MF0 @7 v114 p3 D-1 q0 [ *2 *3 r%156 ]8 [ f+7 f+ r7. >c+ <f+
+A >c+ f+& D-2 a D-1 f+ c+ D0 c D-2 <a+ a D-1 f+7 f+ r%156 ]4 [ *2 ]7 *3 r1.
+
+B C168 l14 vm2 L MF0 @20 v114 p3 D3 q0 [ *4 D3 *3 r%156 ]8 D4 [ f+7 f+ r7. D3
+B >c+ D4 <f+ D3 >c+ D4 f+& a f+ D3 c+ c D5 <a+ D4 a f+7 f+ r%156 ]4 [ D3 *4 ]7
+B D3 *3 r1.
+
+C C168 l14 vm2 L MF0 @40 v104 p1 q0 [ o2e%255&e%129 ]8 v108 p3 [ f+%255&f+%129
+C ]4 r @7 v101 p2 [ *1 <a b f+ g ]7 *3 r%240
+
+F C168 l14 L t201 r21 t200 r24
+
+H C168 l14 vm2 L r28 MF0 @40 v104 p2 D6 q0 [ o2e%255&e%129 ]7 e%255&e%123 r%96
+H @63 v113 p1 D7 [ o5f+7 f+7 f+7 *5 f+ f+ f+ *6 *6 *7 *7 r%144 ]3 f+7 f+7 f+7 [
+H f+ ]7 [ f+28 ]10 [ f+56 ]8 r%72 @7 v95 [ D6 *3 r2 D5 >d D6 e D7 <a D9 b D7 f+
+H g ]7 D6 *3 r%228
+
+I C168 l14 vm2 L [ r%255 ]6 r28 MF0 @64 v108 p3 D-2 q0 *8 D-2 *8 @50 v97 [
+I f+%255&f+%129 ]4 [ r%255 ]6 r%102
+
+J C168 l14 vm2 L [ r%255 ]6 r%30 MF0 @64 v108 p3 D6 q0 [ o4e%48 D9 b%255&b%57
+J r7 D6 ]3 e%48 D9 b%255&b%57 @50 v97 D5 [ >c%255&c%129 ]4 [ r%255 ]6 r%102
+
+K C168 l14 L @6 D31695 p3 v240 [ o1c7 *9 *10 ]7 c7 c%29 r%139 [ c7 *9 *10 ]7 c7
+K c%29 r%19 @4 c%29 r%19 @1 p1 c7 @2 p3 c7 @3 p2 c7 @6 p3 [ *11 c7 @3 c7 c7 @4
+K c%29 r%43 c7 @6 ]3 *11 c%29 r%139 [ c7 *9 *10 ]7 @3 c7 c%29 r%235

@@ -1,0 +1,42 @@
+#mucom88 1.7
+#title Genocide 2 Shady Silence (Stage 4-3)
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o7a q0 a3}
+#*2{D0 o1d+144& D76 >c72& D37}
+#*3{o1d+144& e72& f144& f+72& g144& f+72& f144& e72& *2}
+#*4{o2c144& D76 c72& *2 c144& D76 c72& D0 *3 c144& D0}
+#*5{o2c144& D42 c72& D82 c144& D6}
+#*6{D82 o2c72& D42 c144& D5}
+#*7{o1e144& d+72& D82 >c144& D42 c72& D5 c& D42 c144& *6}
+#*8{o2c72& D42 c144& D82 c72& D6}
+#*9{o1f+144& f72& D6 *7 *8 <d+144& D82 *8 <d+144& e72& D7}
+#*10{D7 o1f72& f+144& D8 g72& D7 *9 f144& f+72& D8 g144& D7}
+#*11{o1f144& D6 e72& d+144& *6 c& D42 c72& D82 c144& D42}
+#*12{*5 o1d+72& D82 *5 <d+72& e144& *10 f+72& *11}
+
+A C144 l48 vm2 r12 L r2. MF0 @54 v118 p2 H7,7,0 q1 *1 r%180 q1 *1 r%228 v112 q1
+A *1
+
+B C144 l48 vm2 r%14 L r2. MF0 @54 v118 p1 D8 H7,7,0 q2 *1 r%180 v112 q2 *1
+B r%228 v120 q2 *1
+
+C C144 l48 vm2 r12 L MF0 @57 v124 p2 H0,0,0 q0 o2c72& D37 [ *4 c%5& D37 ]21 *4
+C c
+
+F C144 l48 t228 r144 t193 r%11 L t193 r72 t192 r144
+
+H C144 l48 vm2 r%13 L MF0 @57 v124 p1 D5 H0,0,0 q0 [ *12 c72& D5 ]9 *12 c72
+
+I C144 l48 vm2 r12 L MF0 @19 v106 p2 H0,0,0 q0 o5c72& D76 c144 D0 g72& f144
+I e72& D46 e144 D0 d72& D-76 d144
+
+J C144 l48 vm2 r%14 L MF0 @19 v106 p1 D5 H0,0,0 q0 o5c144& D82 c72 D8
+J g144& D-94 g72 D6 e144& D53 e72 D6 d144& D-71 d72

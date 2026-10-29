@@ -1,0 +1,147 @@
+#mucom88 1.7
+#title Genocide 2 Tetchy Funk (Stage 1-3)
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o2a g12 q6 a12 >c12 e12 q0 d q6 d+12 q0}
+#*2{*1 o3c d}
+#*3{o2g f12 q6 g12 b12 >d12 q0 c q6 d12 q0}
+#*4{o2g g12 q6 >g12 q0 <g g12 >g q6 <g12 q0}
+#*5{o3c12 c q6 <a+12 >c12 d+12 f12 q0 a+}
+#*6{q6 o2f12 q0 g+ q6 >c12 q0 <a+ >c q6 <g+12 q0}
+#*7{o2d d12 q6 f12 q0 a+ q6 >d12 <a+12 >c12 q0}
+#*8{o2f12 f d+12 *6 g d+ d12 *7 <g+}
+#*9{o2d+12 d+ d+12 q6 g12 q0 f+ q6 g12 a+12 q0}
+#*10{*8 o2a+ *9 g f+ f d+}
+#*11{r%255 r%123 MF0 @29 v105 p3 H0,0,0 q0}
+#*12{o6a q5 a q1 a}
+#*13{o5a q6 g12}
+#*14{o5e12 q0 d d+}
+#*15{*14 o5e r1 d48 e%21 d8 e%150}
+#*16{o4a b >c}
+#*17{o5c <a}
+#*18{o5f *17 >e *17 >e36 c36 <a36 >f36 c36}
+#*19{o5d <b g}
+#*20{o5e <b g *19 >e36 <b36 g36 >d36 <b36}
+#*21{o5e <a f >d36 <a36 f36 >e36 <a36}
+#*22{q6 o4f+12 f12 q0 f+}
+#*23{o5c%78 <a+8 >c4. *22 a+12 >c%78}
+#*24{o5c4. <c d d+ g12 f+}
+#*25{o4g+%78 >c8 f4. d c <b q6 >d12 g+12 q0}
+#*26{q5 o6e q1 e}
+#*27{o6e q5 e e q1 a *12}
+#*28{o4a D10 b D5 >c}
+#*29{D5 o5c D8 <a}
+#*30{D7 o5f *29 D6 >e *29 D6 >e36 D5 c36 D8 <a36}
+#*31{*30 D7 o5f36 D5 c36 D8 <a36}
+#*32{D6 o5d D10 <b D8 g}
+#*33{D10 o4b36 D8 g36}
+#*34{D6 o5e D10 <b D8 g *32 D6 >e36 *33 D6 >d36}
+#*35{D6 o5e D8 <a D7 f D6 >d36 D8 <a36 D7 f36}
+#*36{*35 D6 o5e36 D8 <a36 D7 f36}
+#*37{D5 o5c%78 D9 <a+8 D5 >c4. D7 *22 D9 a+12 D5 >c%78}
+#*38{D5 o5c4. <c D6 d d+ D8 g12 D7 f+}
+#*39{o4g+%78 D5 >c8 D7 f4. D6 d D5 c D10 <b D6}
+#*40{o6d& D41 d& D85 d D0 e r4. @30 v111}
+#*41{o5a12 a q6 a12 a12 a12 q0 g q6 a12}
+#*42{*41 o5a12 q0 g g *41 q0 a q6 g12 q0}
+#*43{o5g12 g q6 g12 g12 g12 q0 f q6 g12}
+#*44{q5 o5g g q2 g12 q5 f q1 g q5 g q2}
+#*45{o5g12 q5 g q4 >d <g f q5 g g q1}
+#*46{o5a+4. q12 a+8 q6 a+12 a+12 q0}
+#*47{o5e12 e q6 e12 e12 e12 q0 e q6 e12}
+#*48{*47 o5e12 q0 e e *47 q0 e q6 e12 q0}
+#*49{o5d12 d q6 d12 d12 d12 q0 d q6 d12}
+#*50{q5 o6e e q2 e12 q5 d q1 e q5 e q2}
+#*51{q5 o6d d q2 d12 q5 c q1 d q5 d q2}
+#*52{*51 o6d12 q5 d q1 g d c q5 d}
+#*53{o6c q2 c12 q5 c q1}
+#*54{q1 o6e *52 d q1 d q5 c *53 c q5 *53}
+#*55{o6e q1 a e d q5 e e *54 f}
+#*56{*50 o6e12 q5 *55 c c q5 c c q1 c}
+#*57{o5d4. q13 d8 q7 d12 d12 q6}
+#*58{o3c c12 @38 v118 p3 q6 b12 @37 v118 q12 e6 p1 q0}
+#*59{*58 o3c c @38 v118 p3}
+#*60{q6 o3b12 @37 v118 p2 q0}
+#*61{o6c12 c q6 c12 c12 c12 q0 c q6 c12}
+#*62{o6b12 b12 q2 b q3 b12}
+#*63{*62 o6b12 q2 b q3 b12 b12 b12 *62 b12 q2}
+#*64{o6b q3 b12}
+#*65{@6 o1c12 c c12 @4 c6 @6 c12 c c}
+#*66{@6 o1c12 c c @4 c8 *65 @4 c c12 *65}
+#*67{@4 o1c8 @6 c12 c c12 @4}
+#*68{@1 p1 o1c48 c48 @2 p3 c @3 p2}
+#*69{@5 o1c%30 @4 c6 *66 @4 c8 *65}
+#*70{@4 o1c12 @6 c c12 c c12 @4}
+#*71{o1c6 @6 c c c12}
+#*72{o1c c}
+#*73{*71 *70 o1c12 *72 @6 c c12 c *70 c12 @6}
+#*74{o1c @4 c48 c48}
+
+A C144 l24 vm2 @23 v120 p3 o2a12 L MF0 @23 v120 p3 q0 [ *2 <a12 ]3 a g12 q6 a12
+A >c12 q0 <a r4 [ a12 *2 ]3 <a12 a g12 q6 a12 >c12 <a12 q0 >e12 d& D41 d& D85 d
+A D0 [ <a12 *2 ]8 [ <g12 *3 <b >c ]2 [ <a12 *2 ]2 [ <g12 *3 <b >c ]2
+A <a18& g72& f72 *2 <a12 *2 <a [ a a a12 q6 >a12 q0 <a a12 >a q6 <a12 q0 a >a
+A <a a g *4 g >g <g g f f f12 q6 >f12 q0 <f f12 >f q6 <f12 q0 f >f <f >f <g *4
+A g g b >c ]2 <a a q6 >c12 d12 d+12 g12 q0 a+ g f+ f d+ [ *5 q6 g12 q0 f+ f ]7
+A *5 g f+ f d+ *10 d g g f12 q6 g12 q0 b q6 >d12 c12 d12 q0 c <b *10 b12 b g+12
+A q6 b12 q0 >d e12 d c d12 <g+ b f g g q6 a+12 >c12 c+12 d12 q0 f q6 d12 q0 e
+A d+ <a12
+
+B C144 l24 vm2 r L *11 [ o6a12 *12 *12 *12 *12 q5 a q1 a a12 *12 *12 a q5 a a
+B q1 >e e q5 e q1 e e ]2 @33 v112 q0 o5e%150 *13 *15 *13 *14 e%150 <a >c d a g+
+B g d+ d%150 <g *16 e d+ d <a r1 *16 <b12 >d d+ d%150 <g *16 d e g a%78 g8
+B a%102 @34 v107 p2 [ e *17 ]2 *18 <a36 [ *19 ]2 *20 g36 [ *17 f ]3 *21 f36 [
+B *19 ]3 >e <b g >f36 <b36 g36 >g36 <b36 g36 [ >e *17 ]2 *18 <a36 [ *19 ]2 *20
+B g36 [ *17 f ]3 *21 f36 [ *19 ]4 *16 d r2 @24 v111 p3 <f+ f d+ *23 <a+8 *24 f
+B *23 d+8 *24 g *25 g%102 f f+ g q6 f12 d12 q0 c <b6 g8 *25 g%96 f4. b3 @30
+B v107 p2 o2e%96
+
+C C144 l24 vm2 r L *11 o6e12 [ e *26 ]4 *26 e12 [ e *26 ]2 *27 a e12 [ e *26 ]4
+C *26 e12 [ e *26 ]2 *27 q7 a12 @33 v105 D6 q0 <e%150 D8 *13 D6 *15 D8 *13 D6
+C *14 e%150 D8 <a D5 >c D6 d D8 a g+ g D6 d+ d%150 D8 <g *28 D6 e d+ d D8 <a r1
+C *28 D10 <b12 D6 >d d+ d%150 D8 <g *28 D6 d e D8 g a%78 g8 a%99 @34 v107 p1 [
+C D6 e *29 ]2 *31 [ *32 ]2 *34 *33 [ *29 D7 f ]3 *36 [ *32 ]3 D6 >e D10 <b D8 g
+C D7 >f36 *33 >g36 *33 [ D6 >e *29 ]2 *31 [ *32 ]2 *34 *33 [ *29 D7 f ]3 *36 [
+C *32 ]4 *28 D6 d r%75 @24 v105 p2 D7 <f+ f D6 d+ *37 D9 <a+8 *38 f *37 D6 d+8
+C *38 D8 g *39 q6 >d12 D8 g+12 q0 g%102 D7 f f+ D8 g D7 q6 f12 D6 d12 D5 q0 c
+C D10 <b6 D8 g8 *39 q6 >d12 D8 g+12 q0 g%96 D7 f4. D10 b3 @30 v107 p1 D6 o2e%90
+
+F C144 l24 t192 r L t193 r%19 t192 r%10
+
+H C144 l24 vm2 r L r%255 r%201 MF0 @35 v111 p2 q0 *40 p1 q3 >e d d+ <b >d <g q0
+H g+48 r%75 @35 v111 *40 p2 q3 >e d d+ <b v109 >d <g+ @29 v105 p3 q0 [ *42 g ]4
+H [ *43 g12 q0 g g *43 q0 g q6 f12 q0 f *42 g ]2 a @14 v106 [ q5 a a q2 a12 q5
+H g q1 a q5 a q2 a12 q5 a q4 >e <a g q5 a a q1 a *44 *45 g q5 f f q2 f12 q5 e
+H q1 f q5 f q2 f12 q5 f q4 >c <f e q5 f f q1 f *44 *45 g ]2 @36 v109 q5 o3a a
+H q11 >c12 d12 d+12 g12 q5 a+ g f+ f d+ q0 [ >d+%78 d+8 q12 d+%66 d+8 q0 d+12
+H ]4 c& f%90 *46 a+%102 g3 g%42 f%96 *46 a+%96 q96 b%198
+
+I C144 l24 vm2 r L r%255 r%201 MF0 @35 v111 p2 q0 o5b8 >c r4. @30 v111 p1 q3 >c
+I <b >c <g b e q0 f48 r%75 @35 v111 <b8 >c r4. @30 v111 p2 q3 >c <b >c <g v109
+I b f @29 v105 p3 q0 [ *48 e ]4 [ *49 d12 q0 d d *49 q0 d q6 d12 q0 d *48 e ]2
+I e @14 v106 *56 *52 d q1 d *56 *52 d q0 d%5 r%91 @36 v109 [ q9 <g%78 q3 g8 q18
+I g%66 q13 g8 q2 g12 ]4 q6 f& c%90 *57 d+%102 d3 d%42 c%96 *57 d+%96 q102 d%198
+
+J C144 l24 vm2 r L r MF0 @37 v118 p2 H0,0,0 q0 [ *59 *60 c c12 ]3 *59 b *60 [
+J c12 *59 *60 c ]3 c12 *59 b q6 b12 @29 v104 q0 [ *61 c12 q0 c c *61 q0 c q6
+J c12 q0 c ]8 c @17 v120 q3 [ b12 *63 b b *64 ]3 b12 [ b12 b12 q2 b q3 ]2 [ b12
+J ]5 q2 *64 b12 q2 b b b q0 b16 r%93 p1 [ q3 b8 *63 *64 q2 b ]4 *64 [ *63 *64
+J q2 b q3 b8 ]3 [ b12 b12 q2 b q3 ]2 [ b12 ]5 q2 b q3 *62 q2 b q0 b36 r%98
+
+K C144 l24 @5 D31695 p3 v240 o1c L r6 @4 D31695 p3 v240 c6 *66 *67 c12 c12 @6 c
+K @23 c r%30 @5 c%30 @4 c6 *66 *67 c12 c12 c *68 c @4 p3 [ c c12 *69 @4 ]3 c
+K c48 c48 c *69 @7 p1 c48 c48 @8 p3 c @9 p2 c @3 c @5 p3 c6 *70 *73 [ c ]4 c12
+K *70 c @3 c @4 *72 @5 c6 *70 *73 [ c ]4 c12 *70 c48 c48 *72 [ c *68 ]2 c @6 p3
+K c @17 D17849 c144 r%11 @4 D31695 c @12 *74 *72 c [ *69 @4 c c12 ]2 @5 c%30 @4
+K *71 *67 c6 @6 *72 c @4 c12 @5 c12 c6 @6 c [ @4 *71 ]3 @4 c c12 @5 c%30 @4 *71
+K *67 c6 *68 c @4 p3 c12 @5 c12 c6 @6 c @4 *71 @4 c8 @5 c12 @6 c c12 @4 *71 @4
+K *72 @3 *74 c @18 *72 *68 *72 @5 p3 c12 @4 c @5 c12 @12 *74 c @5 c

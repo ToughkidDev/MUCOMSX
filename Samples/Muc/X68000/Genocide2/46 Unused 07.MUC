@@ -1,0 +1,41 @@
+#mucom88 1.7
+#title Genocide 2 Unused 07
+#composer Hideyuki Shimono, Naoyuki Kimura
+#author ToughkidCST
+#comment Genocide 2 (X68000)
+#voice GENOCID2.DAT
+#pcm GENOCID2.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (GENOCID2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o5e g g+}
+#*2{o5e D2 g g+}
+#*3{o5f g+ D-2 a}
+#*4{o1f192 p1 f96 p3}
+#*5{p1 o1b96 p3 b32. @79 v113 p2 o4c16 v108 p1 c16 v102 p3}
+
+A C192 l32 vm2 @63 v115 p3 [ o5d *1 ]8 L MF0 @63 v115 p3 q0 [ d *1 ]4 [ c+ *1
+A ]4 [ e *1 ]4 [ d+ *1 ]4
+
+B C192 l32 vm2 r @63 v113 p2 [ D1 o5d *2 ]8 L MF0 @63 v113 p2 D1 q0 [ d *2 D1
+B ]4 [ c+ *2 D1 ]4 [ e *2 D1 ]3 e [ *2 d+ D1 ]4 *2
+
+C C192 l32 vm2 r16 @63 v111 p1 [ D-1 o5d+ *3 ]12 [ D-1 d *3 ]4 [ D-1 f *3 ]4 [
+C D-1 e *3 ]4 [ D-1 d+ *3 ]4 [ D-1 d *3 ]4 [ D-1 f *3 ]4 [ D-1 e *3 ]3 D-1 e f
+C L MF0 @40 v111 p3 D-2 q0 o2a+%255&a+%255&a+%255&a+64 [ r%255 ]4 r%132
+
+F C192 l32 [ t201 r64 t200 r96 ]38 t201 r96 L t201 r24 t200 r%7
+
+H C192 l32 vm2 r%193 L MF0 @77 v113 p1 q0 [ o2d2 c+2 e2 d+2 ]4 r%255 r%129
+
+I C192 l32 vm2 r1 L MF0 @78 v127 p2 q0 *4 f%45 p2 b192 *5 c16 @78 v127 p2 *4
+I f32. p2 *4 f%33 p2 b192 *5 c16
+
+J C192 l32 vm2 r1 L MF0 @77 v113 p2 q0 [ o2d2 c+2 e2 d+2 ]3 d2 c+2 e2 q12
+J d+%108 @63 v111 p1 q0 [ o5d *1 ]4 [ c+ *1 ]4 [ e *1 ]4 [ d+ *1 ]3 d+ e
+
+K C192 l32 r1 L @6 D31695 p3 v240 o1c%29 r%19 @14 c%28 r%20 @6 c16 c%29 r%7 @14
+K c%28 r%20
