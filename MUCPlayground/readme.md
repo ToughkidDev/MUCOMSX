@@ -8,7 +8,7 @@ Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
 
 ## What it does
 
-- Type MML in the editor and press **Play** (`Ctrl+Enter`). `Esc` stops.
+- Type MML in the editor and press **Play** (`Ctrl+Enter`). **Pause** (`F8`) holds the song where it is, with its playing marks, channel view and clock, and **Resume** goes on from there; `Esc` stops.
 - **Text size:** the *Text* slider at the top, left of the language switch, sets the editor's font size (10–24 px); line numbers, colouring, error marks and playback highlights follow, and the size is remembered.
 - **Menus size:** the *Menus* slider next to it enlarges the header, toolbar buttons, side panel (messages, files, quick reference), the editor's bottom bar, the footer and the samples dialog from 100 to 200 %, for anyone who finds the interface hard to read. It applies when the slider is let go, is remembered, and is limited on narrow windows so the panels still fit (100 % per 640 px of width: a phone stays at 100 %, 1280 px and wider allow 200 %).
 - **MML colouring:** parts (in their playback colour), notes, commands, numbers, loops and brackets, macros, tags and comments each have their own colour.

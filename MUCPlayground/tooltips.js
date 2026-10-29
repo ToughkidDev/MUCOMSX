@@ -16,6 +16,7 @@ const TIPS = [
   ['#play', 'Compile the MUC and play it from the start. Errors appear under Compiler messages with the place and how to fix them. Pressed while playing, it starts again with the text as it is now. Key: Ctrl+Enter (⌘+Enter); Ctrl+Shift+Enter plays only the caret\'s line.',
     'MUC를 컴파일해서 처음부터 재생합니다. 오류가 있으면 오른쪽 "컴파일 메시지"에 위치와 고치는 법이 나옵니다. 재생 중에 누르면 지금 텍스트로 처음부터 다시 재생합니다. 단축키: Ctrl+Enter (⌘+Enter), 커서가 있는 행만 듣기는 Ctrl+Shift+Enter',
     'MUCをコンパイルして最初から再生します。エラーは右の「コンパイルメッセージ」に場所と直し方が出ます。再生中に押すと今のテキストで最初から再生し直します。キー: Ctrl+Enter（⌘+Enter）、カーソル行だけ試聴は Ctrl+Shift+Enter'],
+  ['#pause', 'Pause the song where it is; press again to go on from there (Play starts it again from the top). Key: F8', '곡을 그 자리에서 잠시 멈춥니다. 다시 누르면 멈춘 곳부터 이어서 연주합니다 (재생은 처음부터 다시 시작). 단축키: F8', '曲をその場で一時停止します。もう一度押すと止めた所から続けます（再生は最初からやり直し）。キー: F8'],
   ['#stop', 'Stop playing. Key: Esc', '재생을 멈춥니다. 단축키: Esc', '再生を止めます。キー: Esc'],
   ['#viewToggle', 'Switch to the channel view (MDPlayer4Mac\'s look): each chip\'s keyboards, level meters and registers while the song plays. Press again for the editor. Playing a .mub / .vgm file opens it by itself.',
     '채널 뷰(MDPlayer4Mac 모양)로 바꿉니다. 재생 중 칩마다 건반, 레벨 미터, 레지스터가 보입니다. 다시 누르면 에디터로 돌아옵니다. .mub / .vgm 파일을 재생하면 저절로 열립니다.',

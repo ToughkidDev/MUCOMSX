@@ -46,7 +46,7 @@ const STORE_KEYS = 'mucplayground.keys';      // { open, octave, source }
 const T = {
   en: {
     back: '← MUCOMSX', tagline: 'Write MUCOM88 MML, hear it right away',
-    play: '▶ Play', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
+    play: '▶ Play', pause: '❚❚ Pause', resume: '▶ Resume', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
     share: 'Share', shareTip: 'Make a link to this song that opens it ready to play', shareTitle: 'Share this song', shareCopy: 'Copy', shareCopied: 'Copied ✓', shareNative: 'Share…',
@@ -70,7 +70,7 @@ const T = {
     loading: 'Loading the engine (about 11 MB, first time only)…', ready: 'Ready. Press Play or Ctrl+Enter.',
     loadFailed: 'The engine could not be loaded: ', compiling: 'Compiling…', playing: 'Playing',
     compiled: (ms, size) => `Compiled in ${ms} ms, ${size.toLocaleString()} bytes.`,
-    compileFailed: 'Compile error. See the messages on the right.', stopped: 'Stopped.', ended: 'Finished.',
+    compileFailed: 'Compile error. See the messages on the right.', stopped: 'Stopped.', paused: 'Paused. Press Resume (F8) to go on.', ended: 'Finished.',
     silentEnv: (p) => `Part ${p} has no @ or E before its first note, so it makes no sound.`,
     silentVol: (p) => `Part ${p} has no v before its first note, so it makes no sound.`,
     sjisLoss: (chars, n) => `${n} kind(s) of character cannot be written in Shift-JIS and will be saved as "?": ${chars}\nMUC files for the MSX can hold English and Japanese only. Save anyway?`,
@@ -197,7 +197,7 @@ const T = {
   },
   ko: {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
-    play: '▶ 재생', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
+    play: '▶ 재생', pause: '❚❚ 일시정지', resume: '▶ 계속', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
     share: '공유', shareTip: '이 곡을 바로 재생할 수 있는 링크로 만듭니다', shareTitle: '이 곡 공유하기', shareCopy: '복사', shareCopied: '복사됨 ✓', shareNative: '공유…',
@@ -221,7 +221,7 @@ const T = {
     loading: '엔진을 불러오는 중 (약 11 MB, 처음 한 번만)…', ready: '준비됐습니다. 재생 또는 Ctrl+Enter를 누르세요.',
     loadFailed: '엔진을 불러오지 못했습니다: ', compiling: '컴파일 중…', playing: '재생 중',
     compiled: (ms, size) => `${ms} ms에 컴파일, ${size.toLocaleString()} 바이트.`,
-    compileFailed: '컴파일 오류입니다. 오른쪽 메시지를 확인하세요.', stopped: '정지했습니다.', ended: '끝났습니다.',
+    compileFailed: '컴파일 오류입니다. 오른쪽 메시지를 확인하세요.', stopped: '정지했습니다.', paused: '일시정지했습니다. 계속(F8)을 누르면 이어서 연주합니다.', ended: '끝났습니다.',
     silentEnv: (p) => `${p} 파트는 첫 음표 앞에 @나 E가 없어서 소리가 나지 않습니다.`,
     silentVol: (p) => `${p} 파트는 첫 음표 앞에 v가 없어서 소리가 나지 않습니다.`,
     sjisLoss: (chars, n) => `Shift-JIS로 쓸 수 없는 문자 ${n}종류가 "?"로 저장됩니다: ${chars}\nMSX용 MUC에는 영어와 일본어만 쓸 수 있습니다. 그래도 저장할까요?`,
@@ -348,7 +348,7 @@ const T = {
   },
   ja: {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
-    play: '▶ 再生', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
+    play: '▶ 再生', pause: '❚❚ 一時停止', resume: '▶ 再開', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
     share: '共有', shareTip: 'この曲をすぐ再生できるリンクにします', shareTitle: 'この曲を共有', shareCopy: 'コピー', shareCopied: 'コピーしました ✓', shareNative: '共有…',
@@ -372,7 +372,7 @@ const T = {
     loading: 'エンジンを読み込み中（約11 MB、初回のみ）…', ready: '準備完了。再生またはCtrl+Enterを押してください。',
     loadFailed: 'エンジンを読み込めませんでした: ', compiling: 'コンパイル中…', playing: '再生中',
     compiled: (ms, size) => `${ms} msでコンパイル、${size.toLocaleString()}バイト。`,
-    compileFailed: 'コンパイルエラーです。右のメッセージを確認してください。', stopped: '停止しました。', ended: '再生が終わりました。',
+    compileFailed: 'コンパイルエラーです。右のメッセージを確認してください。', stopped: '停止しました。', paused: '一時停止しました。再開（F8）で続きから演奏します。', ended: '再生が終わりました。',
     silentEnv: (p) => `${p}パートは最初の音符の前に@もEも無いため、鳴りません。`,
     silentVol: (p) => `${p}パートは最初の音符の前にvが無いため、鳴りません。`,
     sjisLoss: (chars, n) => `Shift-JISで書けない文字${n}種類が「?」として保存されます: ${chars}\nMSX用のMUCに使えるのは英語と日本語だけです。それでも保存しますか？`,
@@ -1519,6 +1519,7 @@ function onEngineMessage(m, source) {
       if (ctx && ctx.state !== 'running') waitForClick();
       playing = true;
       updateLinePlay();
+      updatePause();
       loopCount = 0;
       traceSession = m.session;
       traceMsx = !!m.info.msx;
@@ -1581,7 +1582,7 @@ worker.postMessage({ type: 'boot', language: lang === 'ja' ? 'ja' : 'en' });
 
 // ---------- audio ----------
 let ctx = null, node = null, gain = null, analyser = null;
-let playing = false, loopCount = 0, underruns = 0;
+let playing = false, paused = false, loopCount = 0, underruns = 0;
 
 // iPhone / iPad: Web Audio is silenced by the ringer switch (or iPad's silent mode) unless
 // the page declares it plays media, and sound may only start inside a tap. unlockAudio runs
@@ -1648,6 +1649,7 @@ function onAudioMessage(m, source) {
       silentAudio?.pause();
       setStatus(t('ended'));
       updateLinePlay();
+      updatePause();
     }
   }
 }
@@ -1825,7 +1827,37 @@ function stop() {
   channelView.stop();
   cvSession = -1;
   updateLinePlay();
+  // A stopped song is not paused any more; the next one finds the audio running.
+  if (paused) { paused = false; ctx?.resume().catch(() => {}); }
+  updatePause();
 }
+
+// ---------- pause ----------
+// Pause holds the audio clock: the worklet stops asking for sound, so the engine stops
+// rendering ahead, and the playing marks, channel view and clock stay where they are.
+// Resume goes on from there; Play compiles and starts again from the top.
+function updatePause() {
+  const btn = $('pause');
+  btn.disabled = !playing;
+  btn.setAttribute('aria-pressed', String(paused));
+  const label = btn.querySelector('span');
+  label.dataset.i18n = paused ? 'resume' : 'pause';   // so a language change keeps it
+  label.textContent = t(label.dataset.i18n);
+}
+function togglePause() {
+  if (!playing || !ctx) return;
+  paused = !paused;
+  if (paused) {
+    ctx.suspend().catch(() => {});
+    silentAudio?.pause();
+    setStatus(t('paused'));
+  } else {
+    unlockAudio();   // in the tap: resumes the audio (and the iOS media session)
+    setStatus(playingName ? t('playingFile', playingName) : playingRows ? t('playingLines', ...playingRows) : t('playing'));
+  }
+  updatePause();
+}
+$('pause').addEventListener('click', togglePause);
 
 // ---------- playing .mub / .vgm files ----------
 // A .mub plays on the editor's engine; a .vgm/.vgz on a second engine that is only
@@ -2020,6 +2052,7 @@ document.addEventListener('keydown', (e) => {
   else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); play(); }
   else if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveMuc(); }
   else if (e.key === 'Escape' && !$('samplesDlg').open) { stopByUser(); }
+  else if (e.key === 'F8') { e.preventDefault(); togglePause(); }
   else if (e.key === 'F6' && splitMode === 'bank' && bankReady) {
     // F6: between the text and the bank.
     e.preventDefault();
