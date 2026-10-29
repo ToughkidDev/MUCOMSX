@@ -1,0 +1,73 @@
+#mucom88 1.7
+#title Gradius II Game Over
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment Gradius II -Gofer no Yabou- (X68000)
+#voice GRADIUS2.DAT
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch5 H=ch6 I=ch7 J=ch8
+; YM2151 FM -> SCC wave+envelope: SCCA=ch3 SCCB=ch4
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ 0,47,74,105,109,127,110,93,64,40,27,-1,-7,-24,-9,-7,0,7,9,24,7,1,-27,-40,-64,-93,-110,-127,-109,-105,-74,-47 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o5a8. v106 q7 a8 v114 q4 b q7 >c8 q5 g8. v106}
+#*2{q10 *1 q2 o6g v114 q7 g8 v106}
+#*3{o5a4. p1 D-3 >c4. p2 D-4 g4. p1 D-5}
+#*4{v114 o4a >c f c a v116 <e v114}
+#*5{o4f *4 g >c e c <g}
+#*6{q7 o5a8 v111 D5 q4 b D3 q7 >c8 D5 q5 g8. v103 q2}
+#*7{q10 o5a8. v103 *6 g v111 q7 g8 v103}
+#*8{H4,1,0 o5f80& H4,5,0 f120& H4,6,0}
+#*9{p2 H4,0,0 o6f%7& H4,1,0 f60& H4,5,0 f240& H4,6,0 f%33 p1}
+#*10{*9 H4,0,0 o5e%7& H4,1,0 e80& H4,5,0 e120& H4,6,0 e%33}
+#*11{p2 H4,0,0 o6e%7& H4,1,0 e80& H4,5,0 e120& H4,6,0 e%33 p1}
+#*12{*10 *11 H4,0,0 o5d%7& H4,1,0 d60& H4,5,0 d240& H4,6,0}
+#*13{p2 H4,0,0 o6d%7& H4,1,0 d80& H4,5,0 d120& H4,6,0 d%33 p1}
+#*14{o5c%7& H4,1,0 c80& H4,5,0 c120& H4,6,0}
+#*15{H4,0,0 q0 *14 o5c%78& v85 H4,0,0}
+#*16{H4,0,0 o6f%7& H4,1,0 f80& H4,5,0 f120& H4,6,0 f%33 D4}
+#*17{o5f%7& H4,1,0 f60& H4,5,0 f240& H4,6,0 f%33 *16 H4,0,0}
+#*18{o5c%7& H4,1,0 c60& H4,5,0 c240& H4,6,0}
+#*19{o5c%33 H4,0,0 >c%7& H4,1,0 c80& H4,5,0 c120& H4,6,0}
+#*20{o6c%33 H4,0,0 <d%7& H4,1,0 d80& H4,5,0 d120& H4,6,0}
+#*21{*20 o5d%33 H4,0,0 >d%7& H4,1,0 d60& H4,5,0 d240& H4,6,0}
+#*22{q16 o5c8 v6 q1 c}
+#*23{q16 o4g8 v6 q1 g v12}
+#*24{q16 o4c8 v6 q1 c}
+#*25{D-11 o5e40. D-13 g40. D-19 a40. D-10}
+#*26{o5e40. g40. D-3 a40. D0}
+
+A C240 l16 vm2 r120 @24 v114 p3 *2 q4 g v114 <a a b q7 a8 q6 g4 *2 g8 v114 q4 f
+A d q0 e4.& v89 e4.
+
+B C240 l16 vm2 r48 @24 v114 p2 D-5 q1 *3 <a4. p2 *3 q0 <b4.& v89 p2 b4.
+
+C C240 l16 vm2 r120 @37 v116 p3 q7 *5 v116 d v114 f a >d <a f v116 c v114 e g
+C >c <g e v116 *5 d v116 f v114 a >d <a f v115 q0 c4.& v86 c4.
+
+F C240 l16 t228 r240 t228 r240 [ t224 r60 t223 r%7 ]86 t224 r60
+
+H C240 l16 vm2 r120 @24 v111 p3 D4 q5 o5a%21 *7 q4 g v111 D4 <a a D5 b D4 q7 a8
+H D5 q6 g4 D4 *7 g8 v111 D4 q4 f D3 d q0 e%75& v85 e4.
+
+I C240 l16 vm2 r120 @25 v111 p1 D-4 q1 o5f30& *8 f%32 *12 d%33 *13 H4,0,0
+I <e%7& H4,1,0 e60& H4,5,0 e120& H4,6,0 e%32 *11 H4,0,0 <f%7& *8 f%33 *12 d%33
+I *13 D-3 *15 *14 c%78& v69 H4,0,0 *14 c%78
+
+J C240 l16 vm2 r48 @25 v111 p3 D5 q1 *17 *18 *19 *21 d%33 H4,0,0 *14 *19 c%33
+J D5 H4,0,0 *17 *14 c%33 H4,0,0 >c%7& H4,1,0 c60& H4,5,0 c240& H4,6,0 *21 d%33
+J *15 *18 c%78& v69 H4,0,0 *14 c%78
+
+SCCA C240 l16 r120 @0 E0,97,0,255,1,3 v12 D-24 [ *22 v12 ]2 D-13 *23 D-24 *24
+SCCA v12 D-13 *23 D-16 q16 d8 v6 q1 d v12 D-13 q16 <g8 v6 q1 g v12 D-20 q16 c8
+SCCA v6 q1 c v12 D-24 [ *22 v12 ]2 D-13 *23 D-24 *24 v15 D-16 d [ D-13 f D-11 a
+SCCA ]2 D-8 >d20 D-21 f20 D-24 c40 D-8 d40 *25 b5. v1 *25 b5. v0 *25 q0 b%71
+
+SCCB C240 l16 r48 @0 E0,97,0,255,1,3 [ v12 *22 ]2 v12 *23 D1 *24 v12 D0 *23 q16
+SCCB d8 v6 q1 d v12 D1 q16 <g8 v6 q1 g v12 D6 q16 c8 v6 q1 c v12 D0 [ *22 v12
+SCCB ]2 *23 D1 *24 v14 D0 d f a f a >d20 D-5 f20 D0 c40 d40 *26 g5. v1 *26 g5.
+SCCB v0 *26 q0 g%71

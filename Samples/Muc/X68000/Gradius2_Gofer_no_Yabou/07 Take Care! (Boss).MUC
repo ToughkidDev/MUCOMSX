@@ -1,0 +1,57 @@
+#mucom88 1.7
+#title Gradius II Take Care! (Boss)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment Gradius II -Gofer no Yabou- (X68000)
+#voice GRADIUS2.DAT
+#pcm GRADIUS2.BIN
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch6 J=ch7
+; YM2151 FM -> SCC wave+envelope: SCCA=ch5
+; K = MSM6258 ADPCM -> ADPCM-B (GRADIUS2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ 0,78,125,127,92,38,-14,-55,-82,-96,-102,-101,-94,-80,-59,-31,0,31,59,80,94,101,102,96,82,55,14,-38,-92,-127,-125,-78 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o5g+8. v108 g+8. v105 g+8. q5 g+ v123}
+#*2{o7c <g d b g d}
+#*3{o4g+ D0 d+ c D-2 a+ D-5 f D-8 d}
+#*4{D-4 o4g+ D0}
+#*5{D-5 o4g}
+#*6{D-5 o4f D0 c D-1 <f D-5 >f D0 c}
+#*7{D-7 o5d+ D-8 c}
+#*8{D-13 o5g D0 d}
+#*9{o5f D-8 c}
+
+A C144 l16 vm2 r72 L MF0 @5 v126 p3 D9 q5 o3g+1 q18 >g+1 q5 <g1 q18 >g1
+
+B C144 l16 vm2 r72 L r MF0 @19 v123 p3 D-3 q14 o4g+8. v114 g+8. v111 g+8. v108
+B g+8. v105 g+8. q5 g+ v123 q14 >g+8. v114 g+8. v111 *1 q14 <g8. v114 g8. v111
+B g8. v108 g8. v105 g8. q5 g v123 q14 >g8. v114 g8. v111 g8. v108 g8. v105 g8.
+
+C C144 l16 vm2 r72 L MF0 @31 v117 p3 q7 o7d+ c <d+ >d <a+ f [ >c <g+ d+ ]2 >c
+C <d+ >d <f >d+ <g+ f >d <a+ f [ >c <g+ d+ ]2 >c <f >d <g+ *2 [ a f c ]2 a f b
+C g *2 [ a f c ]2 a f b d
+
+F C144 l16 t228 r144 t228 r144 L t222 r144 t221 r144
+
+H C144 l16 vm2 r72 L MF0 @32 v113 p3 D2 q1 [ o4g+ >d+ ]16 [ <g D1 >d D2 ]15 <g
+H D1 >d
+
+I C144 l16 vm2 r72 L MF0 @5 v112 p1 D-4 q3 o3g+1 q9 >g+1 q3 <g1 q9 >g1
+
+J C144 l16 vm2 r72 L MF0 @19 v123 p3 q15 o5g+8. v114 g+8. v115 *1 q15 >g+8.
+J v114 g+8. v115 g+8. v108 g+8. v105 g+8. q5 g+ v123 q15 <g8. v114 g8. v115 g8.
+J v108 g8. v105 g8. q5 g v123 q15 >g8. v114 g8. v115 g8. v108 g8. v105 g8. q5 g
+
+K C144 l16 r144 L r144 @11 D31695 p3 v240 o1c%86 r%58 c%85 r%59 c%86 r%58 c%86
+K r%57
+
+SCCA C144 l16 r72 L MF0 @0 E0,194,0,255,0,1 v11 D-4 q8 *3 [ *4 d+ c ]2 *4 c D-2
+SCCA a+ D-8 d D-4 *3 [ *4 d+ c ]2 *4 c D-2 a+ [ D-8 d *5 D-8 d D-1 <g *5 D-8 d
+SCCA D-1 <g *6 D-1 <f D-5 >f D0 c *5 ]2 D-2 <b [ D-13 o5g *7 D-5 f D0 d D-2 <a+
+SCCA *7 D-4 <g+ *7 D-4 <g+ *7 D-5 f D0 d ]2 [ *8 *5 ]2 [ *9 D-5 <f ]2 *9 [ *8
+SCCA ]2 *5 *8 *5 [ *9 D-5 <f ]2 *9 D-13 g D-2 <b

@@ -1,0 +1,77 @@
+#mucom88 1.7
+#title Gradius II The Final Enemy (Stage 8-3)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment Gradius II -Gofer no Yabou- (X68000)
+#voice GRADIUS2.DAT
+#pcm GRADIUS2.BIN
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch4 H=ch5 I=ch6 J=ch7
+; YM2151 FM -> SCC wave+envelope: SCCA=ch3
+; K = MSM6258 ADPCM -> ADPCM-B (GRADIUS2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ -69,111,75,-71,-108,-59,38,88,117,113,119,117,127,118,95,32,-69,-45,-74,-115,-108,-112,-100,-107,-98,-83,-19,64,127,74,-54,-124 }
+  @W1:{ -9,126,104,39,-27,-49,-35,-5,21,35,42,36,30,8,-13,-52,-9,51,15,-8,-27,-36,-39,-34,-18,6,37,50,30,-39,-102,-127 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o4c22. <c22. f22. c22. g22. c22. >c22. <c22.}
+#*2{*1 o3f22. c22. g22. c22. >c22. <c22.}
+#*3{o3b22. <b22. >e22. <b22. >f+22. <b22. >b22. <b22.}
+#*4{o6c22. <c22. f22. c22. g22. c22. >c22. <c22.}
+#*5{*4 o5f22. c22. g22. c22. >c22. <c22.}
+#*6{o5b22. <b22. >e22. <b22. >f+22. <b22. >b22. <b22.}
+#*7{o5g22. <g22. >c22. <g22. >d22. <g22. >g22. <g22.}
+#*8{*7 o5c22. <g22. >d22. <g22. >g22. <g22.}
+#*9{o5f+22. <f+22. b22. f+22. >c+22. <f+22. >f+22. <f+22.}
+#*10{D-3 q1 o6c11. MF0 D-6 q0 <a+8& D-1 a+}
+#*11{MF0 D-6 q1 o5a+22. M46,1,5,9 D-5}
+#*12{o6c22. <c22. D-2 f22. D-1 c22. D-2 g22. D-1 c22.}
+#*13{o5b22. <b22. D-2 >e22. D-3 <b22. D-2 >f+22. D-3 <b22.}
+#*14{o5g11. p3 D-3 a+11. p2 D-2 q4 g22. p1 D-3 q8 b11. p3 D-2}
+#*15{q8 o5g11. p1 *14 q4 g22. p2 D-1 >c22. p1 D-2 <g22. p3}
+#*16{*15 o6c+22. p2 <g22. p1 >d22. p3 <g22.}
+#*17{o1c16 r}
+#*18{r o1c%23 r @4 c%35 r @1 c%23 r c%23 r *17 @4}
+#*19{*17 @19 o1c%36 r22. @4}
+#*20{o1c16 r @1 c16 r @2 c16 r @1 c16 r}
+#*21{D-13 q1 o5g11. D-21 q0 f%23 r%121}
+
+A C176 l176 vm2 r88 L MF0 @15 v122 p3 q1 [ *2 ]4 [ *3 >e22. <b22. >f+22. <b22.
+A >b22. <b22. ]4 [ *2 ]4 [ q5 g11. g11. a+11. q3 g22. q5 b11. q3 g22. >c22.
+A <g22. >c+22. <g22. >d22. <g22. ]4
+
+B C176 l176 vm2 r88 L MF0 @20 v112 p3 q1 [ *5 ]4 [ *6 >e22. <b22. >f+22. <b22.
+B >b22. <b22. ]4 [ *5 ]4 @15 v115 [ q8 g11. g11. a+11. q4 g22. q8 b11. q4 g22.
+B >c22. <g22. >c+22. <g22. >d22. <g22. ]4
+
+C C176 l176 vm2 r88 L MF0 @58 v112 p3 [ q1 o6c11. q0 <a+%23 r%121 ]4 [ q1 b11.
+C q0 a%23 r%121 ]4 [ q1 >c11. q0 <a+%23 r%121 ]4 @27 v115 [ >g8. r%147 q10 f22.
+C q0 ]2 g8. r%147 q10 a+22. q0 g8 r%98 q10 a+22. q0 g16 r%49
+
+F C176 l176 t228 r t228 r L t219 r%3 t218 r88
+
+H C176 l176 vm2 r88 L MF0 @20 v111 p3 q4 [ *8 ]4 [ *9 b22. f+22. >c+22. <f+22.
+H >f+22. <f+22. ]4 [ *8 ]4 @1 v106 [ q2 >d11. d11. f11. q1 d22. q2 f+11. q1
+H d22. g22. d22. g+22. d22. a22. d22. ]4
+
+I C176 l176 vm2 r%14 L M46,1,5,9 @9 v106 p2 [ *10 r%121 M46,1,5,9 ]3 *10 [
+I r%121 D-6 q1 b8& D0 b88 D-6 q0 a8& D-1 a ]4 [ r%121 M46,1,5,9 *10 ]4 r%109
+I M46,1,5,9 @19 v111 p3 [ D-5 q12 g%180 MF0 D-4 q1 f22. M46,1,5,9 ]2 D-5 q12
+I g%180 *11 q8 g%120 *11 q16 g%72
+
+J C176 l176 vm2 r%14 L MF0 @20 v104 p1 D-1 q4 [ *12 *12 >c22. <c22. ]4 D-3 [
+J *13 *13 >b22. <b22. ]4 D-1 [ *12 *12 >c22. <c22. ]4 @15 v106 p2 D-2 [ *16 p2
+J ]3 *16
+
+K C176 l176 r L r @1 D31695 p3 v240 [ o1c%23 *18 c%23 r @1 ]11 c%23 *18 c%5 r
+K c%5 r [ *19 *20 @2 *20 @4 *17 @2 *17 *17 @20 ]2 *19 [ *17 @1 *17 @2 ]3 *17 @1
+K *17 @4 *17 @2 *17 *17 @21 *19 *20 *17 @4 c%5 r c%5 r *17 *17 @5 c%7 r c22 @6
+K c%7 r c%7 r @8 c22 @1 c%7
+
+SCCA C176 l176 r88 L MF0 @0 E0,9,0,255,0,1 v7 [ *21 ]4 [ D-22 q1 f+11. D-11 q0
+SCCA e%23 r%121 ]4 [ *21 ]4 @1 E0,9,0,255,0,2 v8 D-13 [ g%45 r%135 D-21 q9 f22.
+SCCA D-13 q0 ]2 g%45 r%135 D-2 q9 a+22. D-13 q0 g%30 r%90 D-2 q9 a+22. D-13 q0
+SCCA g%15 r%45

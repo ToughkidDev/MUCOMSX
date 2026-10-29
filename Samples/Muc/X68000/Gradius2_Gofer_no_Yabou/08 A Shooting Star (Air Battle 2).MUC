@@ -1,0 +1,141 @@
+#mucom88 1.7
+#title Gradius II A Shooting Star (Air Battle 2)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment Gradius II -Gofer no Yabou- (X68000)
+#voice GRADIUS2.DAT
+#pcm GRADIUS2.BIN
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch4 H=ch5 I=ch6 J=ch7
+; YM2151 FM -> SCC wave+envelope: SCCA=ch3
+; K = MSM6258 ADPCM -> ADPCM-B (GRADIUS2.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ 0,44,83,111,126,127,114,90,59,26,-4,-28,-42,-45,-37,-21,0,21,37,45,42,28,4,-26,-59,-90,-114,-127,-126,-111,-83,-44 }
+  @W1:{ -9,126,104,39,-27,-49,-35,-5,21,35,42,36,30,8,-13,-52,-9,51,15,-8,-27,-36,-39,-34,-18,6,37,50,30,-39,-102,-127 }
+  @W2:{ -62,119,127,90,37,-27,-61,-89,-88,-97,-87,-96,-85,-93,-75,-92,-62,86,93,94,102,98,105,99,106,92,79,29,-19,-89,-109,-125 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o4c c}
+#*2{o4d+ d+}
+#*3{o6g f+ d M24,1,5,10 q9 c2 MF0 q2 d}
+#*4{*3 o5b g a b >c d}
+#*5{o6c M24,1,5,10 q6 d3 MF0 q2}
+#*6{o6c <b a}
+#*7{o5g b >d g d <b}
+#*8{o4e2 f2 g2 @29}
+#*9{o5a >c g <a}
+#*10{*9 o6c g <b >d g b g d}
+#*11{*10 *9 o6c g <a >d g f+ d}
+#*12{D3 o5g72& D5 g144& D8 g72& D10}
+#*13{o5g72& D8 g144& D5 g72& D3 g144& D0 g72& D-2 g72& D-5}
+#*14{*12 *13 o5g144& D-7 g72& D-5}
+#*15{o5g72& D-2 g144& *14 g144& D-2 g72& *12}
+#*16{D-5 o5g72& D-7 g144& D-5 g72& D-2}
+#*17{D5 o5g72& D8 g144& D10 g72& D8}
+#*18{o6d72& D6 d72& D4 d144& D2 d72& D0}
+#*19{o5d g d a d >d}
+#*20{o5a D0 >c D-1 g D-2}
+#*21{D6 o5g72& D9 g144& D6 g72& D4}
+#*22{D-1 o5g72& D-4 g144& D-6 g72& D-9}
+#*23{D-4 o5g72& D1 g144& D4}
+#*24{*21 o5g72& D1 g144& *22 g72& D-6 g144& *23 g72& *21}
+#*25{D4 o5g144& *24 g144& D1 g72& *22 g144& D-6 g72& *23}
+#*26{o5g6& D1 g72& *25 g72& D6 g144& D9}
+#*27{D9 o5g72& D6 g144& D4 g72& D1}
+#*28{D-4 o5g72& D-6 g144& D-9 g72& D-6}
+#*29{o5g g}
+#*30{q0 o5c%7 r%17 q5 c c D-2 <g D-1 >c}
+#*31{o1c%35 r144 c%35 r144 c%23 r144}
+#*32{o1c%11 r144}
+#*33{o1c%5 r144 c%5 r144}
+#*34{o1c%23 r144 c%11 r144 @4}
+#*35{@0 E0,12,0,255,0,6}
+#*36{@1 E0,9,0,255,0,2}
+#*37{D17 o4e72& D6 e144& D0 e72& D-3}
+#*38{D-27 o4e72& D-35 e144& D-43 e72& D-35}
+#*39{o4d+72& D10 d+144& D19 d+72& D10}
+#*40{D-7 o4d+72& D-23 d+144& D-31 d+72& D-39}
+#*41{D-39 o4d+72& D-31 d+144& D-7 d+72& D2}
+#*42{D-8 o5d}
+#*43{M25,1,16,11 D-24 q5 o5c2 MF0 D-8 q1 d D-18 <b D-21}
+#*44{D-19 o4a D-18 b D-24 >c D-8 d}
+#*45{o5g D-22 f+ *42 *43 g *44 D-24 c D-18}
+#*46{D-24 o5c M25,1,16,11 D-8 q3 d3 MF0}
+#*47{D-21 o4g D-18 b *42 D-13 g *42 D-18 <b}
+#*48{D-21 o4g D-24 >c D-27 e}
+#*49{D-22 o4f+ D-19 a *42 d D-19 <a D-22}
+
+A C144 l12 vm2 r72 @16 v118 p3 q9 o4g1 q18 f2. q1 f f f q9 e1 q5 d+2 q3 f4 q1 f
+A f f L MF0 @16 v120 p3 [ q15 c6 q3 *1 <g >c ]4 [ q15 d+6 q3 *2 <a+ >d+ ]4 q15
+A c6 q3 *1 <g >c q15 e6 q3 e e c e q15 f6 q3 f f c f q15 g6 q3 g g d g [ q15 a6
+A q3 a a e a q15 b6 q3 b b g b q15 >c6 q3 c c <g >c q15 d6 q3 d d <a >d ]2 q18
+A <g1 q9 g2 q5 g4 q2 g g g
+
+B C144 l12 vm2 r72 @27 v112 p3 q36 o5d2. @33 v100 q3 >d d d @27 v112 q36 <c2.
+B @33 v100 q3 >c c c @27 v112 q36 o4b2. @33 v100 q3 >b b b @27 v112 <a+2 >c2 L
+B MF0 @20 v112 p3 q2 *4 c <b M23,1,8,10 q5 a4 MF0 q2 a b *5 <a+ f M23,1,8,10
+B q24 g2. MF0 q2 g a a+ a a+ >c d d+ f *4 *6 b >c d <b >g v115 q6 [ <e a >e ]2
+B *7 [ g >c e ]2 <f+ a >d d <a >f+ [ <e a >e ]2 *7 [ g >c e ]2 <f+ a >d d <a q0
+B >f+24 r8 q2 b a g f a g d f e d *5 g a M24,1,5,10 q9 >d2
+
+C C144 l12 vm2 r72 M10,1,4,10 @34 v121 p3 q60 o6g2. MF0 q6 g g g M10,1,4,10 q60
+C f2. MF0 q6 f f f M10,1,4,10 q60 e2. MF0 q6 e e e M10,1,4,10 q5 d+2 f2 L MF0
+C @35 v115 p1 [ q30 o4c2. q3 *1 c ]2 [ q30 d+2. q3 *2 d+ ]2 q14 c2 *8 v113 q4 [
+C *11 a ]2 @33 v108 p3 q6 <g6& *14 *15 g144& D8 g72& D5 g72& D3 g144& D0
+C g72& D-2 g144& D-5 g72& D-7 g72& D-5 g144& D-2 g72& D3 g144& D5 g72& D8
+C g72& D10 g144& D8 g72& D5 g144& D3 g72& D0 g72& D-2 g144& *16 g72& D3
+C g144& *17 g72& D5 g144& D3 g72& D0 g144& D-2 g72& *16 g144& D3 g72& *17
+C g144& D5 g18 D0 q1 g6& D3 g72& *17 g144& D5 g72& D3 g72& D0 g144& D-2
+C g72& D-5 g144& D-7 g72& D-5 *15 g144& D0 >d6& D2 d72& D4 d72& D6 d144& D8 *18
+C c+6& D2 c+144& D4 c+72& D5 c+72& D7 c+144& D5 c+72& D4 c+144& D2 c+48
+
+F C144 l12 t228 r144 t228 [ r144 t221 r9 t220 ]33 r144 t221 r%15 L t221 r%21
+F t220 r144
+
+H C144 l12 vm2 r72 @33 v101 p3 q5 [ *19 ]3 *6 b g d [ *19 ]3 *6 g+ >c+ q0 f%7
+H r%23 L MF0 @35 v111 p3 [ q18 o4c2. q1 *1 c ]2 D-1 [ q18 d+2. q1 *2 d+ ]2 D0
+H q5 c2 D-1 *8 v104 D-2 q4 [ *20 *20 <b D-1 >d g D-2 b D-1 g d D-2 *20 *20 <a
+H D-1 >d g f+ d D-2 a ]2 @33 v104 D-1 q6 *26 g72& D6 g72& D4 g144& D1 g72& D-1
+H g144& D-4 g72& D-6 g72& D-9 g144& D-6 g72& D-4 g144& D1 g72& D4 g72& D6
+H g144& *27 g72& D-1 g144& *28 g72& D-4 g144& D1 g72& D4 g144& D6 g72& *27
+H g144& D-1 g72& *28 g144& D-4 g72& D1 g72& D4 g144& *21 g18 D-1 q1 *26
+H g72& D-1 >d6& D0 d72& D2 d144& D4 *18 d144& D-1 d144& c+6& D0 c+72& D2
+H c+144& D4 c+72& D6 c+72& D4 c+144& D2 c+72& D0 c+72
+
+I C144 l12 vm2 r72 @29 v116 p3 q7 [ *19 ]3 *6 b g d [ *19 ]3 *6 g+ >c+ f L MF0
+I @35 v115 p2 [ q30 o4c2. q3 *1 c ]2 [ q30 d+2. q3 *2 d+ ]2 q14 c2 *8 v112 q4 [
+I *11 a ]2 @33 v106 q7 <g1 q1 g2 >d4 c+4
+
+J C144 l12 vm2 r18 @27 v107 p1 D-5 q18 o5g2. p3 q1 *29 g p1 D-4 q18 f2. p3 q1 f
+J f f p1 q18 e2. p3 q1 e e e p1 q5 d+2 f%66 L MF0 @5 v117 p3 D-1 [ *30 ]4 D-2 [
+J q0 d+%7 r%17 q5 d+ d+ D-3 <a+ D-2 >d+ ]4 D-1 *30 D-2 q0 e%7 r%17 q5 e e D-1 c
+J D-2 e q0 f%7 r%17 q5 f f D-1 c D-2 f q0 g%7 r%17 q5 *29 d g v114 [ D-3 q16 a6
+J q4 a a D-2 e D-3 a q16 b6 q4 b b D-2 g D-3 b D-1 q16 >c6 q4 c c D-2 <g D-1 >c
+J D-2 q16 d6 q4 d d D-3 <a D-2 >d ]2 q45 <g1 q23 g2 q12 g4 q4 *29 g
+
+K C144 l12 r72 @1 D31695 p3 v240 *31 @3 c24 c%5 r144 @12 *32 @13 *32 *32 @1 *31
+K @7 *33 @14 [ *32 ]3 @1 *31 @3 *33 @15 *32 @16 c c @1 c4 c4 c6 @7 c%5 r144 c24
+K @4 c%5 r144 c24 c c @1 c6 c @4 c%11 L r144 @1 D31695 p3 v240 [ c%23 r144 *34
+K *32 @1 ]5 c%23 r144 *34 c%5 r144 c%5 [ r144 *32 *32 @1 *34 c%11 ]2 r144 @1
+K c%23 r144 [ c6 c @4 c @1 c6 ]2 c6 c @4 c @1 c%23 [ r144 *34 *32 @1 *32 c%11
+K ]3 r144 *34 [ *32 ]3 @1 [ *34 *32 @1 *32 *32 ]3 *34 [ *32 ]3 @1 *32 @7 *33 @4
+K *32 c c c @5 c%5 r144 c24 c c @6 c @8 [ c @1 c @4 c @2 ]3 c @1 *32 @5 *33 @6
+K *33 @8 *33 @1 *34 c%11
+
+SCCA C144 l12 r18 M11,1,5,11 *35 v15 D-13 q48 o4g%102 MF0 *36 q6 *29 q8 g8
+SCCA M11,1,5,11 *35 q48 <f%102 MF0 *36 D-21 q6 >f f q8 f8 *35 D-19 q0 <e16& D-3
+SCCA e72& D0 e72& D6 e144& *37 e72& D-19 e144& *38 e72& D-27 e144& D-3 e72& D0
+SCCA e144& D6 e72& *37 e144& D-19 e72& *38 e144& D-27 e72& D-3 e72& D0 e144 r3
+SCCA *36 D-11 q6 >e e q8 e8 *35 D-23 q5 <d+%10& D-7 d+144& D2 *39 d+72& D2
+SCCA d+144& *40 d+72& D-55 d+144& *41 *39 d+144& D2 d+72& *40 d+144& D-55
+SCCA d+72& *41 d+144& D10 d+72& D19 d+72& D10 d+144& D2 d+72& D-7 d+144& D-23
+SCCA d+72& D-31 d+72& D-39 d+24 M9,1,5,11 D-13 q6 f%84 L MF0 @2 E0,9,0,255,0,4
+SCCA v8 D-13 q1 *45 <b M25,1,16,11 D-19 q3 a4 MF0 q1 a D-18 b *46 D-10 q1 <a+
+SCCA D-21 f M25,1,16,11 q18 g2. MF0 q1 g [ D-19 a D-10 a+ ]2 D-24 >c *42 D-23
+SCCA d+ D-21 f D-13 *45 <b *44 D-18 <b D-13 >g v5 [ D-19 <e a D-27 >e ]2 *47 [
+SCCA *48 ]2 *49 >f+ [ D-19 <e a D-27 >e ]2 *47 [ *48 ]2 *49 q13 >f+6 D-10 q1 b
+SCCA v6 D-19 a D-13 g D-21 f D-19 a D-13 g *42 D-21 f D-27 e *42 *46 D-13 q1 g
+SCCA D-19 a M25,1,16,11 D-24 q5 >d2

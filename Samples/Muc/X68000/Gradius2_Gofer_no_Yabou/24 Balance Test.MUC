@@ -1,0 +1,20 @@
+#mucom88 1.7
+#title Gradius II Balance Test
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment Gradius II -Gofer no Yabou- (X68000)
+#voice GRADIUS2.DAT
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+A C112 l56 vm2 r L MF0 @70 v112 p3 q5 [ o7e14. <b14. >e14. q10 f+7. b7. f+7.
+A e7. q5 <b14. >e14. <b14. >e14. f+14. ]2
+
+B C112 l56 vm2 r L MF0 @70 v111 p3 q48 o5b1. q16 b7. q48 a1. q16 a7. q48 g1.
+B q16 g7. q54 a%192
+
+C C112 l56 vm2 r L MF0 @70 v111 p3 q48 o5e1. q16 e7. q48 d1. q16 d7. q48 c1.
+C q16 c7. q54 d%192
+
+F C112 l56 t228 r112 t228 r112 L t221 r112 t220 r16

@@ -1,0 +1,34 @@
+#mucom88 1.7
+#title Gradius II Konami Logo
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment Gradius II -Gofer no Yabou- (X68000)
+#voice GRADIUS2.DAT
+#CarrierCorrection Yes
+; Requires current MucoMSX MSX PSG/SCC extensions (msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; YM2151 FM -> SCC wave+envelope: SCCA=ch7 SCCB=ch8
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ 0,44,83,111,126,127,114,90,59,26,-4,-28,-42,-45,-37,-21,0,21,37,45,42,28,4,-26,-59,-90,-114,-127,-126,-111,-83,-44 }
+
+A C144 l16 vm2 r72 @63 v116 p3 D-3 q14 o5b8. D-2 >g8. >e8. <g8. D-3 q0 <b1
+
+B C144 l16 vm2 r%11 @63 v116 p3 D-1 q14 o6c8. D-3 b8. D-1 >c8. D-2 q0 <e1
+
+C C144 l16 vm2 r%20 @63 v116 p3 D-2 q14 o6e8. D-1 >c8. D-3 <b8. D-1 q0 c1
+
+F C144 l16 [ t228 r t227 r144 ]29
+
+H C144 l16 vm2 r%38 @63 v107 p2 D1 q5 o5b D0 >c e D1 g b D0 >c e c D1 <b g D0 e
+H c D1 q0 <b1
+
+I C144 l16 vm2 r%56 @64 v103 p1 D6 q3 o5b D4 >c e D5 g D6 b D4 >c e c D6 <b D5
+I g D4 e c D6 q0 <b%99
+
+J C144 l16 vm2 r%26 @64 v105 p3 q13 o5b8. >g8. >e8. <g8. q0 <b%77
+
+SCCA C144 l16 r%35 @0 E0,12,0,255,0,6 v10 q13 o5c8. b8. D-24 >c8. D0 q0 <e%77
+
+SCCB C144 l16 r%53 @0 E0,12,0,255,0,6 v6 q16 o5e8. D-24 >c8. D0 <b8. q0 c%59
