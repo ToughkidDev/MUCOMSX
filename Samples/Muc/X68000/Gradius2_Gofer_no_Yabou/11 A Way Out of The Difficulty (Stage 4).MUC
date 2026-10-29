@@ -56,7 +56,7 @@ C p3 g ]5 p2 <a p1 g+ [ p3 >c p2 d+ p1 g+ ]2 p3 >c p2 o5a+ [ p1 >d p3 f p2 a+
 C ]2 p1 >d v113 q3 o5g40 a40 b40 >c40 <b40 >c40 d40 e40 d40 [ e40 f40 g40 ]2
 C a40 f40 g40 p2 a40 b40 g40 [ a40 b40 >c40 ]2 d40 <b40 >c40 d40 e40
 
-F C240 l20 t228 r240 t228 [ r240 t214 r120 t213 ]16 r240 L t214 r%13 t213 r60
+F C240 l20 t228 r120 [ t214 r120 t213 r240 ]16 L t214 r%13 t213 r60
 
 H C240 l20 vm2 r%50 L M24,1,1,8 @30 v112 p3 q6 o5c%96 d%96 d+%96 f%96 MF0 v116
 H q1 <d M30,4,8,2 q3 d5 d10. d10. q4 d4 MF0 q1 c M30,4,8,2 *5 MF0 q1 <a+

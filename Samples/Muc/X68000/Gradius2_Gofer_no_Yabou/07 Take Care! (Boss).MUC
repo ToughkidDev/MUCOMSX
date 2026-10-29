@@ -10,48 +10,56 @@
 ; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch6 J=ch7
 ; YM2151 FM -> SCC wave+envelope: SCCA=ch5
 ; K = MSM6258 ADPCM -> ADPCM-B (GRADIUS2.BIN)
-; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
 
 ; SCC waves: steady-state shape of the YM2151 voices
   @W0:{ 0,78,125,127,92,38,-14,-55,-82,-96,-102,-101,-94,-80,-59,-31,0,31,59,80,94,101,102,96,82,55,14,-38,-92,-127,-125,-78 }
 
 ; macros (#*n{...} is pasted where *n stands)
-#*1{o5g+8. v108 g+8. v105 g+8. q5 g+ v123}
-#*2{o7c <g d b g d}
-#*3{o4g+ D0 d+ c D-2 a+ D-5 f D-8 d}
-#*4{D-4 o4g+ D0}
-#*5{D-5 o4g}
-#*6{D-5 o4f D0 c D-1 <f D-5 >f D0 c}
-#*7{D-7 o5d+ D-8 c}
-#*8{D-13 o5g D0 d}
-#*9{o5f D-8 c}
+#*1{v123 q7}
+#*2{q4 o6f28 q3}
+#*3{q4 o7d28 q3 <a+ *2 >c q4 <g+28 q3 d+ q4 >c28}
+#*4{*3 q3 o6g+ q4 d+28 q3 >c}
+#*5{o6g28 q3 d q4 b28 q3 g q4 d28 q3 a *2}
+#*6{o7c q4 *5 c q4 a28 q3 f q4 c28 q3 a}
+#*7{D-4 q3 o4g+ D0 q4}
+#*8{D-8 q4 o4d28}
+#*9{D-5 q3 o4f D0 q4 c28}
+#*10{D-1 q3 o3g D-5 q4 >g28 D-8 q3 d D-1 q4 <g28 *9}
+#*11{*10 D-1 q3 o3f D-5 q4 >f28 D0 q3 c D-1 q4 <f28}
+#*12{D-13 q3 o5g}
+#*13{D-5 q3 o4g D-13 q4 >g28 D0 q3 d D-5 q4 <g28 q3}
+#*14{D-8 q4 o5c28 D-5 q3 <f q4 >f28 D-8 q3 c D-5 q4}
+#*15{*13 o5f *14 <f28 q3 >f D-8 q4 c28}
 
-A C144 l16 vm2 r72 L MF0 @5 v126 p3 D9 q5 o3g+1 q18 >g+1 q5 <g1 q18 >g1
+A C140 l35 vm2 r140 L MF0 @5 v126 p3 D9 q3 o3g+%72 q9 >g+%72 q3 <g%72 q9 >g%72
 
-B C144 l16 vm2 r72 L r MF0 @19 v123 p3 D-3 q14 o4g+8. v114 g+8. v111 g+8. v108
-B g+8. v105 g+8. q5 g+ v123 q14 >g+8. v114 g+8. v111 *1 q14 <g8. v114 g8. v111
-B g8. v108 g8. v105 g8. q5 g v123 q14 >g8. v114 g8. v111 g8. v108 g8. v105 g8.
+B C140 l35 vm2 r140 L r MF0 @19 v123 p3 D-3 q7 o4g+10 v114 g+%13 v111 g+10 v108
+B g+%13 v105 g+10 q2 g+ *1 >g+10 v114 g+%13 v111 g+10 v108 g+%13 v105 g+10 q2
+B g+ *1 <g10 v114 g%13 v111 g10 v108 g%13 v105 g10 q2 g *1 >g10 v114 g%13 v111
+B g10 v108 g%13 v105 g10
 
-C C144 l16 vm2 r72 L MF0 @31 v117 p3 q7 o7d+ c <d+ >d <a+ f [ >c <g+ d+ ]2 >c
-C <d+ >d <f >d+ <g+ f >d <a+ f [ >c <g+ d+ ]2 >c <f >d <g+ *2 [ a f c ]2 a f b
-C g *2 [ a f c ]2 a f b d
+C C140 l35 vm2 r140 L MF0 @31 v117 p3 q3 o7d+ q4 c28 q3 <d+ *4 q4 <d+28 q3 >d
+C *2 >d+ q4 <g+28 q3 f *4 *2 >d q4 <g+28 q3 *6 *2 b q4 g28 q3 *6 *2 b q4 d28
 
-F C144 l16 t228 r144 t228 r144 L t222 r144 t221 r144
+F C140 l35 t199 r140 L t187 r140
 
-H C144 l16 vm2 r72 L MF0 @32 v113 p3 D2 q1 [ o4g+ >d+ ]16 [ <g D1 >d D2 ]15 <g
-H D1 >d
+H C140 l35 vm2 r140 L MF0 @32 v113 p3 D2 [ q0 o4g+ q1 >d+28 ]16 [ q0 <g D1 q1
+H >d28 D2 ]15 q0 <g D1 q1 >d28
 
-I C144 l16 vm2 r72 L MF0 @5 v112 p1 D-4 q3 o3g+1 q9 >g+1 q3 <g1 q9 >g1
+I C140 l35 vm2 r140 L MF0 @5 v112 p1 D-4 q2 o3g+%72 q5 >g+%72 q2 <g%72 q5 >g%72
 
-J C144 l16 vm2 r72 L MF0 @19 v123 p3 q15 o5g+8. v114 g+8. v115 *1 q15 >g+8.
-J v114 g+8. v115 g+8. v108 g+8. v105 g+8. q5 g+ v123 q15 <g8. v114 g8. v115 g8.
-J v108 g8. v105 g8. q5 g v123 q15 >g8. v114 g8. v115 g8. v108 g8. v105 g8. q5 g
+J C140 l35 vm2 r140 L MF0 @19 v123 p3 q7 o5g+%13 v114 q8 g+10 v115 q7 g+%13
+J v108 q8 g+10 v105 q7 g+%13 q3 g+28 *1 >g+%13 v114 q8 g+10 v115 q7 g+%13 v108
+J q8 g+10 v105 q7 g+%13 q3 g+28 *1 <g%13 v114 q8 g10 v115 q7 g%13 v108 q8 g10
+J v105 q7 g%13 q3 g28 *1 >g%13 v114 q8 g10 v115 q7 g%13 v108 q8 g10 v105 q7
+J g%13 q3 g28
 
-K C144 l16 r144 L r144 @11 D31695 p3 v240 o1c%86 r%58 c%85 r%59 c%86 r%58 c%86
-K r%57
+K C140 l35 L r140 @11 D31695 p3 v240 [ o1c%43 r%29 ]3 c%43 r5
 
-SCCA C144 l16 r72 L MF0 @0 E0,194,0,255,0,1 v11 D-4 q8 *3 [ *4 d+ c ]2 *4 c D-2
-SCCA a+ D-8 d D-4 *3 [ *4 d+ c ]2 *4 c D-2 a+ [ D-8 d *5 D-8 d D-1 <g *5 D-8 d
-SCCA D-1 <g *6 D-1 <f D-5 >f D0 c *5 ]2 D-2 <b [ D-13 o5g *7 D-5 f D0 d D-2 <a+
-SCCA *7 D-4 <g+ *7 D-4 <g+ *7 D-5 f D0 d ]2 [ *8 *5 ]2 [ *9 D-5 <f ]2 *9 [ *8
-SCCA ]2 *5 *8 *5 [ *9 D-5 <f ]2 *9 D-13 g D-2 <b
+SCCA C140 l35 r140 L MF0 @0 E255,255,0,255,0,2 v11 [ *7 d+28 q3 c D-2 q4 a+28
+SCCA D-5 q3 f *8 *7 d+28 q3 c D-4 q4 g+28 D0 q3 d+ q4 c28 *7 c28 D-2 q3 a+ *8
+SCCA ]2 D-5 q3 g *8 *11 *9 [ D-5 q3 g *8 ]2 *11 *9 D-5 q3 g D-2 q4 <b28 [ *12
+SCCA D-7 q4 d+28 D-8 q3 c D-5 q4 f28 D0 q3 d D-2 q4 <a+28 D-7 q3 >d+ D-8 q4 c28
+SCCA D-4 q3 <g+ D-7 q4 >d+28 D-8 q3 c D-4 q4 <g+28 D-7 q3 >d+ D-8 q4 c28 D-5 q3
+SCCA f D0 q4 d28 ]2 *12 D0 q4 d28 *15 [ *12 D0 q4 d28 ]2 *15 *12 D-2 q4 <b28
