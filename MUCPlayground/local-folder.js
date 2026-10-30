@@ -103,9 +103,20 @@ const db = () => new Promise((resolve, reject) => {
 });
 async function rememberFolder(handle) {
   try {
+    // 'last' for Folder…, and up to eight folders a dropped song may be in.
+    const known = (await rememberedFolders()).filter((h) => h.name !== handle.name);
     const store = (await db()).transaction('handles', 'readwrite').objectStore('handles');
     store.put(handle, 'last');
+    store.put([handle, ...known].slice(0, 8), 'all');
   } catch { /* not kept: picked again next time */ }
+}
+async function rememberedFolders() {
+  try {
+    const store = (await db()).transaction('handles', 'readonly').objectStore('handles');
+    const get = (key) => new Promise((resolve) => { const r = store.get(key); r.onsuccess = () => resolve(r.result || null); r.onerror = () => resolve(null); });
+    const all = (await get('all')) || [], last = await get('last');
+    return last && !all.length ? [last] : all;
+  } catch { return []; }
 }
 export async function rememberedFolder() {
   try {
@@ -123,4 +134,57 @@ export async function openRemembered(ask) {
     try { state = await handle.requestPermission({ mode: 'read' }); } catch { state = 'denied'; }
   }
   return state === 'granted' ? fromHandle(handle) : null;
+}
+
+// ---------- the folder of a dropped song (Chromium) ----------
+// A song dropped by itself comes without the files next to it. Chromium hands over a file
+// handle for it (DataTransferItem.getAsFileSystemHandle); a folder allowed before that holds
+// it finds its files without asking again, and the folder picker opens right in its folder.
+//   { song: path of the song in `folder`, folder (only the song's own folder and below,
+//     quick to list), root() -> the whole allowed folder, for files kept further up }
+async function songIn(dir, parts) {
+  let d = dir;
+  for (const p of parts.slice(0, -1)) d = await d.getDirectoryHandle(p);
+  return {
+    song: parts[parts.length - 1],
+    folder: await fromHandle(d),
+    root: async () => ({ song: parts.join('/'), folder: await fromHandle(dir) }),
+  };
+}
+
+// The allowed folder a dropped song is in: { found, needs } — `found` as above when the
+// folder may be read now, else `needs`, a remembered folder holding it that has to be
+// allowed again (with a click: allowFolder). null when no remembered folder holds it.
+export async function folderOfSong(fileHandle) {
+  if (!fileHandle) return null;
+  for (const dir of await rememberedFolders()) {
+    try {
+      const parts = await dir.resolve(fileHandle);
+      if (!parts) continue;
+      if (await dir.queryPermission({ mode: 'read' }) === 'granted') return { found: await songIn(dir, parts) };
+      return { needs: dir, parts };
+    } catch { /* gone or not comparable */ }
+  }
+  return null;
+}
+
+// After a click: allows a remembered folder again, or picks the song's folder (the picker
+// opens where the song is). Returns { song, folder, root } as above, or null.
+export async function allowFolder(fileHandle, remembered) {
+  if (remembered) {
+    try {
+      if (await remembered.needs.requestPermission({ mode: 'read' }) === 'granted') return songIn(remembered.needs, remembered.parts);
+    } catch { /* fall back to the picker */ }
+  }
+  if (!window.showDirectoryPicker) return null;
+  let dir;
+  try { dir = await window.showDirectoryPicker({ id: 'mucplayground', mode: 'read', startIn: fileHandle || undefined }); }
+  catch (e) { if (e.name === 'AbortError') return null; throw e; }
+  await rememberFolder(dir);
+  const parts = fileHandle ? await dir.resolve(fileHandle).catch(() => null) : null;
+  if (parts) return songIn(dir, parts);
+  // Not inside it: look the song up by name.
+  const folder = await fromHandle(dir);
+  const song = fileHandle ? findSong(folder, fileHandle.name) : null;
+  return { song, folder, root: async () => ({ song, folder }) };
 }

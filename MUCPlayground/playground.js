@@ -21,7 +21,7 @@ import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, im
 import { readPcmBank, putPcm, mucPcms, pcmLine, mucSamples, pcmKey, importPcm, encodeAdpcm, decodeAdpcm, resample, readWav, writeWav, wavFitsCompiler, NATIVE_RATE, SLOTS as PCM_SLOTS, RAM_SIZE } from './pcm-bank.js';
 import { PcmEditor } from './pcm-editor.js';
 import { applyTips, bankTip } from './tooltips.js';
-import { pickFolder, fromDropEntries, findRef, findSong, openRemembered } from './local-folder.js';
+import { pickFolder, fromDropEntries, findRef, findSong, openRemembered, folderOfSong, allowFolder } from './local-folder.js';
 import { timeline } from './mml-timeline.js';
 import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
@@ -158,6 +158,10 @@ const T = {
     loadingSample: (n) => `Loading ${n}…`, sampleFailed: 'Could not load the sample: ',
     openFolder: 'Folder…', folderOther: 'Another folder…', folderFailed: 'Could not read the folder: ',
     folderTitle: (n) => `Folder: ${n}`, folderSource: (songs, all) => `${songs} songs among ${all} files. Opening one attaches the voice / PCM files it names from the folder.`,
+    folderNote: (list) => `${list}: a song dropped by itself comes without the files next to it (the browser does not let a page read them). Allow its folder once to load them; songs dropped from that folder later load theirs by themselves.`,
+    folderNoteAgain: (list) => `${list}: allow this song's folder again to load them (the browser asks once per visit).`,
+    folderNotePick: (list) => `${list}: a song dropped by itself comes without the files next to it. Drop it together with them, drop its folder, or choose the folder here.`,
+    folderNoteGo: 'Allow the folder and load', folderNoteAgainGo: 'Allow again', folderNotePickGo: 'Choose the folder…',
     folderOpened: (n) => `Opened ${n} from the folder`, attachedFiles: (list) => `attached ${list}`, stillMissing: (list) => `still missing: ${list}`,
     missingFile_pcm: (f) => `${f} (#pcm) is not attached, so the ADPCM part K plays nothing.`, missingFile_voice: (f) => `${f} (#voice) is not attached, so voices the MUC does not define itself cannot be found.`,
     shortMorph: (n, k) => `?WM${n}: the morph reads about 31 waves from wave ${n} on; ${k} are defined, so it wraps to the first ones.`,
@@ -313,6 +317,10 @@ const T = {
     demo: '데모 (FM + SSG + 리듬)', template: '템플릿 (OPNA + MSX 칩)', yourSong: '내 곡 (자동 저장)', samples: '샘플',
     loadingSample: (n) => `${n} 불러오는 중…`, sampleFailed: '샘플을 불러오지 못했습니다: ',
     openFolder: '폴더…', folderOther: '다른 폴더…', folderFailed: '폴더를 읽지 못했습니다: ',
+    folderNote: (list) => `${list}: 곡 파일만 놓으면 브라우저가 같은 폴더의 파일을 페이지에 넘겨주지 않습니다. 이 곡의 폴더를 한 번 허용하면 함께 불러오고, 다음부터는 그 폴더의 곡을 놓을 때 자동으로 불러옵니다.`,
+    folderNoteAgain: (list) => `${list}: 이 곡의 폴더를 다시 허용하면 불러옵니다 (브라우저가 방문할 때마다 한 번 묻습니다).`,
+    folderNotePick: (list) => `${list}: 곡 파일만 놓으면 같은 폴더의 파일은 함께 오지 않습니다. 곡과 함께 놓거나, 폴더째 놓거나, 여기서 폴더를 고르세요.`,
+    folderNoteGo: '폴더 허용하고 불러오기', folderNoteAgainGo: '다시 허용', folderNotePickGo: '폴더 선택…',
     folderTitle: (n) => `폴더: ${n}`, folderSource: (songs, all) => `파일 ${all}개 중 곡 ${songs}개. 곡을 열면 그 곡이 쓰는 음색·PCM 파일을 폴더에서 찾아 함께 첨부합니다.`,
     folderOpened: (n) => `폴더에서 ${n}을 열었습니다`, attachedFiles: (list) => `첨부: ${list}`, stillMissing: (list) => `아직 없음: ${list}`,
     missingFile_pcm: (f) => `${f}(#pcm)가 첨부되지 않아 ADPCM 파트 K가 소리 나지 않습니다.`, missingFile_voice: (f) => `${f}(#voice)가 첨부되지 않아 MUC에 정의되지 않은 음색을 찾을 수 없습니다.`,
@@ -469,6 +477,10 @@ const T = {
     demo: 'デモ（FM + SSG + リズム）', template: 'テンプレート（OPNA + MSXチップ）', yourSong: '自分の曲（自動保存）', samples: 'サンプル曲',
     loadingSample: (n) => `${n}を読み込み中…`, sampleFailed: 'サンプルを読み込めませんでした: ',
     openFolder: 'フォルダ…', folderOther: '別のフォルダ…', folderFailed: 'フォルダを読めませんでした: ',
+    folderNote: (list) => `${list}: 曲ファイルだけをドロップすると、ブラウザは同じフォルダのファイルをページに渡しません。この曲のフォルダを一度許可すると一緒に読み込み、次からはそのフォルダの曲をドロップすると自動で読み込みます。`,
+    folderNoteAgain: (list) => `${list}: この曲のフォルダをもう一度許可すると読み込みます（ブラウザは訪問ごとに一度確認します）。`,
+    folderNotePick: (list) => `${list}: 曲ファイルだけをドロップすると、同じフォルダのファイルは一緒に来ません。曲と一緒にドロップするか、フォルダごとドロップするか、ここでフォルダを選んでください。`,
+    folderNoteGo: 'フォルダを許可して読み込む', folderNoteAgainGo: 'もう一度許可', folderNotePickGo: 'フォルダを選ぶ…',
     folderTitle: (n) => `フォルダ: ${n}`, folderSource: (songs, all) => `${all}ファイル中${songs}曲。曲を開くと、その曲が使う音色・PCMファイルをフォルダから探して一緒に添付します。`,
     folderOpened: (n) => `フォルダから${n}を開きました`, attachedFiles: (list) => `添付: ${list}`, stillMissing: (list) => `まだない: ${list}`,
     missingFile_pcm: (f) => `${f}（#pcm）が添付されていないため、ADPCMパートKが鳴りません。`, missingFile_voice: (f) => `${f}（#voice）が添付されていないため、MUCで定義していない音色が見つかりません。`,
@@ -1127,6 +1139,7 @@ async function recoverMissingFiles() {
 
 function renderFiles() {
   if (bankReady) scheduleBank();
+  if (!$('folderNote').hidden && !missingFiles().length) $('folderNote').hidden = true;
   const list = $('files');
   list.innerHTML = '';
   const shown = new Set();
@@ -1205,6 +1218,64 @@ async function attachFromKnownFolder(songName) {
   return attachRefs(folder, path);
 }
 
+// A song dropped by itself (Chromium hands over its file handle): its files from the
+// folder it is in, when that folder was allowed before (local-folder.js folderOfSong).
+let songHandle = null;     // the dropped song's file handle, while it is the song in the editor
+let pendingAllow = null;   // a remembered folder holding it that must be allowed again
+let playAfterAllow = false; // the drop meant to play it: play once its files are in
+async function attachFromSongFolder() {
+  if (!missingFiles().length || !songHandle) return [];
+  const hit = await folderOfSong(songHandle).catch(() => null);
+  if (!hit?.found) { pendingAllow = hit?.needs ? hit : null; return []; }
+  return attachFromFound(hit.found);
+}
+// The song's own folder first; files kept further up the allowed folder after that.
+async function attachFromFound(found) {
+  currentFolder = found.folder;
+  songFolderPath = found.song;
+  let got = await attachRefs(found.folder, found.song);
+  if (missingFiles().length && found.root) {
+    const all = await found.root();
+    currentFolder = all.folder;
+    songFolderPath = all.song;
+    got = got.concat(await attachRefs(all.folder, all.song));
+  }
+  return got;
+}
+// Files still missing after a drop: a note with the one click that can fetch them.
+function showFolderNote() {
+  const missing = missingFiles();
+  if (!missing.length) { $('folderNote').hidden = true; return; }
+  const list = missing.join(', ');
+  const kind = songHandle && window.showDirectoryPicker ? (pendingAllow ? 'Again' : '') : 'Pick';
+  $('folderNoteText').textContent = t('folderNote' + kind, list);
+  $('folderNoteGo').textContent = t('folderNote' + kind + 'Go');
+  $('folderNote').hidden = false;
+}
+async function allowSongFolder() {
+  $('folderNote').hidden = true;
+  let found = null;
+  try {
+    if (songHandle && window.showDirectoryPicker) found = await allowFolder(songHandle, pendingAllow);
+    else {
+      const folder = await chooseFolder();
+      if (folder) { const song = findSong(folder, sourceName); found = { folder, song }; }
+    }
+  } catch (e) { setStatus(t('folderFailed') + (e.message || e), true); return; }
+  pendingAllow = null;
+  if (!found) { showFolderNote(); return; }
+  const got = await attachFromFound(found);
+  const missing = missingFiles();
+  setStatus([got.length ? t('attachedFiles', got.join(', ')) : '', missing.length ? t('stillMissing', missing.join(', ')) : ''].filter(Boolean).join(' · ') || t('ready'));
+  scheduleCheck();
+  if (missing.length) showFolderNote();
+  // The drop meant to play it, or it was playing without them: play it with them.
+  if (got.length && (playAfterAllow || (playing && active === 'muc' && !playingRows))) play();
+  playAfterAllow = false;
+}
+$('folderNoteGo').addEventListener('click', allowSongFolder);
+$('folderNoteClose').addEventListener('click', () => { $('folderNote').hidden = true; });
+
 async function chooseFolder() {
   try { return await pickFolder($('folderInput')); }
   catch (e) { setStatus(t('folderFailed') + (e.message || e), true); return null; }
@@ -1265,6 +1336,7 @@ async function loadFolderSong(folder, path) {
 // The missing-file warning's "Find in folder": the song's folder (asking for the
 // remembered one, or picking one), then its files from there.
 async function findMissingInFolder() {
+  if (songHandle && window.showDirectoryPicker) { await allowSongFolder(); return; }
   let folder = currentFolder || await openRemembered(true).catch(() => null);
   let path = folder ? (folder === currentFolder && songFolderPath) || findSong(folder, sourceName) : null;
   if (!folder || path === null) {
@@ -1394,7 +1466,7 @@ $('openInput').addEventListener('change', async (e) => {
 // Files picked or dropped together: voice / PCM files are attached first, then the song
 // (the first .muc / .mub / .vgm) opens; a song with files still missing looks for them in
 // the folder opened with Folder…, when it is there.
-async function openPicked(list, playMuc) {
+async function openPicked(list, playMuc, handles = null) {
   let playable = null;
   const attached = [];
   for (const f of list) {
@@ -1409,11 +1481,15 @@ async function openPicked(list, playMuc) {
   }
   if (playable.kind !== 'muc') { playFile(playable.name, playable.data); return; }
   openMuc(playable.name, playable.data);
+  songHandle = await handles?.get(playable.name)?.catch(() => null) || null;
   songFolderPath = null;
   const found = await attachFromKnownFolder(playable.name);
+  found.push(...await attachFromSongFolder());
   const missing = missingFiles();
   setStatus([attached.length || found.length ? t('attachedFiles', [...attached, ...found].join(', ')) : '', missing.length ? t('stillMissing', missing.join(', ')) : ''].filter(Boolean).join(' · ') || (engineReady ? t('ready') : t('loading')));
   scheduleCheck();
+  showFolderNote();
+  playAfterAllow = playMuc;
   if (playMuc) play();
 }
 
@@ -1432,6 +1508,10 @@ function kindOf(name, data) {
 let sourceName = 'SONG.MUC';
 function openMuc(name, buffer) {
   stop();
+  songHandle = null;
+  pendingAllow = null;
+  playAfterAllow = false;
+  $('folderNote').hidden = true;
   sourceName = name;
   setSource(decodeText(buffer));
   current = 'mine';
@@ -1490,20 +1570,27 @@ window.addEventListener('drop', async (e) => {
   // The drop's items can only be read now, before anything is awaited.
   const dirs = [...e.dataTransfer.items].map((i) => i.webkitGetAsEntry?.()).filter((en) => en?.isDirectory);
   const list = [...e.dataTransfer.files];
+  // Chromium: each dropped file's handle, to find the folder a song is in (asked for now,
+  // while the drop can still be read).
+  const handles = new Map();
+  for (const item of e.dataTransfer.items) {
+    const f = item.kind === 'file' && item.getAsFileSystemHandle ? item.getAsFile() : null;
+    if (f) handles.set(f.name, item.getAsFileSystemHandle());
+  }
   const onList = !$('playlist').hidden && $('playlist').contains(e.target);
   // A folder: playlist mode, with every song in it, to choose from.
   if (dirs.length) {
     const folder = await fromDropEntries(dirs);
     setPlaylistMode(true);
     const items = folderItems(folder);
-    const loose = await fileItems(list.filter((f) => !dirs.some((d) => d.name === f.name)));
+    const loose = await fileItems(list.filter((f) => !dirs.some((d) => d.name === f.name)), handles);
     playlist.add([...items, ...loose]);
     setStatus(items.length + loose.length ? t('plAdded', items.length + loose.length) : t('plNoSongs', folder.name), !items.length && !loose.length);
     return;
   }
   // Playlist mode: songs go to the end of the list; dropped elsewhere, the first one plays.
   if (playlistMode) {
-    const items = await fileItems(list);
+    const items = await fileItems(list, handles);
     if (!items.length) { await openPicked(list, false); return; }
     playlist.add(items);
     if (onList) setStatus(t('plAdded', items.length));
@@ -1512,7 +1599,7 @@ window.addEventListener('drop', async (e) => {
   }
   // Attach voice / PCM files first, so a song dropped together with them finds them.
   if (list.some((f) => PLAYABLE.test(f.name))) playlist.setCurrent(null);
-  await openPicked(list, true);
+  await openPicked(list, true, handles);
 });
 
 // ---------- playlist ----------
@@ -1543,7 +1630,7 @@ function folderItems(folder) {
     }));
 }
 // Dropped files: the songs, each keeping the voice / PCM files dropped with them.
-async function fileItems(list) {
+async function fileItems(list, handles = null) {
   const songs = [], files = [];
   for (const f of list) {
     let data;
@@ -1552,7 +1639,7 @@ async function fileItems(list) {
     if (kind === 'other') files.push({ name: f.name, data });
     else songs.push({ f, data, kind });
   }
-  return songs.map(({ f, data, kind }) => Playlist.item({ name: f.name, path: f.name, kind, files, load: async () => data }));
+  return songs.map(({ f, data, kind }) => Playlist.item({ name: f.name, path: f.name, kind, files, handle: handles?.get(f.name) || null, load: async () => data }));
 }
 
 async function playItem(item) {
@@ -1569,11 +1656,15 @@ async function playItem(item) {
   clearFiles();
   for (const f of item.files || []) attach(f.name, f.data);
   openMuc(item.name, data);
+  songHandle = await item.handle?.catch(() => null) || null;
   songFolderPath = null;
   const found = await attachFromKnownFolder(item.name);
+  found.push(...await attachFromSongFolder());
   const missing = missingFiles();
   setStatus([found.length ? t('attachedFiles', found.join(', ')) : '', missing.length ? t('stillMissing', missing.join(', ')) : ''].filter(Boolean).join(' · ') || t('ready'));
   scheduleCheck();
+  showFolderNote();
+  playAfterAllow = true;
   play();
 }
 
