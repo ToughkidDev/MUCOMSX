@@ -517,6 +517,11 @@ footer p{margin:2px 0}
 .samples[open]{display:flex}
 .share-top{align-self:center;padding:5px 12px;font-weight:600;border-color:var(--accent2);color:var(--accent2)}
 .share-top:hover{background:var(--accent2);color:#fff}
+.share-top[aria-pressed="true"]{background:var(--accent2);color:#fff}
+/* Player mode: MDPlayer4Web in place of the editor; everything else is inert and dimmed. */
+.player-frame{flex:1;width:100%;min-height:0;border:0;background:#000}
+body.player-mode #panes,body.player-mode #chview,body.player-mode #keys,body.player-mode .wavedit{display:none !important}
+body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 .share-dlg{width:min(620px,calc((100vw - 32px) / var(--ui)))}
 .new-dlg{width:min(600px,calc((100vw - 32px) / var(--ui)))}
 .new-list{list-style:none;margin:0;padding:0 8px 12px;overflow:auto;border-top:1px solid var(--line)}
@@ -583,6 +588,7 @@ footer p{margin:2px 0}
     <p class="byline">Written by ToughkidCST</p>
   </div>
   <button type="button" class="btn share-top" id="shareBtn" data-i18n-title="shareTip"><span aria-hidden="true">🔗</span> <span data-i18n="share">Share</span></button>
+  <button type="button" class="btn share-top" id="playerModeBtn" aria-pressed="false" data-i18n-title="playerModeTip"><span aria-hidden="true">🎧</span> <span data-i18n="playerMode">Player mode</span></button>
   <div class="sizes">
     <label class="vol"><span data-i18n="fontSize" data-i18n-title="fontSizeTip">Text</span> <input id="fontSize" data-i18n-title="fontSizeTip" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
     <label class="vol"><span data-i18n="uiSize" data-i18n-title="uiSizeTip">Menus</span> <input id="uiSize" data-i18n-title="uiSizeTip" type="range" min="100" max="200" step="10" value="100"> <output id="uiSizeOut" for="uiSize">100%</output></label>
@@ -657,6 +663,7 @@ footer p{margin:2px 0}
     </div>
     <div class="keys" id="keys" hidden></div>
     <div class="chview" id="chview" hidden></div>
+    <iframe class="player-frame" id="playerFrame" title="MDPlayer4Web" hidden allow="autoplay; fullscreen; clipboard-read; clipboard-write"></iframe>
     <div class="wavedit" id="waveEditor" hidden></div>
     <div class="wavedit" id="fmEditor" hidden></div>
     <div class="wavedit" id="pcmEditor" hidden></div>

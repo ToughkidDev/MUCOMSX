@@ -53,7 +53,9 @@ const T = {
     play: '▶ Play', pause: '❚❚ Pause', resume: '▶ Resume', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
-    share: 'Share', shareTip: 'Make a link to this song that opens it ready to play', shareTitle: 'Share this song', shareCopy: 'Copy', shareCopied: 'Copied ✓', shareNative: 'Share…',
+    share: 'Share', shareTip: 'Make a link to this song that opens it ready to play',
+    playerMode: 'Player mode', playerModeTip: 'Player mode: MDPlayer4Web in place of the editor; the rest of the page is off until you press this again',
+    playerModeOn: 'Player mode — MDPlayer4Web. Press Player mode again to go back to the editor.', shareTitle: 'Share this song', shareCopy: 'Copy', shareCopied: 'Copied ✓', shareNative: 'Share…',
     shareSample: (n) => `A link to the sample "${n}" in the repository; its voice and PCM files come with it.`,
     shareExample: 'A link to the built-in example.',
     shareText: (kb) => `The song text is inside the link (${kb} KB compressed); changes made after this are not.`,
@@ -209,7 +211,9 @@ const T = {
     play: '▶ 재생', pause: '❚❚ 일시정지', resume: '▶ 계속', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
-    share: '공유', shareTip: '이 곡을 바로 재생할 수 있는 링크로 만듭니다', shareTitle: '이 곡 공유하기', shareCopy: '복사', shareCopied: '복사됨 ✓', shareNative: '공유…',
+    share: '공유', shareTip: '이 곡을 바로 재생할 수 있는 링크로 만듭니다',
+    playerMode: '플레이어 모드', playerModeTip: '플레이어 모드: 편집기 자리에 MDPlayer4Web을 띄웁니다. 다시 누를 때까지 나머지 화면은 꺼집니다',
+    playerModeOn: '플레이어 모드 — MDPlayer4Web. 플레이어 모드를 다시 누르면 편집기로 돌아갑니다.', shareTitle: '이 곡 공유하기', shareCopy: '복사', shareCopied: '복사됨 ✓', shareNative: '공유…',
     shareSample: (n) => `저장소의 샘플 "${n}" 링크입니다. 음색·PCM 파일도 함께 열립니다.`,
     shareExample: '내장 예제 링크입니다.',
     shareText: (kb) => `곡 텍스트가 링크 안에 들어 있습니다(압축 ${kb} KB). 이후에 고친 내용은 들어가지 않습니다.`,
@@ -365,7 +369,9 @@ const T = {
     play: '▶ 再生', pause: '❚❚ 一時停止', resume: '▶ 再開', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
-    share: '共有', shareTip: 'この曲をすぐ再生できるリンクにします', shareTitle: 'この曲を共有', shareCopy: 'コピー', shareCopied: 'コピーしました ✓', shareNative: '共有…',
+    share: '共有', shareTip: 'この曲をすぐ再生できるリンクにします',
+    playerMode: 'プレイヤーモード', playerModeTip: 'プレイヤーモード: エディタの場所にMDPlayer4Webを表示します。もう一度押すまでほかの部分は使えません',
+    playerModeOn: 'プレイヤーモード — MDPlayer4Web。プレイヤーモードをもう一度押すとエディタに戻ります。', shareTitle: 'この曲を共有', shareCopy: 'コピー', shareCopied: 'コピーしました ✓', shareNative: '共有…',
     shareSample: (n) => `リポジトリのサンプル「${n}」へのリンクです。音色・PCMファイルも一緒に開きます。`,
     shareExample: '内蔵の例へのリンクです。',
     shareText: (kb) => `曲のテキストがリンクの中に入っています（圧縮 ${kb} KB）。この後の変更は入りません。`,
@@ -1480,11 +1486,12 @@ $('saveMub').addEventListener('click', () => exportAs('mub'));
 $('saveVgm').addEventListener('click', () => exportAs('vgm'));
 
 let dragDepth = 0;
-window.addEventListener('dragenter', (e) => { e.preventDefault(); dragDepth++; $('drop').classList.add('on'); });
+window.addEventListener('dragenter', (e) => { e.preventDefault(); if (playerMode) return; dragDepth++; $('drop').classList.add('on'); });
 window.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; $('drop').classList.remove('on'); } });
 window.addEventListener('dragover', (e) => e.preventDefault());
 window.addEventListener('drop', async (e) => {
   e.preventDefault();
+  if (playerMode) return;   // drops belong to the player (on it) in player mode
   dragDepth = 0;
   $('drop').classList.remove('on');
   // The drop's items can only be read now, before anything is awaited.
@@ -1514,6 +1521,32 @@ window.addEventListener('drop', async (e) => {
   if (list.some((f) => PLAYABLE.test(f.name))) playlist.setCurrent(null);
   await openPicked(list, true);
 });
+
+// ---------- player mode ----------
+// MDPlayer4Web where the editor is (like the channel view), and the rest of the page inert
+// (no clicks, focus or keys) until Player mode is pressed again. Leaving unloads the player,
+// so it stops playing; the editor comes back as it was.
+const PLAYER_URL = 'https://toughkiddev.github.io/MDPlayer4Mac/MDPlayer4Web/';
+let playerMode = false;
+function playerLocked() {
+  const top = document.querySelector('header.top');
+  return [top.querySelector('.back'), $('shareBtn'), top.querySelector('.sizes'), top.querySelector('.lang'),
+    document.querySelector('.toolbar'), $('playlist'), $('plSplitter'), document.querySelector('.editor-foot'),
+    document.querySelector('main > aside.side'), document.querySelector('body > footer')].filter(Boolean);
+}
+function setPlayerMode(on) {
+  playerMode = !!on;
+  if (playerMode) { stopByUser(); closeSuggest(); }
+  const frame = $('playerFrame');
+  if (playerMode) frame.src = PLAYER_URL; else frame.removeAttribute('src');
+  frame.hidden = !playerMode;
+  document.body.classList.toggle('player-mode', playerMode);
+  for (const el of playerLocked()) el.inert = playerMode;
+  $('playerModeBtn').setAttribute('aria-pressed', String(playerMode));
+  setStatus(playerMode ? t('playerModeOn') : t('ready'));
+  if (!playerMode) { renderGutter(); renderHighlight(); traceDirty = true; }
+}
+$('playerModeBtn').addEventListener('click', () => setPlayerMode(!playerMode));
 
 // ---------- playlist ----------
 // Playlist mode shows the list on the right of the editor / channel view (playlist.js).
@@ -2176,6 +2209,7 @@ for (const p of panes) {
   p.code.addEventListener('click', closeSuggest);
 }
 document.addEventListener('keydown', (e) => {
+  if (playerMode) return;   // the page's keys are off in player mode
   if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'Enter') { e.preventDefault(); playLines(); }
   else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); play(); }
   else if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); saveMuc(); }
