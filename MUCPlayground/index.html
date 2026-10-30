@@ -92,6 +92,35 @@ select{border:1px solid var(--line);background:var(--bg);border-radius:8px;paddi
 /* ---------- layout ---------- */
 .layout{flex:1;display:grid;grid-template-columns:minmax(0,1fr) calc(340px * var(--ui));grid-template-rows:minmax(0,1fr);min-height:0}
 .editor-wrap{display:flex;flex-direction:column;min-width:0;min-height:420px;border-right:1px solid var(--line)}
+/* The editor / channel view (work-main) and, in playlist mode, the playlist on its right. */
+.work{flex:1;display:flex;min-height:0;--plw:300px}
+.work-main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
+.pl-splitter{flex:0 0 6px;background:var(--line);cursor:col-resize;touch-action:none}
+.pl-splitter:hover,.pl-splitter.drag{background:var(--accent2)}
+.playlist{flex:0 0 var(--plw);min-width:0;display:flex;flex-direction:column;background:var(--panel);color:var(--ink)}
+.playlist.drop-here{outline:2px dashed var(--accent2);outline-offset:-4px}
+.pl-head{display:flex;align-items:center;gap:8px;padding:8px 10px 4px}
+.pl-head .spacer{flex:1}
+.pl-title{font-size:.9rem}
+.pl-hint{margin:0;padding:0 10px 6px;font-size:.74rem;color:var(--muted)}
+.pl-list{list-style:none;margin:0;padding:0 6px 10px;overflow:auto;flex:1;min-height:0;counter-reset:none}
+.pl-list li{display:flex;align-items:stretch;border-radius:6px}
+.pl-list li.current{background:var(--sel)}
+.pl-item{flex:1;min-width:0;display:flex;align-items:center;gap:8px;border:0;background:transparent;color:inherit;
+         text-align:left;padding:6px 6px;border-radius:6px;cursor:pointer;font:inherit;font-size:.85rem}
+.pl-item:hover,.pl-item:focus-visible{background:var(--sel);outline:none}
+.pl-no{font-family:var(--mono);font-size:.72rem;color:var(--muted);min-width:2.2em;text-align:right}
+.pl-text{flex:1;min-width:0;display:flex;flex-direction:column}
+.pl-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-dir{color:var(--muted);font-size:.7rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-dir:empty{display:none}
+.pl-ext{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.pl-list li.current .pl-name{font-weight:700;color:var(--accent)}
+.pl-list li.current .pl-no::before{content:"▶ ";color:var(--accent)}
+.pl-del{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:0 8px;border-radius:6px;font-size:.8rem}
+.pl-del:hover,.pl-del:focus-visible{color:var(--accent);background:var(--sel);outline:none}
+@media (max-width:900px){.work{flex-direction:column}.pl-splitter{display:none}.playlist{flex:0 0 45%;border-top:1px solid var(--line)}.pl-hint{display:none}}
+@media (pointer:coarse){.pl-item{min-height:44px}.pl-del{min-width:44px}}
 .panes{position:relative;flex:1;display:flex;min-height:0;--split:50%;
        --lh:20px;font-family:var(--mono);font-size:13.5px;line-height:var(--lh)}
 .panes.split-stack{flex-direction:column}
@@ -237,7 +266,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .wavedit textarea.fe-text{position:static;flex:1;width:auto;height:auto;min-width:240px;font-family:var(--mono);font-size:.82rem;line-height:1.45;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--code-bg);color:var(--ink);resize:vertical;overflow:auto}
 .wavedit textarea.fe-text::selection{color:var(--ink)}
 @media (max-width:900px){
-  .editor-wrap:has(> .wavedit:not([hidden])){height:auto}
+  .editor-wrap:has(.wavedit:not([hidden])){height:auto}
   .wavedit{flex:none;overflow:visible}
   .we-main{flex-direction:column;min-height:0}
   .we-canvas{flex:none;height:240px}
@@ -571,6 +600,7 @@ footer p{margin:2px 0}
   <button class="btn" id="stop" type="button"><span data-i18n="stop">■ Stop</span> <kbd>Esc</kbd></button>
   <span class="clock" id="clock" aria-live="off">0:00.0</span>
   <button class="btn" id="viewToggle" type="button" aria-pressed="false" data-i18n-title="channelViewTip"><span data-i18n="channelView">▦ Channels</span></button>
+  <button class="btn" id="playlistToggle" type="button" aria-pressed="false" data-i18n-title="plTip"><span data-i18n="plButton">☰ Playlist</span></button>
   <label class="vol"><span data-i18n="volume">Volume</span> <input id="volume" type="range" min="0" max="100" value="70"></label>
   <label class="vol speed"><span data-i18n="speed">Speed</span> <span class="speed-track"><input id="speed" type="range" min="25" max="200" step="1" value="100"></span> <output id="speedOut" for="speed">100%</output></label>
   <span class="spacer"></span>
@@ -595,6 +625,8 @@ footer p{margin:2px 0}
 
 <main class="layout">
   <section class="editor-wrap" aria-label="Editor">
+   <div class="work" id="work">
+    <div class="work-main">
     <div class="panes" id="panes">
       <div class="editor" id="paneA">
         <pre class="gutter" aria-hidden="true"></pre>
@@ -628,6 +660,10 @@ footer p{margin:2px 0}
     <div class="wavedit" id="waveEditor" hidden></div>
     <div class="wavedit" id="fmEditor" hidden></div>
     <div class="wavedit" id="pcmEditor" hidden></div>
+    </div>
+    <div class="splitter pl-splitter" id="plSplitter" role="separator" aria-orientation="vertical" hidden></div>
+    <aside class="playlist" id="playlist" hidden aria-label="Playlist"></aside>
+   </div>
     <div class="editor-foot">
       <span class="grp ed"><span data-i18n="split">Split</span>
         <span class="tool-group" role="group" id="splitModes">

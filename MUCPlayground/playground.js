@@ -26,6 +26,7 @@ import { timeline } from './mml-timeline.js';
 import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 import { installTouchTaps } from './touch-tap.js';
+import { Playlist } from './playlist.js';
 
 // iPad / iPhone: a tap on a button presses it even while the page is busy redrawing.
 installTouchTaps();
@@ -42,6 +43,9 @@ const STORE_MANUAL = 'mucplayground.manualBook';
 const STORE_MANUAL_FOLLOW = 'mucplayground.manualFollow';
 const STORE_MANUAL_SIZE = 'mucplayground.manualFontSize';
 const STORE_KEYS = 'mucplayground.keys';      // { open, octave, source }
+const STORE_PLAYLIST = 'mucplayground.playlist';   // '1' while playlist mode is on
+const STORE_PLAYLIST_W = 'mucplayground.playlistWidth';
+let playlist = null;   // playlist.js, made once the page is set up
 
 const T = {
   en: {
@@ -188,7 +192,12 @@ const T = {
     loadingVgm: 'Loading the VGM player (about 20 MB, first time only)…', vgmFailed: 'The VGM player could not be loaded: ',
     clickToStart: 'Click anywhere on the page to start the sound (the browser needs a click first).',
     unsupported: (n) => `${n} is not a file this player opens.`, playingFile: (n) => `Playing ${n}`,
-    channelView: '▦ Channels', channelViewTip: 'Channel view (MDPlayer4Mac style) / editor', split: 'Split', splitOff: 'One view', splitSide: 'Two views, side by side',
+    channelView: '▦ Channels', channelViewTip: 'Channel view (MDPlayer4Mac style) / editor',
+    plButton: '☰ Playlist', plTip: 'Playlist mode: a list of songs on the right. Dropped songs are added to it; dropped on the list they are only added, dropped anywhere else they are added and played. A dropped folder opens it with every song in the folder.',
+    plTitle: (n) => `Playlist · ${n} ${n === 1 ? 'song' : 'songs'}`, plClear: 'Clear', plClearTip: 'Take every song off the list', plRemove: 'Take off the list',
+    plHint: 'Click a song to play it. Drop songs or a folder here to add them; drop them elsewhere to add and play.',
+    plAdded: (n) => `Added ${n} ${n === 1 ? 'song' : 'songs'} to the playlist`, plNoSongs: (n) => `No .muc / .mub / .vgm / .vgz in ${n}`,
+    dropPlaylist: 'Drop on the playlist to add · anywhere else to add and play · a folder adds all its songs', split: 'Split', splitOff: 'One view', splitSide: 'Two views, side by side',
     splitStack: 'Two views, one above the other', zoom: 'Size', zoomFit: 'Fit',
     cvEmpty: 'Play a song to see its chips here, as in MDPlayer.', cvOther: 'No channel view for: ',
     cvMixerTip: 'Channel volume (MUC and .mub), in MDPlayer4Mac\'s mixer units (0.5 dB steps): from -32 (-16 dB) to +20 (+10 dB), with OFF below -32; 0 is the song\'s own level, 35/43 of the way along as in MDPlayer. Drag a fader along its channel row: it rests at 0 for a moment on the way through. The key at the right puts that fader back to 0; the wheel moves it 0.5 dB; click the number to switch the channel off and on; double-click a fader for 0, or VOL for every channel of the chip. It works on the registers the song writes (FM: the carriers\' TL; SSG / PSG / OPLL / SCC: their volume; rhythm, ADPCM: their level), so louder goes only as far as a register can and a channel on the SSG hardware envelope can only be switched off. Kept for the next songs; saved .mub / .vgm files are not changed.',
@@ -339,7 +348,12 @@ const T = {
     loadingVgm: 'VGM 플레이어를 불러오는 중 (약 20 MB, 처음 한 번만)…', vgmFailed: 'VGM 플레이어를 불러오지 못했습니다: ',
     clickToStart: '페이지 아무 곳이나 클릭하면 소리가 나옵니다 (브라우저가 먼저 클릭을 요구합니다).',
     unsupported: (n) => `${n}은(는) 열 수 없는 파일입니다.`, playingFile: (n) => `${n} 재생 중`,
-    channelView: '▦ 채널 뷰', channelViewTip: '채널 뷰(MDPlayer4Mac 방식) / 에디터 전환', split: '분할', splitOff: '하나로 보기', splitSide: '좌우로 나눠 보기',
+    channelView: '▦ 채널 뷰', channelViewTip: '채널 뷰(MDPlayer4Mac 방식) / 에디터 전환',
+    plButton: '☰ 플레이리스트', plTip: '플레이리스트 모드: 오른쪽에 곡 목록을 띄웁니다. 곡을 끌어다 놓으면 목록에 추가되며, 목록 위에 놓으면 추가만, 다른 곳에 놓으면 추가하고 바로 연주합니다. 폴더를 놓으면 그 폴더의 곡이 모두 목록에 들어갑니다.',
+    plTitle: (n) => `플레이리스트 · ${n}곡`, plClear: '비우기', plClearTip: '목록의 곡을 모두 뺍니다', plRemove: '목록에서 빼기',
+    plHint: '곡을 누르면 연주합니다. 곡이나 폴더를 여기에 놓으면 추가만, 다른 곳에 놓으면 추가하고 연주합니다.',
+    plAdded: (n) => `플레이리스트에 ${n}곡을 추가했습니다`, plNoSongs: (n) => `${n}에 .muc / .mub / .vgm / .vgz 파일이 없습니다`,
+    dropPlaylist: '플레이리스트 위에 놓으면 추가 · 다른 곳에 놓으면 추가하고 연주 · 폴더는 안의 곡을 모두 추가', split: '분할', splitOff: '하나로 보기', splitSide: '좌우로 나눠 보기',
     splitStack: '위아래로 나눠 보기', zoom: '크기', zoomFit: '화면 맞춤',
     cvEmpty: '곡을 재생하면 MDPlayer처럼 칩별 채널이 여기에 표시됩니다.', cvOther: '채널 뷰가 없는 칩: ',
     cvMixerTip: '채널 볼륨 (MUC, .mub), MDPlayer4Mac 믹서 단위(0.5 dB): -32(-16 dB) ~ +20(+10 dB), -32 아래는 OFF. 0이 곡 원래 음량이고 MDPlayer처럼 이동 거리의 35/43 지점에 있습니다. 채널 행의 페이더를 좌우로 끌면 0을 지날 때 살짝 걸립니다. 오른쪽 버튼은 그 페이더를 0으로 되돌립니다. 휠로 0.5 dB씩, 숫자를 클릭하면 그 채널을 끄고 켭니다. 페이더를 더블클릭하면 0, VOL을 더블클릭하면 그 칩의 모든 채널이 0으로 돌아갑니다. 곡이 쓰는 레지스터에 적용되므로 (FM은 캐리어 TL, SSG / PSG / OPLL / SCC는 볼륨, 리듬·ADPCM은 레벨) 키우는 쪽은 레지스터가 허용하는 만큼만 커지고, SSG 하드웨어 엔벨로프 채널은 끄기만 됩니다. 다음 곡에도 유지되고, 저장하는 .mub / .vgm 파일은 바뀌지 않습니다.',
@@ -490,7 +504,12 @@ const T = {
     loadingVgm: 'VGMプレーヤーを読み込み中（約20 MB、初回のみ）…', vgmFailed: 'VGMプレーヤーを読み込めませんでした: ',
     clickToStart: 'ページのどこかをクリックすると音が出ます（ブラウザが最初のクリックを必要とします）。',
     unsupported: (n) => `${n}は開けないファイルです。`, playingFile: (n) => `${n}を再生中`,
-    channelView: '▦ チャンネル', channelViewTip: 'チャンネルビュー（MDPlayer4Mac風）/ エディタの切り替え', split: '分割', splitOff: '1画面', splitSide: '左右に分割',
+    channelView: '▦ チャンネル', channelViewTip: 'チャンネルビュー（MDPlayer4Mac風）/ エディタの切り替え',
+    plButton: '☰ プレイリスト', plTip: 'プレイリストモード: 右側に曲の一覧を出します。ドロップした曲は一覧に追加され、一覧の上なら追加だけ、ほかの場所なら追加してすぐ演奏します。フォルダをドロップするとその中の曲がすべて入ります。',
+    plTitle: (n) => `プレイリスト · ${n}曲`, plClear: '空にする', plClearTip: '一覧の曲をすべて外します', plRemove: '一覧から外す',
+    plHint: '曲をクリックすると演奏します。曲やフォルダをここにドロップすると追加だけ、ほかの場所なら追加して演奏します。',
+    plAdded: (n) => `プレイリストに${n}曲を追加しました`, plNoSongs: (n) => `${n}に.muc / .mub / .vgm / .vgzがありません`,
+    dropPlaylist: 'プレイリストの上なら追加 · ほかの場所なら追加して演奏 · フォルダは中の曲をすべて追加', split: '分割', splitOff: '1画面', splitSide: '左右に分割',
     splitStack: '上下に分割', zoom: 'サイズ', zoomFit: '画面に合わせる',
     cvEmpty: '曲を再生すると、MDPlayerのようにチップごとのチャンネルがここに表示されます。', cvOther: 'チャンネルビューのないチップ: ',
     cvMixerTip: 'チャンネル音量（MUC、.mub）、MDPlayer4Macのミキサー単位（0.5 dB）: -32（-16 dB）〜+20（+10 dB）、-32の下はOFF。0が曲本来の音量で、MDPlayerと同じく移動幅の35/43の位置です。チャンネル行のフェーダーを左右にドラッグすると0で少し引っかかります。右のボタンでそのフェーダーを0に戻します。ホイールで0.5 dBずつ、数字をクリックでそのチャンネルをオフ・オン。フェーダーのダブルクリックで0、VOLのダブルクリックでそのチップの全チャンネルが0に戻ります。曲が書くレジスタに効くため（FMはキャリアのTL、SSG / PSG / OPLL / SCCは音量、リズム・ADPCMはレベル）、大きくする方はレジスタが許す分だけで、SSGハードウェアエンベロープのチャンネルはオフだけできます。次の曲にも残り、保存する.mub / .vgmファイルは変わりません。',
@@ -544,6 +563,7 @@ function applyLanguage() {
   if (bankReady) { bank.build(); if (bank.isOpen) bank.refresh(); }
   if (manualReady) { manual.setLang(lang); quickRef.setLang(lang); }
   if (typeof keyboard !== 'undefined') { keyboard.build(); refreshKeySources(); }
+  playlist?.render();
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
   $('chview').dataset.empty = t('cvEmpty');
@@ -1470,9 +1490,115 @@ window.addEventListener('drop', async (e) => {
   // The drop's items can only be read now, before anything is awaited.
   const dirs = [...e.dataTransfer.items].map((i) => i.webkitGetAsEntry?.()).filter((en) => en?.isDirectory);
   const list = [...e.dataTransfer.files];
-  if (dirs.length) { showFolder(await fromDropEntries(dirs)); return; }
+  const onList = !$('playlist').hidden && $('playlist').contains(e.target);
+  // A folder: playlist mode, with every song in it, to choose from.
+  if (dirs.length) {
+    const folder = await fromDropEntries(dirs);
+    setPlaylistMode(true);
+    const items = folderItems(folder);
+    const loose = await fileItems(list.filter((f) => !dirs.some((d) => d.name === f.name)));
+    playlist.add([...items, ...loose]);
+    setStatus(items.length + loose.length ? t('plAdded', items.length + loose.length) : t('plNoSongs', folder.name), !items.length && !loose.length);
+    return;
+  }
+  // Playlist mode: songs go to the end of the list; dropped elsewhere, the first one plays.
+  if (playlistMode) {
+    const items = await fileItems(list);
+    if (!items.length) { await openPicked(list, false); return; }
+    playlist.add(items);
+    if (onList) setStatus(t('plAdded', items.length));
+    else playItem(items[0]);
+    return;
+  }
   // Attach voice / PCM files first, so a song dropped together with them finds them.
+  if (list.some((f) => PLAYABLE.test(f.name))) playlist.setCurrent(null);
   await openPicked(list, true);
+});
+
+// ---------- playlist ----------
+// Playlist mode shows the list on the right of the editor / channel view (playlist.js).
+let playlistMode = false;
+function setPlaylistMode(on) {
+  playlistMode = !!on;
+  $('playlist').hidden = !playlistMode;
+  $('plSplitter').hidden = !playlistMode;
+  $('playlistToggle').setAttribute('aria-pressed', String(playlistMode));
+  $('drop').dataset.i18n = playlistMode ? 'dropPlaylist' : 'drop';
+  $('drop').textContent = t($('drop').dataset.i18n);
+  store.set(STORE_PLAYLIST, playlistMode ? '1' : '');
+  // The editor and the channel view are narrower or wider now.
+  renderGutter();
+  traceDirty = true;
+}
+$('playlistToggle').addEventListener('click', () => setPlaylistMode(!playlistMode));
+
+const songKind = (name) => (/\.muc$/i.test(name) ? 'muc' : /\.mub$/i.test(name) ? 'mub' : 'vgm');
+// The songs of a folder, in path order; each finds its voice / PCM files in the folder.
+function folderItems(folder) {
+  return folder.entries.filter((e) => PLAYABLE.test(e.path))
+    .sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: 'base' }))
+    .map((e) => Playlist.item({
+      name: e.path.slice(e.path.lastIndexOf('/') + 1), path: (folder.name ? folder.name + '/' : '') + e.path,
+      kind: songKind(e.path), folder, folderPath: e.path, load: async () => (await e.get()).arrayBuffer(),
+    }));
+}
+// Dropped files: the songs, each keeping the voice / PCM files dropped with them.
+async function fileItems(list) {
+  const songs = [], files = [];
+  for (const f of list) {
+    let data;
+    try { data = await f.arrayBuffer(); } catch { continue; }   // a folder among the files
+    const kind = kindOf(f.name, data);
+    if (kind === 'other') files.push({ name: f.name, data });
+    else songs.push({ f, data, kind });
+  }
+  return songs.map(({ f, data, kind }) => Playlist.item({ name: f.name, path: f.name, kind, files, load: async () => data }));
+}
+
+async function playItem(item) {
+  playlist.setCurrent(item);
+  if (item.folder && item.kind === 'muc') {
+    await loadFolderSong(item.folder, item.folderPath);
+    currentFolder = item.folder;
+    play();
+    return;
+  }
+  let data;
+  try { data = await item.load(); } catch (e) { setStatus(t('sampleFailed') + (e.message || e), true); return; }
+  if (item.kind !== 'muc') { playFile(item.name, data); return; }
+  clearFiles();
+  for (const f of item.files || []) attach(f.name, f.data);
+  openMuc(item.name, data);
+  songFolderPath = null;
+  const found = await attachFromKnownFolder(item.name);
+  const missing = missingFiles();
+  setStatus([found.length ? t('attachedFiles', found.join(', ')) : '', missing.length ? t('stillMissing', missing.join(', ')) : ''].filter(Boolean).join(' · ') || t('ready'));
+  scheduleCheck();
+  play();
+}
+
+playlist = new Playlist($('playlist'), { t, onPlay: playItem });
+
+// Drag the bar left of the playlist to make it wider or narrower.
+$('plSplitter').addEventListener('pointerdown', (e) => {
+  const bar = e.currentTarget, work = $('work');
+  bar.setPointerCapture(e.pointerId);
+  bar.classList.add('drag');
+  const move = (ev) => {
+    const box = work.getBoundingClientRect();
+    const w = Math.round(Math.min(box.width * 0.7, Math.max(180, box.right - ev.clientX)));
+    work.style.setProperty('--plw', `${w}px`);
+    traceDirty = true;
+  };
+  const up = () => {
+    bar.classList.remove('drag');
+    bar.removeEventListener('pointermove', move);
+    bar.removeEventListener('pointerup', up);
+    store.set(STORE_PLAYLIST_W, work.style.getPropertyValue('--plw'));
+    renderGutter();
+  };
+  bar.addEventListener('pointermove', move);
+  bar.addEventListener('pointerup', up);
 });
 
 // ---------- engine ----------
@@ -3480,6 +3606,8 @@ for (const p of panes) p.code.addEventListener('input', scheduleBank);
     } catch { /* keep the defaults */ }
   } else renderGutter();
   setSplit(store.get(STORE_SPLIT) || 'off');
+  if (store.get(STORE_PLAYLIST_W)) $('work').style.setProperty('--plw', store.get(STORE_PLAYLIST_W));
+  setPlaylistMode(store.get(STORE_PLAYLIST) === '1');
   applyLanguage();
   if (!engineReady) setStatus(t('loading'));
   (async () => {
