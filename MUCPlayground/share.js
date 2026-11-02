@@ -1,6 +1,8 @@
 // Share links. The page has no server, so a link carries the song itself:
 //   ?sample=Muc/…/SONG.muc   a repository sample, opened as it is (its voice / PCM files
 //                            come from the same folder)
+//   ?playlist=Muc/MSX/Snatcher[&song=SONG.muc]  a repository folder in playlist mode, every
+//                            song in it listed, the one named (else the first) opened
 //   ?ex=demo | ?ex=template | ?ex=extScc …  a built-in example or template, unedited
 //   #s=…                     anything else: the text, compressed, with the repository paths
 //                            of attached files that came from the repository and the bytes
@@ -43,9 +45,10 @@ export async function decodeSong(payload) {
   };
 }
 
-// What a page address asks for: { sample }, { example }, { payload } or null.
+// What a page address asks for: { playlist, song }, { sample }, { example }, { payload } or null.
 export function sharedRequest(loc) {
   const q = new URLSearchParams(loc.search);
+  if (q.get('playlist')) return { playlist: q.get('playlist').replace(/\/+$/, ''), song: q.get('song') || null };
   if (q.get('sample')) return { sample: q.get('sample') };
   if (/^(?:demo|template|ext[A-Z][a-z]+)$/.test(q.get('ex') || '')) return { example: q.get('ex') };
   const h = /^#s=([A-Za-z0-9_-]+)$/.exec(loc.hash);

@@ -198,6 +198,7 @@ const T = {
     plButton: '☰ Playlist', plTip: 'Playlist mode: a list of songs on the right. Dropped songs are added to it; dropped on the list they are only added, dropped anywhere else they are added and played. A dropped folder opens it with every song in the folder.',
     plTitle: (n) => `Playlist · ${n} ${n === 1 ? 'song' : 'songs'}`, plClear: 'Clear', plClearTip: 'Take every song off the list', plRemove: 'Take off the list',
     plHint: 'Click a song to play it. Drop songs or a folder here to add them; drop them elsewhere to add and play.',
+    plShare: '🔗 Share', plShareTip: 'Make a link that opens this playlist (a folder of samples) with the song chosen in it', plShareOnlyFolder: 'Only a playlist of one sample folder (its 📂 button) can be shared as a link.', plShareInfo: (d, n) => `The folder ${d}: ${n} songs, from the repository (songs added to it later are listed too).`, plShareSong: (n) => `Opens with ${n}.`, plSharedOpened: (d, n) => `Opened the shared playlist ${d} (${n} songs). Press Play to listen, or pick a song.`,
     plAdded: (n) => `Added ${n} ${n === 1 ? 'song' : 'songs'} to the playlist`, folderToPlaylist: (d) => `Open the songs of ${d} in the playlist, to pick, hear and edit them`, plNoSongs: (n) => `No .muc / .mub / .vgm / .vgz in ${n}`,
     dropPlaylist: 'Drop on the playlist to add · anywhere else to add and play · a folder adds all its songs', split: 'Split', splitOff: 'One view', splitSide: 'Two views, side by side',
     splitStack: 'Two views, one above the other', zoom: 'Size', zoomFit: 'Fit',
@@ -356,6 +357,7 @@ const T = {
     plButton: '☰ 플레이리스트', plTip: '플레이리스트 모드: 오른쪽에 곡 목록을 띄웁니다. 곡을 끌어다 놓으면 목록에 추가되며, 목록 위에 놓으면 추가만, 다른 곳에 놓으면 추가하고 바로 연주합니다. 폴더를 놓으면 그 폴더의 곡이 모두 목록에 들어갑니다.',
     plTitle: (n) => `플레이리스트 · ${n}곡`, plClear: '비우기', plClearTip: '목록의 곡을 모두 뺍니다', plRemove: '목록에서 빼기',
     plHint: '곡을 누르면 연주합니다. 곡이나 폴더를 여기에 놓으면 추가만, 다른 곳에 놓으면 추가하고 연주합니다.',
+    plShare: '🔗 공유', plShareTip: '이 플레이리스트(샘플 폴더)를 지금 고른 곡과 함께 여는 링크를 만듭니다', plShareOnlyFolder: '샘플 폴더 하나(📂 버튼)로 만든 플레이리스트만 링크로 공유할 수 있습니다.', plShareInfo: (d, n) => `${d} 폴더: ${n}곡, 저장소에서 불러옴 (나중에 폴더에 추가된 곡도 함께 나옴).`, plShareSong: (n) => `${n}을(를) 연 상태로 엽니다.`, plSharedOpened: (d, n) => `공유된 플레이리스트 ${d} (${n}곡)를 열었습니다. 재생을 누르거나 곡을 고르세요.`,
     plAdded: (n) => `플레이리스트에 ${n}곡을 추가했습니다`, folderToPlaylist: (d) => `${d}의 곡을 플레이리스트로 엽니다 (골라서 듣고 편집)`, plNoSongs: (n) => `${n}에 .muc / .mub / .vgm / .vgz 파일이 없습니다`,
     dropPlaylist: '플레이리스트 위에 놓으면 추가 · 다른 곳에 놓으면 추가하고 연주 · 폴더는 안의 곡을 모두 추가', split: '분할', splitOff: '하나로 보기', splitSide: '좌우로 나눠 보기',
     splitStack: '위아래로 나눠 보기', zoom: '크기', zoomFit: '화면 맞춤',
@@ -514,6 +516,7 @@ const T = {
     plButton: '☰ プレイリスト', plTip: 'プレイリストモード: 右側に曲の一覧を出します。ドロップした曲は一覧に追加され、一覧の上なら追加だけ、ほかの場所なら追加してすぐ演奏します。フォルダをドロップするとその中の曲がすべて入ります。',
     plTitle: (n) => `プレイリスト · ${n}曲`, plClear: '空にする', plClearTip: '一覧の曲をすべて外します', plRemove: '一覧から外す',
     plHint: '曲をクリックすると演奏します。曲やフォルダをここにドロップすると追加だけ、ほかの場所なら追加して演奏します。',
+    plShare: '🔗 共有', plShareTip: 'このプレイリスト（サンプルフォルダ）を選んだ曲と一緒に開くリンクを作ります', plShareOnlyFolder: 'サンプルフォルダ1つ（📂ボタン）で作ったプレイリストだけをリンクで共有できます。', plShareInfo: (d, n) => `${d}フォルダ: ${n}曲、リポジトリから読み込み（後でフォルダに追加された曲も出ます）。`, plShareSong: (n) => `${n}を開いた状態で開きます。`, plSharedOpened: (d, n) => `共有されたプレイリスト${d}（${n}曲）を開きました。再生を押すか曲を選んでください。`,
     plAdded: (n) => `プレイリストに${n}曲を追加しました`, folderToPlaylist: (d) => `${d}の曲をプレイリストで開きます（選んで聴いて編集）`, plNoSongs: (n) => `${n}に.muc / .mub / .vgm / .vgzがありません`,
     dropPlaylist: 'プレイリストの上なら追加 · ほかの場所なら追加して演奏 · フォルダは中の曲をすべて追加', split: '分割', splitOff: '1画面', splitSide: '左右に分割',
     splitStack: '上下に分割', zoom: 'サイズ', zoomFit: '画面に合わせる',
@@ -1634,7 +1637,7 @@ async function playItem(item) {
   play();
 }
 
-playlist = new Playlist($('playlist'), { t, onPlay: playItem });
+playlist = new Playlist($('playlist'), { t, onPlay: playItem, onShare: () => sharePlaylist() });
 
 // Drag the bar left of the playlist to make it wider or narrower.
 $('plSplitter').addEventListener('pointerdown', (e) => {
@@ -3751,7 +3754,11 @@ $('shareBtn').addEventListener('click', async () => {
     return;
   }
   if (url.length > 8000) li(t('shareLong', url.length), true);
-  li(t('shareHow'));
+  showShareDialog(url, info);
+});
+// The share dialog with a link and what it carries.
+function showShareDialog(url, info) {
+  info.push({ text: t('shareHow') });
   $('shareUrl').value = url;
   $('shareInfo').innerHTML = '';
   for (const x of info) { const el = document.createElement('li'); el.textContent = x.text; if (x.warn) el.className = 'warn'; $('shareInfo').appendChild(el); }
@@ -3760,7 +3767,22 @@ $('shareBtn').addEventListener('click', async () => {
   $('shareDlg').showModal();
   $('shareUrl').focus();
   $('shareUrl').select();
-});
+}
+
+// The playlist's link: a playlist of one repository folder's samples (what its 📂 opens)
+// is shared as ?playlist=<folder>, with &song= for the song chosen in it.
+const dirOf = (path) => path.slice(0, path.lastIndexOf('/'));
+function sharePlaylist() {
+  const items = playlist.items;
+  const dir = items.length && items.every((x) => x.repoPath) ? dirOf(items[0].repoPath) : null;
+  if (!dir || !safePath(dir + '/') || items.some((x) => dirOf(x.repoPath) !== dir)) { setStatus(t('plShareOnlyFolder'), true); return; }
+  const enc = (s) => s.split('/').map(encodeURIComponent).join('/');
+  const now = playlist.current;
+  const url = `${pageBase(location)}?playlist=${enc(dir.slice(SAMPLES_ROOT.length))}` + (now ? `&song=${encodeURIComponent(now.name)}` : '');
+  const info = [{ text: t('plShareInfo', dir.slice(SAMPLES_ROOT.length), items.length) }];
+  if (now) info.push({ text: t('plShareSong', now.name) });
+  showShareDialog(url, info);
+}
 $('shareCopy').addEventListener('click', async () => {
   const url = $('shareUrl').value;
   try { await navigator.clipboard.writeText(url); }
@@ -3824,6 +3846,24 @@ $('sharedRestore').addEventListener('click', async () => {
     kept = true;
   }
   try {
+    if (req.playlist) {
+      // A folder of samples in playlist mode; the song named, else the first, in the editor.
+      const dir = SAMPLES_ROOT + req.playlist;
+      if (!safePath(dir + '/')) throw new Error(req.playlist);
+      await readSampleTree(false);
+      const paths = sampleTree.files.filter((f) => PLAYABLE.test(f) && dirOf(f) === dir)
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+      if (!paths.length) throw new Error(t('plNoSongs', req.playlist));
+      const items = repoItems(paths);
+      openInPlaylist(items);
+      const pick = items.find((x) => x.name.toLowerCase() === (req.song || '').toLowerCase()) || items[0];
+      if (await loadRepoFile(pick.repoPath, true)) playlist.setCurrent(pick);
+      showSharedNote(kept);
+      sharedStatus = { text: t('plSharedOpened', req.playlist, items.length), err: false };
+      setStatus(sharedStatus.text);
+      if (engineReady) sharedStatus = null;
+      return;
+    }
     if (req.sample) {
       const path = SAMPLES_ROOT + req.sample;
       if (!safePath(path)) throw new Error(req.sample);

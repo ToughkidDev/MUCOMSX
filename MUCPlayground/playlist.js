@@ -8,7 +8,7 @@
 let nextId = 1;
 
 export class Playlist {
-  // o: { t(key, ...args), onPlay(item), onChange() }
+  // o: { t(key, ...args), onPlay(item), onChange(), onShare() }
   constructor(root, o) {
     this.root = root;
     this.o = o;
@@ -18,12 +18,14 @@ export class Playlist {
       <div class="pl-head">
         <b class="pl-title"></b>
         <span class="spacer"></span>
+        <button type="button" class="btn small pl-share"></button>
         <button type="button" class="btn small pl-clear"></button>
       </div>
       <p class="pl-hint"></p>
       <ol class="pl-list"></ol>`;
     this.list = root.querySelector('.pl-list');
     root.querySelector('.pl-clear').addEventListener('click', () => this.clear());
+    root.querySelector('.pl-share').addEventListener('click', () => this.o.onShare?.());
     this.list.addEventListener('click', (e) => {
       const li = e.target.closest('li');
       if (!li) return;
@@ -99,6 +101,11 @@ export class Playlist {
     clear.textContent = t('plClear');
     clear.title = t('plClearTip');
     clear.disabled = !this.items.length;
+    const share = this.root.querySelector('.pl-share');
+    share.textContent = t('plShare');
+    share.title = t('plShareTip');
+    share.disabled = !this.items.length;
+    share.hidden = !this.o.onShare;
     const hint = this.root.querySelector('.pl-hint');
     hint.textContent = t('plHint');
     this.list.innerHTML = '';
