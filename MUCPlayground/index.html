@@ -558,6 +558,9 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
   .s-head .btn{min-height:40px}
 }
 .s-list summary small{color:var(--muted);font-weight:400;margin-left:6px}
+.s-folder{margin-left:8px;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:0 6px;font-size:.85rem;line-height:1.5;cursor:pointer;vertical-align:middle}
+.s-folder:hover,.s-folder:focus-visible{border-color:var(--accent2);background:var(--sel);outline:none}
+@media (pointer:coarse){.s-folder{min-width:40px;min-height:32px}}
 .s-list ul{list-style:none;margin:0 0 8px;padding:0}
 .s-list li button{display:flex;gap:10px;width:100%;text-align:left;border:0;background:transparent;padding:5px 8px 5px 24px;
                   border-radius:6px;cursor:pointer;font-size:.88rem}

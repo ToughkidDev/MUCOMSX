@@ -198,7 +198,7 @@ const T = {
     plButton: '☰ Playlist', plTip: 'Playlist mode: a list of songs on the right. Dropped songs are added to it; dropped on the list they are only added, dropped anywhere else they are added and played. A dropped folder opens it with every song in the folder.',
     plTitle: (n) => `Playlist · ${n} ${n === 1 ? 'song' : 'songs'}`, plClear: 'Clear', plClearTip: 'Take every song off the list', plRemove: 'Take off the list',
     plHint: 'Click a song to play it. Drop songs or a folder here to add them; drop them elsewhere to add and play.',
-    plAdded: (n) => `Added ${n} ${n === 1 ? 'song' : 'songs'} to the playlist`, plNoSongs: (n) => `No .muc / .mub / .vgm / .vgz in ${n}`,
+    plAdded: (n) => `Added ${n} ${n === 1 ? 'song' : 'songs'} to the playlist`, folderToPlaylist: (d) => `Open the songs of ${d} in the playlist, to pick, hear and edit them`, plNoSongs: (n) => `No .muc / .mub / .vgm / .vgz in ${n}`,
     dropPlaylist: 'Drop on the playlist to add · anywhere else to add and play · a folder adds all its songs', split: 'Split', splitOff: 'One view', splitSide: 'Two views, side by side',
     splitStack: 'Two views, one above the other', zoom: 'Size', zoomFit: 'Fit',
     cvEmpty: 'Play a song to see its chips here, as in MDPlayer.', cvOther: 'No channel view for: ',
@@ -356,7 +356,7 @@ const T = {
     plButton: '☰ 플레이리스트', plTip: '플레이리스트 모드: 오른쪽에 곡 목록을 띄웁니다. 곡을 끌어다 놓으면 목록에 추가되며, 목록 위에 놓으면 추가만, 다른 곳에 놓으면 추가하고 바로 연주합니다. 폴더를 놓으면 그 폴더의 곡이 모두 목록에 들어갑니다.',
     plTitle: (n) => `플레이리스트 · ${n}곡`, plClear: '비우기', plClearTip: '목록의 곡을 모두 뺍니다', plRemove: '목록에서 빼기',
     plHint: '곡을 누르면 연주합니다. 곡이나 폴더를 여기에 놓으면 추가만, 다른 곳에 놓으면 추가하고 연주합니다.',
-    plAdded: (n) => `플레이리스트에 ${n}곡을 추가했습니다`, plNoSongs: (n) => `${n}에 .muc / .mub / .vgm / .vgz 파일이 없습니다`,
+    plAdded: (n) => `플레이리스트에 ${n}곡을 추가했습니다`, folderToPlaylist: (d) => `${d}의 곡을 플레이리스트로 엽니다 (골라서 듣고 편집)`, plNoSongs: (n) => `${n}에 .muc / .mub / .vgm / .vgz 파일이 없습니다`,
     dropPlaylist: '플레이리스트 위에 놓으면 추가 · 다른 곳에 놓으면 추가하고 연주 · 폴더는 안의 곡을 모두 추가', split: '분할', splitOff: '하나로 보기', splitSide: '좌우로 나눠 보기',
     splitStack: '위아래로 나눠 보기', zoom: '크기', zoomFit: '화면 맞춤',
     cvEmpty: '곡을 재생하면 MDPlayer처럼 칩별 채널이 여기에 표시됩니다.', cvOther: '채널 뷰가 없는 칩: ',
@@ -514,7 +514,7 @@ const T = {
     plButton: '☰ プレイリスト', plTip: 'プレイリストモード: 右側に曲の一覧を出します。ドロップした曲は一覧に追加され、一覧の上なら追加だけ、ほかの場所なら追加してすぐ演奏します。フォルダをドロップするとその中の曲がすべて入ります。',
     plTitle: (n) => `プレイリスト · ${n}曲`, plClear: '空にする', plClearTip: '一覧の曲をすべて外します', plRemove: '一覧から外す',
     plHint: '曲をクリックすると演奏します。曲やフォルダをここにドロップすると追加だけ、ほかの場所なら追加して演奏します。',
-    plAdded: (n) => `プレイリストに${n}曲を追加しました`, plNoSongs: (n) => `${n}に.muc / .mub / .vgm / .vgzがありません`,
+    plAdded: (n) => `プレイリストに${n}曲を追加しました`, folderToPlaylist: (d) => `${d}の曲をプレイリストで開きます（選んで聴いて編集）`, plNoSongs: (n) => `${n}に.muc / .mub / .vgm / .vgzがありません`,
     dropPlaylist: 'プレイリストの上なら追加 · ほかの場所なら追加して演奏 · フォルダは中の曲をすべて追加', split: '分割', splitOff: '1画面', splitSide: '左右に分割',
     splitStack: '上下に分割', zoom: 'サイズ', zoomFit: '画面に合わせる',
     cvEmpty: '曲を再生すると、MDPlayerのようにチップごとのチャンネルがここに表示されます。', cvOther: 'チャンネルビューのないチップ: ',
@@ -1231,7 +1231,8 @@ $('folderSearch').addEventListener('input', () => renderFolderList());
 function renderFolderList() {
   if (!currentFolder) return;
   fillSongList($('folderList'), currentFolder.entries.map((e) => e.path), $('folderSearch').value, 0, (d) => d,
-    (path) => { $('folderDlg').close(); loadFolderSong(currentFolder, path); });
+    (path) => { $('folderDlg').close(); loadFolderSong(currentFolder, path); },
+    (paths) => { $('folderDlg').close(); openInPlaylist(folderItems({ ...currentFolder, entries: currentFolder.entries.filter((e) => paths.includes(e.path)) })); });
 }
 
 // A folder's songs to choose from; a folder with one song opens it at once.
@@ -1588,7 +1589,30 @@ async function fileItems(list) {
   return songs.map(({ f, data, kind }) => Playlist.item({ name: f.name, path: f.name, kind, files, load: async () => data }));
 }
 
+// Repository samples (the samples list's folder button): fetched like a picked sample.
+function repoItems(paths) {
+  return paths.map((path) => Playlist.item({
+    name: path.slice(path.lastIndexOf('/') + 1), path: path.slice(SAMPLES_ROOT.length),
+    kind: songKind(path), repoPath: path, load: () => fetchRepoFile(path),
+  }));
+}
+// A folder's songs: playlist mode, the songs at the end of the list, the first one shown.
+function openInPlaylist(items) {
+  if (!items.length) return;
+  setPlaylistMode(true);
+  playlist.add(items);
+  setStatus(t('plAdded', items.length));
+  playlist.list.children[playlist.items.length - items.length]?.scrollIntoView({ block: 'start' });
+}
+
 async function playItem(item) {
+  if (item.repoPath) {
+    // A sample: into the editor with its voice / PCM files (asks first about your own text).
+    const opened = await loadRepoFile(item.repoPath);
+    if (opened) playlist.setCurrent(item);
+    if (opened === true) play();
+    return;
+  }
   playlist.setCurrent(item);
   if (item.folder && item.kind === 'muc') {
     await loadFolderSong(item.folder, item.folderPath);
@@ -2482,12 +2506,14 @@ async function readSampleTree(force) {
 function renderSampleList() {
   // Templates come first: they are where a new song usually starts.
   fillSongList($('sampleList'), sampleTree.files, $('sampleSearch').value, SAMPLES_ROOT.length,
-    (d) => (d.startsWith('Muc/Templates') ? '0' : '1') + d, (path) => { $('samplesDlg').close(); loadRepoFile(path); });
+    (d) => (d.startsWith('Muc/Templates') ? '0' : '1') + d, (path) => { $('samplesDlg').close(); loadRepoFile(path); },
+    (paths) => { $('samplesDlg').close(); openInPlaylist(repoItems(paths)); });
 }
 
 // The playable files among `paths`, grouped by folder (folders after the first `skip`
-// characters), the ones matching `query`; onPick(path) when one is clicked.
-function fillSongList(list, paths, query, skip, order, onPick) {
+// characters), the ones matching `query`; onPick(path) when one is clicked, and
+// onFolder(paths) for the folder button by a folder's song count (its songs to the playlist).
+function fillSongList(list, paths, query, skip, order, onPick, onFolder = null) {
   query = query.trim().toLowerCase();
   list.innerHTML = '';
   const groups = new Map();
@@ -2505,6 +2531,21 @@ function fillSongList(list, paths, query, skip, order, onPick) {
     d.querySelector('summary').innerHTML = '<span></span><small></small>';
     d.querySelector('summary span').textContent = dir || '/';
     d.querySelector('summary small').textContent = groups.get(dir).length;
+    if (onFolder) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 's-folder';
+      b.textContent = '📂';
+      b.title = t('folderToPlaylist', dir || '/');
+      b.setAttribute('aria-label', b.title);
+      // In the summary: open the playlist instead of folding the folder.
+      b.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onFolder([...groups.get(dir)].sort((a, c) => a.localeCompare(c, undefined, { numeric: true })));
+      });
+      d.querySelector('summary').appendChild(b);
+    }
     for (const path of groups.get(dir).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))) {
       const name = path.slice(path.lastIndexOf('/') + 1);
       const li = document.createElement('li');
@@ -2554,8 +2595,8 @@ async function loadRepoFile(path, force = false) {
   try {
     setStatus(t('loadingSample', name));
     const data = await fetchRepoFile(path);
-    if (kindOf(name, data) !== 'muc') { playFile(name, data); return; }
-    if (!force && current === 'mine' && code.value.trim() && !confirm(t('confirmReplace'))) { setStatus(engineReady ? t('ready') : t('loading')); return; }
+    if (kindOf(name, data) !== 'muc') { playFile(name, data); return 'played'; }
+    if (!force && current === 'mine' && code.value.trim() && !confirm(t('confirmReplace'))) { setStatus(engineReady ? t('ready') : t('loading')); return false; }
     stop();
     clearFiles();
     setSource(decodeText(data));
@@ -2570,8 +2611,10 @@ async function loadRepoFile(path, force = false) {
       try { attach(ref, await fetchRepoFile(match), true, match); } catch { /* listed as missing */ }
     }
     setStatus(engineReady ? t('ready') : t('loading'));
+    return true;
   } catch (e) {
     setStatus(t('sampleFailed') + e.message, true);
+    return false;
   }
 }
 
