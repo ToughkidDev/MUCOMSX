@@ -62,6 +62,7 @@ const T = {
     shareRepoFiles: (names) => `From the repository: ${names}`, shareEmbedded: (names) => `Inside the link: ${names}`,
     shareMissing: (names) => `Not in the link: ${names}. Too large or not attached; put them in the repository's Samples folder or send them separately.`,
     shareLong: (n) => `The link is ${n.toLocaleString()} characters long; some messengers cut long links.`,
+    shareView: (v) => `Opens with ${v} beside the editor, as you have it now.`,
     shareHow: 'Whoever opens the link gets this song and its files in their own browser, ready for Play.',
     shareFailed: 'Could not make the link: ',
     sharedOpened: (n) => `Opened the shared song "${n}". Press Play to listen.`, sharedBad: 'This shared link could not be read: ',
@@ -221,6 +222,7 @@ const T = {
     shareRepoFiles: (names) => `저장소에서 가져올 파일: ${names}`, shareEmbedded: (names) => `링크 안에 든 파일: ${names}`,
     shareMissing: (names) => `링크에 없는 파일: ${names}. 너무 크거나 첨부되지 않았습니다. 저장소의 Samples 폴더에 넣거나 따로 보내 주세요.`,
     shareLong: (n) => `링크 길이가 ${n.toLocaleString()}자입니다. 일부 메신저는 긴 링크를 자를 수 있습니다.`,
+    shareView: (v) => `지금처럼 편집기 옆에 ${v}을(를) 연 상태로 엽니다.`,
     shareHow: '링크를 연 사람의 브라우저에 이 곡과 파일이 그대로 열리고, 재생만 누르면 됩니다.',
     shareFailed: '링크를 만들지 못했습니다: ',
     sharedOpened: (n) => `공유된 곡 "${n}"을(를) 열었습니다. 재생을 눌러 들어 보세요.`, sharedBad: '공유 링크를 읽지 못했습니다: ',
@@ -380,6 +382,7 @@ const T = {
     shareRepoFiles: (names) => `リポジトリから読み込むファイル: ${names}`, shareEmbedded: (names) => `リンクに入っているファイル: ${names}`,
     shareMissing: (names) => `リンクに入っていないファイル: ${names}。大きすぎるか添付されていません。リポジトリのSamplesフォルダに入れるか、別に送ってください。`,
     shareLong: (n) => `リンクの長さは${n.toLocaleString()}文字です。長いリンクを切るメッセンジャーもあります。`,
+    shareView: (v) => `今と同じくエディタの横に${v}を開いた状態で開きます。`,
     shareHow: 'リンクを開いた人のブラウザにこの曲とファイルがそのまま開き、再生を押すだけで聴けます。',
     shareFailed: 'リンクを作れませんでした: ',
     sharedOpened: (n) => `共有された曲「${n}」を開きました。再生を押して聴いてください。`, sharedBad: '共有リンクを読めませんでした: ',
@@ -3758,6 +3761,13 @@ $('shareBtn').addEventListener('click', async () => {
 });
 // The share dialog with a link and what it carries.
 function showShareDialog(url, info) {
+  // The tracker or the oscilloscope, when one is open, opens with the link too.
+  if (splitMode === 'tracker' || splitMode === 'scope') {
+    const hash = url.indexOf('#');
+    const [head, tail] = hash < 0 ? [url, ''] : [url.slice(0, hash), url.slice(hash)];
+    url = `${head}${head.includes('?') ? '&' : '?'}view=${splitMode}${tail}`;
+    info.push({ text: t('shareView', t(splitMode === 'tracker' ? 'trkTitle' : 'scopeTitle')) });
+  }
   info.push({ text: t('shareHow') });
   $('shareUrl').value = url;
   $('shareInfo').innerHTML = '';
@@ -3859,6 +3869,7 @@ $('sharedRestore').addEventListener('click', async () => {
       const pick = items.find((x) => x.name.toLowerCase() === (req.song || '').toLowerCase()) || items[0];
       if (await loadRepoFile(pick.repoPath, true)) playlist.setCurrent(pick);
       showSharedNote(kept);
+      if (req.view) setSplit(req.view);
       sharedStatus = { text: t('plSharedOpened', req.playlist, items.length), err: false };
       setStatus(sharedStatus.text);
       if (engineReady) sharedStatus = null;
@@ -3892,6 +3903,7 @@ $('sharedRestore').addEventListener('click', async () => {
     showSharedNote(kept);
     sharedStatus = { text: t('sharedBad') + e.message, err: true };
   }
+  if (req.view) setSplit(req.view);
   setStatus(sharedStatus.text, sharedStatus.err);
   if (engineReady) sharedStatus = null;
 })();

@@ -4,6 +4,8 @@
 //   ?playlist=Muc/MSX/Snatcher[&song=SONG.muc]  a repository folder in playlist mode, every
 //                            song in it listed, the one named (else the first) opened
 //   ?ex=demo | ?ex=template | ?ex=extScc …  a built-in example or template, unedited
+//   &view=tracker | &view=scope   on any of these: the page opens with the tracker or the
+//                            oscilloscope beside the editor
 //   #s=…                     anything else: the text, compressed, with the repository paths
 //                            of attached files that came from the repository and the bytes
 //                            of small files that did not
@@ -45,14 +47,17 @@ export async function decodeSong(payload) {
   };
 }
 
-// What a page address asks for: { playlist, song }, { sample }, { example }, { payload } or null.
+// What a page address asks for: { playlist, song }, { sample }, { example }, { payload } or
+// null; each with `view` ('tracker' / 'scope') when the link asks the page to open that split.
 export function sharedRequest(loc) {
   const q = new URLSearchParams(loc.search);
-  if (q.get('playlist')) return { playlist: q.get('playlist').replace(/\/+$/, ''), song: q.get('song') || null };
-  if (q.get('sample')) return { sample: q.get('sample') };
-  if (/^(?:demo|template|ext[A-Z][a-z]+)$/.test(q.get('ex') || '')) return { example: q.get('ex') };
+  const view = ['tracker', 'scope'].includes(q.get('view')) ? q.get('view') : null;
+  const ask = (r) => ({ ...r, view });
+  if (q.get('playlist')) return ask({ playlist: q.get('playlist').replace(/\/+$/, ''), song: q.get('song') || null });
+  if (q.get('sample')) return ask({ sample: q.get('sample') });
+  if (/^(?:demo|template|ext[A-Z][a-z]+)$/.test(q.get('ex') || '')) return ask({ example: q.get('ex') });
   const h = /^#s=([A-Za-z0-9_-]+)$/.exec(loc.hash);
-  if (h) return { payload: h[1] };
+  if (h) return ask({ payload: h[1] });
   return null;
 }
 
