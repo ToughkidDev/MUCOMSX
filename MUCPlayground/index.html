@@ -524,6 +524,12 @@ body.player-mode #panes,body.player-mode #chview,body.player-mode #keys,body.pla
 body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 .share-dlg{width:min(620px,calc((100vw - 32px) / var(--ui)))}
 .new-dlg{width:min(600px,calc((100vw - 32px) / var(--ui)))}
+.ask-dlg{width:min(520px,calc((100vw - 32px) / var(--ui)))}
+.ask-text{margin:0;padding:4px 16px 12px;font-size:.9rem;line-height:1.5;white-space:pre-line}
+.ask-buttons{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:0 16px 16px}
+.ask-dlg{width:min(520px,calc((100vw - 32px) / var(--ui)))}
+.ask-text{margin:0;padding:4px 16px 12px;font-size:.9rem;line-height:1.5;white-space:pre-line}
+.ask-buttons{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;padding:0 16px 16px}
 .new-list{list-style:none;margin:0;padding:0 8px 12px;overflow:auto;border-top:1px solid var(--line)}
 .new-list .new-group{padding:12px 8px 4px;font-size:.78rem;font-weight:600;color:var(--muted)}
 .new-list button{display:block;width:100%;text-align:left;border:0;background:transparent;color:inherit;font:inherit;padding:8px 10px;border-radius:8px;cursor:pointer}
@@ -743,6 +749,16 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
   <div class="s-list" id="sampleList"></div>
 </dialog>
 
+<dialog class="samples ask-dlg" id="askDlg" aria-labelledby="askTitle">
+  <div class="s-head"><h2 id="askTitle"></h2></div>
+  <p class="ask-text" id="askText"></p>
+  <div class="ask-buttons" id="askButtons"></div>
+</dialog>
+<dialog class="samples ask-dlg" id="askDlg" aria-labelledby="askTitle">
+  <div class="s-head"><h2 id="askTitle"></h2></div>
+  <p class="ask-text" id="askText"></p>
+  <div class="ask-buttons" id="askButtons"></div>
+</dialog>
 <dialog class="samples new-dlg" id="newDlg" aria-labelledby="newTitle">
   <div class="s-head">
     <h2 id="newTitle" data-i18n="newTitle">New song from a template</h2>

@@ -46,6 +46,7 @@ const STORE_KEYS = 'mucplayground.keys';      // { open, octave, source }
 const STORE_PLAYLIST = 'mucplayground.playlist';   // '1' while playlist mode is on
 const STORE_PLAYLIST_W = 'mucplayground.playlistWidth';
 let playlist = null;   // playlist.js, made once the page is set up
+let loadedText = null; // the text as last loaded: your song counts as changed when it differs
 
 const T = {
   en: {
@@ -169,6 +170,8 @@ const T = {
     missingAttach: 'Attach file…', missingAttachTip: (f) => `Pick ${f} (and any other files the song needs) from your computer; several can be picked at once`,
     missingFolder: 'Find in folder', missingFolderTip: (f) => `Look for ${f} in the song's folder: the folder opened with Folder… (or the one remembered), else pick the folder the song is in; every file the song names is attached from there`,
     underrun: 'Playback is catching up; this device renders slowly.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
+    guardTitle: 'Your song has changes', guardText: (n) => `${n} in the editor has changes that are not saved to a file. Save it before it is replaced?\n(Either way it is also kept aside: "Bring it back" returns it.)`, guardSave: 'Save as .muc, then go on', guardDiscard: 'Go on without saving', guardCancel: 'Cancel',
+    plAskTitle: 'The playlist has songs', plAskText: (n, m) => `The playlist has ${n} songs. Replace them with the ${m} new ones, or add these at the end?`, plAskReplace: 'New playlist', plAskAppend: 'Add at the end',
     confirmReplace: 'Replace the editor contents? Your current text is lost unless you saved it.',
     newSong: 'New', newSongTip: 'Start a new MUC from a template', newStarted: (name) => `New song from the template ${name}, with comments on each part. Save it as .muc when you are done.`,
     confirmNew: 'Start a new song from the template? Your current text and attached files are removed unless you saved them.',
@@ -330,6 +333,8 @@ const T = {
     missingAttach: '파일 첨부…', missingAttachTip: (f) => `내 컴퓨터에서 ${f}(와 곡에 필요한 다른 파일)를 고릅니다. 여러 개를 한 번에 고를 수 있습니다`,
     missingFolder: '폴더에서 찾기', missingFolderTip: (f) => `곡의 폴더에서 ${f}를 찾습니다. 폴더…로 연 폴더(또는 기억된 폴더)를 쓰고, 없으면 곡이 있는 폴더를 고르게 합니다. 곡이 쓰는 파일을 모두 거기서 첨부합니다`,
     underrun: '렌더링이 재생을 따라잡는 중입니다. 이 기기에서는 느릴 수 있습니다.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
+    guardTitle: '고친 곡이 있습니다', guardText: (n) => `에디터의 ${n}에 파일로 저장하지 않은 변경이 있습니다. 바꾸기 전에 저장할까요?\n(어느 쪽이든 따로 보관해 두므로 "되돌리기"로 되돌릴 수 있습니다.)`, guardSave: '.muc로 저장하고 계속', guardDiscard: '저장하지 않고 계속', guardCancel: '취소',
+    plAskTitle: '플레이리스트에 곡이 있습니다', plAskText: (n, m) => `플레이리스트에 ${n}곡이 있습니다. 새 ${m}곡으로 바꿀까요, 아니면 목록 끝에 추가할까요?`, plAskReplace: '새 목록으로 바꾸기', plAskAppend: '끝에 추가',
     confirmReplace: '에디터 내용을 바꿀까요? 저장하지 않은 현재 내용은 사라집니다.',
     newSong: '새로', newSongTip: '템플릿으로 새 MUC 작성 시작', newStarted: (name) => `템플릿 ${name}(으)로 새 곡을 시작했습니다. 파트마다 설명이 있습니다. 다 쓰면 .muc로 저장하세요.`,
     confirmNew: '템플릿으로 새 곡을 시작할까요? 저장하지 않은 현재 내용과 첨부 파일은 사라집니다.',
@@ -491,6 +496,8 @@ const T = {
     missingAttach: 'ファイルを添付…', missingAttachTip: (f) => `自分のパソコンから${f}（と曲に必要な他のファイル）を選びます。複数まとめて選べます`,
     missingFolder: 'フォルダから探す', missingFolderTip: (f) => `曲のフォルダで${f}を探します。フォルダ…で開いたフォルダ（または記憶したフォルダ）を使い、なければ曲のあるフォルダを選びます。曲が使うファイルをすべてそこから添付します`,
     underrun: 'レンダリングが再生に追いつこうとしています。この端末では遅い場合があります。', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
+    guardTitle: '変更した曲があります', guardText: (n) => `エディタの${n}にファイルへ保存していない変更があります。置き換える前に保存しますか？\n（どちらでも別に保管するので「元に戻す」で戻せます。）`, guardSave: '.mucで保存して続ける', guardDiscard: '保存せずに続ける', guardCancel: 'キャンセル',
+    plAskTitle: 'プレイリストに曲があります', plAskText: (n, m) => `プレイリストに${n}曲あります。新しい${m}曲に置き換えますか、それとも最後に追加しますか？`, plAskReplace: '新しいリストにする', plAskAppend: '最後に追加',
     confirmReplace: 'エディタの内容を置き換えますか？保存していない現在の内容は失われます。',
     newSong: '新規', newSongTip: 'テンプレートで新しいMUCを書き始める', newStarted: (name) => `テンプレート「${name}」で新しい曲を始めました。パートごとに説明があります。書き終えたら.mucで保存してください。`,
     confirmNew: 'テンプレートで新しい曲を始めますか？保存していない現在の内容と添付ファイルは失われます。',
@@ -866,6 +873,7 @@ function setSource(text) {
   // The textarea turns CRLF into LF; the line list must match it, or a CRLF file's lines
   // all end in \r until the first edit (and voice definitions are not recognised).
   text = text.replace(/\r\n?/g, '\n');
+  loadedText = text;
   if (waveEdit) { waveEdit = null; waveEditor.close(); fmEditor.close(); $('panes').hidden = viewMode === 'channels'; }
   for (const p of panes) {
     p.code.value = text;
@@ -1412,13 +1420,17 @@ $('openInput').addEventListener('change', async (e) => {
 // the folder opened with Folder…, when it is there.
 async function openPicked(list, playMuc) {
   let playable = null;
-  const attached = [];
+  const attached = [], others = [];
   for (const f of list) {
-    const data = await f.arrayBuffer();
+    let data;
+    try { data = await f.arrayBuffer(); } catch { continue; }
     const kind = kindOf(f.name, data);
-    if (kind === 'other') { attach(f.name, data); attached.push(f.name); }
+    if (kind === 'other') others.push({ name: f.name, data });
     else if (!playable) playable = { name: f.name, data, kind };
   }
+  // A MUC replaces your song in the editor: ask first (nothing changes when you cancel).
+  if (playable?.kind === 'muc' && !(await guardEditor())) return;
+  for (const f of others) { attach(f.name, f.data); attached.push(f.name); }
   if (!playable) {
     if (attached.length) { setStatus(t('attachedFiles', attached.join(', '))); scheduleCheck(); }
     return;
@@ -1511,26 +1523,69 @@ window.addEventListener('drop', async (e) => {
   // A folder: playlist mode, with every song in it, to choose from.
   if (dirs.length) {
     const folder = await fromDropEntries(dirs);
-    setPlaylistMode(true);
-    const items = folderItems(folder);
-    const loose = await fileItems(list.filter((f) => !dirs.some((d) => d.name === f.name)));
-    playlist.add([...items, ...loose]);
-    setStatus(items.length + loose.length ? t('plAdded', items.length + loose.length) : t('plNoSongs', folder.name), !items.length && !loose.length);
+    const items = [...folderItems(folder), ...await fileItems(list.filter((f) => !dirs.some((d) => d.name === f.name)))];
+    if (!items.length) { setStatus(t('plNoSongs', folder.name), true); return; }
+    await openInPlaylist(items);
     return;
   }
   // Playlist mode: songs go to the end of the list; dropped elsewhere, the first one plays.
   if (playlistMode) {
     const items = await fileItems(list);
     if (!items.length) { await openPicked(list, false); return; }
+    // Dropped elsewhere a MUC is opened too: ask about your changed song first (cancel: no change).
+    if (!onList && items[0].kind === 'muc' && !(await guardEditor())) return;
     playlist.add(items);
     if (onList) setStatus(t('plAdded', items.length));
-    else playItem(items[0]);
+    else playItem(items[0], { asked: true });
     return;
   }
   // Attach voice / PCM files first, so a song dropped together with them finds them.
   if (list.some((f) => PLAYABLE.test(f.name))) playlist.setCurrent(null);
   await openPicked(list, true);
 });
+
+// ---------- keeping your song safe ----------
+// A question with buttons ([id, label, primary]); resolves to the id pressed, 'cancel' when
+// the dialog is closed (Esc).
+function ask(title, text, buttons) {
+  return new Promise((resolve) => {
+    const dlg = $('askDlg'), box = $('askButtons');
+    $('askTitle').textContent = title;
+    $('askText').textContent = text;
+    box.innerHTML = '';
+    let answer = 'cancel';
+    for (const [id, label, primary] of buttons) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn' + (primary ? ' primary' : '');
+      b.textContent = label;
+      b.addEventListener('click', () => { answer = id; dlg.close(); });
+      box.appendChild(b);
+    }
+    dlg.addEventListener('close', () => resolve(answer), { once: true });
+    dlg.showModal();
+    box.querySelector('.primary')?.focus();
+  });
+}
+// Your song is about to leave the editor. Changed since it was loaded (or your own text from
+// an earlier visit): save it as a file, go on without, or cancel. Going on always keeps it
+// aside too, with "Bring it back" (the note a share link shows).
+const editorChanged = () => current === 'mine' && !!code.value.trim() && code.value !== loadedText;
+async function guardEditor() {
+  if (!editorChanged()) return true;
+  const a = await ask(t('guardTitle'), t('guardText', sourceName), [['save', t('guardSave'), true], ['discard', t('guardDiscard')], ['cancel', t('guardCancel')]]);
+  if (a === 'cancel') return false;
+  await backupStore.put({ text: code.value, name: sourceName, files: [...files.values()].map((f) => ({ name: f.name, data: f.data, origin: f.origin || null })) });
+  showSharedNote(true);
+  if (a === 'save') await saveMuc();
+  return true;
+}
+// Songs coming into a playlist that has songs: a new list, or at the end of this one.
+async function askPlaylist(count) {
+  if (!playlist.items.length) return 'replace';
+  const a = await ask(t('plAskTitle'), t('plAskText', playlist.items.length, count), [['replace', t('plAskReplace'), true], ['append', t('plAskAppend')], ['cancel', t('guardCancel')]]);
+  return a === 'cancel' ? null : a;
+}
 
 // ---------- player mode ----------
 // MDPlayer4Web where the editor is (like the channel view), and the rest of the page inert
@@ -1605,28 +1660,42 @@ function repoItems(paths) {
     kind: songKind(path), repoPath: path, load: () => fetchRepoFile(path),
   }));
 }
-// A folder's songs: playlist mode, the songs at the end of the list, the first one shown.
-function openInPlaylist(items) {
-  if (!items.length) return;
+// A folder's songs into the playlist: asks whether they replace the list or join it, and
+// what to do with your changed song, then shows the first MUC among them in the editor (not
+// playing), so the song left from before does not stay there. quiet: no questions (a share
+// link, which keeps your song aside itself, and opens the song it names).
+async function openInPlaylist(items, { quiet = false } = {}) {
+  if (!items.length) return false;
+  const mode = quiet ? 'replace' : await askPlaylist(items.length);
+  if (!mode) return false;
+  if (!quiet && !(await guardEditor())) return false;
   setPlaylistMode(true);
+  if (mode === 'replace') playlist.clear();
   playlist.add(items);
-  setStatus(t('plAdded', items.length));
   playlist.list.children[playlist.items.length - items.length]?.scrollIntoView({ block: 'start' });
+  const first = items.find((x) => x.kind === 'muc');
+  if (!quiet && first) await playItem(first, { play: false, asked: true });
+  setStatus(t('plAdded', items.length));
+  return true;
 }
 
-async function playItem(item) {
+// A playlist song: a MUC into the editor (after asking about your changed song) and played
+// unless play is false; a .mub / .vgm played (the editor keeps its song).
+async function playItem(item, { play: start = true, asked = false } = {}) {
+  if (item.kind === 'muc' && !asked && !(await guardEditor())) return;
+  if (item.kind !== 'muc' && !start) return;
   if (item.repoPath) {
-    // A sample: into the editor with its voice / PCM files (asks first about your own text).
-    const opened = await loadRepoFile(item.repoPath);
+    // A sample: into the editor with its voice / PCM files.
+    const opened = await loadRepoFile(item.repoPath, true);
     if (opened) playlist.setCurrent(item);
-    if (opened === true) play();
+    if (opened === true && start) play();
     return;
   }
   playlist.setCurrent(item);
   if (item.folder && item.kind === 'muc') {
     await loadFolderSong(item.folder, item.folderPath);
     currentFolder = item.folder;
-    play();
+    if (start) play();
     return;
   }
   let data;
@@ -1640,7 +1709,7 @@ async function playItem(item) {
   const missing = missingFiles();
   setStatus([found.length ? t('attachedFiles', found.join(', ')) : '', missing.length ? t('stillMissing', missing.join(', ')) : ''].filter(Boolean).join(' · ') || t('ready'));
   scheduleCheck();
-  play();
+  if (start) play();
 }
 
 playlist = new Playlist($('playlist'), { t, onPlay: playItem, onShare: () => sharePlaylist() });
@@ -2605,7 +2674,7 @@ async function loadRepoFile(path, force = false) {
     setStatus(t('loadingSample', name));
     const data = await fetchRepoFile(path);
     if (kindOf(name, data) !== 'muc') { playFile(name, data); return 'played'; }
-    if (!force && current === 'mine' && code.value.trim() && !confirm(t('confirmReplace'))) { setStatus(engineReady ? t('ready') : t('loading')); return false; }
+    if (!force && !(await guardEditor())) { setStatus(engineReady ? t('ready') : t('loading')); return false; }
     stop();
     clearFiles();
     setSource(decodeText(data));
@@ -3690,6 +3759,8 @@ for (const p of panes) p.code.addEventListener('input', scheduleBank);
       if (song?.name) sourceName = song.name;
       if (typeof song?.current === 'string' && song.current !== 'demo') current = song.current;
     } catch { /* keep the defaults */ }
+    // Your own text from an earlier visit may never have been saved to a file.
+    if (current === 'mine') loadedText = null;
   } else renderGutter();
   setSplit(store.get(STORE_SPLIT) || 'off');
   if (store.get(STORE_PLAYLIST_W)) $('work').style.setProperty('--plw', store.get(STORE_PLAYLIST_W));
@@ -3846,6 +3917,7 @@ $('sharedRestore').addEventListener('click', async () => {
   stop();
   clearFiles();
   setSource(b.text);
+  loadedText = null;   // your song again: asked about before it is replaced
   sourceName = b.name || 'SONG.MUC';
   current = 'mine';
   saveSong();
@@ -3878,7 +3950,7 @@ $('sharedRestore').addEventListener('click', async () => {
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
       if (!paths.length) throw new Error(t('plNoSongs', req.playlist));
       const items = repoItems(paths);
-      openInPlaylist(items);
+      await openInPlaylist(items, { quiet: true });
       const pick = items.find((x) => x.name.toLowerCase() === (req.song || '').toLowerCase()) || items[0];
       if (await loadRepoFile(pick.repoPath, true)) playlist.setCurrent(pick);
       showSharedNote(kept);
