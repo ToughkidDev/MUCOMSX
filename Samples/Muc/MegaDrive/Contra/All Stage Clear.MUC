@@ -1,0 +1,63 @@
+#mucom88 1.7
+#title All Stage Clear
+#composer H.Kobayashi, M.Yamane, A.Yamaoka, H.Taniguchi, A.Hata
+#author ToughkidCST
+#comment Contra: The Hard Corps (Japan)
+#driver mucomDotNET
+#voice CONTRAHC.DAT
+#pcm CONTRACE.BIN
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, K = DAC drums (3-voice mix -> ADPCM-B)
+; sound $CE, driver tick = 1 clock (C48), MD timer -> t
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o4c+& e r}
+#*2{D-7 o2c+& D-8 e r}
+#*3{o3e24 r}
+#*4{D2047 o1b16 @13 D1322 b16 @9 D2047 b16}
+#*5{o4e24 r}
+#*6{o2e24 r}
+#*7{r v115}
+#*8{r v96}
+#*9{r v108 p1}
+#*10{v120 p3}
+
+A C48 l48 vm2 @3 v115 p3 t121 o3e24& c24& <a24& f24& d24& <b r @26 v120 [ *1 ]4
+A v110 p1 *1 v99 *1 *10 [ d+& f+ r ]4 [ <b& >d r ]4 @29 v108
+A <g& g+& b%11& H4,7,0 b%40 r24 @26 v120 H4,0,0 t128 f+& a r v110 p2 f+& a r
+A *10 g+& b r v110 p1 g+& b r *10 b& >d r v110 p2 <b& >d r *10 *1 v110 p1 *1
+A v99 p2 *1 p1 *1 v88 p2 *1 p1 *1 *10 <c+& e%11& H4,7,0 e%23 r @8 v115 p2
+A H4,0,0 *2 v99 D-7 t127 c+& D-8 e r v88 *2 v77 *2 v66 *2
+
+B C48 l48 vm2 @36 v115 p2 o4d+24& <b24& g+24& e24& c+24& <a+ r @18 v123 [ *5 ]4
+B v110 p3 *5 v99 *5 v123 p2 [ f+24 r ]4 [ d24 r ]4 @5 v118 p3 o1a24 r v99 p2
+B a24 r v88 p1 a24 r v77 p2 a24 r @29 v108 o4g+& a%10& H4,7,0 a%31 r @18 v120
+B H4,0,0 <a24 r v99 p3 a24 r v120 p2 b24 r v99 p3 b24 r v120 p2 >d24 r v99 p3
+B d24 r v120 p2 *5 v99 p3 *5 v88 p2 e%5 r v77 p3 e%5 r v123 p2 <e4& H4,6,0 e%23
+B r @36 v115 p3 H4,0,0 *3 v99 *3 v88 *3 v77 *3 v66 *3
+
+C C48 l48 vm2 @36 v115 p1 o4f24& c+24& <a+24& f+24& d+24& c r @4 v113 [ o7g+24
+C r ]4 v107 p3 g+24 *8 p2 g+24 r v113 p1 [ a+24 r ]4 [ f+24 r ]4 @46 v118
+C o1b%7& p3 b%7& p2 b%7& p1 b24 r @29 v108 o5f& f+%10& H4,7,0 f+%19 r @4 v108
+C H4,0,0 o7c+24 *8 p3 c+24 *9 d+24 *8 p3 d+24 *9 f+24 *8 p3 f+24 *9 g+24 *8 p3
+C g+24 r v85 p1 g+%5 r v74 p3 g+%5 *9 <g+%10& H4,7,0 g+%25 r @8 v113 H4,0,0 D8
+C *6 v96 *6 v85 *6 v74 *6 v0 *6
+
+H C48 l48 vm2 @36 *10 o4e24& c24& <a24& f24& d24& <b r @8 v115 p1 [ *3 ]4 v99
+H *3 v88 *3 v115 [ f+24 r ]4 [ d24 r ]4 @36 v123 p3 <b%53 r24 @8 v115 p1 a24 r
+H v99 a24 *7 b24 r v99 b24 *7 >d24 r v99 d24 *7 *3 v99 *3 v88 e%5 r v77 e%5 r
+H v123 p3 <e%35 *7 *6 v99 *6 v88 *6 v77 *6 v66 *6
+
+I C48 l48 vm2 @36 v120 p2 o3e24& c24& p3 <a24& f24& p1 d24& <b r @22 v113 p3 [
+I *5 ]4 v96 *5 v85 *5 v113 [ f+24 r ]4 [ d24 r ]4 @36 v120 p1 o1b%35 r @29 v108
+I p3 o6d+& e%7& H4,7,0 e%10 r @20 v115 p1 H4,0,0 o3a24 *8 a24 *7 b24 *8 b24 *7
+I >d24 *8 d24 *7 *5 v96 *5 v85 e%5 r v74 e%5 r @23 v113
+I <e%10& d+& d& c+& c& <b& a+& a& D0 g+& g& f+& f& p3
+I e& d+& d& c+& c& <b& a+& a& D0 g+& g& p2 f+& f& e16& @40 v113 p1 *3 v96 *3
+I v85 *3 v74 *3 v0 *3
+
+K C48 l48 p3 @1 v62 D2047 o1b4 @3 D1322 b16 @11 *4 @15 D2884 b16 @25 b16 @26
+K D1322 b16 @12 *4 @14 D2834 b16 @18 b16 @19 b16 @20 b16 @17 D1322 b%55 @3 b8
+K @21 D2047 b8 @27 b8 @28 D1322 b4 @29 D2884 b24 @23 b24 @24 b24 @22 D1322 b24
+K @10 b24 @8 [ b24 @6 b24 @5 ]2 b24 @7 b24 @16 [ b24 @5 b24 @6 ]4 b24 @5 b24 @7
+K b%15

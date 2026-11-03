@@ -1,0 +1,70 @@
+#mucom88 1.7
+#title What a Painful World
+#composer H.Kobayashi, M.Yamane, A.Yamaoka, H.Taniguchi, A.Hata
+#author ToughkidCST
+#comment Contra: The Hard Corps (Japan)
+#driver mucomDotNET
+#voice CONTRAHC.DAT
+#pcm CONTRAC9.BIN
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, K = DAC drums (3-voice mix -> ADPCM-B)
+; sound $C9, driver tick = 1 clock (C48), MD timer -> t
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o3c%5 r v94 c%5 r}
+#*2{D20 o5e& D19 e& D17 e r16 @46 v105 p1 H4,0,0 D0}
+#*3{D10 o5f+%11& p3 f+& H4,7,0 f+ r v100 H4,0,0 f+%5 r}
+#*4{@24 D1 o1b24 @14 b24 @15 b24 @10 b24 @13 b24 @12}
+#*5{o5f+& D-11 f+& D-13 f+& D-14 f+& D-16 f+& D-18}
+#*6{o5f& D-15 f& D-17 f& D-19 f& D-21 f& D-23}
+#*7{D24 o5f& D22 f& D20 f& D18 f& D16 f& D14}
+#*8{o5f& D6 f& D4 f& D2 f& D0 f& D-2 f& D-4}
+#*9{v83 o3c%5 r v72 c%5 r v0 c%5 r v115 <f+%5 r}
+#*10{r o5g& a+12 r a& >c%11& H4,7,0 c%34 r24 H4,0,0}
+#*11{o5f+12 r e& g12 r f+& a12 *10 <g& a+8}
+#*12{o1b4 *4 b24 @16 b24 @31 b24 @32 b24}
+#*13{o2c%11 r c%11 r @10 v120 p2 a%11 r}
+#*14{r o8c%5 r}
+#*15{D-14 *6 o5f& D21 e& *2}
+#*16{o5f+& *7 f& D12 f& D10}
+#*17{v115 *1 v83 o3c%5 r v72}
+
+A C48 l48 vm2 @46 v113 p3 t146 o2c%41& D-17 c& D0 <b& D-33 b& D0 a+& D-31
+A a+& D0 a& D-30 a& D0 g+& D-14 g+& D14 g& D0 g16 r24 @29 v110 o5d+& *11 r
+A f+& a8 r e& D-24 f+& D0 g%5 r f+4& H4,7,0 f+%37& D-2 f+& D-4 f+& D-5 f+& D-7
+A f+& D-9 *5 t147 f+& D-20 f+& D-22 f+& D-23 *16 f24& D8 *8 f& D-6 f& D-8
+A f& D-9 f& D-11 f& D-12 f& *15 o2c2& H4,6,0 t146 c%69 r16 L t146 @46 v105 p2
+A H4,0,0 D0 c2& H4,6,0 c%69 r16 @29 v110 p3 H4,0,0 o5d+& *11 r f+& D-27 g+& D0
+A a%5 r e& g8 r f+4& H4,7,0 t147 f+%37& D-2 f+& D-4 f+& D-6 f+& D-8 f+& D-9 *5
+A f+& D-20 f+& D-22 f+& D-24 *16 f& D9 f& D7 *8 f& D-6 f& D-8 f& D-10 f& D-12
+A f24& *15 t146 o2c2& H4,6,0 c%69 r16
+
+B C48 l48 vm2 @46 v89 p2 D7 o2c4. r v105 c%27& D13 <b& D12 a+& D13 a& D12
+B g+& D11 g& D10 f+& f& D8 e& D9 d+& D7 d @29 v84 *3 D9 g12& p1 g r L @29 v100
+B p1 H4,0,0 D11 a%5 r D10 a+%5 r p3 D6 >c%11& p2 c& H4,7,0 c%10& p3 c%11& p1
+B c%11& p3 c24 r24 H4,0,0 D10 <a+%7 r D11 a& p2 a8 r D9 g%5& p3 g24 r D10
+B f+8.& p1 f+16& H4,7,0 f+6& p3 f+%11& p2 f+%11& p3 f+8& H4,0,0 D8 f8& p1
+B f8& e8& p3 e8& D7 d+8& p2 d+16 r @46 v105 p3 D9 o1g2& H4,6,0 g%69 r16 H4,0,0
+B g2& H4,6,0 g%69 r16 @29 v84 p2 H4,0,0 *3 D9 g12& p1 g r
+
+C C48 l48 vm2 @46 v89 p1 D-7 o2c%25 r v105 c%20& D-14 <b& D-13 a+& D-12 a& D-11
+C g+& D-10 g& f+& f& e& D-8 d+& D-9 d @51 v100 D0 o8g%5 r L @51 v100 p1 D0
+C c24& p3 c16 r f+12& p2 f+ *14 g& p1 g12 r c16& p3 c24 r f+%5 r p2 c%5 r
+C g24& p1 g16 r c12& p3 c r f+%5 r c& p2 c12 r g16& p1 g24 *14 p3 f+%5 r
+C c24& p2 c16 r g12& p1 g *14 f+& p3 f+12 r c16& p2 c24 r g%5 r p1 c%5 r
+C f+24& p3 f+16 r c12& p2 c r g%5 r c& p1 c12 r g+16& p3 g+24 *14 p2 g%5 r
+C c24& p1 c16 r f+12& p3 f+ *14 p1 g%5 r
+
+H C48 l48 vm2 @46 v115 p2 o1g%11& p3 g%11& p1 g%11& p3 g%11& f+& p2
+H f+& f24& e24& d+24& d24& c+ r @3 v115 p3 *1 L @3 v115 p3 *1 *9 *1 *17 c%17 [
+H r v115 c%5 r v94 c%5 ]2 r *9 >c%5 r v105 <f+%5 r *17 c%5 r v113
+H c& <b& a+& a& g+& g& f+& f& D0 e& d+& d& c+ v115 *1
+
+I C48 l48 vm2 @3 v123 p3 o3c%32& <b24& a+24& a24& g+24& g24& f+24& f24& D0
+I e24& d+24& d24& c+24& c24& @24 v120 *13 L @10 v115 p1 a%5 r v120 p2 a%5 r @24
+I v120 p3 *13
+
+K C48 l48 p3 @1 v62 D2719 o1b1 @3 v23 D1501 b24 @11 v62 b24 @8 b24 @6 b24 @5 b4
+K L @27 v62 D1501 *12 @17 b24 @12 b24 @26 b24 @21 D1501 b4 @23 b4 @29 D1608 b2
+K @3 D1501 b4 @23 *12 @18 D1501 b8 @9 b8 @7 D1 b8 @25 D1501 b4 @19 D1608 b2 @3
+K D1501 b4

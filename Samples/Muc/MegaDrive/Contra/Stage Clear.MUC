@@ -1,0 +1,36 @@
+#mucom88 1.7
+#title Stage Clear
+#composer H.Kobayashi, M.Yamane, A.Yamaoka, H.Taniguchi, A.Hata
+#author ToughkidCST
+#comment Contra: The Hard Corps (Japan)
+#driver mucomDotNET
+#voice CONTRAHC.DAT
+#pcm CONTRACC.BIN
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, K = DAC drums (3-voice mix -> ADPCM-B)
+; sound $CC, driver tick = 1 clock (C48), MD timer -> t
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o4c+& e r}
+#*2{D3033 o1b16 @6 b16 @5 b16}
+
+A C48 l48 vm2 @21 v88 p2 t135 o3g r v93 a r v98 p3 b r v103 >c r v108 p1 d r
+A v113 e r @26 v118 p3 [ *1 ]4 v101 *1 v90 *1 v118 [ d+& f+ r ]4 [ <b& >d r ]4
+A <f+& a r g+& b r b& >d r c+& e8.& H4,6,0 t136 e%13 r v101 H4,0,0 *1 v90 *1
+A v79 *1
+
+B C48 l48 vm2 @36 v113 p2 o4f24& d24& <b24& g+24& f24& d r @18 v118 [ o5e24 r
+B ]4 v96 e24 r v85 e24 r v118 [ f+24 r ]4 [ d24 r ]4 <a24 r b24 r >d24 r
+B e4& H4,7,0 e6 r v96 H4,0,0 e16 r v85 e16 r v74 e16 r
+
+C C48 l48 vm2 @36 v115 p1 o4e24& c24& <a24& f24& d24& <b r @4 v110 [ o6g+24 r
+C ]4 v99 g+24 r v88 g+24 r v110 [ a+24 r ]4 [ f+24 r ]4 c+24 r d+24 r f+24 r
+C g+%11& H4,6,0 g+8. r @24 v123 H4,0,0 o2c%11 r
+
+H C48 l48 vm2 @36 v120 p3 o4d& c+& c& <b& a+& a& g+24& g& D0 f+& f& e @3 v110 [
+H e24 r ]4 v99 e24 r v88 e24 r v110 [ f+24 r ]4 [ d24 r ]4 <a24 r b24 r >d24 r
+H e%20 r @24 v123 p2 o1a%11 r
+
+K C48 l48 p3 @1 v23 D1232 o1b4 @2 v62 D3033 b16 @11 b16 @15 b16 @5 b16 @7 D1232
+K b8 @2 *2 @10 b16 @8 D3304 b16 @12 b16 @14 b16 @16 b16 @13 *2 @9 D1973 b%21 @4
+K b4
