@@ -62,6 +62,7 @@ const T = {
     shareRepoFiles: (names) => `From the repository: ${names}`, shareEmbedded: (names) => `Inside the link: ${names}`,
     shareMissing: (names) => `Not in the link: ${names}. Too large or not attached; put them in the repository's Samples folder or send them separately.`,
     shareLong: (n) => `The link is ${n.toLocaleString()} characters long; some messengers cut long links.`,
+    shareAutoPlay: 'The song is playing now, so the link starts it as soon as it is open (the browser may wait for a first tap before it lets sound out).',
     shareView: (v) => `Opens with ${v} beside the editor, as you have it now.`,
     shareHow: 'Whoever opens the link gets this song and its files in their own browser, ready for Play.',
     shareFailed: 'Could not make the link: ',
@@ -222,6 +223,7 @@ const T = {
     shareRepoFiles: (names) => `저장소에서 가져올 파일: ${names}`, shareEmbedded: (names) => `링크 안에 든 파일: ${names}`,
     shareMissing: (names) => `링크에 없는 파일: ${names}. 너무 크거나 첨부되지 않았습니다. 저장소의 Samples 폴더에 넣거나 따로 보내 주세요.`,
     shareLong: (n) => `링크 길이가 ${n.toLocaleString()}자입니다. 일부 메신저는 긴 링크를 자를 수 있습니다.`,
+    shareAutoPlay: '지금 연주 중이므로, 링크를 열면 곡을 연 뒤 바로 연주를 시작합니다 (브라우저에 따라 첫 탭을 한 번 해야 소리가 납니다).',
     shareView: (v) => `지금처럼 편집기 옆에 ${v}을(를) 연 상태로 엽니다.`,
     shareHow: '링크를 연 사람의 브라우저에 이 곡과 파일이 그대로 열리고, 재생만 누르면 됩니다.',
     shareFailed: '링크를 만들지 못했습니다: ',
@@ -382,6 +384,7 @@ const T = {
     shareRepoFiles: (names) => `リポジトリから読み込むファイル: ${names}`, shareEmbedded: (names) => `リンクに入っているファイル: ${names}`,
     shareMissing: (names) => `リンクに入っていないファイル: ${names}。大きすぎるか添付されていません。リポジトリのSamplesフォルダに入れるか、別に送ってください。`,
     shareLong: (n) => `リンクの長さは${n.toLocaleString()}文字です。長いリンクを切るメッセンジャーもあります。`,
+    shareAutoPlay: '今演奏中なので、リンクを開くと曲を開いてすぐ演奏を始めます（ブラウザによっては最初に一度タップすると音が出ます）。',
     shareView: (v) => `今と同じくエディタの横に${v}を開いた状態で開きます。`,
     shareHow: 'リンクを開いた人のブラウザにこの曲とファイルがそのまま開き、再生を押すだけで聴けます。',
     shareFailed: 'リンクを作れませんでした: ',
@@ -3761,12 +3764,21 @@ $('shareBtn').addEventListener('click', async () => {
 });
 // The share dialog with a link and what it carries.
 function showShareDialog(url, info) {
+  // A query parameter, before a #s= payload.
+  const param = (u, kv) => {
+    const hash = u.indexOf('#');
+    const [head, tail] = hash < 0 ? [u, ''] : [u.slice(0, hash), u.slice(hash)];
+    return `${head}${head.includes('?') ? '&' : '?'}${kv}${tail}`;
+  };
   // The tracker or the oscilloscope, when one is open, opens with the link too.
   if (splitMode === 'tracker' || splitMode === 'scope') {
-    const hash = url.indexOf('#');
-    const [head, tail] = hash < 0 ? [url, ''] : [url.slice(0, hash), url.slice(hash)];
-    url = `${head}${head.includes('?') ? '&' : '?'}view=${splitMode}${tail}`;
+    url = param(url, `view=${splitMode}`);
     info.push({ text: t('shareView', t(splitMode === 'tracker' ? 'trkTitle' : 'scopeTitle')) });
+  }
+  // Playing or paused now: the link starts the song; stopped: it only opens it.
+  if (playing) {
+    url = param(url, 'play=1');
+    info.push({ text: t('shareAutoPlay') });
   }
   info.push({ text: t('shareHow') });
   $('shareUrl').value = url;
@@ -3846,6 +3858,7 @@ $('sharedRestore').addEventListener('click', async () => {
 // Opening a share link: the address is cleaned at once (a reload keeps what you do next),
 // your own song is kept aside, then the shared one is loaded.
 (async () => {
+  let fileStarted = false;   // a shared .mub / .vgm sample plays as soon as it opens
   const req = sharedRequest(location);
   if (!req) return;
   history.replaceState(null, '', pageBase(location));
@@ -3873,12 +3886,13 @@ $('sharedRestore').addEventListener('click', async () => {
       sharedStatus = { text: t('plSharedOpened', req.playlist, items.length), err: false };
       setStatus(sharedStatus.text);
       if (engineReady) sharedStatus = null;
+      if (req.play && current === 'repo:' + pick.repoPath) play();
       return;
     }
     if (req.sample) {
       const path = SAMPLES_ROOT + req.sample;
       if (!safePath(path)) throw new Error(req.sample);
-      await loadRepoFile(path, true);
+      fileStarted = await loadRepoFile(path, true) === 'played';
     } else if (req.example) {
       current = 'shared';
       await loadExample(req.example);
@@ -3905,5 +3919,8 @@ $('sharedRestore').addEventListener('click', async () => {
   }
   if (req.view) setSplit(req.view);
   setStatus(sharedStatus.text, sharedStatus.err);
+  const failed = sharedStatus.err;
   if (engineReady) sharedStatus = null;
+  // The link asks for the song to play (a .mub / .vgm sample already plays once opened).
+  if (req.play && !failed && !fileStarted) play();
 })();

@@ -6,6 +6,8 @@
 //   ?ex=demo | ?ex=template | ?ex=extScc …  a built-in example or template, unedited
 //   &view=tracker | &view=scope   on any of these: the page opens with the tracker or the
 //                            oscilloscope beside the editor
+//   &play=1                  on any of these: the song starts playing once it is open (the
+//                            browser may wait for a first tap before it lets sound out)
 //   #s=…                     anything else: the text, compressed, with the repository paths
 //                            of attached files that came from the repository and the bytes
 //                            of small files that did not
@@ -48,11 +50,12 @@ export async function decodeSong(payload) {
 }
 
 // What a page address asks for: { playlist, song }, { sample }, { example }, { payload } or
-// null; each with `view` ('tracker' / 'scope') when the link asks the page to open that split.
+// null; each with `view` ('tracker' / 'scope') when the link asks the page to open that split,
+// and `play` when it asks for the song to start.
 export function sharedRequest(loc) {
   const q = new URLSearchParams(loc.search);
   const view = ['tracker', 'scope'].includes(q.get('view')) ? q.get('view') : null;
-  const ask = (r) => ({ ...r, view });
+  const ask = (r) => ({ ...r, view, play: q.get('play') === '1' });
   if (q.get('playlist')) return ask({ playlist: q.get('playlist').replace(/\/+$/, ''), song: q.get('song') || null });
   if (q.get('sample')) return ask({ sample: q.get('sample') });
   if (/^(?:demo|template|ext[A-Z][a-z]+)$/.test(q.get('ex') || '')) return ask({ example: q.get('ex') });
