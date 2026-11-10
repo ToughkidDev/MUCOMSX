@@ -165,7 +165,36 @@
   "name": "Contra",
   "dir": "../Samples/Muc/MegaDrive/Contra/",
   "songs": [
-   "Contra_Overdrive.MUC"
+   "A Spirit of Bushi.MUC",
+   "AC Violence.MUC",
+   "Alien's Den.MUC",
+   "All Stage Clear.MUC",
+   "Charshoe X.MUC",
+   "Contra Overdrive.MUC",
+   "Contra The Blue Gale.MUC",
+   "Contra_Overdrive.MUC",
+   "Format X.MUC",
+   "GTR Attack!.MUC",
+   "Game Over.MUC",
+   "Gekokujoh Norakura.MUC",
+   "Guillotine.MUC",
+   "JB303.MUC",
+   "Jurassic Dope.MUC",
+   "Konami Music.MUC",
+   "Last Springsteen.MUC",
+   "Locked & Loaded.MUC",
+   "Moonlit Army.MUC",
+   "R.A.V.E.MUC",
+   "Simon 1994RD.MUC",
+   "Something Wonderful.MUC",
+   "Stage Clear.MUC",
+   "The Dawn.MUC",
+   "The Foggy Cave in the Darkness.MUC",
+   "The Hard Corps Blues.MUC",
+   "The Hard Corps.MUC",
+   "What a Painful World.MUC",
+   "Yoru no Nikusyokujyu.MUC",
+   "Zephyr.MUC"
   ]
  },
  {
@@ -207,14 +236,6 @@
    "Starting Point (Start).MUC",
    "Tears Began Gushing (Space Tricky Area Theme).MUC",
    "The War is Over (Game Over).MUC"
-  ]
- },
- {
-  "name": "MetalGear2",
-  "dir": "../Samples/Muc/MucoMSXChipExtension(msPb)Format/MetalGear2/",
-  "songs": [
-   "Intro1.MUC",
-   "Intro2.MUC"
   ]
  },
  {

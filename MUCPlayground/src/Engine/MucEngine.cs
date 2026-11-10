@@ -24,6 +24,10 @@ public sealed class CompileResult
     // MUCOMSX native MSX songs (an msPb container) it is rebuilt by MsxTrace when asked
     // for, and null when the positions could not be recovered.
     internal MmlDatum[] Data;
+    // What plays, when it is not Mub byte for byte: the compiler's own MUB in the mode
+    // MucoMSX chose, whose bytes Data traces (Mub is that song in MucoMSX's layout, for
+    // saving and exporting).
+    internal byte[] PlayMub;
     public List<CompileMessage> Errors = new();
     public List<CompileMessage> Warnings = new();
     public bool Ok => Mub != null && Errors.Count == 0;
@@ -143,21 +147,48 @@ public static class MucEngine
                 return result;
             }
 
-            mucomDotNET.Compiler.Compiler compiler = new();
-            compiler.Init();
-            using MemoryStream input = new(NormalizeTrackDeclarationIndentation(source), writable: false);
-            MmlDatum[] compiled = compiler.Compile(input, openFile);
-            CompilerInfo info = compiler.GetCompilerInfo();
-            if (info?.warningList != null)
-                foreach (var w in info.warningList) result.Warnings.Add(new(w.Item1, w.Item2, w.Item3, IdentifyCode(w.Item3)));
-            if (info?.errorList != null)
-                foreach (var e in info.errorList) result.Errors.Add(new(e.Item1, e.Item2, e.Item3, IdentifyCode(e.Item3)));
-            if (compiled == null && result.Errors.Count == 0)
-                result.Errors.Add(new(-1, -1, "MUCOM88 compilation failed."));
+            // As MDPlayer4Mac's MucomDotNET.CompileMuc does since 0.3.0, following MucoMSX:
+            // a source MucoMSX refuses before compiling (a #pcm tag naming a file that is not
+            // there, a row over 1023 bytes) is refused with its code and message.
+            string refused = MucoMsxSourceRules.CheckPcm(source, openFile) ?? MucoMsxSourceRules.CheckRows(source);
+            if (refused != null)
+            {
+                result.Errors.Add(Refusal(refused));
+                return result;
+            }
+            // The MUB is MucoMSX's (MucomCompileMode): a classic score as a MUCOM88 v1.7 MUB8
+            // played in classic mode, an extended one as muPb in mucomDotNET mode.
+            byte[] mub = MucomCompileMode.Compile(source, openFile, out string modeError);
+            bool classic = MucoMsxMubWriter.IsMub8(mub);
+            // The driver data with each byte's source position, compiled in the same mode. The
+            // mode tag goes after the score (tags are read from any row), so rows keep their
+            // numbers for the messages and the playing marks.
+            byte[] normalized = NormalizeTrackDeclarationIndentation(source);
+            if (classic) normalized = normalized.Concat(Encoding.ASCII.GetBytes("\r\n#driver mucom88\r\n")).ToArray();
+            MmlDatum[] Run()
+            {
+                mucomDotNET.Compiler.Compiler compiler = new();
+                compiler.Init();
+                using MemoryStream input = new(normalized, writable: false);
+                MmlDatum[] output = compiler.Compile(input, openFile);
+                CompilerInfo info = compiler.GetCompilerInfo();
+                if (info?.warningList != null)
+                    foreach (var w in info.warningList) result.Warnings.Add(new(w.Item1, w.Item2, w.Item3, IdentifyCode(w.Item3)));
+                if (info?.errorList != null)
+                    foreach (var e in info.errorList) result.Errors.Add(new(e.Item1, e.Item2, e.Item3, IdentifyCode(e.Item3)));
+                return output;
+            }
+            MmlDatum[] compiled = classic ? Run() : mucomDotNET.Compiler.Muc88.CompileMucoMsxExtended(Run);
+            if (mub == null && result.Errors.Count == 0)
+                result.Errors.Add(new(-1, -1, string.IsNullOrEmpty(modeError) ? "MUCOM88 compilation failed." : modeError));
             if (result.Errors.Count == 0)
             {
-                result.Mub = compiled.Select(d => d == null ? (byte)0 : (byte)d.dat).ToArray();
-                result.Data = compiled.Select(d => d ?? new MmlDatum(0)).ToArray();
+                result.Mub = mub;
+                if (compiled != null)
+                {
+                    result.PlayMub = compiled.Select(d => d == null ? (byte)0 : (byte)d.dat).ToArray();
+                    result.Data = compiled.Select(d => d ?? new MmlDatum(0)).ToArray();
+                }
             }
         }
         catch (Exception ex)
@@ -194,6 +225,14 @@ public static class MucEngine
     // and splits lines on CRLF, and a portamento length written after the brace ({ce}4) is
     // moved after the first note. Line count is preserved, so compiler row numbers still
     // point at the editor's lines.
+    // "Error line 3 (code 19): PCM file in #pcm tag not found\n> #pcm X.BIN" (MucoMsxSourceRules)
+    // as a message on that row, with the code as MucoMSX numbers it.
+    static CompileMessage Refusal(string text)
+    {
+        var m = System.Text.RegularExpressions.Regex.Match(text, @"^Error line (\d+) \(code (\d+)\): ([^\n]*)");
+        return m.Success ? new(int.Parse(m.Groups[1].Value), 1, m.Groups[3].Value, "MSX" + m.Groups[2].Value) : new(-1, -1, text);
+    }
+
     internal static byte[] NormalizeTrackDeclarationIndentation(byte[] source)
         => MucSourceNormalization.NormalizeTrackDeclarationIndentation(source);
 
@@ -274,7 +313,7 @@ public sealed class MucPlayer
     // Plays a fresh compile. With trace on, the driver is given the compiler's own data
     // (identical bytes) so it can report source positions in Trace.
     public bool Start(CompileResult compiled, Func<string, Stream> openFile, bool trace = true)
-        => Start(compiled.Mub, openFile, trace ? compiled.Data : null);
+        => Start(compiled.PlayMub ?? compiled.Mub, openFile, trace ? compiled.Data : null);
 
     public bool Start(byte[] mub, Func<string, Stream> openFile) => Start(mub, openFile, null);
 
