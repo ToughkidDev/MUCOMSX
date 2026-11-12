@@ -11,17 +11,21 @@
 //   levels    at the bottom edge of each panel a white bar, centred, as wide as the channel
 //             is loud: its peak over the last 20 ms against the chip's full output (falling
 //             back smoothly), so the channels can be compared while the waves fill their panels
+//   mix       under the channels, the whole width: the sound that goes out (all channels as
+//             mixed, at the volume set), read from the page's audio output; it also shows for
+//             a VGM file, whose channels the scope cannot read
 const RATE = 22050;
 const RING = 1 << 16;                 // samples kept per channel (about 3 s)
 const FLOOR = { FM: 2000, SSG: 300, PSG: 300, RHY: 2000, ADPCM: 2000, OPLL: 1200, DRUM: 1200, SCC: 2000 };
 // A channel's full output, as the engine reads it (see ChannelScope.cs), for the meters.
 const FULL = { FM: 32768, SSG: 1400, PSG: 1400, RHY: 32768, ADPCM: 32768, OPLL: 8192, DRUM: 16384, SCC: 30720 };
-const STORE_WINDOW = 'mucplayground.scopeWindow', STORE_ALL = 'mucplayground.scopeAll', STORE_METERS = 'mucplayground.scopeMeters';
+const STORE_WINDOW = 'mucplayground.scopeWindow', STORE_ALL = 'mucplayground.scopeAll', STORE_METERS = 'mucplayground.scopeMeters', STORE_MIX = 'mucplayground.scopeMix';
 
 
 export class ScopeView {
   // opts: t(key, …args); colors(name): a part's colour; now(): the output frame heard now,
-  // or null when nothing plays; noteOf(name): what that part is playing now ('' if nothing).
+  // or null when nothing plays; noteOf(name): what that part is playing now ('' if nothing);
+  // mix(): { data: Float32Array, rate } of the output's latest samples, or null.
   constructor(root, opts) {
     this.root = root;
     this.o = opts;
@@ -30,8 +34,11 @@ export class ScopeView {
     this.windowMs = 25;
     this.all = false;
     this.meters = true;
+    this.mixOn = true;
+    this.mixPeak = 0;
     try {
       this.meters = localStorage.getItem(STORE_METERS) !== '0';
+      this.mixOn = localStorage.getItem(STORE_MIX) !== '0';
       const w = Number(localStorage.getItem(STORE_WINDOW));
       if (w >= 5 && w <= 100) this.windowMs = w;
       this.all = localStorage.getItem(STORE_ALL) === '1';
@@ -49,6 +56,7 @@ export class ScopeView {
         <label title="${T('scopeWindowTip')}">${T('scopeWindow')} <input type="range" class="scope-win" min="5" max="100" step="1" value="${this.windowMs}" aria-describedby="scopeWinOut"><output id="scopeWinOut" class="scope-win-out"></output></label>
         <label title="${T('scopeAllTip')}"><input type="checkbox" class="scope-all"${this.all ? ' checked' : ''}> ${T('scopeAll')}</label>
         <label title="${T('scopeMetersTip')}"><input type="checkbox" class="scope-meters"${this.meters ? ' checked' : ''}> ${T('scopeMeters')}</label>
+        <label title="${T('scopeMixTip')}"><input type="checkbox" class="scope-mix"${this.mixOn ? ' checked' : ''}> ${T('scopeMix')}</label>
         <span class="scope-info" aria-live="polite"></span>
       </div>
       <div class="scope-area" role="img"><canvas class="scope-canvas" aria-hidden="true"></canvas></div>`;
@@ -61,6 +69,7 @@ export class ScopeView {
     win.ondblclick = () => { win.value = 25; win.oninput(); };
     showWin();
     q('.scope-all').onchange = (e) => { this.all = e.target.checked; try { localStorage.setItem(STORE_ALL, this.all ? '1' : '0'); } catch { /* ignore */ } this.describe(); this.drawOnce(); };
+    q('.scope-mix').onchange = (e) => { this.mixOn = e.target.checked; try { localStorage.setItem(STORE_MIX, this.mixOn ? '1' : '0'); } catch { /* ignore */ } this.drawOnce(); };
     q('.scope-meters').onchange = (e) => { this.meters = e.target.checked; try { localStorage.setItem(STORE_METERS, this.meters ? '1' : '0'); } catch { /* ignore */ } this.drawOnce(); };
     new ResizeObserver(() => this.drawOnce()).observe(this.area);
     this.describe();
@@ -139,7 +148,8 @@ export class ScopeView {
   draw() {
     const area = this.area, cv = this.canvas;
     const dpr = window.devicePixelRatio || 1;
-    const W = Math.max(1, area.clientWidth), H = Math.max(1, area.clientHeight);
+    const W = Math.max(1, area.clientWidth);
+    let H = Math.max(1, area.clientHeight);
     if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) {
       cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
       cv.style.width = `${W}px`; cv.style.height = `${H}px`;
@@ -149,6 +159,14 @@ export class ScopeView {
     g.fillStyle = '#07080b';
     g.fillRect(0, 0, W, H);
     const list = this.shown();
+    // The mix: a band the whole width under the channels (all of it when there are none to show).
+    const mix = this.mixOn && this.o.now() !== null ? this.o.mix?.() : null;
+    if (mix) {
+      const mixH = list.length ? Math.max(56, Math.min(H * 0.3, H / (Math.ceil(list.length / 2) + 1))) : H;
+      this.drawMix(g, mix, 0, H - mixH, W, mixH);
+      if (!list.length) return;
+      H -= mixH;
+    }
     if (!list.length) {
       g.fillStyle = '#7f8899';
       g.font = '14px system-ui, sans-serif';
@@ -178,6 +196,59 @@ export class ScopeView {
       const x0 = (k % cols) * cw, y0 = Math.floor(k / cols) * chh;
       this.drawChannel(g, ch, x0, y0, cw, chh, end, win, now !== null);
     });
+  }
+
+  // The output's wave: the window's length of its latest samples, moved back to the steepest
+  // rising zero crossing so a steady sound stands still, the height following its peak.
+  drawMix(g, mix, x0, y0, w, h) {
+    const { data, rate } = mix;
+    g.fillStyle = '#0c0e13';
+    g.fillRect(x0 + 1, y0 + 1, w - 2, h - 2);
+    g.strokeStyle = '#1d2129';
+    g.lineWidth = 1;
+    g.strokeRect(x0 + 0.5, y0 + 0.5, w - 1, h - 1);
+    const mid = y0 + h / 2;
+    g.strokeStyle = '#1a1e26';
+    g.beginPath(); g.moveTo(x0 + 4, mid); g.lineTo(x0 + w - 4, mid); g.stroke();
+    const n = data.length;
+    const win = Math.min(Math.floor(n / 2), Math.max(16, Math.round((this.windowMs / 1000) * rate)));
+    let center = n - 1 - Math.floor(win / 2);
+    let best = -1, slope = 0;
+    for (let i = center; i > center - win / 2 && i > 0; i--) {
+      const a = data[i - 1], b = data[i];
+      if (a < 0 && b >= 0 && b - a > slope) { slope = b - a; best = i; }
+    }
+    if (best >= 0) center = best;
+    const from = center - Math.floor(win / 2);
+    let peak = 0;
+    for (let i = 0; i < win; i++) { const v = Math.abs(data[from + i] || 0); if (v > peak) peak = v; }
+    this.mixPeak = Math.max(peak, this.mixPeak * 0.97);
+    const scale = (h * 0.42) / Math.max(this.mixPeak, 0.02);
+    g.save();
+    g.beginPath(); g.rect(x0 + 2, y0 + 2, w - 4, h - 4); g.clip();
+    g.strokeStyle = '#dfe3ec';
+    g.lineWidth = 1.6;
+    g.lineJoin = 'round';
+    g.shadowColor = '#9fb4ff';
+    g.shadowBlur = 6;
+    g.beginPath();
+    const step = Math.max(1, Math.floor(win / (w * 2)));
+    for (let i = 0; i < win; i += step) {
+      const x = x0 + 4 + ((w - 8) * i) / (win - 1);
+      const y = mid - (data[from + i] || 0) * scale;
+      if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    }
+    g.stroke();
+    g.restore();
+    const big = Math.max(11, Math.min(14, h / 6));
+    g.font = `600 ${big}px ui-monospace, Menlo, Consolas, monospace`;
+    const label = this.o.t('scopeMixLabel');
+    g.fillStyle = 'rgba(7, 8, 11, 0.78)';
+    g.fillRect(x0 + 4, y0 + 3, g.measureText(label).width + 10, big + 6);
+    g.textBaseline = 'top';
+    g.fillStyle = '#dfe3ec';
+    g.fillText(label, x0 + 9, y0 + 6);
+    g.textBaseline = 'alphabetic';
   }
 
   // Each channel's level now: its peak over the last 20 ms against the chip's full output

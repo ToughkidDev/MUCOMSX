@@ -24,6 +24,11 @@
 //   effects   on a MucoMSX ?XT4 track a note starts a shared effect: its cell shows XD0–XD9
 //             (c … a) in orange with no @, the info line the ?XDn definition (a click shows it
 //             in the text); a digit or XDn is typed there, and keys give c … a as XD0–XD9
+//   roll      View: Roll shows the same notes as coloured lines on a piano roll instead,
+//             time flowing left past a fixed playing line, each part in its colour, the notes
+//             sounding now lit white; rhythm, drum and effect parts as grey marks on a lane
+//             at the top. The Row setting is the zoom; the wheel or ← → look around, a click
+//             on a note shows it in the text. Editing stays in View: Pattern
 
 import { timeline, lengthText, noteText, tokenText } from './mml-timeline.js';
 import { KEY_MAP } from './keyboard.js';
@@ -70,6 +75,10 @@ export class Tracker {
     this.redoStack = [];
     this.octave = 4;
     this.playTick = null;
+    this.view = 'pattern';    // 'pattern' (rows and cells) or 'roll' (a piano roll, view only)
+    try { if (localStorage.getItem('mucplayground.trackerView') === 'roll') this.view = 'roll'; } catch { /* default */ }
+    this.rollTick = 0;        // where the roll looks when it does not follow the playing line
+    this.rollHits = [];       // the notes drawn on the roll: { x, y, w, h, ev }
     this.follow = true;
     this.holdUntil = 0;
     this.autoAt = 0;
@@ -83,12 +92,13 @@ export class Tracker {
     this.root.innerHTML = `
       <div class="trk-bar">
         <b>🎼 ${T('trkTitle')}</b>
+        <span class="tool-group" role="group" aria-label="${T('trkView')}"><button type="button" class="btn small" data-view="pattern" title="${T('trkViewPatternTip')}">${T('trkViewPattern')}</button><button type="button" class="btn small" data-view="roll" title="${T('trkViewRollTip')}">${T('trkViewRoll')}</button></span>
         <label>${T('trkRow')} <select class="trk-res">${RESOLUTIONS.map((r) => `<option value="${r}"${r === this.perWhole ? ' selected' : ''}>1/${r}</option>`).join('')}</select></label>
-        <span class="tool-group" role="group" aria-label="${T('keysOctave')}"><button type="button" class="btn small" data-oct="-1" title="${T('keysOctDown')}" aria-label="${T('keysOctDown')}">−</button><output class="trk-oct" aria-live="polite"></output><button type="button" class="btn small" data-oct="1" title="${T('keysOctUp')}" aria-label="${T('keysOctUp')}">+</button></span>
-        <label title="${T('trkStepTip')}">${T('trkStep')} <select class="trk-step">${STEPS.map((n) => `<option value="${n}"${n === this.step ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
-        <label>${T('trkInput')} <select class="trk-input"><option value="display">${T('trkInputDisplay')}</option><option value="tracker">${T('trkInputTracker')}</option></select></label>
-        <span class="tool-group trk-tools" role="group"><button type="button" class="btn small" data-act="rest" title="${T('trkRestTip')}">${T('trkRest')}</button><button type="button" class="btn small" data-act="off" title="${T('trkOffTip')}" aria-label="${T('trkOffTip')}">OFF</button><button type="button" class="btn small" data-act="keys" title="${T('trkKeysTip')}" aria-label="${T('trkKeysTip')}">🎹</button></span>
-        <span class="tool-group" role="group"><button type="button" class="btn small" data-act="undo" title="${T('trkUndoTip')}" aria-label="${T('trkUndoTip')}" disabled>↶</button><button type="button" class="btn small" data-act="redo" title="${T('trkRedoTip')}" aria-label="${T('trkRedoTip')}" disabled>↷</button><button type="button" class="btn small" data-act="help" title="${T('trkHelpTip')}" aria-label="${T('trkHelpTip')}" aria-expanded="false">?</button></span>
+        <span class="tool-group trk-edit" role="group" aria-label="${T('keysOctave')}"><button type="button" class="btn small" data-oct="-1" title="${T('keysOctDown')}" aria-label="${T('keysOctDown')}">−</button><output class="trk-oct" aria-live="polite"></output><button type="button" class="btn small" data-oct="1" title="${T('keysOctUp')}" aria-label="${T('keysOctUp')}">+</button></span>
+        <label class="trk-edit" title="${T('trkStepTip')}">${T('trkStep')} <select class="trk-step">${STEPS.map((n) => `<option value="${n}"${n === this.step ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
+        <label class="trk-edit">${T('trkInput')} <select class="trk-input"><option value="display">${T('trkInputDisplay')}</option><option value="tracker">${T('trkInputTracker')}</option></select></label>
+        <span class="tool-group trk-tools trk-edit" role="group"><button type="button" class="btn small" data-act="rest" title="${T('trkRestTip')}">${T('trkRest')}</button><button type="button" class="btn small" data-act="off" title="${T('trkOffTip')}" aria-label="${T('trkOffTip')}">OFF</button><button type="button" class="btn small" data-act="keys" title="${T('trkKeysTip')}" aria-label="${T('trkKeysTip')}">🎹</button></span>
+        <span class="tool-group trk-edit" role="group"><button type="button" class="btn small" data-act="undo" title="${T('trkUndoTip')}" aria-label="${T('trkUndoTip')}" disabled>↶</button><button type="button" class="btn small" data-act="redo" title="${T('trkRedoTip')}" aria-label="${T('trkRedoTip')}" disabled>↷</button><button type="button" class="btn small" data-act="help" title="${T('trkHelpTip')}" aria-label="${T('trkHelpTip')}" aria-expanded="false">?</button></span>
         <span class="trk-info"></span>
       </div>
       <div class="trk-help" hidden></div>
@@ -100,7 +110,8 @@ export class Tracker {
     this.canvas = q('.trk-canvas');
     this.spacer = q('.trk-spacer');
     q('.trk-res').onchange = (e) => { const tick = this.cursor.row * this.rowTicks; this.perWhole = +e.target.value; this.cursor.row = Math.floor(tick / this.rowTicks); this.layout(); this.scrollToCursor(); };
-    this.root.querySelectorAll('[data-oct], [data-act]').forEach((b) => b.addEventListener('pointerdown', (e) => e.preventDefault()));
+    this.root.querySelectorAll('[data-oct], [data-act], [data-view]').forEach((b) => b.addEventListener('pointerdown', (e) => e.preventDefault()));
+    this.root.querySelectorAll('[data-view]').forEach((b) => { b.onclick = () => this.setView(b.dataset.view); });
     this.root.querySelectorAll('[data-oct]').forEach((b) => { b.onclick = () => this.setOctave(this.octave + +b.dataset.oct); });
     this.root.querySelectorAll('[data-act]').forEach((b) => {
       b.onclick = () => {
@@ -127,8 +138,29 @@ export class Tracker {
     this.scroller.addEventListener('keyup', (e) => { if (this.held === e.code) { this.o.preview(false, this.heldMidi); this.held = null; } });
     this.scroller.addEventListener('focus', () => { this.armed = true; this.draw(); });
     this.scroller.addEventListener('blur', () => this.draw());
+    // The roll: the wheel looks along the song (a moment while it plays, then it follows again).
+    this.scroller.addEventListener('wheel', (e) => {
+      if (this.view !== 'roll') return;
+      e.preventDefault();
+      this.rollTick = this.rollAt() + (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) / (this.rollPpt || 1);
+      this.rollTick = Math.max(0, this.rollTick);
+      this.holdUntil = performance.now() + 2500;
+      this.draw();
+    }, { passive: false });
     new ResizeObserver(() => this.layout()).observe(this.scroller);
     this.setOctave(this.octave);
+    this.setView(this.view);
+  }
+
+  // View: 'pattern' (rows and cells, edited here) or 'roll' (the notes as coloured lines).
+  setView(view) {
+    this.view = view === 'roll' ? 'roll' : 'pattern';
+    try { localStorage.setItem('mucplayground.trackerView', this.view); } catch { /* ignore */ }
+    this.root.classList.toggle('trk-roll', this.view === 'roll');
+    this.root.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === this.view)));
+    if (this.view === 'roll' && this.playTick === null) this.rollTick = this.cursor.row * this.rowTicks;
+    this.layout();
+    if (this.view === 'pattern' && this.m) this.scrollToCursor();
   }
 
   setOctave(o) {
@@ -181,8 +213,10 @@ export class Tracker {
     const w = this.scroller.clientWidth, h = this.scroller.clientHeight;
     // Room above and below so any row can sit in the middle.
     this.pad = Math.max(0, Math.floor((h - m.headH) / 2 - m.rowH));
-    this.spacer.style.width = `${m.numW + this.tracks.length * m.colW}px`;
-    this.spacer.style.height = `${m.headH + this.pad * 2 + this.rows * m.rowH}px`;
+    // The roll draws its own time axis: nothing to scroll.
+    const roll = this.view === 'roll';
+    this.spacer.style.width = roll ? `${w}px` : `${m.numW + this.tracks.length * m.colW}px`;
+    this.spacer.style.height = roll ? `${h}px` : `${m.headH + this.pad * 2 + this.rows * m.rowH}px`;
     const dpr = window.devicePixelRatio || 1;
     this.canvas.style.width = `${w}px`;
     this.canvas.style.height = `${h}px`;
@@ -235,6 +269,7 @@ export class Tracker {
     g.fillRect(0, 0, W, H);
     g.font = this.font;
     g.textBaseline = 'middle';
+    if (this.view === 'roll') { this.drawRoll(g, W, H); return; }
     const first = Math.max(0, Math.floor((this.scroller.scrollTop - this.pad) / m.rowH) - 1);
     const last = Math.min(this.rows - 1, first + Math.ceil(H / m.rowH) + 2);
     const playRow = this.playTick === null ? -1 : Math.floor(this.playTick / this.rowTicks);
@@ -479,7 +514,7 @@ export class Tracker {
   }
 
   hover(e) {
-    if (!this.m || e.buttons || this.editor) return;
+    if (!this.m || e.buttons || this.editor || this.view === 'roll') return;
     const r = this.scroller.getBoundingClientRect();
     const x = e.clientX - r.left, y = e.clientY - r.top;
     const track = Math.floor((x + this.scroller.scrollLeft - this.m.numW) / this.m.colW);
@@ -497,6 +532,13 @@ export class Tracker {
     if (!this.m) return;
     const r = this.scroller.getBoundingClientRect();
     const x = e.clientX - r.left, y = e.clientY - r.top;
+    if (this.view === 'roll') {
+      // A note on the roll: its MML in the text.
+      this.scroller.focus({ preventScroll: true });
+      const hit = [...this.rollHits].reverse().find((h) => x >= h.x - 2 && x <= h.x + h.w + 2 && y >= h.y - 2 && y <= h.y + h.h + 2);
+      if (hit) { this.showInfo(hit.ev); this.o.reveal(hit.ev.src); }
+      return;
+    }
     if (y < this.m.headH || x < this.m.numW) return;
     const track = Math.floor((x + this.scroller.scrollLeft - this.m.numW) / this.m.colW);
     // (the empty band above the first row picks the first row)
@@ -509,6 +551,18 @@ export class Tracker {
   }
 
   key(e) {
+    if (this.view === 'roll') {
+      // ← → a beat (with Shift a bar), Home the start.
+      const clock = this.tracks[0]?.clock || 128;
+      const d = e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0;
+      if (d || e.key === 'Home') {
+        e.preventDefault();
+        this.rollTick = e.key === 'Home' ? 0 : Math.max(0, this.rollAt() + d * (e.shiftKey ? clock : clock / 4));
+        this.holdUntil = performance.now() + 2500;
+        this.draw();
+      }
+      return;
+    }
     const { track, row } = this.cursor;
     if ((e.ctrlKey || e.metaKey) && !e.altKey) {
       const k = e.key.toLowerCase();
@@ -853,9 +907,122 @@ export class Tracker {
     this.advance(Math.floor(tick / this.rowTicks));
   }
 
+  // ---------- roll view ----------
+  // The tick at the playing line: the song's while it plays (unless the wheel just moved
+  // the roll), else where the roll was left.
+  rollAt() {
+    return this.playTick !== null && performance.now() > this.holdUntil ? this.playTick : this.rollTick;
+  }
+
+  drawRoll(g, W, H) {
+    const m = this.m, fs = this.fontSize;
+    const clock = this.tracks[0]?.clock || 128;
+    const ppt = (m.cw * 2) / this.rowTicks;      // one Row step is two characters wide
+    this.rollPpt = ppt;
+    const t0 = this.rollAt();
+    if (this.playTick === null || performance.now() <= this.holdUntil) this.rollTick = t0;
+    const playX = Math.round(W * 0.4);
+    const a = t0 - playX / ppt, b = t0 + (W - playX) / ppt;
+    const xOf = (tick) => playX + (tick - t0) * ppt;
+    // Pitched parts on the roll; rhythm, drum and effect parts on a lane at the top.
+    const perc = (tr) => ['RHY', 'DRUM'].includes(chipOf(tr.name)) || tr.events.some((ev) => ev.fx !== undefined);
+    const pitched = [], lane = [];
+    this.tracks.forEach((tr, k) => (perc(tr) ? lane : pitched).push(k));
+    let lo = 127, hi = 0;
+    for (const k of pitched) for (const ev of this.tracks[k].events) if (ev.kind === 'note' && ev.midi !== undefined) { lo = Math.min(lo, ev.midi); hi = Math.max(hi, ev.midi); }
+    if (lo > hi) { lo = 48; hi = 72; }
+    lo -= 2; hi += 2;
+    const top = m.headH;
+    const laneH = lane.length ? Math.max(6, Math.min(10, Math.round(fs * 0.6))) * lane.length + 6 : 0;
+    const y0 = top + laneH + 4, y1 = H - 4;
+    const rowh = Math.max(1, (y1 - y0) / (hi - lo + 1));
+    const yOf = (midi) => y1 - (midi - lo + 1) * rowh;
+    // pitch rows: black keys a shade darker, a line at every C (named at the left)
+    g.font = `${Math.max(9, Math.round(fs * 0.75))}px ui-monospace, Menlo, Consolas, monospace`;
+    for (let p = lo; p <= hi; p++) {
+      const y = yOf(p);
+      if ([1, 3, 6, 8, 10].includes(p % 12)) { g.fillStyle = '#0e0f13'; g.fillRect(0, y, W, rowh); }
+      if (p % 12 === 0) {
+        const line = Math.round(y + rowh);
+        g.fillStyle = '#2a2f3b'; g.fillRect(0, line - 0.5, W, 1);
+      } else if (rowh >= 5) { g.fillStyle = '#181a20'; g.fillRect(0, Math.round(y + rowh) - 0.5, W, 1); }
+    }
+    // the octave names, over the rows (drawn after them, so no row covers one)
+    if (rowh * 12 >= 18) {
+      g.fillStyle = '#8a93a6';
+      g.textBaseline = 'bottom';
+      for (let p = Math.ceil(lo / 12) * 12; p <= hi; p += 12) g.fillText(`C${Math.floor(p / 12) - 1}`, 4, Math.round(yOf(p) + rowh) - 1);
+      g.textBaseline = 'middle';
+    }
+    // beats faint, bars bright
+    const beat = clock / 4;
+    for (let tick = Math.max(0, Math.floor(a / beat) * beat); tick <= b; tick += beat) {
+      const x = Math.round(xOf(tick)) + 0.5;
+      const bar = Math.abs(tick / clock - Math.round(tick / clock)) < 1e-6;
+      g.fillStyle = bar ? '#7d8799' : '#252934';
+      g.fillRect(x - (bar ? 0.5 : 0), top, bar ? 1.5 : 1, H - top);
+    }
+    // notes
+    const hits = [];
+    const now = this.playTick;
+    const sounding = (ev) => now !== null && ev.tick <= now && now < ev.tick + ev.len;
+    const drawNotes = (k, place) => {
+      const evs = this.tracks[k].events;
+      // the first event that may still show (notes are rarely longer than four bars)
+      let i = 0, j = evs.length;
+      while (i < j) { const mid = (i + j) >> 1; if (evs[mid].tick < a - clock * 4) i = mid + 1; else j = mid; }
+      for (; i < evs.length && evs[i].tick <= b; i++) {
+        const ev = evs[i];
+        if (ev.kind !== 'note' || ev.tick + ev.len < a) continue;
+        const r = place(ev);
+        if (!r) continue;
+        const on = sounding(ev);
+        g.globalAlpha = on ? 1 : ev.rep ? 0.45 : 0.9;
+        if (on) { g.shadowColor = r.color; g.shadowBlur = 8; }
+        g.fillStyle = on ? '#ffffff' : r.color;
+        g.fillRect(r.x, r.y, r.w, r.h);
+        g.shadowBlur = 0;
+        hits.push({ x: r.x, y: r.y, w: r.w, h: r.h, ev });
+      }
+      g.globalAlpha = 1;
+    };
+    for (const k of pitched) {
+      const color = this.o.colors(this.tracks[k].name);
+      const h = Math.max(2, Math.min(rowh * 0.7, 8));
+      drawNotes(k, (ev) => (ev.midi === undefined ? null : { x: xOf(ev.tick), y: yOf(ev.midi) + (rowh - h) / 2, w: Math.max(2, ev.len * ppt - 1), h, color }));
+    }
+    if (lane.length) {
+      g.fillStyle = '#0b0c10'; g.fillRect(0, top, W, laneH);
+      const lh = (laneH - 6) / lane.length;
+      lane.forEach((k, n) => drawNotes(k, (ev) => ({ x: xOf(ev.tick), y: top + 3 + n * lh + lh * 0.25, w: Math.max(3, Math.min(ev.len, this.rowTicks) * ppt - 2), h: Math.max(2, lh * 0.5), color: ev.fx !== undefined ? C.fx : '#9aa3b5' })));
+    }
+    this.rollHits = hits;
+    // the playing line
+    g.fillStyle = '#e0505a';
+    g.fillRect(playX - 1, top, 2, H - top);
+    // the parts and their colours
+    g.fillStyle = C.head;
+    g.fillRect(0, 0, W, top);
+    g.font = this.font;
+    let x = 8;
+    const bar = Math.floor(t0 / clock) + 1;
+    g.fillStyle = C.num16;
+    g.fillText(`${bar}`, x, top / 2);
+    x += g.measureText(`${bar}`).width + 12;
+    for (const tr of this.tracks) {
+      if (x > W - 20) break;
+      g.fillStyle = this.o.colors(tr.name);
+      g.fillRect(x, top / 2 - 4, 10, 8);
+      g.fillStyle = C.text;
+      g.fillText(tr.name, x + 14, top / 2);
+      x += 14 + g.measureText(tr.name).width + 12;
+    }
+  }
+
   // ---------- playing ----------
   setPlayhead(tick) {
     this.playTick = tick;
+    if (tick !== null && this.view === 'roll') { this.draw(); return; }
     if (tick !== null && this.follow && performance.now() > this.holdUntil) {
       const row = Math.floor(tick / this.rowTicks);
       if (row !== this.lastPlayRow) {

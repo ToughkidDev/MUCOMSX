@@ -118,11 +118,13 @@ const T = {
     manTitle: 'Manual', manTip: 'Manual mode: the MML guide (MUCOM88 and the mucomDotNET extensions) beside the editor; examples go into the song with Insert',
     scopeTitle: 'Scope', scopeTip: 'Oscilloscope mode: every channel\'s own waveform next to the text, while the song plays',
     scopeWindow: 'Time', scopeWindowTip: 'How much of each wave is shown (5–100 ms; double-click: 25 ms)',
+    scopeMix: 'Mix', scopeMixTip: 'Under the channels, the whole width: the sound that goes out, every channel mixed at the volume set (shown for a VGM file too)', scopeMixLabel: 'MIX',
     scopeMeters: 'Levels', scopeMetersTip: 'A white bar at the bottom of each panel, as wide as the channel is loud (its peak against the chip\'s full output)',
     scopeAll: 'All channels', scopeAllTip: 'Show every channel of the song\'s chips, also those that have not sounded',
     scopeIdle: 'Play the song to see each channel\'s wave', scopeWaiting: 'No channel has sounded yet',
-    scopeVgm: 'The oscilloscope shows MUC and MUB songs (not VGM files)',
+    scopeVgm: 'A VGM file shows only the mix: its channels cannot be read one by one',
     scopeChannels: (n, list) => `Oscilloscope of ${n} channels: ${list}`, scopeCount: (n) => `${n} channels`,
+    trkView: 'View', trkViewPattern: 'Pattern', trkViewPatternTip: 'Rows and cells, as Furnace shows a pattern (edited here)', trkViewRoll: 'Roll', trkViewRollTip: 'The notes as coloured lines on a piano roll, time flowing past a fixed playing line; the wheel or ← → look around, a click on a note shows it in the text (view only)',
     trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
     trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave; Ctrl+Z undo, ? all keys',
     trkInput: 'Input', trkInputDisplay: 'As shown (C#4, OFF, 0F)', trkInputTracker: 'Quick keys (Z S X / Q 2 W)',
@@ -281,11 +283,13 @@ const T = {
     manTitle: '문법', manTip: '문법 설명서 모드: 에디터 옆에 MML 설명서(MUCOM88, mucomDotNET 확장 명령)를 띄우고, 예제는 넣기로 곡에 넣습니다',
     scopeTitle: '스코프', scopeTip: '오실로스코프 모드: 곡이 재생되는 동안 채널마다 파형을 텍스트 옆에 보여 줌',
     scopeWindow: '시간폭', scopeWindowTip: '각 파형을 얼마나 길게 보여 줄지 (5–100 ms, 더블클릭하면 25 ms)',
+    scopeMix: '믹스', scopeMixTip: '채널들 아래에 전체 폭으로: 실제로 나가는 소리, 모든 채널을 설정한 음량으로 합친 파형 (VGM 파일도 표시)', scopeMixLabel: 'MIX',
     scopeMeters: '레벨', scopeMetersTip: '각 패널 아래쪽 가운데의 흰 막대, 채널이 클수록 넓어짐 (칩의 최대 출력에 대한 최고점)',
     scopeAll: '모든 채널', scopeAllTip: '아직 소리가 나지 않은 채널까지 곡이 쓰는 칩의 모든 채널을 보여 줌',
     scopeIdle: '곡을 재생하면 채널마다 파형이 보입니다', scopeWaiting: '아직 소리가 난 채널이 없습니다',
-    scopeVgm: '오실로스코프는 MUC와 MUB 곡을 보여 줍니다 (VGM 파일은 안 됨)',
+    scopeVgm: 'VGM 파일은 채널별 파형 없이 믹스만 보여 줍니다',
     scopeChannels: (n, list) => `채널 ${n}개의 오실로스코프: ${list}`, scopeCount: (n) => `채널 ${n}개`,
+    trkView: '보기', trkViewPattern: '패턴', trkViewPatternTip: 'Furnace 패턴처럼 행과 칸으로 보기 (여기서 편집)', trkViewRoll: '롤', trkViewRollTip: '음을 피아노 롤 위의 색깔 선으로 보기. 고정된 재생선 옆으로 시간이 흐릅니다. 휠이나 ← →로 둘러보고, 음을 누르면 텍스트에서 그 위치를 보여 줍니다 (보기 전용)',
     trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
     trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브. Ctrl+Z 되돌리기, ? 전체 키',
     trkInput: '입력', trkInputDisplay: '표시 형식대로 (C#4, OFF, 0F)', trkInputTracker: '빠른 키 (Z S X / Q 2 W)',
@@ -444,11 +448,13 @@ const T = {
     manTitle: '文法', manTip: '文法説明書モード: エディタの横にMML説明書（MUCOM88、mucomDotNET拡張コマンド）を表示し、例は挿入で曲に入れます',
     scopeTitle: 'スコープ', scopeTip: 'オシロスコープモード: 曲の再生中、チャンネルごとの波形をテキストの横に表示',
     scopeWindow: '時間幅', scopeWindowTip: '各波形をどれだけの長さ表示するか（5–100 ms、ダブルクリックで25 ms）',
+    scopeMix: 'ミックス', scopeMixTip: 'チャンネルの下に全幅で: 実際に出ていく音、全チャンネルを設定した音量で合わせた波形（VGMファイルも表示）', scopeMixLabel: 'MIX',
     scopeMeters: 'レベル', scopeMetersTip: '各パネル下端中央の白い棒、チャンネルが大きいほど広がる（チップの最大出力に対するピーク）',
     scopeAll: '全チャンネル', scopeAllTip: 'まだ鳴っていないチャンネルも含め、曲が使うチップの全チャンネルを表示',
     scopeIdle: '曲を再生するとチャンネルごとの波形が表示されます', scopeWaiting: 'まだ鳴ったチャンネルがありません',
-    scopeVgm: 'オシロスコープはMUCとMUBの曲を表示します（VGMファイルは不可）',
+    scopeVgm: 'VGMファイルはチャンネル別の波形なしでミックスだけを表示します',
     scopeChannels: (n, list) => `${n}チャンネルのオシロスコープ: ${list}`, scopeCount: (n) => `${n}チャンネル`,
+    trkView: '表示', trkViewPattern: 'パターン', trkViewPatternTip: 'Furnaceのパターンのように行とセルで表示（ここで編集）', trkViewRoll: 'ロール', trkViewRollTip: '音をピアノロール上の色の線で表示。固定された再生線の横を時間が流れます。ホイールや← →で見回し、音をクリックするとテキストのその位置を表示（表示のみ）',
     trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
     trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ。Ctrl+Zで元に戻す、?で全キー',
     trkInput: '入力', trkInputDisplay: '表示どおり (C#4, OFF, 0F)', trkInputTracker: 'クイックキー (Z S X / Q 2 W)',
@@ -1845,6 +1851,7 @@ worker.postMessage({ type: 'boot', language: lang === 'ja' ? 'ja' : 'en' });
 
 // ---------- audio ----------
 let ctx = null, node = null, gain = null, analyser = null;
+let mixAnalyser = null, mixData = null;   // the output for the scope's mix wave (about 186 ms)
 let playing = false, paused = false, loopCount = 0, underruns = 0;
 
 // iPhone / iPad: Web Audio is silenced by the ringer switch (or iPad's silent mode) unless
@@ -1886,6 +1893,9 @@ async function ensureAudio() {
   analyser = ctx.createAnalyser();
   analyser.fftSize = 2048;
   node.connect(gain).connect(analyser).connect(ctx.destination);
+  mixAnalyser = ctx.createAnalyser();
+  mixAnalyser.fftSize = 8192;
+  gain.connect(mixAnalyser);
   setVolume();
   const channel = new MessageChannel();
   node.port.postMessage({ type: 'enginePort', port: channel.port1 }, [channel.port1]);
@@ -3202,7 +3212,10 @@ function revealSource(src) {
   mark.className = 'tlink';
   mark.style.cssText = `left:${a.x - 1}px;top:${a.y}px;width:${Math.max(6, b.x - a.x) + 2}px;height:${a.lh}px`;
   p.root.querySelector('.code-area').appendChild(mark);
-  p.code.addEventListener('scroll', () => mark.remove(), { once: true });
+  // Gone when you scroll the text; not on the scroll above, whose event comes a moment later.
+  const shown = performance.now();
+  const drop = () => { if (performance.now() - shown < 250) p.code.addEventListener('scroll', drop, { once: true }); else mark.remove(); };
+  p.code.addEventListener('scroll', drop, { once: true });
 }
 // Where each playing part is in the tracker, from the engine's trace: the event with that
 // source (the next one after the last, for repeats), and how fast clocks go by.
@@ -3241,6 +3254,13 @@ $('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'track
 // noteOf: the MML token a part plays now, from the playback positions (its label: A, MSXD …).
 const scopeView = new ScopeView($('scopeView'), {
   t, colors: partColor, now: () => (playing ? playedFrame() : null),
+  // The sound going out, all channels mixed (a VGM file's too).
+  mix: () => {
+    if (!mixAnalyser) return null;
+    if (!mixData) mixData = new Float32Array(mixAnalyser.fftSize);
+    mixAnalyser.getFloatTimeDomainData(mixData);
+    return { data: mixData, rate: ctx.sampleRate };
+  },
   noteOf: (name) => {
     for (const [key, p] of positions) if (partInfo(key).label === name) return tokenAt(p).text.trim();
     return '';
