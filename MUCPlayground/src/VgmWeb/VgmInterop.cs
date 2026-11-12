@@ -42,8 +42,14 @@ public static partial class Interop
         string error = "";
         levels.Clear();
         rendered = 0;
+        scope = null;
         try { session = VgmEngine.Load(data, 2048, SongPath); }
         catch (Exception e) { session = null; error = e.Message; }
+        if (session?.Mds != null)
+        {
+            try { scope = new ChannelScope(); scope.AddMdsound(session.Mds); }
+            catch { scope = null; }
+        }
         if (session != null) session.Driver.vgmSpeed = speed;
         if (session == null && error == "") error = "Not a VGM file this player supports.";
         GD3 tag = session?.Driver.GD3;
@@ -74,15 +80,19 @@ public static partial class Interop
     {
         if (session == null || session.Driver.Stopped) return new byte[0];
         if (pcm.Length < frames * 2) pcm = new short[frames * 2];
-        // In slices, so the channel view's level meters are sampled about every 12 ms.
-        int n = 0;
+        // In slices, so the channel view's level meters are sampled about every 12 ms; while
+        // the oscilloscope shows, two frames at a time, the channels read after each.
+        bool probe = scopeOn && scope?.Probes.Count > 0;
+        int n = 0, sinceLevels = 0;
         while (n < frames * 2)
         {
-            int got = session.RenderSamplesWithMasterVolume(pcm, n, Math.Min(1024, frames * 2 - n));
+            int got = session.RenderSamplesWithMasterVolume(pcm, n, Math.Min(probe ? 4 : 1024, frames * 2 - n));
             if (got <= 0) break;
             n += got;
             rendered += got / 2;
-            LogLevels();
+            if (probe) { for (int f = 0; f < got / 2; f++) scope.Capture(rendered - got / 2 + f); }
+            sinceLevels += got;
+            if (sinceLevels >= 1024 || !probe) { LogLevels(); sinceLevels = 0; }
         }
         byte[] bytes = new byte[Math.Max(0, n) * 2];
         Buffer.BlockCopy(pcm, 0, bytes, 0, bytes.Length);
@@ -91,6 +101,35 @@ public static partial class Interop
 
     [JSExport]
     public static int[] TakeTrace() => new int[0];
+
+    // The per-channel oscilloscope (ChannelScope.cs, as in the MUC engine): on while the page
+    // shows it.
+    static ChannelScope scope;
+    static bool scopeOn;
+    [JSExport]
+    public static void SetScope(bool on) => scopeOn = on;
+
+    // Its channels for the song playing: [{ name, chip }].
+    [JSExport]
+    public static string ScopeChannels()
+    {
+        if (scope == null) return "[]";
+        return "[" + string.Join(",", scope.Probes.Select((p) => $"{{\"name\":\"{p.Name}\",\"chip\":\"{p.Chip}\"}}")) + "]";
+    }
+
+    // The samples kept since the last call: the output frame of the first (int32), then for
+    // each kept sample (22,050 Hz) one 16-bit value per channel, little-endian.
+    [JSExport]
+    public static byte[] TakeScope()
+    {
+        if (scope == null) return new byte[0];
+        short[] s = scope.Take(out long frame);
+        if (s.Length == 0) return new byte[0];
+        byte[] bytes = new byte[4 + s.Length * 2];
+        BitConverter.TryWriteBytes(bytes.AsSpan(0, 4), (int)frame);
+        Buffer.BlockCopy(s, 0, bytes, 4, s.Length * 2);
+        return bytes;
+    }
 
     // The emulators' live output levels for MDPlayer4Mac's OPNA/OPNB meters: groups of
     // frame, VGM command of the chip (0x56 YM2608, 0x58 YM2610), chip id, key mask, then the
@@ -150,7 +189,7 @@ public static partial class Interop
     });
 
     [JSExport]
-    public static void Stop() => session = null;
+    public static void Stop() { session = null; scope = null; }
 
     static string Json(Action<Utf8JsonWriter> body)
     {

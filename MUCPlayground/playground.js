@@ -124,7 +124,7 @@ const T = {
     scopeMeters: 'Levels', scopeMetersTip: 'A white bar at the bottom of each panel, as wide as the channel is loud (its peak against the chip\'s full output)',
     scopeAll: 'All channels', scopeAllTip: 'Show every channel of the song\'s chips, also those that have not sounded',
     scopeIdle: 'Play the song to see each channel\'s wave', scopeWaiting: 'No channel has sounded yet',
-    scopeVgm: 'A VGM file shows only the mix: its channels cannot be read one by one',
+    scopeVgm: 'The chips of this file cannot be read channel by channel: only the mix is shown',
     scopeChannels: (n, list) => `Oscilloscope of ${n} channels: ${list}`, scopeCount: (n) => `${n} channels`,
     ckTitle: 'Keys', ckParts: (n) => `${n} parts, as they play`, ckIdle: 'Each part\'s keyboard shows here while a song plays',
     trkFile: 'Notes read from the chip registers of the file playing (1 row = Row × 1/60 s). Read-only.',
@@ -291,7 +291,7 @@ const T = {
     scopeMeters: '레벨', scopeMetersTip: '각 패널 아래쪽 가운데의 흰 막대, 채널이 클수록 넓어짐 (칩의 최대 출력에 대한 최고점)',
     scopeAll: '모든 채널', scopeAllTip: '아직 소리가 나지 않은 채널까지 곡이 쓰는 칩의 모든 채널을 보여 줌',
     scopeIdle: '곡을 재생하면 채널마다 파형이 보입니다', scopeWaiting: '아직 소리가 난 채널이 없습니다',
-    scopeVgm: 'VGM 파일은 채널별 파형 없이 믹스만 보여 줍니다',
+    scopeVgm: '이 파일의 칩은 채널별로 읽을 수 없어 믹스만 보여 줍니다',
     scopeChannels: (n, list) => `채널 ${n}개의 오실로스코프: ${list}`, scopeCount: (n) => `채널 ${n}개`,
     ckTitle: '건반', ckParts: (n) => `${n}개 파트, 연주하는 대로`, ckIdle: '곡을 연주하면 파트마다 건반이 여기에 나옵니다',
     trkFile: '재생 중인 파일의 칩 레지스터에서 읽은 음표입니다(행 = Row × 1/60초). 읽기 전용.',
@@ -458,7 +458,7 @@ const T = {
     scopeMeters: 'レベル', scopeMetersTip: '各パネル下端中央の白い棒、チャンネルが大きいほど広がる（チップの最大出力に対するピーク）',
     scopeAll: '全チャンネル', scopeAllTip: 'まだ鳴っていないチャンネルも含め、曲が使うチップの全チャンネルを表示',
     scopeIdle: '曲を再生するとチャンネルごとの波形が表示されます', scopeWaiting: 'まだ鳴ったチャンネルがありません',
-    scopeVgm: 'VGMファイルはチャンネル別の波形なしでミックスだけを表示します',
+    scopeVgm: 'このファイルのチップはチャンネル別に読めないため、ミックスだけを表示します',
     scopeChannels: (n, list) => `${n}チャンネルのオシロスコープ: ${list}`, scopeCount: (n) => `${n}チャンネル`,
     ckTitle: '鍵盤', ckParts: (n) => `${n}パート、演奏のとおりに`, ckIdle: '曲を演奏するとパートごとの鍵盤がここに出ます',
     trkFile: '再生中のファイルのチップレジスタから読んだ音符です（行 = Row × 1/60秒）。読み取り専用。',
@@ -1837,7 +1837,11 @@ function onEngineMessage(m, source) {
       if (playingName && source === 'muc') loadFileNotes(new Uint8Array(m.data));
       break;
     case 'scopeChannels':
-      if (source === active && m.session === traceSession) { if (m.channels) scopeView.setChannels(m.channels); else scopeView.setUnsupported(); }
+      if (source === active && m.session === traceSession) {
+        // A VGM file's channels are named by chip (FM1, OPNA SSG2 …): coloured one by one.
+        scopeColors = new Map(source === 'vgm' ? (m.channels || []).map((c, i) => [c.name, PART_COLORS[i % PART_COLORS.length]]) : []);
+        if (m.channels?.length) scopeView.setChannels(m.channels); else scopeView.setUnsupported();
+      }
       break;
     case 'scope':
       if (source === active && m.session === traceSession) scopeView.push(m.data);
@@ -2161,6 +2165,7 @@ function bootVgm() {
   vgmWorker.onerror = (e) => setStatus(t('vgmFailed') + (e.message || 'worker error'), true);
   vgmWorker.postMessage({ type: 'boot', language: 'en' });
   vgmWorker.postMessage({ type: 'speed', value: +$('speed').value / 100 });
+  vgmWorker.postMessage({ type: 'scope', on: splitMode === 'scope' });
 }
 
 function connectVgmAudio() {
@@ -2750,6 +2755,7 @@ function setSplit(mode, transient = false) {
   $('scopeToggle').setAttribute('aria-pressed', String(splitMode === 'scope'));
   if (splitMode === 'scope') scopeView.open(); else scopeView.close();
   worker.postMessage({ type: 'scope', on: splitMode === 'scope' });
+  vgmWorker?.postMessage({ type: 'scope', on: splitMode === 'scope' });
   markBankButtons();
   if (splitMode === 'tracker') { if (fileMode()) tracker.setTracks(fileNotes?.tracks || []); else tracker.setText(code.value); tracker.layout(); }
   if (splitMode === 'bank') bank.refresh();
@@ -3464,8 +3470,9 @@ function updateChanKeys() {
 
 // ---------- oscilloscope mode ----------
 // noteOf: the MML token a part plays now, from the playback positions (its label: A, MSXD …).
+let scopeColors = new Map();
 const scopeView = new ScopeView($('scopeView'), {
-  t, colors: partColor, now: () => (playing ? playedFrame() : null),
+  t, colors: (name) => scopeColors.get(name) ?? partColor(name), now: () => (playing ? playedFrame() : null),
   // The sound going out, all channels mixed (a VGM file's too).
   mix: () => {
     if (!mixAnalyser) return null;

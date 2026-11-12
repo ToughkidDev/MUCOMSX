@@ -19,6 +19,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="$(Mdp4MacDir)/macos/MDPlayerCore/MDPlayerCore.csproj" />
+    <!-- The per-channel oscilloscope probes, shared with the MUC engine. -->
+    <Compile Include="../Engine/ChannelScope.cs" Link="ChannelScope.cs" />
     <!-- GD3 tags are often Japanese; keep the code-page tables like the MUC engine does. -->
     <TrimmerRootAssembly Include="System.Text.Encoding.CodePages" />
     <!-- YM2608 rhythm samples, the same files the MUC engine and MDPlayer4Mac use. -->
