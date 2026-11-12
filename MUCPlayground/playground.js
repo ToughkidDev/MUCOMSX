@@ -15,7 +15,7 @@ import { BankView } from './bank-view.js';
 import { Manual } from './manual.js';
 import { targetAt } from './manual-lookup.js';
 import { QuickRef } from './quick-ref.js';
-import { encodeSong, decodeSong, sharedRequest, pageBase, EMBED_LIMIT } from './share.js';
+import { encodeSong, decodeSong, encodeFile, decodeFile, sharedRequest, pageBase, EMBED_LIMIT, FILE_LIMIT } from './share.js';
 import { mucVoices, voiceLines, writeDat as writeDatSlot, newDat as newDatBytes, readDat, voiceKey, importVoices } from './voice-bank.js';
 import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, importWaves } from './scc-bank.js';
 import { readPcmBank, putPcm, mucPcms, pcmLine, mucSamples, pcmKey, importPcm, encodeAdpcm, decodeAdpcm, resample, readWav, writeWav, wavFitsCompiler, NATIVE_RATE, SLOTS as PCM_SLOTS, RAM_SIZE } from './pcm-bank.js';
@@ -59,6 +59,10 @@ const T = {
     share: 'Share', shareTip: 'Make a link to this song that opens it ready to play',
     playerMode: 'Player mode', playerModeTip: 'Player mode: MDPlayer4Web in place of the editor; the rest of the page is off until you press this again',
     playerModeOn: 'Player mode — MDPlayer4Web. Press Player mode again to go back to the editor.', shareTitle: 'Share this song', shareCopy: 'Copy', shareCopied: 'Copied ✓', shareNative: 'Share…',
+    shareFileRepo: (n) => `A link to "${n}" in the repository: it opens in the channel view and plays.`,
+    shareFileEmbedded: (n, kb) => `"${n}" is your own file: it travels inside the link (${kb} KB) and plays when opened.`,
+    shareFileTooBig: (n, kb) => `"${n}" (${kb} KB) is too large to go inside a link (96 KB at most, packed). Commit it to the repository's Samples folder and share it from the samples list.`,
+    sharePlaylistNow: (d) => `The playlist that is open: the folder ${d}.`,
     shareSample: (n) => `A link to the sample "${n}" in the repository; its voice and PCM files come with it.`,
     shareExample: 'A link to the built-in example.',
     shareText: (kb) => `The song text is inside the link (${kb} KB compressed); changes made after this are not.`,
@@ -226,6 +230,10 @@ const T = {
     share: '공유', shareTip: '이 곡을 바로 재생할 수 있는 링크로 만듭니다',
     playerMode: '플레이어 모드', playerModeTip: '플레이어 모드: 편집기 자리에 MDPlayer4Web을 띄웁니다. 다시 누를 때까지 나머지 화면은 꺼집니다',
     playerModeOn: '플레이어 모드 — MDPlayer4Web. 플레이어 모드를 다시 누르면 편집기로 돌아갑니다.', shareTitle: '이 곡 공유하기', shareCopy: '복사', shareCopied: '복사됨 ✓', shareNative: '공유…',
+    shareFileRepo: (n) => `저장소의 "${n}" 링크입니다. 채널 뷰로 열리고 재생됩니다.`,
+    shareFileEmbedded: (n, kb) => `"${n}"은(는) 내 파일이라 링크 안에 담겨 갑니다(${kb} KB). 열면 재생됩니다.`,
+    shareFileTooBig: (n, kb) => `"${n}"(${kb} KB)은(는) 링크에 담기에 너무 큽니다(압축 후 최대 96 KB). 저장소 Samples 폴더에 올린 뒤 샘플 목록에서 공유하세요.`,
+    sharePlaylistNow: (d) => `지금 열려 있는 플레이리스트: ${d} 폴더입니다.`,
     shareSample: (n) => `저장소의 샘플 "${n}" 링크입니다. 음색·PCM 파일도 함께 열립니다.`,
     shareExample: '내장 예제 링크입니다.',
     shareText: (kb) => `곡 텍스트가 링크 안에 들어 있습니다(압축 ${kb} KB). 이후에 고친 내용은 들어가지 않습니다.`,
@@ -393,6 +401,10 @@ const T = {
     share: '共有', shareTip: 'この曲をすぐ再生できるリンクにします',
     playerMode: 'プレイヤーモード', playerModeTip: 'プレイヤーモード: エディタの場所にMDPlayer4Webを表示します。もう一度押すまでほかの部分は使えません',
     playerModeOn: 'プレイヤーモード — MDPlayer4Web。プレイヤーモードをもう一度押すとエディタに戻ります。', shareTitle: 'この曲を共有', shareCopy: 'コピー', shareCopied: 'コピーしました ✓', shareNative: '共有…',
+    shareFileRepo: (n) => `リポジトリの「${n}」へのリンクです。チャンネルビューで開いて再生します。`,
+    shareFileEmbedded: (n, kb) => `「${n}」は自分のファイルなのでリンクの中に入れて送ります（${kb} KB）。開くと再生します。`,
+    shareFileTooBig: (n, kb) => `「${n}」（${kb} KB）はリンクに入れるには大きすぎます（圧縮後最大96 KB）。リポジトリのSamplesフォルダに置いてからサンプル一覧で共有してください。`,
+    sharePlaylistNow: (d) => `いま開いているプレイリスト: ${d}フォルダです。`,
     shareSample: (n) => `リポジトリのサンプル「${n}」へのリンクです。音色・PCMファイルも一緒に開きます。`,
     shareExample: '内蔵の例へのリンクです。',
     shareText: (kb) => `曲のテキストがリンクの中に入っています（圧縮 ${kb} KB）。この後の変更は入りません。`,
@@ -2178,13 +2190,16 @@ function connectVgmAudio() {
   vgmNode.port.onmessage = (e) => onAudioMessage(e.data, 'vgm');
 }
 
-async function playFile(name, data) {
+// The .vgm / .mub file last opened (the channel view shows it): what Share links to.
+let openFile = null;   // { name, data, repoPath }
+async function playFile(name, data, repoPath = null) {
   unlockAudio();
   const kind = kindOf(name, data);
   if (kind !== 'mub' && kind !== 'vgm') { setStatus(t('unsupported', name), true); return; }
   try { await ensureAudio(); } catch (e) { setStatus(t('audioFailed') + e.message, true); return; }
   stop();
   playingName = name;
+  openFile = { name, data, repoPath };
   underruns = 0;
   loopCount = 0;
   showClock(0);
@@ -2705,7 +2720,7 @@ async function loadRepoFile(path, force = false) {
   try {
     setStatus(t('loadingSample', name));
     const data = await fetchRepoFile(path);
-    if (kindOf(name, data) !== 'muc') { playFile(name, data); return 'played'; }
+    if (kindOf(name, data) !== 'muc') { playFile(name, data, path); return 'played'; }
     if (!force && !(await guardEditor())) { setStatus(engineReady ? t('ready') : t('loading')); return false; }
     stop();
     clearFiles();
@@ -4038,9 +4053,33 @@ $('shareBtn').addEventListener('click', async () => {
   const info = [];
   const li = (text, warn = false) => info.push({ text, warn });
   let url;
+  // Whether what the link opens is what plays now (then it starts playing too).
+  let sharesPlaying = playing && !playingName;
   try {
     const base = pageBase(location);
-    if (current.startsWith('repo:') && safePath(current.slice(5))) {
+    const folder = playlistMode ? playlistFolder() : null;
+    const now = playlist.current;
+    const fileOpen = viewMode === 'channels' && !!playingName && openFile;
+    // What is open now: the playlist of a sample folder (while its song, or none, is what is
+    // open), a .vgm / .mub in the channel view, else the text.
+    const nowIsPlaylists = !now || (fileOpen ? openFile.repoPath === now.repoPath : current === 'repo:' + now.repoPath);
+    if (folder && nowIsPlaylists) {
+      sharePlaylist();
+      return;
+    }
+    if (fileOpen && openFile.repoPath && safePath(openFile.repoPath)) {
+      url = `${base}?sample=${openFile.repoPath.slice(SAMPLES_ROOT.length).split('/').map(encodeURIComponent).join('/')}`;
+      li(t('shareFileRepo', openFile.name));
+      sharesPlaying = playing;
+    } else if (fileOpen) {
+      // the limit is on what the link carries (packed): a plain .vgm packs well
+      const payload = await encodeFile(openFile);
+      const kb = (payload.length * 3 / 4 / 1024).toFixed(1);
+      if (payload.length * 3 / 4 > FILE_LIMIT) { setStatus(t('shareFileTooBig', openFile.name, kb), true); return; }
+      url = `${base}#f=${payload}`;
+      li(t('shareFileEmbedded', openFile.name, kb));
+      sharesPlaying = playing;
+    } else if (current.startsWith('repo:') && safePath(current.slice(5))) {
       url = `${base}?sample=${current.slice(5 + SAMPLES_ROOT.length).split('/').map(encodeURIComponent).join('/')}`;
       li(t('shareSample', sourceName));
     } else if (Object.hasOwn(BUILT_IN, current)) {
@@ -4070,10 +4109,10 @@ $('shareBtn').addEventListener('click', async () => {
     return;
   }
   if (url.length > 8000) li(t('shareLong', url.length), true);
-  showShareDialog(url, info);
+  showShareDialog(url, info, sharesPlaying);
 });
 // The share dialog with a link and what it carries.
-function showShareDialog(url, info) {
+function showShareDialog(url, info, startsPlaying = playing) {
   // A query parameter, before a #s= payload.
   const param = (u, kv) => {
     const hash = u.indexOf('#');
@@ -4086,7 +4125,7 @@ function showShareDialog(url, info) {
     info.push({ text: t('shareView', t(splitMode === 'tracker' ? 'trkTitle' : 'scopeTitle')) });
   }
   // Playing or paused now: the link starts the song; stopped: it only opens it.
-  if (playing) {
+  if (startsPlaying) {
     url = param(url, 'play=1');
     info.push({ text: t('shareAutoPlay') });
   }
@@ -4104,10 +4143,16 @@ function showShareDialog(url, info) {
 // The playlist's link: a playlist of one repository folder's samples (what its 📂 opens)
 // is shared as ?playlist=<folder>, with &song= for the song chosen in it.
 const dirOf = (path) => path.slice(0, path.lastIndexOf('/'));
-function sharePlaylist() {
+// The repository folder the playlist is made of, or null (songs of yours, or several folders).
+function playlistFolder() {
   const items = playlist.items;
   const dir = items.length && items.every((x) => x.repoPath) ? dirOf(items[0].repoPath) : null;
-  if (!dir || !safePath(dir + '/') || items.some((x) => dirOf(x.repoPath) !== dir)) { setStatus(t('plShareOnlyFolder'), true); return; }
+  return dir && safePath(dir + '/') && items.every((x) => dirOf(x.repoPath) === dir) ? dir : null;
+}
+function sharePlaylist() {
+  const items = playlist.items;
+  const dir = playlistFolder();
+  if (!dir) { setStatus(t('plShareOnlyFolder'), true); return; }
   const enc = (s) => s.split('/').map(encodeURIComponent).join('/');
   const now = playlist.current;
   const url = `${pageBase(location)}?playlist=${enc(dir.slice(SAMPLES_ROOT.length))}` + (now ? `&song=${encodeURIComponent(now.name)}` : '');
@@ -4204,6 +4249,17 @@ $('sharedRestore').addEventListener('click', async () => {
       const path = SAMPLES_ROOT + req.sample;
       if (!safePath(path)) throw new Error(req.sample);
       fileStarted = await loadRepoFile(path, true) === 'played';
+    } else if (req.file) {
+      const f = await decodeFile(req.file);
+      if (kindOf(f.name, f.data) === 'muc') throw new Error(f.name);
+      fileStarted = true;
+      playFile(f.name, f.data);
+      showSharedNote(kept);
+      sharedStatus = { text: t('sharedOpened', f.name), err: false };
+      setStatus(sharedStatus.text);
+      if (engineReady) sharedStatus = null;
+      if (req.view) setSplit(req.view);
+      return;
     } else if (req.example) {
       current = 'shared';
       await loadExample(req.example);

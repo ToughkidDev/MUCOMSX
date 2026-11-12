@@ -8,6 +8,8 @@
 //                            oscilloscope beside the editor
 //   &play=1                  on any of these: the song starts playing once it is open (the
 //                            browser may wait for a first tap before it lets sound out)
+//   #f=…                     a .vgm / .vgz / .mub file of yours (not from the repository),
+//                            its bytes in the link; it plays once opened
 //   #s=…                     anything else: the text, compressed, with the repository paths
 //                            of attached files that came from the repository and the bytes
 //                            of small files that did not
@@ -16,6 +18,7 @@
 // start with "j" and hold the JSON uncompressed.
 
 export const EMBED_LIMIT = 24 * 1024;   // bytes of attached files a link may carry
+export const FILE_LIMIT = 96 * 1024;    // bytes of a packed .vgm / .mub file a link may carry
 
 const b64 = (bytes) => { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000)); return btoa(s); };
 const unb64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
@@ -49,7 +52,23 @@ export async function decodeSong(payload) {
   };
 }
 
-// What a page address asks for: { playlist, song }, { sample }, { example }, { payload } or
+// A .vgm / .mub file in a link (#f=): { v, n: name, d: base64 }, packed like #s=.
+export async function encodeFile({ name, data }) {
+  const raw = new TextEncoder().encode(JSON.stringify({ v: 1, n: name, d: b64(new Uint8Array(data)) }));
+  if (typeof CompressionStream === 'function') return 'z' + toUrl(b64(await pipe(raw, new CompressionStream('deflate-raw'))));
+  return 'j' + toUrl(b64(raw));
+}
+
+export async function decodeFile(payload) {
+  const kind = payload[0], bytes = unb64(fromUrl(payload.slice(1)));
+  const raw = kind === 'z' ? await pipe(bytes, new DecompressionStream('deflate-raw')) : kind === 'j' ? bytes : null;
+  if (!raw) throw new Error('unknown link format');
+  const o = JSON.parse(new TextDecoder().decode(raw));
+  if (o.v !== 1 || typeof o.d !== 'string') throw new Error('unknown link version');
+  return { name: typeof o.n === 'string' ? o.n.replace(/[\\/]/g, '_') : 'SONG.VGM', data: unb64(o.d).buffer };
+}
+
+// What a page address asks for: { playlist, song }, { sample }, { example }, { payload }, { file } or
 // null; each with `view` ('tracker' / 'scope') when the link asks the page to open that split,
 // and `play` when it asks for the song to start.
 export function sharedRequest(loc) {
@@ -61,6 +80,8 @@ export function sharedRequest(loc) {
   if (/^(?:demo|template|ext[A-Z][a-z]+)$/.test(q.get('ex') || '')) return ask({ example: q.get('ex') });
   const h = /^#s=([A-Za-z0-9_-]+)$/.exec(loc.hash);
   if (h) return ask({ payload: h[1] });
+  const f = /^#f=([A-Za-z0-9_-]+)$/.exec(loc.hash);
+  if (f) return ask({ file: f[1] });
   return null;
 }
 
