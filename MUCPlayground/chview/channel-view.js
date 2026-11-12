@@ -9,7 +9,7 @@ import { MixerStrip, STRIP_W, ROWS } from './mixer-strip.js';
 const BASE = new URL('./', import.meta.url);
 
 // Chip type -> module and class. A chip without a panel is listed by name only.
-const PANELS = {
+export const PANELS = {
   YM2608: ['./ym2608.js', 'YM2608'],
   YM2610: ['./ym2610.js', 'YM2610'],
   YM2203: ['./ym2203.js', 'YM2203'],
@@ -61,7 +61,7 @@ export async function gunzipIfNeeded(bytes) {
 }
 
 // Reads a VGM's chip writes in time order, following its loop like the player does.
-class VgmReader {
+export class VgmReader {
   constructor(data) {
     this.d = data;
     const v = new DataView(data.buffer, data.byteOffset, data.byteLength);

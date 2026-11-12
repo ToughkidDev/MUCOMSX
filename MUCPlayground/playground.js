@@ -28,6 +28,7 @@ import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/cha
 import { installTouchTaps } from './touch-tap.js';
 import { Playlist } from './playlist.js';
 import { ChannelKeys } from './channel-keys.js';
+import { chipNotes, tickOf } from './chip-notes.js';
 
 // iPad / iPhone: a tap on a button presses it even while the page is busy redrawing.
 installTouchTaps();
@@ -126,6 +127,7 @@ const T = {
     scopeVgm: 'A VGM file shows only the mix: its channels cannot be read one by one',
     scopeChannels: (n, list) => `Oscilloscope of ${n} channels: ${list}`, scopeCount: (n) => `${n} channels`,
     ckTitle: 'Keys', ckParts: (n) => `${n} parts, as they play`, ckIdle: 'Each part\'s keyboard shows here while a song plays',
+    trkFile: 'Notes read from the chip registers of the file playing (1 row = Row × 1/60 s). Read-only.',
     trkView: 'View', trkViewPattern: 'Pattern', trkViewPatternTip: 'Rows and cells, as Furnace shows a pattern (edited here)', trkViewRoll: 'Roll', trkViewRollTip: 'The notes as coloured lines on a piano roll, time flowing past a fixed playing line; the wheel or ← → look around, a click on a note shows it in the text (view only)',
     trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
     trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave; Ctrl+Z undo, ? all keys',
@@ -292,6 +294,7 @@ const T = {
     scopeVgm: 'VGM 파일은 채널별 파형 없이 믹스만 보여 줍니다',
     scopeChannels: (n, list) => `채널 ${n}개의 오실로스코프: ${list}`, scopeCount: (n) => `채널 ${n}개`,
     ckTitle: '건반', ckParts: (n) => `${n}개 파트, 연주하는 대로`, ckIdle: '곡을 연주하면 파트마다 건반이 여기에 나옵니다',
+    trkFile: '재생 중인 파일의 칩 레지스터에서 읽은 음표입니다(행 = Row × 1/60초). 읽기 전용.',
     trkView: '보기', trkViewPattern: '패턴', trkViewPatternTip: 'Furnace 패턴처럼 행과 칸으로 보기 (여기서 편집)', trkViewRoll: '롤', trkViewRollTip: '음을 피아노 롤 위의 색깔 선으로 보기. 고정된 재생선 옆으로 시간이 흐릅니다. 휠이나 ← →로 둘러보고, 음을 누르면 텍스트에서 그 위치를 보여 줍니다 (보기 전용)',
     trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
     trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브. Ctrl+Z 되돌리기, ? 전체 키',
@@ -458,6 +461,7 @@ const T = {
     scopeVgm: 'VGMファイルはチャンネル別の波形なしでミックスだけを表示します',
     scopeChannels: (n, list) => `${n}チャンネルのオシロスコープ: ${list}`, scopeCount: (n) => `${n}チャンネル`,
     ckTitle: '鍵盤', ckParts: (n) => `${n}パート、演奏のとおりに`, ckIdle: '曲を演奏するとパートごとの鍵盤がここに出ます',
+    trkFile: '再生中のファイルのチップレジスタから読んだ音符です（行 = Row × 1/60秒）。読み取り専用。',
     trkView: '表示', trkViewPattern: 'パターン', trkViewPatternTip: 'Furnaceのパターンのように行とセルで表示（ここで編集）', trkViewRoll: 'ロール', trkViewRollTip: '音をピアノロール上の色の線で表示。固定された再生線の横を時間が流れます。ホイールや← →で見回し、音をクリックするとテキストのその位置を表示（表示のみ）',
     trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
     trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ。Ctrl+Zで元に戻す、?で全キー',
@@ -884,7 +888,7 @@ function setSource(text) {
   // all end in \r until the first edit (and voice definitions are not recognised).
   text = text.replace(/\r\n?/g, '\n');
   loadedText = text;
-  if (waveEdit) { waveEdit = null; waveEditor.close(); fmEditor.close(); $('panes').hidden = viewMode === 'channels'; }
+  if (waveEdit) { waveEdit = null; waveEditor.close(); fmEditor.close(); $('panes').hidden = false; }
   for (const p of panes) {
     p.code.value = text;
     p.code.scrollTop = 0;
@@ -1795,6 +1799,8 @@ function onEngineMessage(m, source) {
       traceSession = m.session;
       traceMsx = !!m.info.msx;
       trkPlay.clear();
+      filePos = 0; filePosAt = null;
+      refreshNoteViews();
       packedTracks = null;
       packedAt.clear();
       traceEvents = [];
@@ -1826,6 +1832,9 @@ function onEngineMessage(m, source) {
     }
     case 'trace':
       if (m.session === traceSession) for (const v of m.events) traceEvents.push(v);
+      break;
+    case 'fileVgm':
+      if (playingName && source === 'muc') loadFileNotes(new Uint8Array(m.data));
       break;
     case 'scopeChannels':
       if (source === active && m.session === traceSession) { if (m.channels) scopeView.setChannels(m.channels); else scopeView.setUnsupported(); }
@@ -2178,9 +2187,11 @@ async function playFile(name, data) {
   if (kind === 'mub') {
     if (!engineReady) { pendingPlay = false; pendingFile = { name, data }; setStatus(t('loading')); return; }
     active = 'muc';
-    worker.postMessage({ type: 'playFile', data: data.slice(0) });
+    loadFileNotes(null);
+    worker.postMessage({ type: 'playFile', data: data.slice(0), notes: true });
   } else {
     try { vgmForView = await gunzipIfNeeded(new Uint8Array(data)); } catch { vgmForView = null; }
+    loadFileNotes(vgmForView);
     bootVgm();
     active = 'vgm';
     if (!vgmReady) { pendingVgm = data.slice(0); return; }
@@ -2720,12 +2731,14 @@ function setSplit(mode, transient = false) {
   if (!transient && playKeysOn && splitMode !== 'keys') { playKeysOn = false; splitBeforeKeys = null; showKeysPiano(); }
   const box = $('panes');
   const right = ['tracker', 'bank', 'manual', 'scope', 'keys'].includes(splitMode);
-  box.classList.toggle('split-side', splitMode === 'side' || right);
-  box.classList.toggle('split-stack', splitMode === 'stack');
+  // Beside the channel view only the right frame's views split; a second text does not.
+  const cv = viewMode === 'channels';
+  box.classList.toggle('split-side', (splitMode === 'side' && !cv) || right);
+  box.classList.toggle('split-stack', splitMode === 'stack' && !cv);
   box.classList.toggle('split-tracker', right);
   // Tracker / voice bank: the text on the left, the tracker (tracker.js) or the voice bank
   // (bank-view.js) on the right.
-  panes[1].root.hidden = splitMode === 'off' || right;
+  panes[1].root.hidden = splitMode === 'off' || right || cv;
   $('tracker').hidden = splitMode !== 'tracker';
   $('bank').hidden = splitMode !== 'bank';
   $('manual').hidden = splitMode !== 'manual';
@@ -2738,9 +2751,9 @@ function setSplit(mode, transient = false) {
   if (splitMode === 'scope') scopeView.open(); else scopeView.close();
   worker.postMessage({ type: 'scope', on: splitMode === 'scope' });
   markBankButtons();
-  if (splitMode === 'tracker') { tracker.setText(code.value); tracker.layout(); }
+  if (splitMode === 'tracker') { if (fileMode()) tracker.setTracks(fileNotes?.tracks || []); else tracker.setText(code.value); tracker.layout(); }
   if (splitMode === 'bank') bank.refresh();
-  $('splitter').hidden = splitMode === 'off';
+  $('splitter').hidden = splitMode === 'off' || (cv && !right);
   $('splitter').setAttribute('aria-orientation', splitMode === 'stack' ? 'horizontal' : 'vertical');
   $('splitModes').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.split === splitMode)));
   if (panes[1].root.hidden && pane === panes[1]) { closeSuggest(); pane = panes[0]; }
@@ -2752,6 +2765,7 @@ function setSplit(mode, transient = false) {
   traceDirty = true;
   if (!transient) store.set(STORE_SPLIT, splitMode);
   if (splitMode === 'keys') chanKeys.draw();
+  if (cv) channelView.applyScale();
 }
 $('splitModes').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setSplit(b.dataset.split); });
 
@@ -2913,8 +2927,8 @@ function closeWaveEditor() {
   if (waveEditor.isOpen) waveEditor.close();
   if (fmEditor.isOpen) fmEditor.close();
   if (pcmEditor.isOpen) pcmEditor.close();
-  $('panes').hidden = viewMode === 'channels';
-  document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = viewMode === 'channels'; });
+  $('panes').hidden = false;
+  showFoot();
   renderGutter();
   renderHighlight();
   traceDirty = true;
@@ -2941,13 +2955,18 @@ function setView(mode, auto = false) {
   autoChannels = viewMode === 'channels' && auto;
   const channels = viewMode === 'channels';
   if (channels) closeSuggest();
-  $('panes').hidden = channels;
+  // The channel view takes the text's place on the left; the right frame (tracker, scope,
+  // keys, manual) stays beside it.
+  $('panes').hidden = false;
+  $('panes').classList.toggle('cv-mode', channels);
+  $('paneA').hidden = channels;
   $('chview').hidden = !channels;
+  setSplit(splitMode, true);
   showKeysPiano();
   updatePlayKeys();
+  refreshNoteViews();
   $('viewToggle').setAttribute('aria-pressed', String(channels));
-  document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = channels; });
-  document.querySelector('.editor-foot .cv').hidden = !channels;
+  showFoot();
   if (!channels) {
     renderGutter();
     renderHighlight();
@@ -2955,6 +2974,12 @@ function setView(mode, auto = false) {
   }
 }
 $('viewToggle').addEventListener('click', () => setView(viewMode === 'channels' ? 'editor' : 'channels'));
+// The editor's tools under the frame; with the channel view only the right frame's views.
+function showFoot() {
+  const channels = viewMode === 'channels';
+  document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = channels && !el.classList.contains('both'); });
+  document.querySelector('.editor-foot .cv').hidden = !channels;
+}
 
 let zoomIndex = DEFAULT_SCALE;
 function setZoom(index) {
@@ -3202,7 +3227,7 @@ function trackerPreview(on, midi, name, fx = false, tap = false) {
 tracker.setFontSize(Number($('fontSize').value) || 13.5);
 let trackerTimer = 0, linkRow = 0;
 function scheduleTracker() {
-  if (splitMode !== 'tracker') return;
+  if (splitMode !== 'tracker' || fileMode()) return;
   clearTimeout(trackerTimer);
   trackerTimer = setTimeout(() => tracker.setText(code.value), 150);
 }
@@ -3250,6 +3275,11 @@ function trackerTrace(key, row, col, at) {
 }
 let trkShown = null;
 function updateTrackerPlayhead() {
+  if (fileMode()) {
+    const tick = playing && fileNotes ? fileTick() : null;
+    if (tick !== trkShown) { trkShown = tick; tracker.setPlayhead(tick); }
+    return;
+  }
   let tick = null;
   if (playing && !traceStale && trkPlay.size) {
     const now = playedFrame() / SAMPLE_RATE;
@@ -3262,6 +3292,48 @@ function updateTrackerPlayhead() {
   if (tick !== trkShown) { trkShown = tick; tracker.setPlayhead(tick); }
 }
 $('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'tracker' ? 'off' : 'tracker'));
+
+// ---------- notes of a playing file ----------
+// A .vgm / .mub has no MML: its notes are read from its chip writes (chip-notes.js; a .mub's
+// from the VGM the engine writes for it) for the tracker and the keys beside the channel view.
+let fileNotes = null;        // chipNotes() of the file playing (or last played)
+let fileNotesId = 0;
+let filePos = 0, filePosAt = null;   // the song position (frames at normal speed), and the heard frame it was taken at
+const fileMode = () => viewMode === 'channels' && !!playingName;
+async function loadFileNotes(vgm) {
+  const id = ++fileNotesId;
+  fileNotes = null;
+  refreshNoteViews();
+  if (!vgm) return;
+  try {
+    const notes = await chipNotes(vgm);
+    if (id !== fileNotesId) return;
+    notes.tracks.forEach((tr, i) => { tr.color = PART_COLORS[i % PART_COLORS.length]; });
+    fileNotes = notes;
+  } catch { /* no notes */ }
+  refreshNoteViews();
+}
+// The heard frame moves at the playback speed; the song position at normal speed.
+function fileTick() {
+  const f = playedFrame();
+  if (filePosAt !== null && f > filePosAt) filePos += (f - filePosAt) * (+$('speed').value / 100);
+  filePosAt = f;
+  return tickOf(fileNotes, filePos);
+}
+function eventAtTick(evs, tick) {
+  let lo = 0, hi = evs.length - 1, found = -1;
+  while (lo <= hi) { const mid = (lo + hi) >> 1; if (evs[mid].tick <= tick) { found = mid; lo = mid + 1; } else hi = mid - 1; }
+  const ev = evs[found];
+  return ev && tick < ev.tick + ev.len ? ev : null;
+}
+// A song started, or its notes came: the tracker and the keys show its notes.
+function refreshNoteViews() {
+  if (splitMode === 'tracker') {
+    if (fileMode()) tracker.setTracks(fileNotes?.tracks || []);
+    else if (tracker.external) tracker.setText(code.value);
+  }
+  if (playKeysOn) startKeysSong();
+}
 
 // ---------- keys while playing ----------
 // With the keys mode on, a playing MUC song shows every part's keyboard in the right frame
@@ -3281,7 +3353,9 @@ function keyChip(name) {
 }
 function showKeysPiano() { $('keys').hidden = !keysOpen || viewMode === 'channels' || playKeysOn; }
 function updatePlayKeys() {
-  const want = keysOpen && playing && viewMode !== 'channels' && active === 'muc' && !playingName && !playerMode;
+  // Beside the channel view the keys mode is always the keyboards (a file's notes, or the
+  // MUC's); in the editor only while a MUC plays (the piano for writing otherwise).
+  const want = keysOpen && !playerMode && (viewMode === 'channels' || (playing && active === 'muc' && !playingName));
   if (want === playKeysOn) return;
   playKeysOn = want;
   if (want) {
@@ -3318,6 +3392,15 @@ function drumPads(tr, chip) {
   };
 }
 function startKeysSong() {
+  if (fileMode()) {
+    // a .vgm / .mub: its chips' channels (chip-notes.js)
+    const tracks = fileNotes?.tracks || [];
+    let lo = Infinity, hi = -Infinity;
+    for (const tr of tracks) if (!tr.drum) for (const ev of tr.events) if (ev.midi !== undefined) { lo = Math.min(lo, ev.midi); hi = Math.max(hi, ev.midi); }
+    keysSong = { file: true, tracks };
+    chanKeys.start(tracks.map((tr) => ({ name: tr.name, chip: tr.chip, color: tr.color, perc: !!tr.drum, pads: tr.pads })), lo, hi);
+    return;
+  }
   let tracks = [];
   try { tracks = timeline(playedText).filter((tr) => tr.events.length); } catch { /* none */ }
   const bySrc = new Map(), hitsOf = new Map();
@@ -3346,7 +3429,19 @@ function startKeysSong() {
 // Each frame: what every part sounds now, from the positions the trace reports.
 function updateChanKeys() {
   if (!playKeysOn || !keysSong) return;
+  if (!playing) { if (keysSong.shown) { keysSong.shown = false; chanKeys.stop(); } return; }
+  keysSong.shown = true;
   const notes = new Map();
+  if (keysSong.file) {
+    const tick = fileTick();
+    for (const tr of keysSong.tracks) {
+      const ev = eventAtTick(tr.events, tick);
+      if (!ev || ev.kind !== 'note') continue;
+      notes.set(tr.name, tr.drum ? { ev, hits: ev.pads } : ev.midi);
+    }
+    chanKeys.update(notes);
+    return;
+  }
   for (const [key, pos] of positions) {
     const name = partInfo(key).label;
     const list = keysSong.bySrc.get(name)?.get(`${pos.row}:${pos.col}`);

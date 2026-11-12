@@ -50,6 +50,9 @@ function chipOf(name) {
   const letter = name[0];
   return 'ABCHIJ'.includes(letter) ? 'FM' : 'DEF'.includes(letter) ? 'SSG' : letter === 'G' ? 'RHY' : letter === 'K' ? 'ADPCM' : '';
 }
+// A track read from a file's chip writes (chip-notes.js) names its chip and colour itself.
+const trackChip = (tr) => tr.chip ?? chipOf(tr.name);
+const trackColor = (view, tr) => tr.color ?? view.o.colors(tr.name);
 const STEPS = [0, 1, 2, 3, 4, 6, 8, 12, 16];
 
 const hex2 = (v) => (v === null || v === undefined ? '..' : typeof v === 'string' ? (v.slice(0, 2) + '..').slice(0, 2) : ((v & 255).toString(16).toUpperCase().padStart(2, '0')));
@@ -171,7 +174,22 @@ export class Tracker {
   // Clocks per row, from the first part's base clock.
   get rowTicks() { return Math.max(1, Math.round((this.tracks[0]?.clock || 128) / this.perWhole)); }
 
+  // Notes read from a file's chip writes (a .vgm or .mub playing: chip-notes.js), shown
+  // read-only: no text behind them to edit or show. setText goes back to the MUC text.
+  setTracks(tracks) {
+    this.external = true;
+    this.root.classList.add('trk-ro');
+    this.tracks = tracks;
+    this.bySource = new Map();
+    this.cursor.track = Math.min(this.cursor.track, Math.max(0, this.tracks.length - 1));
+    this.closeEditor?.();
+    this.layout();
+    this.showInfo(null);
+  }
+
   setText(text) {
+    this.external = false;
+    this.root.classList.remove('trk-ro');
     try { this.tracks = timeline(text); } catch { this.tracks = []; }
     // Where each event is written (row:col, 1-based column like the trace) -> [track, index].
     this.bySource = new Map();
@@ -289,7 +307,7 @@ export class Tracker {
       if (x + m.colW < m.numW || x > W) continue;
       g.strokeStyle = C.grid;
       g.beginPath(); g.moveTo(Math.round(x) + .5, m.headH); g.lineTo(Math.round(x) + .5, H); g.stroke();
-      const color = this.o.colors(this.tracks[k].name);
+      const color = trackColor(this, this.tracks[k]);
       for (let r = first; r <= last; r++) {
         const y = this.rowY(r);
         if (y + m.rowH < m.headH || y > H) continue;
@@ -298,7 +316,11 @@ export class Tracker {
         const ev = starts[0];
         let tx = x + 6;
         const put = (text, col, alpha = 1) => { g.globalAlpha = alpha; g.fillStyle = col; g.fillText(text, tx, cy); tx += g.measureText(text).width + m.cw * 0.6; g.globalAlpha = 1; };
-        if (ev && ev.kind === 'note' && ev.fx !== undefined) {
+        if (ev && ev.kind === 'note' && ev.label !== undefined) {
+          // a drum hit read from a file: the drums it strikes
+          put(ev.label.length > 3 ? ev.label.slice(0, 2) + '+' : ev.label.padEnd(3), C.fx);
+          put('..', C.empty); put('..', C.empty);
+        } else if (ev && ev.kind === 'note' && ev.fx !== undefined) {
           // an effect note: XD0–XD9 (red when the song does not define it)
           const a = ev.rep ? C.dim : 1;
           const known = ev.fx < 10 && this.tracks[k].effects?.has(ev.fx);
@@ -363,7 +385,7 @@ export class Tracker {
       if (x + m.colW < m.numW || x > W) continue;
       const on = k === this.cursor.track;
       if (on) { g.fillStyle = C.headOn; g.fillRect(x + 1, 0, m.colW - 2, m.headH); }
-      g.fillStyle = this.o.colors(this.tracks[k].name);
+      g.fillStyle = trackColor(this, this.tracks[k]);
       g.fillRect(x + 1, m.headH - (on ? 5 : 3), m.colW - 2, on ? 5 : 3);
       // the part's name, and under it its chip (an effect track says so)
       g.fillStyle = on ? '#ffffff' : C.text;
@@ -371,7 +393,7 @@ export class Tracker {
       const fx = this.tracks[k].fxTail || this.tracks[k].events.some((e) => e.fx !== undefined);
       g.fillStyle = C.kind;
       g.font = `${Math.round(this.fontSize * 0.78)}px ui-monospace, Menlo, Consolas, monospace`;
-      g.fillText(chipOf(this.tracks[k].name) + (fx ? ' · FX' : ''), x + 6, m.headH * 0.68);
+      g.fillText(trackChip(this.tracks[k]) + (fx ? ' · FX' : ''), x + 6, m.headH * 0.68);
       g.font = this.font;
     }
     g.fillStyle = C.head;
@@ -406,7 +428,7 @@ export class Tracker {
     const hit = this.eventAt(this.cursor.track, this.cursor.row * this.rowTicks);
     this.showInfo(hit?.ev);
     this.announce();
-    if (reveal) this.o.reveal(hit ? hit.ev.src : null);
+    if (reveal && !this.external) this.o.reveal(hit ? hit.ev.src : null);
   }
 
   // The cursor's cell in words, for screen readers: part and chip, row, then what starts or
@@ -419,14 +441,14 @@ export class Tracker {
     const starts = this.startsIn(track, row)[0];
     const held = starts ? null : this.eventAt(track, row * this.rowTicks)?.ev;
     const ev = starts || held;
-    const noteName = (e) => (e.fx !== undefined ? `XD${e.fx}` : NAMES[e.midi % 12].replace('-', '') + (Math.floor(e.midi / 12) - 1));
+    const noteName = (e) => (e.label !== undefined ? e.label : e.fx !== undefined ? `XD${e.fx}` : NAMES[e.midi % 12].replace('-', '') + (Math.floor(e.midi / 12) - 1));
     let what;
     if (!ev) what = T('trkSayEmpty');
     else if (ev.kind === 'rest') what = T('trkSayRest', ev.len);
     else if (held) what = T('trkSayHeld', noteName(ev));
     else what = T('trkSayNote', noteName(ev), ev.fx !== undefined ? null : hex2(ev.inst), hex2(ev.vol), ev.len);
     const field = [T('trkSayFieldNote'), '@', 'v'][col];
-    return T('trkSayCell', tr.name, chipOf(tr.name), row.toString(16).toUpperCase().padStart(2, '0'), what, field);
+    return T('trkSayCell', tr.name, trackChip(tr), row.toString(16).toUpperCase().padStart(2, '0'), what, field);
   }
 
   announce() {
@@ -451,6 +473,12 @@ export class Tracker {
   showInfo(ev, message) {
     const info = this.root.querySelector('.trk-info');
     if (message) { info.textContent = message; return; }
+    if (this.external) {
+      // time in the song (a tick is 1/60 s) and what plays
+      const time = (tk) => { const sec = tk / 60; return `${Math.floor(sec / 60)}:${(sec % 60).toFixed(2).padStart(5, '0')}`; };
+      info.textContent = !ev ? this.o.t('trkFile') : `${time(ev.tick)} +${(ev.len / 60).toFixed(2)}s · ${ev.label ?? (ev.midi !== undefined ? NAMES[ev.midi % 12].replace('-', '') + (Math.floor(ev.midi / 12) - 1) : this.o.t('trkSayRest', ev.len))}`;
+      return;
+    }
     if (!ev) { info.textContent = this.o.t(this.input === 'display' ? 'trkHintDisplay' : 'trkHint'); return; }
     const where = this.o.t('trkWhere', ev.src.row, ev.tick, ev.len);
     info.textContent = where + (ev.shared ? ' · ' + this.o.t('trkShared') : '') + (ev.src.macro ? ' · ' + this.o.t('trkMacro') : '') + (ev.src.alone ? '' : ' · ' + this.o.t('trkMulti'));
@@ -490,6 +518,7 @@ export class Tracker {
 
   // An effect typed in a cell: ?XDn written as its note letter, heard as a noise burst.
   enterFx(n) {
+    if (this.external) return;
     const midi = 12 * (this.octave + 1) + n;
     this.previewFx(midi);
     this.edit('note', midi);
@@ -536,7 +565,7 @@ export class Tracker {
       // A note on the roll: its MML in the text.
       this.scroller.focus({ preventScroll: true });
       const hit = [...this.rollHits].reverse().find((h) => x >= h.x - 2 && x <= h.x + h.w + 2 && y >= h.y - 2 && y <= h.y + h.h + 2);
-      if (hit) { this.showInfo(hit.ev); this.o.reveal(hit.ev.src); }
+      if (hit) { this.showInfo(hit.ev); if (!this.external) this.o.reveal(hit.ev.src); }
       return;
     }
     if (y < this.m.headH || x < this.m.numW) return;
@@ -587,6 +616,11 @@ export class Tracker {
     }
     const move = { ArrowUp: -1, ArrowDown: 1, PageUp: -16, PageDown: 16 }[e.code];
     if (move) { e.preventDefault(); this.moveTo(track, row + move); return; }
+    if (this.external) {
+      if (e.code === 'Home') { e.preventDefault(); this.moveTo(track, 0); }
+      if (e.code === 'End') { e.preventDefault(); this.moveTo(track, this.rows - 1); }
+      return;
+    }
     if (this.input === 'display') {
       // Typed as shown: a letter, O, . or - starts a note field; hex digits an @ / v field;
       // Enter opens the field with what it shows.
@@ -647,6 +681,7 @@ export class Tracker {
   // A text box over the field, in the tracker's own format; it closes by itself once the
   // value is complete (C#4, C-4, C4, OFF, ..., two hex digits), or with Enter.
   openEditor(initial, select = false) {
+    if (this.external) return;
     this.closeEditor();
     const { track, row, col } = this.cursor;
     const [fx, fw] = this.subColumn(col);
@@ -721,6 +756,7 @@ export class Tracker {
 
   // A note from the keys mode piano.
   enterNote(midi) {
+    if (this.external) return;
     this.cursor.col = 0;
     this.edit('note', midi);
   }
@@ -729,6 +765,7 @@ export class Tracker {
   // just before it is changed, or one is written there. again: the second hex digit, which
   // completes the value typed with the first.
   setParam(kind, value, again) {
+    if (this.external) return;
     const { track, row } = this.cursor;
     const ev = this.startsIn(track, row).find((e) => e.kind === 'note');
     if (!ev) { this.showInfo(null, this.o.t('trkParamNote')); return; }
@@ -763,6 +800,7 @@ export class Tracker {
   // Only while the text is still what the tracker left: an edit typed in the text since
   // then is undone there (the editor's own Ctrl+Z).
   undo() {
+    if (this.external) return;
     const last = this.undoStack[this.undoStack.length - 1];
     if (!last) { this.showInfo(null, this.o.t('trkNothingUndo')); return; }
     if (this.o.text() !== last.after) { this.undoStack = []; this.redoStack = []; this.markUndo(); this.showInfo(null, this.o.t('trkUndoStale')); return; }
@@ -774,6 +812,7 @@ export class Tracker {
   }
 
   redo() {
+    if (this.external) return;
     const next = this.redoStack[this.redoStack.length - 1];
     if (!next) { this.showInfo(null, this.o.t('trkNothingRedo')); return; }
     if (this.o.text() !== next.before) { this.redoStack = []; this.markUndo(); this.showInfo(null, this.o.t('trkUndoStale')); return; }
@@ -829,6 +868,7 @@ export class Tracker {
   // Rewrites the token behind the cursor: 'note' (a pitch), 'rest' (Delete: the note
   // becomes a rest), 'off' (a rest from this row on).
   edit(action, midi) {
+    if (this.external) return;
     const { track, row } = this.cursor;
     const tick = row * this.rowTicks;
     const tr = this.tracks[track];
@@ -925,7 +965,7 @@ export class Tracker {
     const a = t0 - playX / ppt, b = t0 + (W - playX) / ppt;
     const xOf = (tick) => playX + (tick - t0) * ppt;
     // Pitched parts on the roll; rhythm, drum and effect parts on a lane at the top.
-    const perc = (tr) => ['RHY', 'DRUM'].includes(chipOf(tr.name)) || tr.events.some((ev) => ev.fx !== undefined);
+    const perc = (tr) => tr.drum || ['RHY', 'DRUM'].includes(trackChip(tr)) || tr.events.some((ev) => ev.fx !== undefined);
     const pitched = [], lane = [];
     this.tracks.forEach((tr, k) => (perc(tr) ? lane : pitched).push(k));
     let lo = 127, hi = 0;
@@ -987,7 +1027,7 @@ export class Tracker {
       g.globalAlpha = 1;
     };
     for (const k of pitched) {
-      const color = this.o.colors(this.tracks[k].name);
+      const color = trackColor(this, this.tracks[k]);
       const h = Math.max(2, Math.min(rowh * 0.7, 8));
       drawNotes(k, (ev) => (ev.midi === undefined ? null : { x: xOf(ev.tick), y: yOf(ev.midi) + (rowh - h) / 2, w: Math.max(2, ev.len * ppt - 1), h, color }));
     }
@@ -1011,7 +1051,7 @@ export class Tracker {
     x += g.measureText(`${bar}`).width + 12;
     for (const tr of this.tracks) {
       if (x > W - 20) break;
-      g.fillStyle = this.o.colors(tr.name);
+      g.fillStyle = trackColor(this, tr);
       g.fillRect(x, top / 2 - 4, 10, 8);
       g.fillStyle = C.text;
       g.fillText(tr.name, x + 14, top / 2);

@@ -234,6 +234,16 @@ public static partial class Interop
         return vgm;
     }
 
+    // The chip writes of a compiled .mub file as VGM (no sound made), for the views that read
+    // notes from the registers (chip-notes.js).
+    [JSExport]
+    public static byte[] ExportVgmFile(byte[] mub, int maxSeconds)
+    {
+        byte[] vgm = MucPlayer.ExportVgm(mub, Open, maxSeconds, out string error);
+        exportError = error ?? "";
+        return vgm;
+    }
+
     [JSExport]
     public static string ExportError() => exportError;
 

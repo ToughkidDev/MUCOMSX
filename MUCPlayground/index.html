@@ -131,7 +131,8 @@ select{border:1px solid var(--line);background:var(--bg);border-radius:8px;paddi
 .splitter:hover,.splitter.drag{background:var(--accent2)}
 .editor.focused .gutter{color:var(--ink)}
 /* Channel view: MDPlayer4Mac's chip panels on black. */
-.chview{flex:1;overflow:auto;background:#000;padding:4px;display:flex;flex-direction:column;min-height:0}
+.chview{flex:1;overflow:auto;background:#000;padding:4px;display:flex;flex-direction:column;min-height:0;min-width:0}
+.panes.split-side #chview{flex:0 0 var(--split)}
 .cv-title{flex:none;align-self:flex-start;max-width:100%;height:auto;image-rendering:pixelated;margin:0 0 4px}
 /* Centred in the frame with auto margins, which (unlike align/justify) keep an oversized
    block scrollable; inside it the panels line up on the left like MDPlayer4Mac's stack. */
@@ -282,6 +283,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .tracker{position:relative}
 /* Roll view: only what views the song; editing is in the pattern view. */
 .tracker.trk-roll .trk-edit,.tracker.trk-roll .trk-help{display:none}
+.tracker.trk-ro .trk-edit,.tracker.trk-ro .trk-help{display:none}
 .tracker.trk-roll .trk-scroll{overflow:hidden}
 .trk-cell-edit{position:absolute;z-index:5;box-sizing:border-box;padding:0 3px;border:1px solid #5aa0ff;border-radius:3px;background:#0d2546;color:#fff;font:13px ui-monospace,Menlo,Consolas,monospace;text-transform:uppercase;outline:none}
 .trk-bar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding:5px 10px;font-size:.78rem;line-height:1.3;background:#191b21;border-bottom:1px solid #2b2f3a}
@@ -666,6 +668,7 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
           <button type="button" class="line-play" id="linePlay" hidden>▶</button>
         </div>
       </div>
+      <div class="chview" id="chview" hidden></div>
       <div class="splitter" id="splitter" role="separator" hidden></div>
       <div class="editor" id="paneB" hidden>
         <pre class="gutter" aria-hidden="true"></pre>
@@ -683,7 +686,6 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
       <div class="manual" id="manual" hidden></div>
     </div>
     <div class="keys" id="keys" hidden></div>
-    <div class="chview" id="chview" hidden></div>
     <iframe class="player-frame" id="playerFrame" title="MDPlayer4Web" hidden allow="autoplay; fullscreen; clipboard-read; clipboard-write"></iframe>
     <div class="wavedit" id="waveEditor" hidden></div>
     <div class="wavedit" id="fmEditor" hidden></div>
@@ -699,10 +701,10 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
           <button type="button" data-split="side" aria-pressed="false" data-i18n-title="splitSide">◫</button>
           <button type="button" data-split="stack" aria-pressed="false" data-i18n-title="splitStack">⊟</button>
         </span></span>
-      <button type="button" class="btn small ed keys-toggle" id="trackerToggle" aria-pressed="false" data-i18n-title="trkTip"><span aria-hidden="true">🎼</span> <span data-i18n="trkTitle">Tracker</span></button>
-      <button type="button" class="btn small ed keys-toggle" id="scopeToggle" aria-pressed="false" data-i18n-title="scopeTip"><span aria-hidden="true">∿</span> <span data-i18n="scopeTitle">Scope</span></button>
-      <button type="button" class="btn small ed keys-toggle" id="manualToggle" aria-pressed="false" data-i18n-title="manTip"><span aria-hidden="true">📖</span> <span data-i18n="manTitle">Manual</span></button>
-      <button type="button" class="btn small ed keys-toggle" id="keysToggle" aria-pressed="false" data-i18n-title="keysTip"><span aria-hidden="true">🎹</span> <span data-i18n="keysMode">Keys</span></button>
+      <button type="button" class="btn small ed both keys-toggle" id="trackerToggle" aria-pressed="false" data-i18n-title="trkTip"><span aria-hidden="true">🎼</span> <span data-i18n="trkTitle">Tracker</span></button>
+      <button type="button" class="btn small ed both keys-toggle" id="scopeToggle" aria-pressed="false" data-i18n-title="scopeTip"><span aria-hidden="true">∿</span> <span data-i18n="scopeTitle">Scope</span></button>
+      <button type="button" class="btn small ed both keys-toggle" id="manualToggle" aria-pressed="false" data-i18n-title="manTip"><span aria-hidden="true">📖</span> <span data-i18n="manTitle">Manual</span></button>
+      <button type="button" class="btn small ed both keys-toggle" id="keysToggle" aria-pressed="false" data-i18n-title="keysTip"><span aria-hidden="true">🎹</span> <span data-i18n="keysMode">Keys</span></button>
       <span class="ed" id="cursor">Ln 1, Col 1</span><span class="ed" id="bytes"></span>
       <span class="ed"><kbd>Ctrl+Space</kbd> <span data-i18n="hintSuggest">suggestions</span></span>
       <span class="grp cv" hidden><span data-i18n="zoom">Size</span> <button type="button" class="btn small" id="cvZoom">75%</button></span>

@@ -140,6 +140,12 @@ onmessage = async (event) => {
       case 'playFile': {
         stopPlayback();
         const data = new Uint8Array(m.data);
+        // A .mub's chip writes, for the note views (the MUC engine only; quick: no sound).
+        if (m.notes && E.ExportVgmFile) {
+          let vgm = null;
+          try { vgm = E.ExportVgmFile(data, 600); } catch { vgm = null; }
+          if (vgm) { const copy = vgm.slice(); postMessage({ type: 'fileVgm', session, data: copy.buffer }, [copy.buffer]); }
+        }
         play(session, () => E.StartFile(data));
         break;
       }
