@@ -3298,10 +3298,29 @@ function updatePlayKeys() {
   renderMarks();
   traceDirty = true;
 }
+// A drum part's pads, and which of them an event hits: the G part's @ mask (1 BD, 2 SD, 4 TOP,
+// 8 HH, 16 TOM, 32 RIM), MSXG's the same without the rim shot, and ?ID's own order (16 BD,
+// 8 SD, 4 TOM, 2 TOP, 1 HH); an effect track's notes start ?XD effects 0–9.
+const DRUM_PADS = {
+  RHY: [['BD', 1], ['SD', 2], ['TOP', 4], ['HH', 8], ['TOM', 16], ['RIM', 32]],
+  DRUM: [['BD', 1, 16], ['SD', 2, 8], ['TOM', 16, 4], ['TOP', 4, 2], ['HH', 8, 1]],
+};
+function drumPads(tr, chip) {
+  const fx = [...new Set(tr.events.filter((ev) => ev.fx !== undefined).map((ev) => ev.fx))].sort((a, b) => a - b);
+  if (fx.length) return { pads: fx.map((n) => `XD${n}`), hits: (ev) => (ev.fx === undefined ? [] : [fx.indexOf(ev.fx)]) };
+  const table = DRUM_PADS[chip] || DRUM_PADS.RHY;
+  return {
+    pads: table.map((x) => x[0]),
+    hits: (ev) => {
+      const mask = typeof ev.inst === 'number' ? ev.inst : 0;
+      return table.flatMap((x, i) => (mask & (ev.drumHit ? x[2] ?? 0 : x[1]) ? [i] : []));
+    },
+  };
+}
 function startKeysSong() {
   let tracks = [];
   try { tracks = timeline(playedText).filter((tr) => tr.events.length); } catch { /* none */ }
-  const bySrc = new Map();
+  const bySrc = new Map(), hitsOf = new Map();
   let lo = Infinity, hi = -Infinity;
   const parts = tracks.map((tr) => {
     const map = new Map();
@@ -3309,10 +3328,19 @@ function startKeysSong() {
     bySrc.set(tr.name, map);
     const chip = keyChip(tr.name);
     const perc = PERC_CHIPS.includes(chip) || tr.events.some((ev) => ev.fx !== undefined);
-    if (!perc) for (const ev of tr.events) if (ev.kind === 'note' && ev.midi !== undefined) { lo = Math.min(lo, ev.midi); hi = Math.max(hi, ev.midi); }
-    return { name: tr.name, chip, color: partColor(tr.name), perc };
+    const part = { name: tr.name, chip: perc && chip !== 'RHY' && chip !== 'DRUM' ? `${chip} · FX` : chip, color: partColor(tr.name), perc };
+    if (perc) {
+      const d = drumPads(tr, chip);
+      part.pads = d.pads;
+      hitsOf.set(tr.name, d.hits);
+    } else {
+      for (const ev of tr.events) if (ev.kind === 'note' && ev.midi !== undefined) { lo = Math.min(lo, ev.midi); hi = Math.max(hi, ev.midi); }
+    }
+    return part;
   });
-  keysSong = { tracks, bySrc, last: new Map(), perc: new Map(parts.map((p) => [p.name, p.perc])) };
+  // the drum parts under all the others
+  parts.sort((a, b) => a.perc - b.perc);
+  keysSong = { tracks, bySrc, last: new Map(), hitsOf };
   chanKeys.start(parts, lo, hi);
 }
 // Each frame: what every part sounds now, from the positions the trace reports.
@@ -3333,7 +3361,8 @@ function updateChanKeys() {
     }
     const ev = tr.events[seen.index];
     if (ev?.kind !== 'note') continue;
-    notes.set(name, keysSong.perc.get(name) ? ev : ev.midi ?? null);
+    const hits = keysSong.hitsOf.get(name);
+    notes.set(name, hits ? { ev, hits: hits(ev) } : ev.midi ?? null);
   }
   chanKeys.update(notes);
 }

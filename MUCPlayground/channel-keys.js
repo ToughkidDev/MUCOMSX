@@ -2,14 +2,16 @@
 // plays pressed in its colour, the way chiptune videos show the channels. The page shows it
 // in the right frame while a song plays with the keys mode on (the piano for writing notes
 // comes back when it stops).
-//   parts     [{ name, chip, color, perc }] from the song's text; a rhythm, drum or effect
-//             part (perc) has no pitch: its row flashes on each hit
+//   parts     [{ name, chip, color, perc, pads }] from the song's text; a rhythm, drum or
+//             effect part (perc) has no pitch: its row is a set of drum pads (BD, SD, HH …,
+//             or the effects XD0–XD9), each lit as it is hit and fading; they come last
 //   range     the keyboards cover the octaves the song's notes use (at least four)
-//   notes     update(map) each frame: part name -> MIDI note sounding now, or null
+//   notes     update(map) each frame: part name -> MIDI note sounding now, or null; for a
+//             drum part { ev, hits: [pad index …] }, a new ev being a new hit
 
 const BLACK = [1, 3, 6, 8, 10];
 const WHITE_OF = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6];   // semitone -> white key in the octave
-const FLASH = 140;   // ms a hit stays lit on a rhythm row
+const FLASH = 260;   // ms a drum pad takes to fade after a hit
 
 export class ChannelKeys {
   // opts: t(key, …args)
@@ -18,7 +20,7 @@ export class ChannelKeys {
     this.o = opts;
     this.parts = [];
     this.notes = new Map();
-    this.hits = new Map();   // perc part name -> time of its last hit
+    this.hits = new Map();   // drum part name -> [time of each pad's last hit]
     this.lo = 36; this.hi = 95;
     this.build();
   }
@@ -59,8 +61,12 @@ export class ChannelKeys {
   // hit is a new note object (it lights its row for a moment).
   update(notes) {
     for (const p of this.parts) {
-      const was = this.notes.get(p.name), now = notes.get(p.name) ?? null;
-      if (p.perc && now !== null && now !== was) this.hits.set(p.name, performance.now());
+      if (!p.perc) continue;
+      const was = this.notes.get(p.name), now = notes.get(p.name);
+      if (!now || now.ev === was?.ev) continue;
+      const times = this.hits.get(p.name) || [];
+      for (const i of now.hits) times[i] = performance.now();
+      this.hits.set(p.name, times);
     }
     this.notes = notes;
     this.draw();
@@ -97,7 +103,9 @@ export class ChannelKeys {
     }
     const n = this.parts.length;
     const gap = 3;
-    const rowH = Math.max(12, Math.min(64, (H - gap) / n - gap));
+    const firstDrum = this.parts.findIndex((p) => p.perc);
+    const sep = firstDrum > 0 ? 8 : 0;   // a space between the keyboards and the drums
+    const rowH = Math.max(12, Math.min(64, (H - gap - sep) / n - gap));
     const labelW = Math.min(76, Math.max(46, W * 0.12));
     const kx = labelW + gap * 2, kw = W - kx - gap;
     const octaves = (this.hi - this.lo + 1) / 12;
@@ -105,8 +113,12 @@ export class ChannelKeys {
     const now = performance.now();
     const fs = Math.max(10, Math.min(13, rowH * 0.42));
     this.parts.forEach((p, k) => {
-      const y = gap + k * (rowH + gap);
+      const y = gap + k * (rowH + gap) + (firstDrum > 0 && k >= firstDrum ? sep : 0);
       if (y > H) return;
+      if (k === firstDrum && sep) {
+        g.fillStyle = '#2b2f3a';
+        g.fillRect(gap, y - sep / 2 - gap / 2 - 0.5, W - gap * 2, 1);
+      }
       const midi = this.notes.get(p.name) ?? null;
       // the label: the part's name in its colour, its chip under it
       g.fillStyle = '#1b1e25';
@@ -122,15 +134,7 @@ export class ChannelKeys {
         g.fillStyle = '#8a93a6';
         g.fillText(p.chip, gap + 8, y + rowH * 0.72);
       }
-      if (p.perc) {
-        // a rhythm, drum or effect part: one long cell, lit on each hit
-        const lit = now - (this.hits.get(p.name) || -1e9) < FLASH;
-        g.fillStyle = lit ? p.color : '#1d2028';
-        g.fillRect(kx, y, kw, rowH);
-        g.strokeStyle = '#2b2f3a';
-        g.strokeRect(kx + 0.5, y + 0.5, kw - 1, rowH - 1);
-        return;
-      }
+      if (p.perc) { this.drawPads(g, p, kx, y, kw, rowH, now); return; }
       // white keys, then black keys over them
       for (let o = 0; o < octaves; o++) {
         for (let wk = 0; wk < 7; wk++) {
@@ -158,5 +162,38 @@ export class ChannelKeys {
         g.fillRect(x, y + rowH - 3, BLACK.includes(semi) ? bw : whiteW - 1, 3);
       }
     });
+  }
+
+  // A drum part: a pad per drum (or effect), named on it, lit in the part's colour when hit
+  // and fading out.
+  drawPads(g, p, x0, y, w, h, now) {
+    const pads = p.pads?.length ? p.pads : ['HIT'];
+    const times = this.hits.get(p.name) || [];
+    const pg = 4;
+    const pw = Math.min(110, (w - pg * (pads.length - 1)) / pads.length);
+    const r = Math.min(6, h / 4, pw / 4);
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = `600 ${Math.max(9, Math.min(13, h * 0.42, pw * 0.3))}px ui-monospace, Menlo, Consolas, monospace`;
+    pads.forEach((name, i) => {
+      const x = x0 + i * (pw + pg);
+      const a = Math.max(0, 1 - (now - (times[i] ?? -1e9)) / FLASH);
+      g.beginPath();
+      g.roundRect(x, y, pw, h, r);
+      g.fillStyle = '#1d2028';
+      g.fill();
+      if (a > 0) {
+        g.globalAlpha = 0.25 + 0.75 * a;
+        g.fillStyle = p.color;
+        g.fill();
+        g.globalAlpha = 1;
+      }
+      g.lineWidth = 1;
+      g.strokeStyle = a > 0 ? p.color : '#363b48';
+      g.stroke();
+      g.fillStyle = a > 0.35 ? '#ffffff' : '#8a93a6';
+      g.fillText(name, x + pw / 2, y + h / 2 + 0.5);
+    });
+    g.textAlign = 'start';
   }
 }

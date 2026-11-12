@@ -289,6 +289,7 @@ function run(nodes, st, out, rep) {
         if (node.t === 'note') {
           ev.midi = 12 * (st.oct + 1) + node.semi;
           ev.inst = node.drum ?? st.inst;
+          if (node.drum !== undefined) ev.drumHit = true;   // ?ID: its own mask order
           if (fxTrack(st)) ev.fx = ((node.semi % 12) + 12) % 12;
           ev.vol = st.vol;
           if (st.tie) ev.tied = true;
