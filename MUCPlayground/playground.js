@@ -27,6 +27,7 @@ import { lineSnippet, playsSomething, partLine } from './line-play.js';
 import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/channel-view.js';
 import { installTouchTaps } from './touch-tap.js';
 import { Playlist } from './playlist.js';
+import { ChannelKeys } from './channel-keys.js';
 
 // iPad / iPhone: a tap on a button presses it even while the page is busy redrawing.
 installTouchTaps();
@@ -124,6 +125,7 @@ const T = {
     scopeIdle: 'Play the song to see each channel\'s wave', scopeWaiting: 'No channel has sounded yet',
     scopeVgm: 'A VGM file shows only the mix: its channels cannot be read one by one',
     scopeChannels: (n, list) => `Oscilloscope of ${n} channels: ${list}`, scopeCount: (n) => `${n} channels`,
+    ckTitle: 'Keys', ckParts: (n) => `${n} parts, as they play`, ckIdle: 'Each part\'s keyboard shows here while a song plays',
     trkView: 'View', trkViewPattern: 'Pattern', trkViewPatternTip: 'Rows and cells, as Furnace shows a pattern (edited here)', trkViewRoll: 'Roll', trkViewRollTip: 'The notes as coloured lines on a piano roll, time flowing past a fixed playing line; the wheel or ← → look around, a click on a note shows it in the text (view only)',
     trkTitle: 'Tracker', trkTip: 'Tracker mode: the song as a tracker pattern next to the text, edited from either side', trkRow: 'Row',
     trkHint: 'Click a cell and type: Z S X … / Q 2 W … notes, Delete a rest, 1 a note off; hex digits in @ and v; ↑↓←→ PgUp PgDn move, numpad / * octave; Ctrl+Z undo, ? all keys',
@@ -289,6 +291,7 @@ const T = {
     scopeIdle: '곡을 재생하면 채널마다 파형이 보입니다', scopeWaiting: '아직 소리가 난 채널이 없습니다',
     scopeVgm: 'VGM 파일은 채널별 파형 없이 믹스만 보여 줍니다',
     scopeChannels: (n, list) => `채널 ${n}개의 오실로스코프: ${list}`, scopeCount: (n) => `채널 ${n}개`,
+    ckTitle: '건반', ckParts: (n) => `${n}개 파트, 연주하는 대로`, ckIdle: '곡을 연주하면 파트마다 건반이 여기에 나옵니다',
     trkView: '보기', trkViewPattern: '패턴', trkViewPatternTip: 'Furnace 패턴처럼 행과 칸으로 보기 (여기서 편집)', trkViewRoll: '롤', trkViewRollTip: '음을 피아노 롤 위의 색깔 선으로 보기. 고정된 재생선 옆으로 시간이 흐릅니다. 휠이나 ← →로 둘러보고, 음을 누르면 텍스트에서 그 위치를 보여 줍니다 (보기 전용)',
     trkTitle: '트래커', trkTip: '트래커 모드: 곡을 텍스트 옆에 트래커 패턴으로 보여 주고 양쪽 어디서든 편집', trkRow: '행',
     trkHint: '셀을 클릭하고 입력: Z S X … / Q 2 W …는 음, Delete는 쉼표, 1은 노트 오프, @·v 칸은 16진 숫자. ↑↓←→ PgUp PgDn 이동, 숫자패드 / * 옥타브. Ctrl+Z 되돌리기, ? 전체 키',
@@ -454,6 +457,7 @@ const T = {
     scopeIdle: '曲を再生するとチャンネルごとの波形が表示されます', scopeWaiting: 'まだ鳴ったチャンネルがありません',
     scopeVgm: 'VGMファイルはチャンネル別の波形なしでミックスだけを表示します',
     scopeChannels: (n, list) => `${n}チャンネルのオシロスコープ: ${list}`, scopeCount: (n) => `${n}チャンネル`,
+    ckTitle: '鍵盤', ckParts: (n) => `${n}パート、演奏のとおりに`, ckIdle: '曲を演奏するとパートごとの鍵盤がここに出ます',
     trkView: '表示', trkViewPattern: 'パターン', trkViewPatternTip: 'Furnaceのパターンのように行とセルで表示（ここで編集）', trkViewRoll: 'ロール', trkViewRollTip: '音をピアノロール上の色の線で表示。固定された再生線の横を時間が流れます。ホイールや← →で見回し、音をクリックするとテキストのその位置を表示（表示のみ）',
     trkTitle: 'トラッカー', trkTip: 'トラッカーモード: 曲をテキストの横にトラッカーのパターンとして表示し、どちらからでも編集', trkRow: '行',
     trkHint: 'セルをクリックして入力: Z S X … / Q 2 W … で音、Deleteで休符、1でノートオフ、@・v欄は16進数字。↑↓←→ PgUp PgDnで移動、テンキー / * でオクターブ。Ctrl+Zで元に戻す、?で全キー',
@@ -2116,6 +2120,7 @@ function updatePause() {
   const label = btn.querySelector('span');
   label.dataset.i18n = paused ? 'resume' : 'pause';   // so a language change keeps it
   label.textContent = t(label.dataset.i18n);
+  updatePlayKeys();   // (called at every start and stop of a song)
 }
 function togglePause() {
   if (!playing || !ctx) return;
@@ -2353,6 +2358,7 @@ function drawScope() {
     g.stroke();
     updateTrace();
     if (splitMode === 'tracker') updateTrackerPlayhead();
+    if (playKeysOn) updateChanKeys();
     if (viewMode === 'channels') channelView.update(playedFrame());
     requestAnimationFrame(frame);
   };
@@ -2707,10 +2713,13 @@ async function loadRepoFile(path, force = false) {
 }
 
 // ---------- split editor ----------
-function setSplit(mode) {
-  splitMode = ['side', 'stack', 'tracker', 'bank', 'manual', 'scope'].includes(mode) ? mode : 'off';
+// transient: a split the page opens by itself for a while (the keys while playing), not kept.
+function setSplit(mode, transient = false) {
+  splitMode = ['side', 'stack', 'tracker', 'bank', 'manual', 'scope', 'keys'].includes(mode) ? mode : 'off';
+  // Another split chosen while the keys show for a playing song: they make way until the next song.
+  if (!transient && playKeysOn && splitMode !== 'keys') { playKeysOn = false; splitBeforeKeys = null; showKeysPiano(); }
   const box = $('panes');
-  const right = splitMode === 'tracker' || splitMode === 'bank' || splitMode === 'manual' || splitMode === 'scope';
+  const right = ['tracker', 'bank', 'manual', 'scope', 'keys'].includes(splitMode);
   box.classList.toggle('split-side', splitMode === 'side' || right);
   box.classList.toggle('split-stack', splitMode === 'stack');
   box.classList.toggle('split-tracker', right);
@@ -2724,6 +2733,7 @@ function setSplit(mode) {
   $('trackerToggle').setAttribute('aria-pressed', String(splitMode === 'tracker'));
   // The oscilloscope (scope-view.js): the engine keeps each channel's samples only while it shows.
   $('scopeView').hidden = splitMode !== 'scope';
+  $('chanKeys').hidden = splitMode !== 'keys';
   $('scopeToggle').setAttribute('aria-pressed', String(splitMode === 'scope'));
   if (splitMode === 'scope') scopeView.open(); else scopeView.close();
   worker.postMessage({ type: 'scope', on: splitMode === 'scope' });
@@ -2740,7 +2750,8 @@ function setSplit(mode) {
   renderHighlight();
   for (const p of panes) p.highlighter.scroll(p.code.scrollLeft, p.code.scrollTop);
   traceDirty = true;
-  store.set(STORE_SPLIT, splitMode);
+  if (!transient) store.set(STORE_SPLIT, splitMode);
+  if (splitMode === 'keys') chanKeys.draw();
 }
 $('splitModes').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) setSplit(b.dataset.split); });
 
@@ -2932,7 +2943,8 @@ function setView(mode, auto = false) {
   if (channels) closeSuggest();
   $('panes').hidden = channels;
   $('chview').hidden = !channels;
-  $('keys').hidden = channels || !keysOpen;
+  showKeysPiano();
+  updatePlayKeys();
   $('viewToggle').setAttribute('aria-pressed', String(channels));
   document.querySelectorAll('.editor-foot .ed').forEach((el) => { el.hidden = channels; });
   document.querySelector('.editor-foot .cv').hidden = !channels;
@@ -3000,7 +3012,8 @@ function ensureKeysAudio() {
 function setKeys(open) {
   keysOpen = open;
   $('keysToggle').setAttribute('aria-pressed', String(open));
-  $('keys').hidden = !open || viewMode === 'channels';
+  showKeysPiano();
+  updatePlayKeys();
   if (open) {
     ensureKeysAudio();
     keysCtx?.resume().catch(() => {});
@@ -3249,6 +3262,81 @@ function updateTrackerPlayhead() {
   if (tick !== trkShown) { trkShown = tick; tracker.setPlayhead(tick); }
 }
 $('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'tracker' ? 'off' : 'tracker'));
+
+// ---------- keys while playing ----------
+// With the keys mode on, a playing MUC song shows every part's keyboard in the right frame
+// (channel-keys.js), the keys pressed as they play; the piano for writing notes, under the
+// editor, comes back when the song stops. The note a part plays is the timeline event behind
+// the MML token the engine reports for it.
+let playKeysOn = false, splitBeforeKeys = null;
+let keysSong = null;   // { tracks, bySrc: name -> Map('row:col' -> event indices), last: name -> { pos, index } }
+const chanKeys = new ChannelKeys($('chanKeys'), { t });
+const PERC_CHIPS = ['RHY', 'DRUM'];
+function keyChip(name) {
+  if (name.startsWith('SCC')) return 'SCC';
+  const msx = /^MSX([A-K])/.exec(name);
+  if (msx) return msx[1] === 'G' ? 'DRUM' : 'DEF'.includes(msx[1]) ? 'PSG' : 'OPLL';
+  const l = name[0];
+  return 'ABCHIJ'.includes(l) ? 'FM' : 'DEF'.includes(l) ? 'SSG' : l === 'G' ? 'RHY' : l === 'K' ? 'ADPCM' : '';
+}
+function showKeysPiano() { $('keys').hidden = !keysOpen || viewMode === 'channels' || playKeysOn; }
+function updatePlayKeys() {
+  const want = keysOpen && playing && viewMode !== 'channels' && active === 'muc' && !playingName && !playerMode;
+  if (want === playKeysOn) return;
+  playKeysOn = want;
+  if (want) {
+    startKeysSong();
+    splitBeforeKeys = splitMode;
+    setSplit('keys', true);
+  } else {
+    chanKeys.stop();
+    const back = splitBeforeKeys ?? 'off';
+    splitBeforeKeys = null;
+    if (splitMode === 'keys') setSplit(back, true);
+  }
+  showKeysPiano();
+  renderMarks();
+  traceDirty = true;
+}
+function startKeysSong() {
+  let tracks = [];
+  try { tracks = timeline(playedText).filter((tr) => tr.events.length); } catch { /* none */ }
+  const bySrc = new Map();
+  let lo = Infinity, hi = -Infinity;
+  const parts = tracks.map((tr) => {
+    const map = new Map();
+    tr.events.forEach((ev, i) => { const k = `${ev.src.row}:${ev.src.col + 1}`; if (!map.has(k)) map.set(k, []); map.get(k).push(i); });
+    bySrc.set(tr.name, map);
+    const chip = keyChip(tr.name);
+    const perc = PERC_CHIPS.includes(chip) || tr.events.some((ev) => ev.fx !== undefined);
+    if (!perc) for (const ev of tr.events) if (ev.kind === 'note' && ev.midi !== undefined) { lo = Math.min(lo, ev.midi); hi = Math.max(hi, ev.midi); }
+    return { name: tr.name, chip, color: partColor(tr.name), perc };
+  });
+  keysSong = { tracks, bySrc, last: new Map(), perc: new Map(parts.map((p) => [p.name, p.perc])) };
+  chanKeys.start(parts, lo, hi);
+}
+// Each frame: what every part sounds now, from the positions the trace reports.
+function updateChanKeys() {
+  if (!playKeysOn || !keysSong) return;
+  const notes = new Map();
+  for (const [key, pos] of positions) {
+    const name = partInfo(key).label;
+    const list = keysSong.bySrc.get(name)?.get(`${pos.row}:${pos.col}`);
+    if (!list) continue;
+    const tr = keysSong.tracks.find((x) => x.name === name);
+    // A token a repeat plays again: the next of its events after the last one shown.
+    let seen = keysSong.last.get(name);
+    if (!seen || seen.pos !== pos) {
+      const index = list.find((i) => i > (seen?.index ?? -1)) ?? list[0];
+      seen = { pos, index };
+      keysSong.last.set(name, seen);
+    }
+    const ev = tr.events[seen.index];
+    if (ev?.kind !== 'note') continue;
+    notes.set(name, keysSong.perc.get(name) ? ev : ev.midi ?? null);
+  }
+  chanKeys.update(notes);
+}
 
 // ---------- oscilloscope mode ----------
 // noteOf: the MML token a part plays now, from the playback positions (its label: A, MSXD …).

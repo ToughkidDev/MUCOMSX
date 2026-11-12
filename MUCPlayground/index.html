@@ -308,8 +308,8 @@ textarea::selection{background:var(--sel);color:transparent}
 .tlink{position:absolute;z-index:3;border:2px solid #5aa0ff;border-radius:3px;pointer-events:none;box-sizing:border-box}
 @media (max-width:900px){.panes.split-tracker{flex-direction:column}.panes.split-tracker .splitter{cursor:row-resize}
   /* the tracker needs height on a phone: the editor area grows, the text takes a third */
-  .editor-wrap:has(#tracker:not([hidden])),.editor-wrap:has(#scopeView:not([hidden])){height:92vh;height:92dvh}
-  .panes.split-tracker:has(#tracker:not([hidden])) #paneA,.panes.split-tracker:has(#scopeView:not([hidden])) #paneA{flex-basis:min(var(--split),34%)}}
+  .editor-wrap:has(#tracker:not([hidden])),.editor-wrap:has(#scopeView:not([hidden])),.editor-wrap:has(#chanKeys:not([hidden])){height:92vh;height:92dvh}
+  .panes.split-tracker:has(#tracker:not([hidden])) #paneA,.panes.split-tracker:has(#scopeView:not([hidden])) #paneA,.panes.split-tracker:has(#chanKeys:not([hidden])) #paneA{flex-basis:min(var(--split),34%)}}
 /* Oscilloscope mode (scope-view.js): each channel's wave right of the text, dark like the tracker */
 .scope{position:relative;flex:1 1 0;display:flex;flex-direction:column;min-width:0;min-height:0;background:#07080b;color:#c8ccd6;font-family:var(--sans,system-ui),sans-serif}
 .scope[hidden]{display:none}
@@ -323,6 +323,14 @@ textarea::selection{background:var(--sel);color:transparent}
 .scope-info{flex:1 1 120px;min-width:0;color:#8a93a6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .scope-area{position:relative;flex:1;min-height:0;overflow:hidden}
 .scope-canvas{position:absolute;inset:0;display:block}
+/* Keys while playing (channel-keys.js): a keyboard per part in the right frame. */
+.chankeys{position:relative;flex:1 1 0;display:flex;flex-direction:column;min-width:0;min-height:0;background:#121317;color:#c8ccd6;font-family:var(--sans,system-ui),sans-serif}
+.chankeys[hidden]{display:none}
+.ck-bar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;padding:5px 10px;font-size:.78rem;line-height:1.3;background:#191b21;border-bottom:1px solid #2b2f3a}
+.ck-bar b{color:#e6e6e6}
+.ck-info{flex:1 1 120px;min-width:0;color:#8a93a6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ck-area{position:relative;flex:1;min-height:0;overflow:hidden}
+.ck-canvas{position:absolute;inset:0;display:block}
 /* Voice bank (bank-view.js): right of the text, like the tracker */
 .bank{flex:1 1 0;display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--panel);font-size:.82rem}
 /* ---------- manual mode (manual.js) ---------- */
@@ -670,6 +678,7 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
       </div>
       <div class="tracker" id="tracker" hidden></div>
       <div class="scope" id="scopeView" hidden></div>
+      <div class="chankeys" id="chanKeys" hidden></div>
       <div class="bank" id="bank" hidden></div>
       <div class="manual" id="manual" hidden></div>
     </div>
