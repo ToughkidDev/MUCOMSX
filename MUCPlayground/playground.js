@@ -1811,7 +1811,7 @@ function onEngineMessage(m, source) {
       traceSession = m.session;
       traceMsx = !!m.info.msx;
       trkPlay.clear();
-      filePos = 0; filePosAt = null;
+      fileClock = { f0: 0, p0: 0, speed: +$('speed').value / 100 };
       refreshNoteViews();
       packedTracks = null;
       packedAt.clear();
@@ -2386,7 +2386,8 @@ function drawScope() {
     updateTrace();
     if (splitMode === 'tracker') updateTrackerPlayhead();
     if (playKeysOn) updateChanKeys();
-    if (viewMode === 'channels') channelView.update(playedFrame());
+    // (a VGM file's writes are read from the file: at the song position, which runs at the speed)
+    if (viewMode === 'channels') channelView.update(cvSource === 'vgm' ? fileFrame() : playedFrame());
     requestAnimationFrame(frame);
   };
   frame();
@@ -3316,7 +3317,9 @@ $('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'track
 let fileNotes = null;        // chipNotes() of the open file, once read
 let fileNotesFor = null;     // the openFile they are (being) read for
 let fileNotesId = 0;
-let filePos = 0, filePosAt = null;   // the song position (frames at normal speed), and the heard frame it was taken at
+// The song position (frames at normal speed) from the heard frame: since the last speed
+// change, pos = p0 + (heard - f0) × speed.
+let fileClock = { f0: 0, p0: 0, speed: 1 };
 const fileMode = () => viewMode === 'channels' && !!playingName;
 // Read only when a view shows them (the tracker or the keys beside the channel view), and
 // off the main thread: notes-worker.js, and for a .mub a second engine worker that writes
@@ -3366,13 +3369,15 @@ function ensureFileNotes() {
     refreshNoteViews();
   })().catch(() => { /* no notes for this file */ });
 }
-// The heard frame moves at the playback speed; the song position at normal speed.
-function fileTick() {
-  const f = playedFrame();
-  if (filePosAt !== null && f > filePosAt) filePos += (f - filePosAt) * (+$('speed').value / 100);
-  filePosAt = f;
-  return tickOf(fileNotes, filePos);
+// The heard frame moves at the playback speed; the song position at normal speed. Worked
+// out from the audio clock each time (not added up frame by frame: the clock is corrected
+// back and forth as the audio reports in, and adding only its steps forward drifted ahead).
+function fileFrame() {
+  const f = playedFrame(), speed = +$('speed').value / 100;
+  if (speed !== fileClock.speed) fileClock = { f0: f, p0: fileClock.p0 + (f - fileClock.f0) * fileClock.speed, speed };
+  return Math.max(0, fileClock.p0 + (f - fileClock.f0) * fileClock.speed);
 }
+const fileTick = () => tickOf(fileNotes, fileFrame());
 function eventAtTick(evs, tick) {
   let lo = 0, hi = evs.length - 1, found = -1;
   while (lo <= hi) { const mid = (lo + hi) >> 1; if (evs[mid].tick <= tick) { found = mid; lo = mid + 1; } else hi = mid - 1; }
