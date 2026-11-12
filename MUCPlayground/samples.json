@@ -680,5 +680,26 @@
    "sin013.muc",
    "sin014.muc"
   ]
+ },
+ {
+  "name": "MSX_VampireKiller_Enhanced",
+  "dir": "../Samples/VGMs/MSX_VampireKiller_Enhanced/",
+  "songs": [
+   "01 - Deja Vu (Vampire Killer).vgz",
+   "02 - Stalker.vgz",
+   "03 - Wicked Child.vgz",
+   "04 - Out of Time.vgz",
+   "05 - Heart of Fire.vgz",
+   "06 - Walking on the Edge.vgz",
+   "07 - Nothing to Lose.vgz",
+   "08 - Boss Fight.vgz",
+   "09 - Black Knight.vgz",
+   "10 - Player Miss.vgz",
+   "11 - Prologue.vgz",
+   "12 - Game Over.vgz",
+   "13 - Stage Clear.vgz",
+   "14 - All Clear.vgz",
+   "15 - Unused.vgz"
+  ]
  }
 ]

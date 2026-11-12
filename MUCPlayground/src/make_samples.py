@@ -4,6 +4,8 @@ usage: make_samples.py <Samples/Muc folder> <output samples.json>
 
 Paths in the output are relative to MUCPlayground/, so the page can fetch them from the
 same GitHub Pages site. Companion files (#voice / #pcm) are found by the page itself.
+The VGMs folder next to Samples/Muc (Samples/VGMs/<album>/…, .vgm / .vgz / .mub) is listed
+too, every folder in it that holds songs, after the MUC folders.
 """
 import json
 import os
@@ -24,6 +26,19 @@ for system in sorted(os.listdir(root)):
             groups.append({
                 "name": game,
                 "dir": "../Samples/Muc/%s/%s/" % (system, game),
+                "songs": songs,
+            })
+
+vgms = os.path.join(os.path.dirname(os.path.normpath(root)), "VGMs")
+if os.path.isdir(vgms):
+    for here, dirs, names in sorted(os.walk(vgms)):
+        dirs.sort()
+        songs = sorted(f for f in names if f.lower().endswith((".vgm", ".vgz", ".mub")))
+        if songs:
+            rel = os.path.relpath(here, vgms).replace(os.sep, "/")
+            groups.append({
+                "name": os.path.basename(here),
+                "dir": "../Samples/VGMs/%s/" % rel if rel != "." else "../Samples/VGMs/",
                 "songs": songs,
             })
 
