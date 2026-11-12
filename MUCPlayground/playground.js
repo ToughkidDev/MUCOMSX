@@ -28,7 +28,7 @@ import { ChannelView, SCALES, DEFAULT_SCALE, gunzipIfNeeded } from './chview/cha
 import { installTouchTaps } from './touch-tap.js';
 import { Playlist } from './playlist.js';
 import { ChannelKeys } from './channel-keys.js';
-import { chipNotes, tickOf } from './chip-notes.js';
+import { tickOf } from './chip-notes.js';
 
 // iPad / iPhone: a tap on a button presses it even while the page is busy redrawing.
 installTouchTaps();
@@ -1845,9 +1845,6 @@ function onEngineMessage(m, source) {
     case 'trace':
       if (m.session === traceSession) for (const v of m.events) traceEvents.push(v);
       break;
-    case 'fileVgm':
-      if (playingName && source === 'muc') loadFileNotes(new Uint8Array(m.data));
-      break;
     case 'scopeChannels':
       if (source === active && m.session === traceSession) {
         // A VGM file's channels are named by chip (FM1, OPNA SSG2 …): coloured one by one.
@@ -2200,6 +2197,7 @@ async function playFile(name, data, repoPath = null) {
   stop();
   playingName = name;
   openFile = { name, data, repoPath };
+  fileNotes = null;
   underruns = 0;
   loopCount = 0;
   showClock(0);
@@ -2207,11 +2205,9 @@ async function playFile(name, data, repoPath = null) {
   if (kind === 'mub') {
     if (!engineReady) { pendingPlay = false; pendingFile = { name, data }; setStatus(t('loading')); return; }
     active = 'muc';
-    loadFileNotes(null);
-    worker.postMessage({ type: 'playFile', data: data.slice(0), notes: true });
+    worker.postMessage({ type: 'playFile', data: data.slice(0) });
   } else {
     try { vgmForView = await gunzipIfNeeded(new Uint8Array(data)); } catch { vgmForView = null; }
-    loadFileNotes(vgmForView);
     bootVgm();
     active = 'vgm';
     if (!vgmReady) { pendingVgm = data.slice(0); return; }
@@ -2772,7 +2768,7 @@ function setSplit(mode, transient = false) {
   worker.postMessage({ type: 'scope', on: splitMode === 'scope' });
   vgmWorker?.postMessage({ type: 'scope', on: splitMode === 'scope' });
   markBankButtons();
-  if (splitMode === 'tracker') { if (fileMode()) tracker.setTracks(fileNotes?.tracks || []); else tracker.setText(code.value); tracker.layout(); }
+  if (splitMode === 'tracker') { if (fileMode()) { ensureFileNotes(); tracker.setTracks(fileNotes?.tracks || []); } else tracker.setText(code.value); tracker.layout(); }
   if (splitMode === 'bank') bank.refresh();
   $('splitter').hidden = splitMode === 'off' || (cv && !right);
   $('splitter').setAttribute('aria-orientation', splitMode === 'stack' ? 'horizontal' : 'vertical');
@@ -3317,22 +3313,58 @@ $('trackerToggle').addEventListener('click', () => setSplit(splitMode === 'track
 // ---------- notes of a playing file ----------
 // A .vgm / .mub has no MML: its notes are read from its chip writes (chip-notes.js; a .mub's
 // from the VGM the engine writes for it) for the tracker and the keys beside the channel view.
-let fileNotes = null;        // chipNotes() of the file playing (or last played)
+let fileNotes = null;        // chipNotes() of the open file, once read
+let fileNotesFor = null;     // the openFile they are (being) read for
 let fileNotesId = 0;
 let filePos = 0, filePosAt = null;   // the song position (frames at normal speed), and the heard frame it was taken at
 const fileMode = () => viewMode === 'channels' && !!playingName;
-async function loadFileNotes(vgm) {
-  const id = ++fileNotesId;
+// Read only when a view shows them (the tracker or the keys beside the channel view), and
+// off the main thread: notes-worker.js, and for a .mub a second engine worker that writes
+// its VGM (the one playing is not held up).
+let notesWorker = null, exportWorker = null, exportIdle = 0;
+const workerJobs = new Map();   // id -> resolve
+let jobId = 0;
+function workerJob(w, message, transfer) {
+  return new Promise((resolve) => { const id = ++jobId; workerJobs.set(id, resolve); w.postMessage({ ...message, id }, transfer); });
+}
+function settleJob(m) { workerJobs.get(m.id)?.(m); workerJobs.delete(m.id); }
+async function mubVgm(data) {
+  if (!exportWorker) {
+    exportWorker = new Worker('engine-worker.js', { type: 'module' });
+    exportWorker.onmessage = (e) => { if (e.data.type === 'exportedFile') settleJob(e.data); };
+    exportWorker.postMessage({ type: 'boot', language: 'en' });
+  }
+  clearTimeout(exportIdle);
+  const copy = data.slice(0);
+  const r = await workerJob(exportWorker, { type: 'exportFile', data: copy }, [copy]);
+  // let it go after a while unused (it holds a whole engine)
+  exportIdle = setTimeout(() => { exportWorker?.terminate(); exportWorker = null; }, 120000);
+  return r.data ? new Uint8Array(r.data) : null;
+}
+async function readNotes(vgm) {
+  if (!notesWorker) {
+    notesWorker = new Worker('notes-worker.js', { type: 'module' });
+    notesWorker.onmessage = (e) => settleJob(e.data);
+  }
+  const copy = vgm.slice().buffer;
+  const r = await workerJob(notesWorker, { data: copy }, [copy]);
+  if (r.error) throw new Error(r.error);
+  return r.notes;
+}
+function ensureFileNotes() {
+  if (!openFile || !fileMode() || !(splitMode === 'tracker' || playKeysOn) || fileNotesFor === openFile) return;
+  const file = openFile, id = ++fileNotesId;
+  fileNotesFor = file;
   fileNotes = null;
-  refreshNoteViews();
-  if (!vgm) return;
-  try {
-    const notes = await chipNotes(vgm);
+  (async () => {
+    const vgm = kindOf(file.name, file.data) === 'mub' ? await mubVgm(file.data) : await gunzipIfNeeded(new Uint8Array(file.data));
+    if (!vgm) return;
+    const notes = await readNotes(vgm);
     if (id !== fileNotesId) return;
     notes.tracks.forEach((tr, i) => { tr.color = PART_COLORS[i % PART_COLORS.length]; });
     fileNotes = notes;
-  } catch { /* no notes */ }
-  refreshNoteViews();
+    refreshNoteViews();
+  })().catch(() => { /* no notes for this file */ });
 }
 // The heard frame moves at the playback speed; the song position at normal speed.
 function fileTick() {
@@ -3349,6 +3381,7 @@ function eventAtTick(evs, tick) {
 }
 // A song started, or its notes came: the tracker and the keys show its notes.
 function refreshNoteViews() {
+  ensureFileNotes();
   if (splitMode === 'tracker') {
     if (fileMode()) tracker.setTracks(fileNotes?.tracks || []);
     else if (tracker.external) tracker.setText(code.value);
@@ -3415,6 +3448,7 @@ function drumPads(tr, chip) {
 function startKeysSong() {
   if (fileMode()) {
     // a .vgm / .mub: its chips' channels (chip-notes.js)
+    ensureFileNotes();
     const tracks = fileNotes?.tracks || [];
     let lo = Infinity, hi = -Infinity;
     for (const tr of tracks) if (!tr.drum) for (const ev of tr.events) if (ev.midi !== undefined) { lo = Math.min(lo, ev.midi); hi = Math.max(hi, ev.midi); }

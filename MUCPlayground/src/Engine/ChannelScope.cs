@@ -45,16 +45,23 @@ sealed class ChannelScope
     static object Get(object o, string name) => o == null ? null : FieldOf(o.GetType(), name)?.GetValue(o);
 
     // Called once per output sample while playing; keeps every Decimate-th.
+    bool[] dead = Array.Empty<bool>();
     public void Capture(long frame)
     {
         if (++phase < Decimate) return;
         phase = 0;
+        if (dead.Length != Probes.Count) dead = new bool[Probes.Count];
         if (data.Count == 0) firstFrame = frame;
-        foreach (var p in prepare) p();
-        foreach (var p in Probes)
+        // A reading that fails once (an emulator whose insides are not as expected) is not
+        // tried again: an exception at every sample would cost the playback its speed.
+        for (int i = 0; i < prepare.Count; i++)
         {
-            int v;
-            try { v = p.Read(); } catch { v = 0; }
+            try { prepare[i](); } catch { prepare[i] = () => { }; }
+        }
+        for (int i = 0; i < Probes.Count; i++)
+        {
+            int v = 0;
+            if (!dead[i]) { try { v = Probes[i].Read(); } catch { dead[i] = true; } }
             data.Add((short)Math.Clamp(v, short.MinValue, short.MaxValue));
         }
     }

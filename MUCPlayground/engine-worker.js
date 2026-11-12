@@ -3,6 +3,7 @@
 // MessagePort, so a busy editor never starves playback.
 //   engine-worker.js             MUC editor engine: compile, MUB playback, exports
 //   engine-worker.js?engine=vgm  VGM/VGZ playback (separate, loaded on first use)
+//   a second engine-worker.js   only exportFile: a .mub's VGM for the note views (on first use)
 const ENGINE_DIR = new URL(import.meta.url).searchParams.get('engine') === 'vgm' ? './engine-vgm/' : './engine/';
 
 const SAMPLE_RATE = 44100;
@@ -140,12 +141,6 @@ onmessage = async (event) => {
       case 'playFile': {
         stopPlayback();
         const data = new Uint8Array(m.data);
-        // A .mub's chip writes, for the note views (the MUC engine only; quick: no sound).
-        if (m.notes && E.ExportVgmFile) {
-          let vgm = null;
-          try { vgm = E.ExportVgmFile(data, 600); } catch { vgm = null; }
-          if (vgm) { const copy = vgm.slice(); postMessage({ type: 'fileVgm', session, data: copy.buffer }, [copy.buffer]); }
-        }
         play(session, () => E.StartFile(data));
         break;
       }
@@ -173,6 +168,15 @@ onmessage = async (event) => {
           const copy = bytes.slice();
           postMessage({ type: 'exported', id: m.id, kind: m.kind, data: copy.buffer }, [copy.buffer]);
         }
+        break;
+      }
+      // A .mub's chip writes as VGM, for the note views (chip-notes.js). Asked of a second
+      // copy of this worker, so the one playing is never held up by it.
+      case 'exportFile': {
+        let vgm = null;
+        try { vgm = E.ExportVgmFile ? E.ExportVgmFile(new Uint8Array(m.data), 600) : null; } catch { vgm = null; }
+        const copy = vgm ? vgm.slice() : null;
+        postMessage({ type: 'exportedFile', id: m.id, data: copy?.buffer || null }, copy ? [copy.buffer] : []);
         break;
       }
       case 'encode': {
