@@ -2045,6 +2045,9 @@ window.addEventListener('resize', applyUiSize);
 async function play(rows = null) {
   if (!Array.isArray(rows)) rows = null;   // a click event when bound to the button
   unlockAudio();   // in the tap itself, even while the engine is still loading
+  // The channel view a .mub / .vgm opened is showing: Play plays that file (▦ back to the
+  // editor, and Play plays the text).
+  if (!rows && autoChannels && viewMode === 'channels' && openFile) { playFile(openFile.name, openFile.data, openFile.repoPath); return; }
   writeEdit();   // hear what is being edited
   if (!engineReady) { pendingPlay = true; setStatus(t('loading')); return; }
   await filesRestored;
@@ -2189,6 +2192,18 @@ function connectVgmAudio() {
 
 // The .vgm / .mub file last opened (the channel view shows it): what Share links to.
 let openFile = null;   // { name, data, repoPath }
+// A .mub / .vgm opened for Play without playing it yet: the channel view, empty until it plays.
+function openFileOnly(name, data, repoPath = null) {
+  stop();
+  playingName = name;
+  openFile = { name, data, repoPath };
+  fileNotes = null;
+  setView('channels', true);
+  channelView.start([]);
+  showClock(0);
+  $('nowTitle').textContent = name;
+  $('nowMeta').textContent = '';
+}
 async function playFile(name, data, repoPath = null) {
   unlockAudio();
   const kind = kindOf(name, data);
@@ -2712,12 +2727,18 @@ async function fetchRepoFile(path) {
 }
 
 // force: no question about replacing your text (a share link; your text was kept).
-async function loadRepoFile(path, force = false) {
+// openOnly: a .mub / .vgm is opened in the channel view for Play, not played (a share link
+// that does not ask to play).
+async function loadRepoFile(path, force = false, { openOnly = false } = {}) {
   const name = path.slice(path.lastIndexOf('/') + 1);
   try {
     setStatus(t('loadingSample', name));
     const data = await fetchRepoFile(path);
-    if (kindOf(name, data) !== 'muc') { playFile(name, data, path); return 'played'; }
+    if (kindOf(name, data) !== 'muc') {
+      if (openOnly) { openFileOnly(name, data, path); return 'opened'; }
+      playFile(name, data, path);
+      return 'played';
+    }
     if (!force && !(await guardEditor())) { setStatus(engineReady ? t('ready') : t('loading')); return false; }
     stop();
     clearFiles();
@@ -4253,7 +4274,7 @@ $('sharedRestore').addEventListener('click', async () => {
 // Opening a share link: the address is cleaned at once (a reload keeps what you do next),
 // your own song is kept aside, then the shared one is loaded.
 (async () => {
-  let fileStarted = false;   // a shared .mub / .vgm sample plays as soon as it opens
+  let fileStarted = false;   // a shared .mub / .vgm (with &play=1) already plays once opened
   const req = sharedRequest(location);
   if (!req) return;
   history.replaceState(null, '', pageBase(location));
@@ -4275,19 +4296,21 @@ $('sharedRestore').addEventListener('click', async () => {
       const items = repoItems(paths);
       await openInPlaylist(items, { quiet: true });
       const pick = items.find((x) => x.name.toLowerCase() === (req.song || '').toLowerCase()) || items[0];
-      if (await loadRepoFile(pick.repoPath, true)) playlist.setCurrent(pick);
+      const opened = await loadRepoFile(pick.repoPath, true, { openOnly: !req.play });
+      if (opened) playlist.setCurrent(pick);
+      if (opened === 'played') fileStarted = true;
       showSharedNote(kept);
       if (req.view) setSplit(req.view);
       sharedStatus = { text: t('plSharedOpened', req.playlist, items.length), err: false };
       setStatus(sharedStatus.text);
       if (engineReady) sharedStatus = null;
-      if (req.play && current === 'repo:' + pick.repoPath) play();
+      if (req.play && !fileStarted && current === 'repo:' + pick.repoPath) play();
       return;
     }
     if (req.sample) {
       const path = SAMPLES_ROOT + req.sample;
       if (!safePath(path)) throw new Error(req.sample);
-      fileStarted = await loadRepoFile(path, true) === 'played';
+      fileStarted = await loadRepoFile(path, true, { openOnly: !req.play }) === 'played';
     } else if (req.file) {
       const f = await decodeFile(req.file);
       if (kindOf(f.name, f.data) === 'muc') throw new Error(f.name);
@@ -4318,7 +4341,8 @@ $('sharedRestore').addEventListener('click', async () => {
       }
     }
     showSharedNote(kept);
-    sharedStatus = { text: t('sharedOpened', sourceName), err: false };
+    // a .mub / .vgm sample is the file opened, not the text
+    sharedStatus = { text: t('sharedOpened', req.sample && openFile?.repoPath === SAMPLES_ROOT + req.sample ? openFile.name : sourceName), err: false };
   } catch (e) {
     showSharedNote(kept);
     sharedStatus = { text: t('sharedBad') + e.message, err: true };
