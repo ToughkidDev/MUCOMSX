@@ -137,13 +137,13 @@ dotnet workload install wasm-tools   # .NET 8 SDK
 MUCPlayground/src/build.sh
 ```
 
-`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.3.0), publishes `src/Web` and
+`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.3.1), publishes `src/Web` and
 `src/VgmWeb`, and copies only the files the browser loads into `engine/` (about 11 MB, 4.2 MB
 compressed) and `engine-vgm/` (about 20 MB, 7.3 MB compressed); AOT compilation takes a
 few minutes. Run it again after
 adding samples to refresh `samples.json`.
 
-### MucoMSX native core fixes in MDPlayer4Mac v0.2.6 to v0.3.0
+### MucoMSX native core fixes in MDPlayer4Mac v0.2.6 to v0.3.1
 
 MDPlayer4Mac v0.2.6 took these fixes and additions from MUCPlayground
 ([ToughkidDev/MDPlayer4Mac#1](https://github.com/ToughkidDev/MDPlayer4Mac/pull/1), tests in
@@ -176,6 +176,15 @@ MUCOM88 v1.7 MUB8, a score using mucomDotNET extensions as muPb, in MucoMSX's la
 detune and the last SSG LFO step play as in MucoMSX. `MucEngine` saves and exports that MUB,
 and plays the compiler's own output in the same mode, which keeps each byte's source position
 for the playing marks. The repository's 461 sample MUCs all compile.
+
+MDPlayer4Mac v0.3.1 plays MUB as MucoMSX's players of 2026-11-13 do: an SCC part writes its
+volume at the `v` command itself (not one tick later at the next note or envelope step, as
+MUCOM88's SSG timing had it), FM software LFO and portamento steps check the octave limit only
+on the side they move to (a detuned note no longer loses a block and plays 6 to 16 cents
+sharp), and a MUB without embedded PCM reads the file its `#pcm` tag names or plays without
+the ADPCM channel. Rendered natively for 20 seconds, the 461 sample MUCs all compile and play;
+the sound changes in 16 of them, all from `SNES/Gradius3` (the songs these differences were
+found in), and is byte for byte the same in the other 445.
 
 To compare against MDPlayer4Mac on the desktop:
 
