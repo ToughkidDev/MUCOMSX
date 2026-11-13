@@ -534,6 +534,7 @@ footer p{margin:2px 0}
 .samples{width:min(760px,calc((100vw - 32px) / var(--ui)));max-height:min(80vh / var(--ui),720px);max-height:min(80dvh / var(--ui),720px);padding:0;border:1px solid var(--line);
          border-radius:12px;background:var(--panel);color:var(--ink);display:none;flex-direction:column}
 .samples[open]{display:flex}
+a.btn{text-decoration:none}
 .share-top{align-self:center;padding:5px 12px;font-weight:600;border-color:var(--accent2);color:var(--accent2)}
 .share-top:hover{background:var(--accent2);color:#fff}
 .share-top[aria-pressed="true"]{background:var(--accent2);color:#fff}
@@ -617,6 +618,7 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
   </div>
   <button type="button" class="btn share-top" id="shareBtn" data-i18n-title="shareTip"><span aria-hidden="true">🔗</span> <span data-i18n="share">Share</span></button>
   <button type="button" class="btn share-top" id="playerModeBtn" aria-pressed="false" data-i18n-title="playerModeTip"><span aria-hidden="true">🎧</span> <span data-i18n="playerMode">Player mode</span></button>
+  <a class="btn share-top" id="docLink" href="Manual/" target="_blank" rel="noopener" data-i18n-title="docLinkTip"><span aria-hidden="true">📘</span> <span data-i18n="docLink">Guide</span></a>
   <div class="sizes">
     <label class="vol"><span data-i18n="fontSize" data-i18n-title="fontSizeTip">Text</span> <input id="fontSize" data-i18n-title="fontSizeTip" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
     <label class="vol"><span data-i18n="uiSize" data-i18n-title="uiSizeTip">Menus</span> <input id="uiSize" data-i18n-title="uiSizeTip" type="range" min="100" max="200" step="10" value="100"> <output id="uiSizeOut" for="uiSize">100%</output></label>

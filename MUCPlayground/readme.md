@@ -2,6 +2,7 @@
 
 **Write MUCOM88 MML in the browser and hear it right away.** Written by ToughkidCST.
 Open it at **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/**
+The user's guide (English, 한국어, 日本語), with the full MML reference: **https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/** (**📘 Guide** in the page's header opens it in the page's language; source in [`Manual/`](Manual)).
 
 - **한국어:** 브라우저에서 MUC(MML)를 입력하고 바로 들어볼 수 있는 연습 공간입니다. 설치할 것이 없습니다.
 - **日本語:** ブラウザでMUC（MML）を書いて、すぐに試聴できる練習用スペースです。インストールは不要です。
@@ -114,6 +115,7 @@ the heaviest chip); the interpreter managed 2.2× and 0.6×.
 | `tooltips.js` | The tooltips of every button and control (en / ko / ja), and the bank's per tab |
 | `pcm-editor.js` | The PCM sample editor (Furnace-style selection, tools, resampling, listening) |
 | `keyboard.js` | The keys mode piano (drawing, mouse / touch, computer keyboard mapping) |
+| `Manual/` | The user's guide: the guide in three languages, the MML reference rendered from `manual-data.js`, the messages from `diagnostics.js` |
 | `notes-worker.js` | Runs `chip-notes.js` off the main thread |
 | `chip-notes.js` | The notes of a .vgm / .mub, read from its chip writes for the tracker and keys beside the channel view |
 | `channel-keys.js` | The keys while playing: one keyboard per part, the playing keys pressed in the part colours |

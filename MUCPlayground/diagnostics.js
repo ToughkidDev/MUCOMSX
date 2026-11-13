@@ -124,3 +124,6 @@ export function explain(message, language) {
     form: command ? `${command.sig || command.label} — ${pick(command)}` : '',
   };
 }
+
+// For the user's guide (Manual/): every message with its explanation.
+export const MESSAGE_HINTS = HINTS;

@@ -63,6 +63,7 @@ const T = {
     addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
     share: 'Share', shareTip: 'Make a link to this song that opens it ready to play',
+    docLink: 'Guide', docLinkTip: 'The user\'s guide: how to use MUCPlayground, the full MML reference and the messages explained (opens in a new tab)',
     playerMode: 'Player mode', playerModeTip: 'Player mode: MDPlayer4Web in place of the editor; the rest of the page is off until you press this again',
     playerModeOn: 'Player mode — MDPlayer4Web. Press Player mode again to go back to the editor.', shareTitle: 'Share this song', shareCopy: 'Copy', shareCopied: 'Copied ✓', shareNative: 'Share…',
     shareFileRepo: (n) => `A link to "${n}" in the repository: it opens in the channel view and plays.`,
@@ -240,6 +241,7 @@ const T = {
     addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
     share: '공유', shareTip: '이 곡을 바로 재생할 수 있는 링크로 만듭니다',
+    docLink: '사용 설명서', docLinkTip: '사용 설명서: MUCPlayground 사용법, MML 문법 레퍼런스 전체, 메시지 설명 (새 탭으로 열림)',
     playerMode: '플레이어 모드', playerModeTip: '플레이어 모드: 편집기 자리에 MDPlayer4Web을 띄웁니다. 다시 누를 때까지 나머지 화면은 꺼집니다',
     playerModeOn: '플레이어 모드 — MDPlayer4Web. 플레이어 모드를 다시 누르면 편집기로 돌아갑니다.', shareTitle: '이 곡 공유하기', shareCopy: '복사', shareCopied: '복사됨 ✓', shareNative: '공유…',
     shareFileRepo: (n) => `저장소의 "${n}" 링크입니다. 채널 뷰로 열리고 재생됩니다.`,
@@ -417,6 +419,7 @@ const T = {
     addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
     share: '共有', shareTip: 'この曲をすぐ再生できるリンクにします',
+    docLink: 'ガイド', docLinkTip: 'ユーザーガイド: MUCPlaygroundの使い方、MML文法リファレンス全体、メッセージの説明（新しいタブで開きます）',
     playerMode: 'プレイヤーモード', playerModeTip: 'プレイヤーモード: エディタの場所にMDPlayer4Webを表示します。もう一度押すまでほかの部分は使えません',
     playerModeOn: 'プレイヤーモード — MDPlayer4Web。プレイヤーモードをもう一度押すとエディタに戻ります。', shareTitle: 'この曲を共有', shareCopy: 'コピー', shareCopied: 'コピーしました ✓', shareNative: '共有…',
     shareFileRepo: (n) => `リポジトリの「${n}」へのリンクです。チャンネルビューで開いて再生します。`,
@@ -599,6 +602,9 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, v); } catch { /* private mode or blocked */ } },
 };
 
+// ?lang=ko|en|ja (a link from the user's guide) wins, and is kept as the setting.
+const urlLang = new URLSearchParams(location.search).get('lang');
+if (['en', 'ko', 'ja'].includes(urlLang)) store.set(STORE_LANG, urlLang);
 let lang = store.get(STORE_LANG)
   || ((navigator.language || '').startsWith('ko') ? 'ko' : (navigator.language || '').startsWith('ja') ? 'ja' : 'en');
 const t = (key, ...args) => { const v = T[lang][key] ?? T.en[key]; return typeof v === 'function' ? v(...args) : v; };
@@ -631,6 +637,7 @@ function applyLanguage() {
   if (typeof keyboard !== 'undefined') { keyboard.build(); refreshKeySources(); }
   playlist?.render();
   if ($('loopMode').dataset.ready) showLoopMode();
+  $('docLink').href = `Manual/?lang=${lang}`;
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
   $('chview').dataset.empty = t('cvEmpty');
