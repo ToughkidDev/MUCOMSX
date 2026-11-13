@@ -61,9 +61,11 @@ h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
 /* ---------- toolbar ---------- */
 .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
 /* the loop button: once / loop / random, each with its icon */
-.loop-btn .lm-icon{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.song-step{padding-left:10px;padding-right:10px}
+.song-step .lm-icon path:last-child{fill:currentColor}
+.song-step .lm-icon,.loop-btn .lm-icon{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .loop-btn .lm-icon text{fill:currentColor;stroke:none;font:700 9px system-ui,sans-serif}
-.loop-btn[data-mode="loop"],.loop-btn[data-mode="random"]{color:var(--accent);border-color:var(--accent)}
+.loop-btn[data-mode="loop"]:not(:disabled),.loop-btn[data-mode="random"]:not(:disabled){color:var(--accent);border-color:var(--accent)}
 .btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--bg);border-radius:8px;
      padding:6px 12px;cursor:pointer;font-size:.9rem;white-space:nowrap}
 .btn:hover{border-color:var(--accent2)}
@@ -627,7 +629,9 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 </header>
 
 <div class="toolbar">
+  <button class="btn song-step" id="prevSong" type="button" disabled><svg class="lm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14"/><path d="M18 5.5 9 12l9 6.5z"/></svg></button>
   <button class="btn primary" id="play" type="button"><span data-i18n="play">▶ Play</span> <kbd>Ctrl+Enter</kbd></button>
+  <button class="btn song-step" id="nextSong" type="button" disabled><svg class="lm-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14"/><path d="M6 5.5 15 12l-9 6.5z"/></svg></button>
   <button class="btn" id="pause" type="button" aria-pressed="false" disabled><span data-i18n="pause">❚❚ Pause</span> <kbd>F8</kbd></button>
   <button class="btn" id="stop" type="button"><span data-i18n="stop">■ Stop</span> <kbd>Esc</kbd></button>
   <button class="btn loop-btn" id="loopMode" type="button" data-mode="once"><svg class="lm-icon" viewBox="0 0 24 24" aria-hidden="true"></svg><span class="lm-label"></span></button>

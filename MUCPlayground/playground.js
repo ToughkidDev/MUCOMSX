@@ -53,6 +53,8 @@ let loadedText = null; // the text as last loaded: your song counts as changed w
 const T = {
   en: {
     back: '← MUCOMSX', tagline: 'Write MUCOM88 MML, hear it right away',
+    prevSong: 'Previous song in the playlist (in Random, the one played before)', nextSong: 'Next song in the playlist (in Random, another song at random)',
+    loopOff: 'The loop button works with a playlist of two songs or more; a single song plays once (1+1).',
     loopOnce: 'Once', loopLoop: 'Loop', loopRandom: 'Random',
     loopOnceTip: 'Once: the song plays through and, if it has a loop, the loop once more (1+1), then fades out. Click for Loop.',
     loopLoopTip: 'Loop: the song plays over and over until you stop it (a song without a loop starts again). Click for Random.',
@@ -228,6 +230,8 @@ const T = {
   },
   ko: {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
+    prevSong: '플레이리스트의 이전 곡 (랜덤에서는 바로 전에 들은 곡)', nextSong: '플레이리스트의 다음 곡 (랜덤에서는 무작위로 다른 곡)',
+    loopOff: '루프 버튼은 2곡 이상인 플레이리스트에서 쓸 수 있습니다. 곡이 하나면 한 번(1+1) 연주합니다.',
     loopOnce: '한 번', loopLoop: '반복', loopRandom: '랜덤',
     loopOnceTip: '한 번: 곡을 끝까지 연주하고, 루프가 있으면 루프를 한 번 더(1+1) 연주한 뒤 페이드아웃합니다. 누르면 반복.',
     loopLoopTip: '반복: 정지할 때까지 곡을 계속 반복합니다(루프가 없는 곡은 처음부터 다시). 누르면 랜덤.',
@@ -403,6 +407,8 @@ const T = {
   },
   ja: {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
+    prevSong: 'プレイリストの前の曲（ランダムでは直前に聴いた曲）', nextSong: 'プレイリストの次の曲（ランダムでは別の曲をランダムに）',
+    loopOff: 'ループボタンは2曲以上のプレイリストで使えます。1曲だけなら1回（1+1）演奏します。',
     loopOnce: '1回', loopLoop: 'ループ', loopRandom: 'ランダム',
     loopOnceTip: '1回: 曲を最後まで演奏し、ループがあればループをもう1回（1+1）演奏してからフェードアウトします。押すとループ。',
     loopLoopTip: 'ループ: 停止するまで曲を繰り返します（ループのない曲は最初から）。押すとランダム。',
@@ -1663,6 +1669,7 @@ function setPlaylistMode(on) {
   $('drop').dataset.i18n = playlistMode ? 'dropPlaylist' : 'drop';
   $('drop').textContent = t($('drop').dataset.i18n);
   store.set(STORE_PLAYLIST, playlistMode ? '1' : '');
+  updateSongButtons();
   // The editor and the channel view are narrower or wider now.
   renderGutter();
   traceDirty = true;
@@ -1751,7 +1758,7 @@ async function playItem(item, { play: start = true, asked = false } = {}) {
   if (start) play();
 }
 
-playlist = new Playlist($('playlist'), { t, onPlay: playItem, onShare: () => sharePlaylist() });
+playlist = new Playlist($('playlist'), { t, onPlay: playItem, onShare: () => sharePlaylist(), onChange: () => updateSongButtons() });
 
 // Drag the bar left of the playlist to make it wider or narrower.
 $('plSplitter').addEventListener('pointerdown', (e) => {
@@ -2164,43 +2171,90 @@ const LOOP_ICONS = {
 const STORE_LOOP = 'mucplayground.loopMode';
 let loopMode = LOOP_MODES.includes(store.get(STORE_LOOP)) ? store.get(STORE_LOOP) : 'once';
 const loopsFor = (mode) => (mode === 'loop' ? 0 : 2);
+// Previous, next and the loop button work with a playlist of two songs or more (shown);
+// otherwise a song plays once (1+1), whatever the loop button was set to.
+const manySongs = () => playlistMode && playlist.items.length > 1;
+const playMode = () => (manySongs() ? loopMode : 'once');
+let sentLoops = null;
+function sendLoops() {
+  const n = loopsFor(playMode());
+  if (n === sentLoops) return;
+  sentLoops = n;
+  // the engines end a song after its loops (none: never), from its next loop point
+  worker.postMessage({ type: 'loops', value: n });
+  vgmWorker?.postMessage({ type: 'loops', value: n });
+}
 function setLoopMode(mode) {
   loopMode = LOOP_MODES.includes(mode) ? mode : 'once';
   store.set(STORE_LOOP, loopMode);
   $('loopMode').dataset.ready = '1';
   showLoopMode();
-  // the engines end a song after its loops (none: never), from its next loop point
-  worker.postMessage({ type: 'loops', value: loopsFor(loopMode) });
-  vgmWorker?.postMessage({ type: 'loops', value: loopsFor(loopMode) });
+  sendLoops();
 }
 function showLoopMode() {
   const b = $('loopMode'), key = { once: 'loopOnce', loop: 'loopLoop', random: 'loopRandom' }[loopMode];
   b.dataset.mode = loopMode;
+  b.disabled = !manySongs();
   b.querySelector('.lm-icon').innerHTML = LOOP_ICONS[loopMode];
   b.querySelector('.lm-label').textContent = t(key);
-  b.title = t(key + 'Tip');
-  b.setAttribute('aria-label', `${t(key)}: ${t(key + 'Tip')}`);
+  b.title = b.disabled ? t('loopOff') : t(key + 'Tip');
+  b.setAttribute('aria-label', `${t(key)}: ${b.title}`);
+  for (const [id, k] of [['prevSong', 'prevSong'], ['nextSong', 'nextSong']]) {
+    $(id).disabled = b.disabled;
+    $(id).title = t(k);
+    $(id).setAttribute('aria-label', t(k));
+  }
+}
+// The playlist's songs or its mode changed.
+function updateSongButtons() {
+  if (!$('loopMode').dataset.ready) return;
+  showLoopMode();
+  sendLoops();
 }
 $('loopMode').addEventListener('click', () => setLoopMode(LOOP_MODES[(LOOP_MODES.indexOf(loopMode) + 1) % LOOP_MODES.length]));
 // A song came to its end by itself (not stopped): what the loop button says comes next.
 let randomBag = [];   // ids of the playlist songs not played yet in this round
+let playedIds = [];   // the songs played in Random, for Previous
+function randomItem() {
+  const now = playlist.current?.id;
+  randomBag = randomBag.filter((id) => id !== now && playlist.items.some((x) => x.id === id));
+  if (!randomBag.length) randomBag = playlist.items.map((x) => x.id).filter((id) => id !== now);
+  const id = randomBag.splice(Math.floor(Math.random() * randomBag.length), 1)[0];
+  return playlist.items.find((x) => x.id === id) || null;
+}
 function afterSongEnded(rows) {
   if (playerMode) return;
-  if (loopMode === 'loop') {
+  const mode = playMode();
+  if (mode === 'loop') {
     // the same again: the file, the lines, or the song in the editor
     if (playingName && openFile) playFile(openFile.name, openFile.data, openFile.repoPath);
     else play(rows);
     return;
   }
-  if (loopMode === 'random' && playlistMode && playlist.items.length > 1) {
-    const now = playlist.current?.id;
-    randomBag = randomBag.filter((id) => id !== now && playlist.items.some((x) => x.id === id));
-    if (!randomBag.length) randomBag = playlist.items.map((x) => x.id).filter((id) => id !== now);
-    const id = randomBag.splice(Math.floor(Math.random() * randomBag.length), 1)[0];
-    const item = playlist.items.find((x) => x.id === id);
-    if (item) playItem(item);
-  }
+  if (mode === 'random') stepSong(1);
 }
+// Previous (-1) / next (1): in the playlist's order, round from the end to the start; in
+// Random, another song at random, and back through the ones played.
+function stepSong(dir) {
+  if (!manySongs()) return;
+  const items = playlist.items, now = playlist.current;
+  let item;
+  if (playMode() === 'random') {
+    if (dir < 0) {
+      while (playedIds.length && !item) { const id = playedIds.pop(); if (id !== now?.id) item = items.find((x) => x.id === id); }
+      if (!item) return;
+    } else {
+      item = randomItem();
+      if (now) playedIds.push(now.id);
+    }
+  } else {
+    const at = now ? items.indexOf(now) : (dir > 0 ? -1 : 0);
+    item = items[(at + dir + items.length) % items.length];
+  }
+  if (item) playItem(item);
+}
+$('prevSong').addEventListener('click', () => stepSong(-1));
+$('nextSong').addEventListener('click', () => stepSong(1));
 
 // ---------- pause ----------
 // Pause holds the audio clock: the worklet stops asking for sound, so the engine stops
@@ -2245,7 +2299,7 @@ function bootVgm() {
   vgmWorker.onerror = (e) => setStatus(t('vgmFailed') + (e.message || 'worker error'), true);
   vgmWorker.postMessage({ type: 'boot', language: 'en' });
   vgmWorker.postMessage({ type: 'speed', value: +$('speed').value / 100 });
-  vgmWorker.postMessage({ type: 'loops', value: loopsFor(loopMode) });
+  vgmWorker.postMessage({ type: 'loops', value: loopsFor(playMode()) });
   vgmWorker.postMessage({ type: 'scope', on: splitMode === 'scope' });
 }
 
