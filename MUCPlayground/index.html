@@ -60,6 +60,10 @@ h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
 
 /* ---------- toolbar ---------- */
 .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+/* the loop button: once / loop / random, each with its icon */
+.loop-btn .lm-icon{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.loop-btn .lm-icon text{fill:currentColor;stroke:none;font:700 9px system-ui,sans-serif}
+.loop-btn[data-mode="loop"],.loop-btn[data-mode="random"]{color:var(--accent);border-color:var(--accent)}
 .btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--bg);border-radius:8px;
      padding:6px 12px;cursor:pointer;font-size:.9rem;white-space:nowrap}
 .btn:hover{border-color:var(--accent2)}
@@ -626,6 +630,7 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
   <button class="btn primary" id="play" type="button"><span data-i18n="play">▶ Play</span> <kbd>Ctrl+Enter</kbd></button>
   <button class="btn" id="pause" type="button" aria-pressed="false" disabled><span data-i18n="pause">❚❚ Pause</span> <kbd>F8</kbd></button>
   <button class="btn" id="stop" type="button"><span data-i18n="stop">■ Stop</span> <kbd>Esc</kbd></button>
+  <button class="btn loop-btn" id="loopMode" type="button" data-mode="once"><svg class="lm-icon" viewBox="0 0 24 24" aria-hidden="true"></svg><span class="lm-label"></span></button>
   <span class="clock" id="clock" aria-live="off">0:00.0</span>
   <button class="btn" id="viewToggle" type="button" aria-pressed="false" data-i18n-title="channelViewTip"><span data-i18n="channelView">▦ Channels</span></button>
   <button class="btn" id="playlistToggle" type="button" aria-pressed="false" data-i18n-title="plTip"><span data-i18n="plButton">☰ Playlist</span></button>
@@ -763,11 +768,6 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
   <div class="s-list" id="sampleList"></div>
 </dialog>
 
-<dialog class="samples ask-dlg" id="askDlg" aria-labelledby="askTitle">
-  <div class="s-head"><h2 id="askTitle"></h2></div>
-  <p class="ask-text" id="askText"></p>
-  <div class="ask-buttons" id="askButtons"></div>
-</dialog>
 <dialog class="samples ask-dlg" id="askDlg" aria-labelledby="askTitle">
   <div class="s-head"><h2 id="askTitle"></h2></div>
   <p class="ask-text" id="askText"></p>

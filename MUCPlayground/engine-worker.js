@@ -16,6 +16,10 @@ let session = 0;       // bumps on every play/stop so stale loops exit
 let rendered = 0;      // frames sent to the worklet in this session
 let played = 0;        // frames the worklet reports as played
 let wake = null;       // resolves when the worklet reports progress
+// The loop button: after this many loops (0: never) the song fades out and ends. With 2,
+// a song with a loop plays through, then its loop once more (1+1).
+let maxLoops = 2;
+const FADE = SAMPLE_RATE * 3;   // frames the fade-out takes
 
 async function boot(language) {
   const { dotnet } = await import(ENGINE_DIR + 'dotnet.js');
@@ -43,6 +47,7 @@ async function play(id, start) {
   played = 0;
   audio.postMessage({ type: 'reset', session: id });
   let loop = -1;
+  let fadeFrom = -1;   // the rendered frame the fade-out starts at
   while (id === session) {
     if (rendered - played >= AHEAD) {
       await new Promise((resolve) => { wake = resolve; setTimeout(resolve, 50); });
@@ -60,8 +65,17 @@ async function play(id, start) {
     const frames = pcm.length >> 1;
     const data = new Float32Array(pcm.length);
     for (let i = 0; i < pcm.length; i++) data[i] = pcm[i] / 32768;
+    let faded = false;
+    if (fadeFrom >= 0) {
+      for (let f = 0; f < frames; f++) {
+        const g = Math.max(0, 1 - (rendered + f - fadeFrom) / FADE);
+        data[f * 2] *= g; data[f * 2 + 1] *= g;
+      }
+      faded = rendered + frames - fadeFrom >= FADE;
+    }
     audio.postMessage({ type: 'pcm', data }, [data.buffer]);
     rendered += frames;
+    if (faded) { audio.postMessage({ type: 'end' }); return; }
     // Where each part is in the source, for highlighting as the audio is heard.
     const trace = E.TakeTrace();
     if (trace.length) {
@@ -89,6 +103,8 @@ async function play(id, start) {
     if (status.loop !== loop) {
       loop = status.loop;
       postMessage({ type: 'loop', loop, at: rendered });
+      // at a loop point: enough loops played, fade out from here
+      if (maxLoops && loop >= maxLoops && fadeFrom < 0) fadeFrom = rendered;
     }
     // Yield so stop/compile messages are handled between chunks.
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -149,6 +165,9 @@ onmessage = async (event) => {
         break;
       case 'channelVolume':
         E.SetChannelVolume(m.chip, m.id, m.ch, m.vol);
+        break;
+      case 'loops':
+        maxLoops = Math.max(0, m.value | 0);
         break;
       case 'speed':
         E.SetSpeed(m.value);

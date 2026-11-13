@@ -53,6 +53,10 @@ let loadedText = null; // the text as last loaded: your song counts as changed w
 const T = {
   en: {
     back: '← MUCOMSX', tagline: 'Write MUCOM88 MML, hear it right away',
+    loopOnce: 'Once', loopLoop: 'Loop', loopRandom: 'Random',
+    loopOnceTip: 'Once: the song plays through and, if it has a loop, the loop once more (1+1), then fades out. Click for Loop.',
+    loopLoopTip: 'Loop: the song plays over and over until you stop it (a song without a loop starts again). Click for Random.',
+    loopRandomTip: 'Random: the playlist\'s songs one after another in random order, each once (1+1). A single song plays once. Click for Once.',
     play: '▶ Play', pause: '❚❚ Pause', resume: '▶ Resume', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
     addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
@@ -224,6 +228,10 @@ const T = {
   },
   ko: {
     back: '← MUCOMSX', tagline: 'MUCOM88 MML을 쓰고 바로 들어보기',
+    loopOnce: '한 번', loopLoop: '반복', loopRandom: '랜덤',
+    loopOnceTip: '한 번: 곡을 끝까지 연주하고, 루프가 있으면 루프를 한 번 더(1+1) 연주한 뒤 페이드아웃합니다. 누르면 반복.',
+    loopLoopTip: '반복: 정지할 때까지 곡을 계속 반복합니다(루프가 없는 곡은 처음부터 다시). 누르면 랜덤.',
+    loopRandomTip: '랜덤: 플레이리스트의 곡을 무작위 순서로 하나씩, 각각 한 번(1+1) 연주합니다. 곡이 하나뿐이면 한 번만. 누르면 한 번.',
     play: '▶ 재생', pause: '❚❚ 일시정지', resume: '▶ 계속', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
     addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
@@ -395,6 +403,10 @@ const T = {
   },
   ja: {
     back: '← MUCOMSX', tagline: 'MUCOM88のMMLを書いて、すぐに聴く',
+    loopOnce: '1回', loopLoop: 'ループ', loopRandom: 'ランダム',
+    loopOnceTip: '1回: 曲を最後まで演奏し、ループがあればループをもう1回（1+1）演奏してからフェードアウトします。押すとループ。',
+    loopLoopTip: 'ループ: 停止するまで曲を繰り返します（ループのない曲は最初から）。押すとランダム。',
+    loopRandomTip: 'ランダム: プレイリストの曲をランダムな順で1曲ずつ、それぞれ1回（1+1）演奏します。1曲だけなら1回。押すと1回。',
     play: '▶ 再生', pause: '❚❚ 一時停止', resume: '▶ 再開', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
     addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
@@ -612,6 +624,7 @@ function applyLanguage() {
   if (manualReady) { manual.setLang(lang); quickRef.setLang(lang); }
   if (typeof keyboard !== 'undefined') { keyboard.build(); refreshKeySources(); }
   playlist?.render();
+  if ($('loopMode').dataset.ready) showLoopMode();
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); el.setAttribute('aria-label', el.title); });
   $('chview').dataset.empty = t('cvEmpty');
@@ -1941,6 +1954,7 @@ function onAudioMessage(m, source) {
       underruns = m.underruns;
     } else if (m.type === 'ended') {
       showClock(m.frames);
+      const rows = playingRows;
       playing = false;
       playingRows = null;
       clearTrace();
@@ -1949,6 +1963,7 @@ function onAudioMessage(m, source) {
       setStatus(t('ended'));
       updateLinePlay();
       updatePause();
+      afterSongEnded(rows);
     }
   }
 }
@@ -2134,6 +2149,59 @@ function stop() {
   updatePause();
 }
 
+// ---------- loop button ----------
+// once: a song with a loop plays 1+1 (through, then its loop again) and fades out; loop: the
+// song over and over; random: the playlist in random order, each song once (one song: once).
+const LOOP_MODES = ['once', 'loop', 'random'];
+const LOOP_ICONS = {
+  // an arrow up to a bar, with a 1: play through, then stop
+  once: '<path d="M3 12h11"/><path d="M10 7.5 14.5 12 10 16.5"/><path d="M19 5v14"/>',
+  // two arrows chasing round: again and again
+  loop: '<path d="M4 11V9a3 3 0 0 1 3-3h12"/><path d="M16 3l3 3-3 3"/><path d="M20 13v2a3 3 0 0 1-3 3H5"/><path d="M8 21l-3-3 3-3"/>',
+  // crossing arrows: shuffled
+  random: '<path d="M3 7h3.5c1.6 0 3 .8 3.9 2.1l3.2 5.8c.9 1.3 2.3 2.1 3.9 2.1H20"/><path d="M3 17h3.5c1.4 0 2.7-.7 3.6-1.8"/><path d="M14 8.8c.9-1.1 2.2-1.8 3.6-1.8H20"/><path d="M17.5 4.5 20 7l-2.5 2.5"/><path d="M17.5 14.5 20 17l-2.5 2.5"/>',
+};
+const STORE_LOOP = 'mucplayground.loopMode';
+let loopMode = LOOP_MODES.includes(store.get(STORE_LOOP)) ? store.get(STORE_LOOP) : 'once';
+const loopsFor = (mode) => (mode === 'loop' ? 0 : 2);
+function setLoopMode(mode) {
+  loopMode = LOOP_MODES.includes(mode) ? mode : 'once';
+  store.set(STORE_LOOP, loopMode);
+  $('loopMode').dataset.ready = '1';
+  showLoopMode();
+  // the engines end a song after its loops (none: never), from its next loop point
+  worker.postMessage({ type: 'loops', value: loopsFor(loopMode) });
+  vgmWorker?.postMessage({ type: 'loops', value: loopsFor(loopMode) });
+}
+function showLoopMode() {
+  const b = $('loopMode'), key = { once: 'loopOnce', loop: 'loopLoop', random: 'loopRandom' }[loopMode];
+  b.dataset.mode = loopMode;
+  b.querySelector('.lm-icon').innerHTML = LOOP_ICONS[loopMode];
+  b.querySelector('.lm-label').textContent = t(key);
+  b.title = t(key + 'Tip');
+  b.setAttribute('aria-label', `${t(key)}: ${t(key + 'Tip')}`);
+}
+$('loopMode').addEventListener('click', () => setLoopMode(LOOP_MODES[(LOOP_MODES.indexOf(loopMode) + 1) % LOOP_MODES.length]));
+// A song came to its end by itself (not stopped): what the loop button says comes next.
+let randomBag = [];   // ids of the playlist songs not played yet in this round
+function afterSongEnded(rows) {
+  if (playerMode) return;
+  if (loopMode === 'loop') {
+    // the same again: the file, the lines, or the song in the editor
+    if (playingName && openFile) playFile(openFile.name, openFile.data, openFile.repoPath);
+    else play(rows);
+    return;
+  }
+  if (loopMode === 'random' && playlistMode && playlist.items.length > 1) {
+    const now = playlist.current?.id;
+    randomBag = randomBag.filter((id) => id !== now && playlist.items.some((x) => x.id === id));
+    if (!randomBag.length) randomBag = playlist.items.map((x) => x.id).filter((id) => id !== now);
+    const id = randomBag.splice(Math.floor(Math.random() * randomBag.length), 1)[0];
+    const item = playlist.items.find((x) => x.id === id);
+    if (item) playItem(item);
+  }
+}
+
 // ---------- pause ----------
 // Pause holds the audio clock: the worklet stops asking for sound, so the engine stops
 // rendering ahead, and the playing marks, channel view and clock stay where they are.
@@ -2177,6 +2245,7 @@ function bootVgm() {
   vgmWorker.onerror = (e) => setStatus(t('vgmFailed') + (e.message || 'worker error'), true);
   vgmWorker.postMessage({ type: 'boot', language: 'en' });
   vgmWorker.postMessage({ type: 'speed', value: +$('speed').value / 100 });
+  vgmWorker.postMessage({ type: 'loops', value: loopsFor(loopMode) });
   vgmWorker.postMessage({ type: 'scope', on: splitMode === 'scope' });
 }
 
@@ -4077,6 +4146,7 @@ for (const p of panes) p.code.addEventListener('input', scheduleBank);
     if (current === 'mine') loadedText = null;
   } else renderGutter();
   setSplit(store.get(STORE_SPLIT) || 'off');
+  setLoopMode(loopMode);
   if (store.get(STORE_PLAYLIST_W)) $('work').style.setProperty('--plw', store.get(STORE_PLAYLIST_W));
   setPlaylistMode(store.get(STORE_PLAYLIST) === '1');
   applyLanguage();
