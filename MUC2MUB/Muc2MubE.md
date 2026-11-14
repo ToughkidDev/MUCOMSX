@@ -1,10 +1,20 @@
 # MUC2MUB User Guide
 
-## Update — 2026-10-13
+MSX PSG `MSXD/E/F`, SCC+ `SCCA..E` and OPLL `MSXA/B/C/H/I/J` with rhythm `MSXG` coexist with OPNA rows without a global mode tag. See [MSX MML](../docs/MSX_MML_EN.TXT), [new envelopes and detune](../docs/MSX_STAGE1.TXT), and [OPLL commands](../docs/OPLL_NATIVE.TXT).
+
+Install and replace `MUC2MUB.COM` together with **the matching build of `MUC2MUB.MXR`**, in the current DOS directory or `PATH`. The module loads at startup; playback ticks do not read executable code from disk. Old PMC/PNC/EXP files are not used. Runtime code banks and the SCC waveform cache are separate. Compiled music DATA is limited to **96KiB (98,304 bytes)**.
+
+## Updates
+
+All changes in the **2026-11 update (since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
 
 See [release changes](../shared/docs/RELEASE_UPDATE_261013.en.md) for SCC/SCC+ SSG, PCMInvert, compiler optimization and rhythm-mute fixes since public v0.81. Recompile old MUBs with missing DATA caused by `#OPNA1RhythmMute`. `.MD5` is not required; no MD5 calculation/verification was added. Existing metadata copying is not an integrity check.
 
-> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 122,880 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
+### 2026-11: MUCVOICE removed — edit voices and PCM in MUCPlayground
+
+The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the toolchain's official editor, which runs in a web browser. Open the `#voice`, `#sccvoice` and `#pcm` files in its **FM bank**, **SCC bank** and **PCM bank**, adjust them while listening in the FM voice editor, SCC wave editor and PCM sample editor, then download them with **Save**. Put the downloaded files beside the MUC on the MSX under DOS 8.3 names, then compile and play with this tool. The MSX compiler does not convert WAVs from `#@pcm`, so always save PCM as a BIN bank. Screenshots and step-by-step instructions are in the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md); buttons and keys are in the [official MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks). The toolchain ZIP's FMVOICE.DAT and SCCVOICE.DAT can be loaded in MUCPlayground as a starting point (MUCPlayground does not read INIT.TFI). An old MUCVOICE.COM left in your folder is not updated; you may delete it.
+
+> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
 
 MUC to MUB on the MSX, one song at a time.
@@ -69,9 +79,9 @@ A song whose source targets another compiler, or which contains commands specifi
 
 | Item | Requirement |
 |---|---|
-| CPU | Runs on Z80. Not an R800-only program |
+| CPU | Runs on Z80. Not an R800-only program. On a One Chip MSX the cartridge slots are set to 3.58 MHz and the CPU raised to 8.06 MHz while compiling, then restored at exit (also after an error or abort) |
 | Operating system | MSX-DOS 2 and an environment providing mapper services. Verified on a Nextor configuration |
-| Memory | At least 512 KiB mapper RAM, with allocatable free segments. Internal mapper or a configuration such as MegaFlashROM SCC+ SD / Carnivore2 |
+| Memory | At least 512 KiB mapper RAM, with allocatable free segments. Internal mapper or a configuration such as MegaFlashROM SCC+ SD / Carnivore2. With both an internal and an external mapper, the one with more free memory is used |
 | Storage | Media DOS can read and write. Must allow reading the input and assets and writing to the output folder |
 | Executable | `MUC2MUB.COM` |
 | Source | A `.MUC` of the MUCOM88 v1.7 family |
@@ -143,7 +153,7 @@ D o4 l4 v12 cdefgab>c
 MUC2MUB TEST.MUC
 ```
 
-This example uses channel D, that is SSG, so it needs no external FM voices or ADPCM. The current version may show a missing-file warning while looking for the default PCM file even for songs that use no PCM. If, as in this example, you do not use channel K, there is no need to prepare PCM because of that warning.
+This example uses channel D, that is SSG, so it needs no external FM voices or ADPCM. The current version may show a missing-file warning while looking for the default PCM file (`MUCOMPCM.BIN`) even for songs that use no PCM. If, as in this example, you do not use channel K, there is no need to prepare PCM because of that warning.
 
 Once `TEST.MUB` exists, listen to it in a compatible player. For the basic cycle of writing source → compiling → checking the result, this is enough.
 
@@ -286,6 +296,10 @@ An invalid channel line may be warned about and dropped. When part of a song sou
 | H, I, J | FM 4, 5, 6 |
 | K | ADPCM |
 
+`K` and `k` each assign a semitone transposition, matching MUCOM88. Their sum applies to notes and portamento endpoints. `k1` means one semitone, not one octave; repeated assignments do not accumulate. For example, `K2 k-1 o4 c` equals `o4 c+`. Reset the two values with `K0` and `k0`. These remain existing OPNA commands; this correction adds no syntax to MSX extension rows.
+
+Ordinary OPNA `C S…` retains four 8-bit slot detune values and can coexist with portamento, `x` and `vm`. Combinations requiring extended MUB store these values as 16-bit operands. On explicit `C0`–`C9` pages, `S…` keeps the existing four signed 16-bit operands.
+
 Take care not to confuse this with the channel tables of other MML systems. In particular, D, E and F are SSG, not FM.
 
 ### Common basic notation
@@ -365,11 +379,15 @@ When writing tags, organize them like this.
 
 Metadata handling currently works from the initial header region, within the first source memory window. The fact that music lines can be processed deep into a large MUC is a different matter from applying a tag placed anywhere in the file.
 
+The MUB tag block holds only the `#` rows (tags and `#*n{}` macro definitions) of the initial header region. That region is read to its end even when it spans several source memory windows; blank rows and `;` comment rows are not put in the tag block. Each row ends with CRLF.
+
 Tags outside the header may produce a warning that they were ignored. Unrecognized tags are also warned about. Do not confuse the case where such a tag remains as source text with the case where it is reflected as an actual compile setting.
 
 <a id="08"></a>
 
 ## 8. Preparing FM voices
+
+> **Editing FM voices:** MUCPlayground's **FM bank** and **FM voice editor** make and change VOICE.DAT-form files or inline voices in the MUC. [Guide chapter 4](../shared/docs/MUCPLAYGROUND.en.md#4-fm-voices) · [Official user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks)
 
 FM voices come mainly from an external library, or are defined directly inside the MUC.
 
@@ -431,6 +449,8 @@ Not every faulty inline definition is detected as a clear error. Keep the count,
 
 ## 9. PCM and ADPCM
 
+> **Making a PCM bank:** import WAVs and other audio into MUCPlayground's **PCM bank** with To set to **BIN**, then **Save**: that is the PCM bank file this tool uses (the MSX compiler does not convert WAVs from `#@pcm`). [Guide chapter 6](../shared/docs/MUCPLAYGROUND.en.md#6-pcm)
+
 ### Which file to prepare
 
 A song using ADPCM on channel K needs the PCM bank file that matches it.
@@ -455,17 +475,24 @@ At the saving stage, the PCM file's size is checked and the data is read from di
 - If channel K is not used, no PCM block is included even when a PCM file exists.
 - PCM size is handled as 32-bit, so PCM larger than 64 KiB is handled by the save path. That does not guarantee support for every PCM of any size or format, or by every player.
 
-### The missing-PCM warning
+### Missing PCM: a tagged file is an error, the default file is a warning
+
+If the file named in a `#pcm` tag is not found, compilation does not start and stops with error 19. No MUB file is written.
 
 ```text
-Warning: PCM file not found: PCM.BIN
+Error line 3 (code 19): PCM file in #pcm tag not found
+#pcm PCM.BIN
 ```
 
-Compilation can still finish and produce a MUB with this warning. That part preserves compatibility with the previous behavior.
+The line number is the line holding the `#pcm` tag, and that line is shown with it. Check the current folder and the real 8.3 filename, then run again. MUCPLAY and MUCEDIT (F1 compile) follow the same rule.
 
-For a song that uses channel K, do not treat that as a proper completion. It may be a result where FM and SSG are audible but only the sampled sound is missing. You need to prepare the file and compile again.
+When there is no `#pcm` tag and the default name `MUCOMPCM.BIN` is looked up, only a warning is shown, as before, and compilation continues.
 
-Even a song without channel K may produce the missing-file warning because of the step that queries the PCM size. In that case, simply confirm that the song does not use PCM originally.
+```text
+Warning: PCM file not found: MUCOMPCM.BIN
+```
+
+For a song that uses channel K, do not treat a result with this warning as a proper completion. It may be a result where FM and SSG are audible but only the sampled sound is missing. Even a song without channel K may produce this warning because of the step that queries the PCM size; in that case, simply confirm that the song does not use PCM originally.
 
 Failing to find the file and failing while actually reading a file you did find are different. The latter becomes a `Cannot read PCM file` error and can make saving fail. Do not swap out the PCM file or eject the media while compiling.
 
@@ -514,7 +541,7 @@ For this part you need to keep several different sizes distinct.
 |---|---|
 | Input MUC | Actual size on disk, at most 65,536 bytes, that is 64 KiB |
 | Mapper for loading the source | Five 16 KiB segments, to preserve line boundaries |
-| Music and FM output DATA | Extended path: eight output segments; 122,880-byte total and 59,546-byte per-page limits |
+| Music and FM output DATA | Extended path: six output segments; 98,304-byte total and 59,546-byte per-page limits |
 | Voice and working mapper | One 16 KiB segment |
 | Total working mapper allocation | Base 10 segments (160 KiB); wide output 14 (224 KiB). DOS, the program and other memory are separate |
 | Entire source line | Up to 1023 bytes excluding CR/LF; includes channel prefix, whitespace, comments, tags and macro definitions |
@@ -535,11 +562,11 @@ In particular, avoid stretching a single comment line to tens of thousands of ch
 
 ### Input size and output size are not proportional
 
-A comment-heavy 64 KiB MUC can have small music DATA, while a smaller MUC packed with notes and macro calls can fill the output area first. Output DATA holds not only notes but the channel structure and the voice table. Do not calculate as though all 122,880 bytes were available for notes alone.
+A comment-heavy 64 KiB MUC can have small music DATA, while a smaller MUC packed with notes and macro calls can fill the output area first. Output DATA holds not only notes but the channel structure and the voice table. Do not calculate as though all 98,304 bytes were available for notes alone.
 
 When the output space runs short, reorganize with repeat syntax that preserves the same musical result, or split the song. Cutting comments only helps the input size; it cannot shrink music DATA that has already grown.
 
-The final `.MUB` file includes the header, tags and PCM, so it can be larger than 122,880 bytes or 64 KiB. Do not conclude from file size alone that the DATA limit was exceeded.
+The final `.MUB` file includes the header, tags and PCM, so it can be larger than 98,304 bytes or 64 KiB. Do not conclude from file size alone that the DATA limit was exceeded.
 
 ### Does fitting 4 MiB of RAM raise the limits?
 
@@ -547,7 +574,7 @@ No. It allocates the work segments it needs, not the entire installed RAM.
 
 The current compiler allocates ten base user segments, or fourteen for wide output, in the DOS default mapper context. It does not survey the RAM in every slot to total up capacity, or actively gather free space from other mappers. Even with a large amount of physical RAM, a memory error can occur depending on what DOS can allocate.
 
-Adding RAM does not automatically raise the 64 KiB input, the 122,880-byte music DATA limit, or the line and macro length limits.
+Adding RAM does not automatically raise the 64 KiB input, the 98,304-byte music DATA limit, or the line and macro length limits.
 
 <a id="12"></a>
 
@@ -665,6 +692,7 @@ Below is the complete classification of the current diagnostic messages. The exa
 | 16 | `Invalid macro definition` | A problem with the macro definition's form or braces, or the recursion/call-nesting limit |
 | 17 | `Line/macro exceeds 1023 bytes` | A complete source line or macro body exceeded 1023 bytes |
 | 18 | `Output buffer overflow` | Not enough room in the output area holding music events, voices and so on |
+| 19 | `PCM file in #pcm tag not found` | The PCM file named in a `#pcm` tag does not exist. Compilation does not start and no MUB is written. Check the current folder and the 8.3 name |
 
 Other undefined numbers may also show as `Unspecified compiler error`. Do not attach a new meaning of your own from the code number alone — keep the original text together with the conditions that produced it.
 
@@ -739,7 +767,7 @@ A warning does not mean the source was corrected for you. Since a result can be 
 | `Unknown or malformed tag` | An unknown tag, or faulty tag notation | Check the tag name and form. Consider whether it belongs to another compiler |
 | `Missing tag value` | A tag requiring a value has none | Fill in the required value such as a title or filename. An empty `#comment` is allowed |
 | `Tag outside initial header is ignored` | A tag outside the initial header region | Move it into the contiguous header at the top of the file |
-| `Warning: PCM file not found:` | The specified or default PCM file was not found | Check whether channel K is used, the current folder, and the actual 8.3 name |
+| `Warning: PCM file not found:` | With no `#pcm` tag, the default `MUCOMPCM.BIN` was not found (a missing tagged file is error 19) | Check whether channel K is used, the current folder, and the actual 8.3 name |
 
 Line-related warnings appear like this.
 
@@ -947,7 +975,7 @@ The existing result was protected. That does not mean this run succeeded. Check 
 
 ### I have 4 MiB of RAM but still get an output buffer overflow.
 
-Installed RAM and the music DATA limit are different. Extended output uses up to eight segments with a total DATA limit of 122,880 bytes; more RAM does not expand it automatically.
+Installed RAM and the music DATA limit are different. Extended output uses up to eight segments with a total DATA limit of 98,304 bytes; more RAM does not expand it automatically.
 
 ### Can I compile without a `.MD5`?
 
@@ -1015,3 +1043,18 @@ The integrated build adds MSX-prefixed parts, native msPb output and automatic p
 [MSX target guide](../shared/docs/MSX_TARGETS.en.md)
 
 For `#SSGExtend`, `@I`, `@W`, `pe` and `#PCMInvert`, see the [SCC+ SSG guide](../shared/docs/SSG_EXTEND.en.md). This extends msPb with approximate SCC+ playback, not bit-exact PC virtual SSG.
+
+## Dedicated SCC scores
+
+`SCCA`–`SCCE` select SCC/SCC+ channels 1–5, with multi-channel selectors such as `SCCABC` and pages 0–9. Put `#sccvoice SCCVOICE.DAT` in the initial header and use `@0`–`@255` to select defined waves from an SCWD v1 bank (saved from MUCPlayground's SCC bank). Keep the bank beside the MUC in the working directory under a plain DOS 8.3 name. The default is `SCCVOICE.DAT`.
+
+Example: `SCCA @0 o4 v15 l8 cdefgab>c`
+
+MUB embeds the waveforms and needs no DAT at playback time. MUCEDIT compilation, playback and MUB export use the same commands. Install current MUC2MUB/MUCPLAY/MUCEDIT/MUBPLAY together for the new `msPb0102` profile. Ordinary SCC shares CH4/5 wave RAM; five independent waves require SCC+. Do not mix this with `#SSGExtend On` or raw SCC. The 512KiB mapper requirement, 60,000-byte MUCEDIT document limit and 96KiB music DATA limit remain. See the dedicated SCC section in the common MSX_TARGETS guide for details.
+
+
+## Inline SCC waveforms in MUC
+
+Define a 32-byte SCC waveform with `@Wnumber:{ ... }`, following the brace form of OPNA voice definitions, and select it with `@number` in a part. When all required SCC waves are defined inline, compilation, playback and MUB export need neither `#sccvoice` nor an external DAT.
+
+`@Wnumber:{ ... }` definitions inserted by MUCPlayground's SCC wave editor work as they are ([SCC wave editing guide](../shared/docs/MUCPLAYGROUND.en.md#5-scc-waves)). IDs are 0–255, with exactly 32 samples in -128–127. Inline definitions override external waves of the same ID; an explicitly named `#sccvoice` file must still exist. See the SCC wave section of MSX_TARGETS for examples and compatibility forms.

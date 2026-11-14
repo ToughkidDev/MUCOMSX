@@ -1,0 +1,659 @@
+Common MML on compact rows
+
+MSX rows with ?XU also accept |, [ ... ]n and L. A bar line adds no data.
+Repeats nest at most twice and may continue on the next row of the same channel.
+A repeat cannot cross a definition's closing }. L marks the channel loop;
+the following ! jumps back to it. Compact rows do not support / repeat exits.
+Replace [A / B]n with [A B]n-1 A, writing the calculated integer for n-1.
+
+MSXA ?XU1 ?XT1 ?IR3 v12 o4 [c%2 [d%2]2]3 e%2 !
+MSXD ?XU1 ?XT1 ?EP0,$81,$38 v12 o4 c%4 !
+
+Compact OPLL melodies accept ?IR1–?IR15 and ?IU0–?IU15.
+Define custom patches first with ?IUindex={8 bytes}. PSG-only compact songs
+need no ?WD; define SCC waves before compact SCC music rows.
+?FB0 ... ?FBn works on OPLL melody and MSXG. A rest on ?XT4 waits without
+starting an effect; a rest on MSXG ?XT64 hits no drums. ?ID applies pending
+?IT, volume and ?IB. When ?WM sample strides pass the shared wave region's
+end, samples wrap to its first wave. Existing aliases and OPNA grammar remain
+unchanged. Mixed OPNA/MSX songs retain #CarrierCorrection and #OPNA1RhythmMute.
+
+
+Shared phrase definition rows: SCCS / PSGS / OPLS
+
+SCCS declares SCC/SCC+ shared phrases, PSGS declares PSG phrases, and OPLS
+is for OPLL melody. These are definition-only rows, not new sound channels.
+Use ?FD definitions or continuations of an open definition. PSGS/SCCS also
+accept existing ?XD rhythm definitions. Notes, calls and settings outside a
+definition are errors; put phrase settings inside the definition body.
+
+  SCCA ?XU1 ?FC43 !
+  SCCB ?XU1 ?FC43 !
+  SCCS ?FD43={ o4 ?EP2,$29,$70 c%4 d%4 ?FR }
+
+Execution stays on the calling channel. FD IDs use the existing global 0..255
+namespace. A closing } does not return or end playback: write ?FR explicitly.
+Definition order and intentional fallthrough remain unchanged. Repeat the same
+shared prefix on continuation rows. Keep short definitions, including }, on one
+line. Comments/blank lines are allowed; do not switch row kind inside a block.
+
+Compile-time defaults and standard/compact context are those of the existing
+canonical carriers: SCCS=SCCA, PSGS=MSXD, OPLS=MSXA. No independent default-state
+store is added. Use explicit o/l in a phrase when needed; compact ?XU mode uses
+this same context. Do not mechanically relabel definitions on other carriers.
+Existing physical-channel definitions remain supported. OPLS means OPLL, not
+OPL2/OPL3 or OPNA. OPLL rhythm compatibility phrases retain their old context.
+OPNA shared phrase support is outside this extension.
+
+Future conversions use shared rows and uppercase $ hexadecimal for packed
+control bytes/masks; volumes, counts, times and resource/phrase IDs stay decimal.
+Final presentation formatting follows optimization and source-effect policies.
+Existing songs and voice files are not automatically regenerated or reformatted.
+
+Numeric literals in MSX extensions ($ hexadecimal)
+
+MSX extension operands and resource definitions accept decimal numbers and
+$-prefixed hexadecimal numbers in the same command. Hex digits are 0..9,
+A..F or a..f.
+
+  SCCA ?EP2,$29,$70
+  SCCA ?EP2,41,$70
+
+Both rows specify the same envelope: 41=$29 and 112=$70. Only notation changes.
+Where a signed operand is allowed, put its sign before $, as in -$80 or +$7F.
+Existing ranges still apply. Signed16 detune ranges from ?DW-$8000 to ?DW$7FFF.
+Wave samples remain -128..127: -$80 is valid; $FF is not implicitly converted
+to -1. The 0x prefix is not supported. An empty $ or an out-of-range value is
+an error. Consecutive A..F characters belong to the hex literal, so separate
+following notes with whitespace: ?DB$12 c8.
+
+Converted sources use hexadecimal for packed control bytes and bit masks;
+volume, counts, times and phrase IDs remain decimal. Ordinary note notation
+and existing OPNA grammar retain their established rules.
+
+PN6 shared pitch tables, program maps, execution controls and global fade
+
+These are new features, not aliases of an older operation. Use ? and two
+uppercase letters; there are no @KT/@IM/@XH/@XC/@XR/@VF aliases.
+Existing one-letter ?/@ forms and OPNA grammar remain unchanged.
+
+  ?KTid={period,...}    Define 12..128 unsigned16 chip-native o1 periods, ID0..15.
+  ?KTid[,start] / ?KT-  Select pitch window / restore default pitch table.
+  ?IMid={label,...}     Define 12..128 FD label IDs0..255, table ID0..15.
+  ?IMid[,start] / ?IM-  Select note-to-program map / restore ordinary notes.
+  ?XH1 / ?XH0          Hold / resume program progression and output updates.
+  ?XC                  Stop and mute program; retain its cached start.
+  ?XR                  Restart cached program from the next tick.
+  ?VFprofile,interval,step,target   Set global MSX fade.
+  ?VF-                 Cancel fade; reset attenuation0 and profile0.
+
+KT/IM/XH/XC/XR are PSG/SCC-only. VF may be written on any MSX route and is
+shared across MSX engines; it does not change OPNA volume or syntax. Global
+table definitions alone do not select a new compilation path.
+PN6 PSG-only compact notation needs no dummy SCC WD definition. Older compact
+PN1..5 requirements and real SCC wave definitions remain unchanged.
+KT period = table[start+pitch-class] >> (octave-1). Values are chip-native
+periods at MUC o1, not semitones/cents or ordinary K/k. Literal absolute
+program periods are not transposed. Start defaults to0, must be0..116, and
+start+12 must not exceed the table length. Overlapping windows share one table.
+
+IM maps note C..B to a program, not numeric @voice selections. Octave does not
+change its index. Referenced FD programs and transitive FC helpers use raw
+effect notation, permitting XM/XI/XP/XS without selecting compact XU for the
+whole music channel. Other music FD phrases retain their previous grammar.
+Program PC, interval counter, repeats and return stack are independent of
+music PC, note duration and music call stack. Its first step runs on the tick
+after the triggering note. FR returns on the auxiliary stack; an empty-stack
+FR completes and mutes only the program. Main music continues unchanged.
+
+Program progression runs on held music ticks. A new note/rest/end boundary does
+not consume an old program step. Thus repeated one-tick mapped notes may replace
+the pending start before any step executes. A mapped rest mutes immediately;
+the existing program may continue on the following held rest tick. Music end
+prevents further program output.
+
+While held, automatic IM note triggers are ignored without queuing; music
+continues. Resume retains PC/counter. XR while held resets the start but does
+not output until resume. XC clears held state but retains IM selection, so a
+later note may trigger again. Changing/disabling IM affects future notes only;
+use XC to stop the running program.
+
+XH1 with no active program and IM disabled does not suppress ordinary notes.
+With IM selected, held note triggers are ignored without ordinary-note fallback.
+An already active held program remains held after IM- until resume or XC.
+
+Hold freezes software program progression/output updates, not an AY hardware
+envelope's internal phase. Cancel/restart do not reset main music state.
+VF0 is continuous master attenuation: subtract from PSG/SCC level, add to
+OPLL attenuation nibbles, preserving underlying volume/envelope state.
+PSG hardware-envelope bit4 cannot be continuously scaled and remains unchanged.
+VF1 applies distinct note-start/program-step arithmetic and hardware-shape
+restart suppression. It preserves the source algorithm's signed/unsigned
+clamps instead of treating every raw effect as an ordinary note.
+Profile0/1, interval0..255 ticks, positive step1..15, target attenuation0..15.
+Move toward the target without overshoot. Interval0 applies the target at the
+next global boundary. Last command in one tick wins; apply once before the
+next global frame across MSX engines. New-song/error cleanup resets the state.
+
+VF1 suppresses shape restart while target or current attenuation is nonzero,
+including the first interval before the first attenuation step. This is an
+explicit fade policy. An artificial original state with fade counter0 and
+nonzero attenuation allows a shape write, so that stopped-source state is not
+identical. VF does not stop music at attenuation16: its range is0..15 and it
+never changes music PC/end status. An external source fade that terminates the
+whole song needs an explicit musical end at the corresponding time.
+
+VF- resets the global attenuation/profile at the next boundary; it does not
+reconstruct levels already baked into a VF1 note start, program step or OPLL
+rhythm hit. Those cached levels may remain until the next corresponding event.
+VF0 preserves raw levels, so its held output returns when attenuation resets.
+VF1 OPLL melody captures attenuation before envelope start; rhythm captures
+only the triggered drum nibbles from raw base levels, without cumulative decay
+or a frame refresh of untriggered/held drums.
+
+Execution example (ordinary music lengths, independently running table programs)
+?KT0={3840,3624,3420,3228,3048,2876,2714,2562,2418,2282,2154,2034,1920,1812,1710,1614}
+?IM0={1,1,1,1,1,1,1,1,1,1,1,1}
+MSXD ?FD1={?XM2,2 ?EN2 ?XI1 ?XP291,10 ?XP292,9 ?FR}
+MSXD ?EP- v12 ?KT0,2 ?IM0 o4 l8 ?VF0,4,1,6 c
+MSXD ?XH1 d ?XR r ?XH0 e ?XC r ?XR r
+MSXD ?IM- ?KT- ?VF- f !
+  The first c starts FD1 on the next tick. Held d does not queue a trigger.
+  XR while held resets only its start; XH0 resumes execution. XC followed by
+  XR restarts the cached program. IM-/KT- restore subsequent ordinary notes;
+  VF- resets master attenuation at the next global boundary. Replace VF0 with
+  VF1,58,1,15 to choose note-start/program-step fade arithmetic. New-song load
+  and error cleanup reset selections, program PC/stack/held state and fade,
+  preventing state from the previous song leaking into the next one.
+
+Raw effect data formats (XM/XI, including IM-referenced FD programs)
+  XM0 disables the effect. XM1 selects noise-only output and legacy byte
+  steps update level only (low nibble +2), preserving the current period.
+  XM2 selects tone-only and XM3 selects tone+noise. These modes decode the
+  period form selected by XI: 0=low byte only, 1=full word, 2=high byte only.
+  XI0 writes only the low period byte; it does not change volume, high byte,
+  mixer, envelope or vibrato. It is not a volume-only format.
+  XP levels use the existing packed +2 followed by EN attenuation. Ordinary
+  compact XP accepts 0..12 and retains its existing bytes. Inside an IM FD,
+  XP accepts 0..15: 13..15 use PN6 explicit full-step packet33. Add a third
+  format argument1 (?XP291,13,1) to force a full period/packed-level step at
+  any level, independently of XM mixer choice. Two-argument levels0..12 keep
+  the old encoding. XI remains 0..2; there is no XI3 format.
+
+Inside new IM programs, XI0 has explicit pitch-low precedence even with XM1.
+An explicit NP in an IM program is an event updating the shared PSG noise
+period register. If multiple programs execute NP in one frame, the last
+executed event wins; there is no private noise generator per channel.
+Legacy ordinary-channel and PN1..5 effect noise arbitration is unchanged.
+Older compact XM1 retains its level-byte behavior and existing bytes.
+
+New features use PN6 and an EX1 directory containing only defined tables and
+relative program pointers. Existing wave/rhythm/OL1 locations stay unchanged.
+Object<=4KiB and DATA<=96KiB. Sources using no new feature retain PN1..5 bytes.
+Older players that do not support PN6 reject it.
+
+MSX PSG / SCC+ / OPLL — functional extension names (2026-10-24)
+
+Current preferred syntax
+  Use ? followed by exactly two uppercase letters. Names describe functions,
+  not games. Existing one-letter ? and @ forms retain their semantics,
+  argument order and output. There are no @ aliases for the new names:
+  ?EP is supported; @EP is not. Case is significant.
+  Numeric @number, FM voice definitions, OPNA @/_/K/k/D/E/M/q/w/P and
+  virtual SSG @I/@W are unchanged. MSXD/E/F=PSG, SCCA..E=SCC(+),
+  MSXA/B/C/H/I/J=OPLL melody, MSXG=OPLL rhythm. Mix with OPNA A..K
+  without a document-wide mode tag.
+
+Command map (prefix column 1 with ?; column 2 with legacy ? or @)
+  ?EPp,a,b[,c] / EP- | e a,b[,p] / e a,b,c,3 / e- | Envelope profile p=0..7 / off
+  ?EA0,n / EA1,n | a n[,0] / a n,1 | Start control / stepped attack
+  ?ETn / ENn | a n,2 / a n,3 | Initial target difference / note-start attenuation
+  ?ELn | v n (n>0) / v- (n=0) | Envelope floor 0..15; zero resets
+  ?DBn / DWn / DR | d n / d n,1 / d- | Byte / signed16 detune / reset
+  ?DSstep,count / DS- | g step,count / g- | One-shot period sweep / off
+  ?MV0,n / MV1,n / MV- | m n / m n,1 / m- | Vibrato mode / off
+  ?MWn / MW- | h n / h- | Vibrato delay / immediate start
+  ?QR / QPn | q / q n | PSG/SCC normal gate / OPLL proportional gate
+  ?NPn | n n | PSG noise period
+  ?GSn / GS- / GHn / GLn | s n / a- / H n / L n | PSG hardware envelope shape / off / high / low
+  ?WDn={...} | W n={...} | Global SCC wave: 32 signed8 samples
+  ?WStarget,source | W target=?W source | Global SCC wave alias
+  ?WMvoice,rate / WM- | w voice,rate / w- | SCC read-stride modulation / off
+  ?WPpolicy | k type,policy 의 정책 부분 | SCC global wave policy 0/1/2
+  ?IRn / IUn | I n / O n | Direct OPLL ROM / user voice
+  ?IUn={...} / ITn={...} | O n={...} / T n={...} | Global OPLL 8-byte patch / 6-byte drum pitch
+  ?ITn / IS0/1 | T n / s 0/1 | OPLL drum-pitch preset / sustain bit
+  ?IDmask,length / IB | D mask,length / B | Compact OPLL hit / add BD to next hit
+  ?FDn={... ?FR} / FCn / FR | P n{... ?r} / p n / r | Phrase definition / call / return
+  ?FJn / FBcount[,label[,counter]] | j n / b count[,label[,counter]] | Label jump / repeat
+  ?XDn={... !} | R n{... !} | Shared rhythm/effect definition
+  ?XMmode[,interval] / XI0/1/2 | x mode[,interval] / i 0/1/2 | Compact effect mode / period encoding
+  ?XSn / XPperiod,level | z n / f period,level | Compact effect step / period and level
+  ?XTtype / XUn | k type / u n | Part type / channel compact-unit declaration
+
+Arguments and scope
+  Profile comes first: ?EP2,41,112 = ?e41,112,2. Profiles: 0=two-byte
+  steps, 1=fractional accumulation, 2=integer steps, 3=three-byte stages,
+  4=release check throughout, 5=during sustain, 6=after sustain, 7=absolute
+  tick decay. Only profile 3 takes three data bytes a,b,c.
+  ?EA0,35 = ?a35,0; ?EA1,35 = ?a35,1; ?MV0,18 = ?m18;
+  ?MV1,18 = ?m18,1. Old aliases keep their original argument order.
+  ?EL0 emits the same reset as ?v-. Old ?v0 sets the same zero floor with
+  a different object encoding; that existing spelling keeps its original bytes.
+  The ordinary XT form takes one type argument; explicit modes are listed below. ?XT1,3 is invalid; use ?XT1 ?WP2.
+  ?XT1 ?WP2 = ?k1,2. WP emits only the policy, without a duplicate type.
+  Policy 0=independent fifth SCC+ wave, 1=D onto E / ignore E selection,
+  2=D/E both update shared wave. WP is global policy written on an SCC row.
+  Global WD/WS/IU/IT definitions alone do not activate the extension path.
+  New FD/XD definitions require =. KT/IM and program/fade controls are PN6
+  features described at the beginning of this guide.
+
+  EP0/1/4/5/6/7, EN/EL/MV1/DS apply to PSG/SCC. EP2/3, EA/ET/DB/DW/DR/
+  MV0/MW also support OPLL melody. NP/GS/GH/GL are PSG-only; WD/WS/WM/WP
+  are SCC-only. GS retriggers even the same shape; GH/GL change period only.
+  OPLL IS controls sustain, not PSG envelope shape. DW is not semitones or
+  cents: PSG/SCC add period, OPLL adds F-number, with opposite pitch direction.
+  ID/IB require the explicit rhythm compact channel. XM/XI/XS/XP require
+  compact notation or an IM-referenced raw FD program.
+  XU selects the whole channel's existing compact notation, not just a later
+  duration; write it directly on the channel, never inside a text macro.
+  Prefer ordinary l/c/E/D/M/q/w/@number for ordinary musical notation.
+  New names lower to existing object commands; they do not add playback work.
+
+Examples (numeric @ remains the existing voice selection)
+  ?IU0={17,17,17,32,192,178,1,244}
+MSXD ?FD1={c8 d8 ?FR}
+MSXD ?EP2,41,112 ?EA0,35 ?ET2 ?NP3 o4 l8 ?FC1 ?FC1 !
+MSXA ?IR3 ?IS1 ?EP2,41,112 v12 o4 l8 cdef !
+
+Compatibility appendix — detailed legacy one-letter spellings follow.
+Use the mapping above for the preferred names and their argument order.
+
+MSX PSG / SCC+ / OPLL MUC extensions
+
+Prefix
+  Use ? for MSX chip letter commands: ?e, ?d, ?p, ?I, ?W, etc.
+  Existing @letter commands remain equivalent compatibility aliases; both
+  spellings may be mixed and produce identical MUB bytes. No global mode tag
+  is needed. Numeric @N, FM definitions @N/@%N, and OPNA @/_ syntax stay unchanged.
+  ?N is invalid: keep @N for numeric voice selection.
+  Global ?W/?O/?T definitions are accepted. Wave-sharing aliases such as
+  ?W1=@W0 require the MSX extension path to be activated by a channel command.
+  Definitions alone do not activate it; legacy routing keeps its existing
+  restrictions for both @W and ?W.
+  MSX text macros (# *N{...}) may contain ?letter commands. Like @u, ?u must
+  be written directly on a channel, outside macros. Do not put MSX-only ?
+  commands in OPNA macros; OPNA/virtual-SSG @I/@W retain their existing syntax.
+
+Channels and compatibility
+  MSXD/E/F: MSX PSG. SCCA/B/C/D/E: the five SCC/SCC+ channels.
+  MSXA/B/C/H/I/J: six OPLL melody channels. MSXG: OPLL rhythm.
+  Unprefixed OPNA A..K keep their existing grammar and compiler; they may
+  play alongside these channels. No #msx compact or document-wide mode exists.
+  An inline MSX extension command selects the extension frontend. Global
+  ?W/?O/?T definitions alone do not change the existing compile path.
+  All present MSX channels then use ordinary MUC notation unless
+  that channel explicitly contains ?uN. This choice is per channel, including
+  all its source rows. Unmodified legacy files retain their existing path.
+
+Ordinary MUC notation (no ?u required)
+  c d e f g a b r, +/#/-, o1..8, < >, lN, cN, dotted lengths and Cn.
+  Defaults: C128, o6, 24 clocks per omitted length, v0 and q0.
+  c8 means C/8 clocks; c%12 means exactly 12 clocks. l%12 sets that default.
+  %12 also sets the default clock length. C0 keeps the preceding clock base.
+  & ties pitches without retriggering; ^ extends the preceding note.
+  c8^8 merges durations. In c8 v12 ^8, the volume change stays after the first
+  c8 and the extension is tied without retriggering. The same applies to q.
+  This extended notation also keeps a tied note sounding when q would have
+  released its first segment before intervening controls: q3 c8 v12 ^8
+  (or &c8) stays connected, with q governing the final segment. This is an
+  intentional improvement over the old muted continuation.
+  Row/macro boundaries without emitted commands still merge. A caret cannot
+  cross a label, loop or phrase call. In this extension path, r8^8 extends
+  silence; this intentionally fixes the old stale-pitch rest behavior.
+  OPNA, explicit ?u channels, and ordinary files using the legacy compile
+  path are unchanged.
+  [ ... ]N repeats at runtime; / skips the final ending on the last pass.
+  Two repeat counters permit two nested levels. L marks the song loop.
+  qN shortens the gate by N clocks. tN writes Timer-B; TN uses BPM notation.
+  In ordinary extension notation, t/T takes effect at its musical position.
+  This improves the old PSG/SCC header-only tempo behavior: t200 c16 t180 d16
+  changes tempo between notes. Explicit ?u and OPNA tempo semantics stay unchanged.
+  EAL,AR,DR,SL,SR,RR retains the six-parameter software envelope.
+  Dn / Dn+ sets/adds signed detune. Mdelay,clock,vector,peak, MF0/1,
+  MWn, MCn, MLn and MDn retain the ordinary software-LFO notation.
+  PSG/SCC: v0..15, )/( relative volume, P0..3 mixer and w0..31 noise.
+  PSG @0..15 selects the existing SSG preset. SCC @0..63 selects a wave.
+  ?e remains a separate Konami envelope; it does not replace ordinary E.
+  # *N{...} and *N reuse textual effect presets/phrases, N=0..65535, depth8.
+  The MSX extension frontend diagnoses ** macro shifts and larger IDs;
+  the existing OPNA macro grammar is unchanged. Put ?u directly on a channel.
+  :N/?pN/?r/?PN{...} share runtime phrases without duplicating their bytes.
+  A definition may precede the main part or follow its !; ordinary later
+  main rows remain stopped. Use ?r inside a phrase, ! at the main part end.
+
+OPLL voice and volume compatibility
+  Ordinary @0..255 uses the existing FM voice bank and its YM2413 ROM
+  approximation. Existing #voice and inline @N/@%N FM definitions still apply.
+  #CarrierCorrection Yes in the metadata header retains carrier-level scaling.
+  ?I1..15 selects a YM2413 ROM instrument directly; ?O0..15 selects the same
+  numbered global ?O definition (eight bytes). A voice change keeps volume.
+  The following v uses the normal FM scale after numeric @, or direct0..15
+  after ?I/?O. Normal FM v encodes (value+4)&255, as before; )/( are runtime
+  changes, so repeated phrases accumulate volume changes correctly.
+  MSXG @0..31 selects OPNA-compatible BD/SD/CY/HH/TOM mask bits0..4.
+  Bit5 RIM has no OPLL counterpart and is an error. Default mask is0.
+  vtotal,BD,SD,CY,HH,TOM,RIM uses total0..63 and six levels0..31.
+  Rhythm notes/rests use ordinary durations and q. Rhythm E/M/D/relative volume
+  are unsupported. Raw ?u rhythm sources retain their existing ?D behavior.
+
+Shared SCC waves
+  ?W0={...}: exactly32 signed samples (-128..127).
+  ?W1=?W0 aliases an earlier ID without storing duplicate samples.
+  Wave-sharing aliases require the activated MSX extension path, not legacy routing.
+  IDs are dense from zero; FM @1 and SCC ?W1 are independent.
+
+Existing compact notation (only channels explicitly containing ?u)
+  ?k1 selects a note part; ?k4 selects a raw shared rhythm/effect sequence.
+  Existing octave/length encodings and @numeric voice meanings are unchanged.
+  ?uN sets a tick unit (PSG/SCC1..255, OPLL1..15); l%N and c%N use multipliers
+  1..16. Denominators retain the old C192 interpretation. Duration=unit*multiplier.
+  ?u18 c%16 lasts288 ticks without splitting the note or restarting envelopes.
+  Ordinary channels reject raw period/mode ?f/?z/?i/?x; use an explicit ?u on
+  that channel for those commands. Ordinary ?k is1, or64 on MSXG.
+
+Shared phrases and repeats (labels 0..255, global within the score)
+  :N defines a label. ?pN calls it; ?r returns; ?jN jumps.
+  ?PN{ ... ?r } defines a shared phrase without selecting it as a part start.
+  ?RN{ ... ! } defines a shared rhythm/effect phrase, N=0..9.
+  ?b0 c d e ?b4 stores the body once and plays it four times. This form has
+  one channel-local marker/counter; do not nest it. Bodies can exceed 255 bytes.
+  Existing ?bcount,label (short distance), ?bcount,label,1 and
+  ?bcount,label,2 retain their existing behavior and two counters.
+  PSG/SCC PN2..5 allow two call levels; a third call level is an error.
+  PSG/SCC PN6 allows five levels; a sixth is an error. Independent IM
+  programmes keep their own separate return stack.
+  A prior return address remains usable for repeated entry into the phrase.
+  A return before any call and a repeat without a marker remain errors.
+  OPLL retains one return slot; its calls do not nest.
+
+Envelopes and effects
+  vLEVEL,TARGET: raw PSG/SCC level and initial target together, both 0..15.
+  It equals vLEVEL ?aTARGET,2 and saves three object bytes. Bare raw v keeps
+  byte levels 0..255; ordinary MUC volume behavior is unchanged.
+  ?aN,3: PSG/SCC note-start attenuation byte; 0 clears it. The attenuated
+  note level becomes the envelope reference; the usual range is 0..15.
+  ?kTYPE,POLICY: SCC waveform policy for this score. POLICY 0 keeps five
+  independent SCC+ waves; 1 shares D onto E and ignores E selections;
+  2 lets either D or E update the shared wave. Bare ?k keeps its meaning.
+  ?eA,B / ?e-: existing packed envelope / off. ?eA,B,0 is identical.
+  ?eA,B,1: Space Manbow fractional Q4 envelope; low nibble of A must be nonzero.
+  ?eA,B,2: Space Manbow integer envelope (direction, level and release).
+  ?eA,B,4 / ,5 / ,6: early SCC integer release variants. Profile 4 checks Q
+    throughout the envelope; 5 checks during periodic sustain; 6 waits for the
+    sustain count to finish. Level holds when remaining duration equals Q,
+    then falls below Q. PSG/SCC only; OPNA and OPLL syntax is unchanged.
+    In profiles 4..6, ?aN uses the complete byte as the initial level.
+    Other profiles retain the established packed-nibble ?a interpretation.
+  ?eA,B,7: absolute-tick decay for PSG/SCC, A/B=0..255. Starting after
+    note-on, lower the current level by one per tick while remaining duration
+    is at least (note length-A) modulo 256, or is less than B. Clamp to ?v.
+    Note-on retains v and the note-start attenuation; ?e- disables decay.
+    Ordinary MUC notation can also use this with ?aN,3 and ?mN,1.
+    The most recent E or ?e selects which envelope controls the channel.
+  ?vN / ?v-: minimum envelope level 0..15 / reset to zero; distinct from v.
+  ?aN: packed envelope start control byte, 0..255. High nibble gives initial
+  downward amount; low nibble controls interval/start level. ?a- keeps its
+  existing PSG hardware-envelope-off meaning.
+  ?gS,N / ?g-: one-shot sweep / off. S is -255..-1 or 1..255 period units,
+  N is 1..255 steps. Positive starts low and rises, negative starts high and
+  falls. Offset starts on the first held tick and returns toward note pitch.
+  ?wV,R / ?w-: SCC strided waveform morph / off. V=0..63, R=0..63.
+  Only SCC accepts ?w. Off restores the base 32 samples. The stride changes
+  using the original phase/carry equations. This stores no waveform animation
+  frames. Reads do not wrap within 32 samples: prepare enough consecutive
+  ?W sample data for start+31*stride. Out-of-pool reads stop with Invalid SCC.
+  Continuous morph uploads preserve the gate; static uploads keep their policy.
+  ?dN / ?d-: detune byte (-128..255) / off.
+  ?mN / ?m-: vibrato / off; ?hN / ?h-: vibrato delay / immediate.
+  ?mN,1: PSG/SCC alternating vibrato around the original note period.
+    High/low nibbles of N (0..255) are interval/width. ?h restarts its delay
+    on each note; alternating direction carries across notes. ?m- disables
+    it; bare ?mN selects the unchanged original vibrato. OPNA/OPLL unchanged.
+  ?kN: original voice/rhythm behavior; ?q: normal gate behavior.
+  ?nN: PSG noise; ?sN: hardware envelope shape; ?HN/?LN: period high/low.
+    Each ?s restarts the envelope, even with the same shape. ?H and ?L each
+    update the period independently without restarting it. The three PSG
+    channels share this generator; pending period bytes precede the next ?s.
+    Independent writes apply to ordinary MUC and PN2/PN4/PN5. Existing PN1
+    packed scores retain their composite period-operand interpretation.
+  ?a-: hardware envelope off.
+  ?x0: effect off; ?x1,N / ?x2,N / ?x3,N: noise/tone/both mixer and interval; see format notes above.
+  ?i0/1/2: effect period byte/word/high-byte form.
+  ?zN: rhythm/effect step 0..207; ?fperiod,level: period 0..4095 and packed level 0..12.
+  Packed effect levels add 2 before start attenuation; they are not raw v0..15.
+  Hardware-envelope mode also affects the resulting channel level.
+
+Example (prepare ?W0 above)
+  SCCA ?k1 @0 ?u18 v12 ?v3 ?e133,101,1 o4 c%16 ?g1,7 d%15 !
+  MSXD ?k1 ?u3 v10 ?e41,112,2 o4 ?b0 c%8 e%8 g%8 ?b4 !
+
+Shared PSG effect table (prepare ?W0 above):
+  MSXD ?u4 ?k4 ?e- ?m- ?d72 c%4 ?k4 ?d47 c%4 !
+  MSXD ?R0{ ?a2,3 ?x2,4 ?a- ?i1 ?f0,9 ?i2 ?z128 ?z112 ?z96 ! }
+  ?d72 and ?d47 reuse the same decay at two pitches. The first ?i1 step sets
+  the complete period. Later ?i2 steps retain its low byte and pack level in
+  the high nibble, period high bits in the low nibble. ?a2,3 compensates +2.
+
+Run matching current COM builds:
+  MUC2MUB SCORE.MUC SCORE.MUB
+  MUCPLAY SCORE.MUC /N
+  MUBPLAY SCORE.MUB /N
+  MUCPLAY /LOAD SCORE.MUC
+  MUCPLAY /COMPILE
+  MUCPLAY /MUB SAVED.MUB
+  MUCPLAY /RELEASE
+Current IBCOM5 builds require each COM and its matching MXR from the same build:
+  MUC2MUB.COM + MUC2MUB.MXR
+  MUCPLAY.COM + MUCPLAY.MXR
+  MUBPLAY.COM + MUBPLAY.MXR
+Place the matching MXR beside its COM or in a DOS PATH directory. Replace the
+pair together. Separate PMC/PNC/EXP files are not required. Referenced voice
+assets retain their existing rules. New files need the updated players.
+
+Format and limits
+  Ordinary notation selects PN5 (msPb0109 / mixed010A) automatically.
+  Explicit-?u-only scores retain PN1..4 and the existing 3F MUB bytes.
+  PN1 keeps its original SCC CH4/5 sharing; PN2 uses five independent waves
+  on SCC+. Ordinary SCC shares CH4/5, so the last upload wins for both.
+  New musical objects, including waves, are at most 4096 bytes; MUC source
+  uses one input window (in practice about 14,900 bytes;
+  a larger source fails with code 9); mixed OPNA DATA is <16KiB. OPNA FM 6ch,
+  SSG 3ch and rhythm retain commands, loops, inline voices, CarrierCorrection
+  and RhythmMute. FM3 multi-page, PCM and mixing other native MSX formats
+  are explicitly rejected in this path. Legacy score compilation is unchanged.
+  Unsupported legacy commands on extended rows are errors, not silent rewrites.
+
+Memory (2026-10-23)
+  Total compiled music DATA: 96KiB (98304 bytes), six output banks.
+  Separate extension-code banks; current occupancy is reported by the build map.
+  Legacy SCC voice cache uses another bank, allocated only when needed.
+  COM startup packing and PN1/PN2 code sharing finish before playback;
+  neither mechanism compresses musical DATA or inserts Z80 code in the MUB.
+  Each IBCOM5 COM loads its matching MXR executable modules at startup.
+  Playback ticks do not read executable code from disk.
+
+Optional source-driver state and frame policies
+
+Existing arities and legacy @/single-letter ? aliases retain their behavior.
+These options affect MSX PSG/SCC routes only; OPNA syntax is unchanged.
+
+  ?DS step,count,1: recompute from the base period using byte-product sweep
+    arithmetic. step=-15..-1 or 1..15; count=0..7. This differs from the legacy
+    two-argument cumulative word sweep, including count zero and final carry.
+  ?GS shape,1: defer the shared PSG shape latch until this frame's output.
+    The last request wins. GS shape keeps its immediate, per-command restart.
+    Deferred requests may also appear in shared SCC effect phrases.
+  ?NP -,policy: select shared PSG noise arbitration without a register write.
+    0=legacy A priority; 1=C priority; 2=C priority plus tone-only A whenever
+    both A and C request noise. Subsequent ordinary NP, mixer and end handling
+    use this policy. ?NP period,policy also sets period (0..31). Each song
+    starts with policy0. Single NP inside IM retains its direct-global update.
+  ?XT type,1: select a track kind without restoring saved effect flags.
+    Typical kinds are 1=notes, 2=effects, 4=rhythm. XT type retains the old
+    save/restore behavior. This option does not change OPNA/OPLL syntax.
+  ?XC mask,1 !: finish selected PSG/SCC tracks together, silently. mask=1..255;
+    bits0..2=PSG A..C and bits3..7=SCC A..E. It must include the issuing route.
+    Use in an explicitly XU compact main score, immediately followed by !.
+    The issuer retires after one silent tick; later routes retire this frame.
+    Not allowed inside IM/XD programs. OPLL and OPNA are unaffected.
+    XC without operands retains its existing auxiliary-program cancel behavior.
+
+Example: MSXD ?XU1 ?XT1 ?NP-,2 o4 v10 c%8 ?XC255,1 !
+These options require the matching PN6-capable COM/MXR pair. Keep notes,
+shared phrases, repeats and shared voices as ordinary musical MUC notation.
+
+Shared table programmes and explicit raw-effect policies
+
+These forms apply to compact MSX PSG/SCC routes. OPNA/OPLL syntax, existing
+arities and legacy @/single-letter ? spellings retain their existing output.
+
+  ?EP8,label,atten,gate,release
+    Start a shared FD level programme on the note's first tick. atten=0..15;
+    gate=0..15 starts release when remaining duration <= floor(duration*gate/16); gate=0 disables automatic
+    release. release uses the packed interval/decrement of EP3. Inside FD,
+    ?XM1,n selects a step interval (0=256 ticks), and ?XS0..15 supplies levels.
+    Begin with ?EN2 to compensate the existing raw-step +2 convention.
+    Subtract atten and apply EL; subtraction below zero produces zero.
+    FR/! holds the last level, and the next note restarts the programme.
+    Calls, repeats and shared FD bodies remain musical data, not per-tick dumps.
+
+  ?MV2,label,descriptor,policy
+    An FD programme uses ?XM1,n and ?DW signed-step for base-relative pitch
+    modulation. signed-step=-8..7; the descriptor's low nibble is depth=0..15.
+    Its high nibble h samples a delay when this command executes: h=0 gives 0,
+    h=1 gives current XU, h>=2 gives current output level+(h-1)*XU, wrapping
+    at eight bits. Every note restarts that sampled delay and programme.
+    Subsequent v/XU changes do not resample it. Signed DW detune is composed.
+    policy=0 uses ordinary counted FB loops. policy=1 also advances the level
+    envelope's repeat counter; its pitch repeat-test counter remains zero,
+    so a positive FB keeps repeating, matching the explicit source variant.
+    EP8 bodies use XM/XS/EN; MV2 bodies use XM/DW. Both support FC/FR/FJ/FB. EP8/MV2
+    selection is not allowed inside an independent IM programme.
+
+  ?DS step,count,2
+    Apply the word-period sweep offset on the note's first tick, then return
+    toward its base each tick. step=-255..-1 or 1..255; count=0..255 (0=256).
+    Preserve 16-bit wrapping. Two-argument DS and byte-product DS mode1 retain
+    their semantics. An MV2 table continues advancing under this sweep but
+    cannot publish pitch until the sweep reaches its base.
+    This mode also works inside IM; it owns only that programme's private
+    channel state. EP8/MV2 selections still require the ordinary score.
+
+  ?GS-,1
+    Disable this route's hardware envelope and clear pending shared PSG noise,
+    period and shape latches. Already emitted writes are not undone.
+    Ordinary GS-/@a- keeps other routes' pending writes.
+
+  ?XT type,2
+    Raw period/level literals bypass note-envelope, LFO and detune processing,
+    retaining the ordinary-note settings/phases for later notes. Typical types
+    are 1=notes, 2=raw effects, 4=rhythm. XT type and XT type,1 are unchanged.
+
+  ?WM voice,rate,1
+    Refresh a held morph waveform even when the phase has not changed. Use
+    when another route can overwrite shared wave memory. Two-argument WM/@w
+    still refreshes only on a phase change.
+
+    WM configuration starts the stride accumulator and carry pulse at zero,
+    including when followed by a rest. A subsequent pitched note retains its
+    normal onset restart (first held update uses phase 16 before adding rate).
+    Selecting a static @voice stops stride animation without resetting the
+    envelope/release counters or its retained gate. This is independent of WP
+    wave sharing. WM- explicitly clears the modulation and its retained gate;
+    a literal-effect programme replaces that gate state and silences its final
+    level on programme end. Ordinary rests do not acquire a retained gate.
+
+Example:
+  MSXD ?XU1 ?XT1,2 ?EP8,1,5,0,65 o4 c%8 !
+  MSXD ?FD1={?EN2 ?XM1,2 ?XS15 ?XS10 ?FR}
+
+These programmes contain musical operations, never executable code. Tick
+budgets, bounds and call depth are checked; errors restore the mapper first.
+The implementation uses existing code-bank gaps, no extra mapper bank or part
+of the empty 16KiB future bank. DATA stays 96KiB with a separate SCC wave cache.
+
+Iterative SCC wave interpolation and envelope-phase voices (compact SCC)
+  ?WI a,b,shift,interval,flags
+    a,b select shared WD voices 0..63. shift is 0..15; interval is in ticks
+    (0=256). Each update recalculates the signed difference from the current
+    32 samples to the target. This is distinct from the existing stride WM.
+    shift 0 settles on A and 15 on B at the next update. Add flag values:
+    1=ping-pong, 2=broadcast to the next SCC route, 4=start on the first note
+    only. The configuring route advances interpolation from its next note.
+  ?WF mask,value
+    Change only the selected policy bits (0..7), without restarting phase,
+    counters or the note. Supply value bits only where mask has bits set.
+  ?WI-
+    Stop the shared interpolator without forcing a static-wave upload.
+  ?WE a,b,c,d / ?WE-
+    Select/disable shared voices for onset, sustain decay, the tick after
+    sustain completion, and fractional release, following EP3 transitions.
+    EP8 table envelopes do not force onset voice A. Static @N or WI selection
+    clears WE on that route. These are new W functions, absent in MUCOM88.
+    No new @ aliases are added. OPNA/OPLL and old one-letter syntax stay intact.
+    Use compact SCC main/FD scores, outside IM. WF also accepts compact PSG.
+
+External SCC banks with compact syntax
+  #sccvoice BANK.DAT
+  ?WS0,17,1
+  SCCA ?XU1 @0 c%4 !
+The existing #sccvoice loader now also serves compact MSX compilation.
+?WSlocal,bankID,1 imports a SCWD entry (0..255) into a local palette slot
+(0..63). Two-argument ?WSlocal,earlierLocal retains its local-alias meaning.
+The complete file format and CRC are checked; missing files/entries and duplicate
+local slots are errors. Only imported local waves are serialized into the MUB.
+Keep the DAT beside the MUC. The host reference compiler receives file bytes via
+assets={"BANK.DAT": bytes}. This is compile-only support, with no new playback opcode.
+
+Source-driver OPLL/PSG controls (PN6)
+  ?KTid[,start] on compact OPLL melody selects twelve nonzero F-numbers
+  (1..1023); values >=512 are halved with the block advanced. ?KT- restores
+  the ordinary table. PSG/SCC KT semantics are unchanged. Define global
+  resources before musical channel rows.
+  ?QPvalue,1 uses a fresh rounded gate product per OPLL note; mode 0 keeps
+  the existing accumulated counter. Plain ?QPvalue retains the selected mode.
+  ?ITid,bias on MSXG adds bias (0..15) to the high-hat attenuation calculation;
+  the existing six-byte kit and one-operand ?IT defaults remain unchanged.
+  ?ID-,length disables rhythm for a rest and commits pending kit/volume first.
+  Numeric ?ID masks remain 0..31. A zero numeric hit is a rhythm-on empty hit.
+  ?XT0 on compact OPLL clears saved type state; use ?XT1 before a pitched note.
+  ?QE0/1/2 selects OPLL end behavior: ordinary key-off (default), frequency-zero
+  keyed end retaining the instrument (melody only), or final chip-state hold.
+  QE is a new end-policy function, not a MUCOM88 alias. A stop/dispose still
+  silences the player. OPNA syntax and its end behavior remain unchanged.
+  ?NP-,3 selects one shared last-writer PSG noise latch. Existing policies
+  0..2 are unchanged; selecting a policy does not itself write a period.
+  Existing @ and ? aliases remain available where already supported.
+
+Static upload sample / shared gate policy: ?WG
+
+  SCCE ?XU1 ?WG15 ?XT1 @0 v12 o4 c%8 !
+  SCCE ?WG-
+
+?WG sample (0..31) selects a sample in the issuing SCC channel as the song-wide
+static-upload destination. SCCE ?WG15 selects sample 15 of the fifth wave.
+For each static upload on ANY SCC route: write zero to the target sample,
+upload the original 32 samples, then write the current five-channel gate mask
+(0..31) to the target sample. The actual gate latch/cache and logical voice
+data are preserved. No upload means no target update. WM dynamic uploads are
+unaffected; WE static uploads use this policy.
+
+Default: disabled. ?WG- disables future updates; it does not undo physical
+sample writes already made. A later normal upload replaces that wave.
+The policy survives the issuing track ending and resets on a new playback.
+Use only on compact SCC routes (explicit ?XU), with independent SCC+ waves
+(?WP0). WP1/2, ordinary SCC hardware and independent IM program bodies reject
+this setting. There is one global target; another route's ?WG moves it.
+This is a new W-family feature, with no MUCOM88 ancestor or @WG alias.
+Existing @/? commands and OPNA syntax/defaults are unchanged.

@@ -12,12 +12,12 @@ See the [update and compatibility guide](RELEASE_UPDATE_261013.en.md). This vers
 | --- | --- |
 | MUC compiler input | 65,536 bytes including tags, comments and line endings |
 | Editor document | 60,000 bytes after newline normalization, four 16 KiB banks |
-| Total compiled music DATA | 122,880 bytes including structural and voice data |
+| Total compiled music DATA | 98,304 bytes including structural and voice data |
 | One page event stream | 59,546 bytes |
 | Software pages | A–K, pages 0–9 per part, up to 110 |
 | Minimum mapper | 512 KiB; CPU acceleration adds no mapper bank |
 
-The total MUB file also contains its header, tags and PCM. It can exceed 120 KiB. The compiler loads source into mapped memory, compiles and validates music DATA there, then writes the container. Export reads the specified prebuilt PCM bank from disk and appends it; this is not WAV conversion or a resident PCM block inside compiled music DATA.
+The total MUB file also contains its header, tags and PCM. It can exceed 96 KiB. The compiler loads source into mapped memory, compiles and validates music DATA there, then writes the container. Export reads the specified prebuilt PCM bank from disk and appends it; this is not WAV conversion or a resident PCM block inside compiled music DATA.
 
 Unextended songs retain MUB8. Extensions and large output use the muPb 0100 path, with the required mucomDotNET driver tag on export. Both use .MUB filenames. Comments and uncalled macros do not by themselves count as used extensions. Do not change a signature to convert formats. Mixing legacy four-byte FM3 S data with extended 16-bit S can be rejected; explicitly use #driver mucomDotNET for an extended score.
 

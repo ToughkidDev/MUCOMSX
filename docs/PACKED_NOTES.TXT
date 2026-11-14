@@ -1,0 +1,149 @@
+MUCOMSX optional packed musical-note profile
+
+The native MUC compiler accepts scoped musical extensions on MSXD/E/F and
+SCCA..E. No global mode tag is required. OPNA A..K rows continue through the
+existing compiler and can play alongside the native music. See MSX_MML_KO.TXT
+(English: MSX_MML_EN.TXT, Japanese: MSX_MML_JA.TXT) for commands, examples
+and current mixed-format limits. PML remains a host
+reference assembler; it is not required to compile the delivered 3F.MUC.
+
+Native compilation:
+  MUC2MUB 3F.MUC 3F.MUB
+  MUCPLAY 3F.MUC /N
+Install MUC2MUB.COM with its matching MUC2MUB.MXR runtime module.
+MUCPLAY.COM and MUBPLAY.COM likewise require MUCPLAY.MXR and MUBPLAY.MXR.
+Put each pair in the current DOS directory or PATH. Separate PMC/PNC/EXP
+files are not used.
+
+Build a score on the host:
+  python3 release_tools/packed_notes.py score.pml score.mub
+
+Play the result with the matching updated players:
+  MUBPLAY SCORE.MUB /N
+  MUCPLAY SCORE.MUB /N
+Both players load their matching MXR once at startup. MUC compilation retains
+its normal voice/PCM asset requirements; embedded MUB voices need no DAT.
+
+MUCPLAY selects the MUB loader only for an explicit .MUB filename. Its ordinary
+.MUC compile/play path is preserved. Old players reject the new profile; they
+cannot play it merely because the filename ends in .MUB.
+
+Container: msPb0103, capabilities 21, native SCC+ plus direct SSG/PSG.
+Mixed OPNA/native files use msPb0104, capabilities 53. The
+PN1 musical object is limited to 2,560 bytes. New effects, waveform aliases or
+objects above this size automatically use PN2, bounded to 4,096 bytes. Eight parts represent the original
+three PSG and five SCC voices. Events include notes, octave, duration unit,
+level, detune, envelope, vibrato, wave selection, calls, returns, two repeat
+counters, jumps and shared percussion/effect phrases. Labels are relative to
+the musical object. Shared SCC waves contain signed 32-sample data. No game
+ROM, Z80 executable driver, time-indexed register log or general-purpose
+compression payload is stored in the MUB.
+
+The interpreter preserves the musical command behavior of the supplied source
+ROM. Calls and loops stay in the score. A bounded per-channel command budget
+prevents an endless command-only loop. On 60 Hz MSX video the new profile uses
+one VDP line interrupt per video frame, matching the source game's cadence.
+The callback temporarily defers the vertical BIOS interrupt until music writes
+finish, then restores its original enable state. Normal stop and error unwind
+also restore the timer settings. Legacy MUC and MUB timer selection is unchanged.
+The 3F campaign qualifies NTSC V99x8 machines; PAL and MSX1 are not qualified.
+
+At loading time, the player generates a session-local cache of bounded,
+straight-line literal controls. This cache is derived only from whitelisted
+musical commands. Calls, returns, loops and notes remain in the interpreter.
+Cached suffixes invoke the same handlers; constant unit/octave/level/envelope
+parameters and wave pointers are prepared once. Neither the source MUB nor
+its structural control flow changes. Full caches use the ordinary interpreter.
+The cache reuses load-only storage in the already allocated sound-driver bank
+and load-only workspace (with separate live OPNA voice storage in mixed songs); it allocates no extra mapper bank.
+
+During each tick, changed SCC registers and shared waves are staged in fixed
+scratch RAM. A single bounded slot transaction writes them in original order,
+including gate-off/wave-upload/gate-restore edges. On SCC+, the fifth wave is
+explicitly mirrored when the original ordinary SCC shares its fourth/fifth
+wave. PSG address/data writes preserve interrupt state and PSG I/O bits.
+Initial zero period/level values are committed so an earlier song cannot leave
+stale pitches in channels whose first period has a zero high byte.
+
+The COM's startup code packing is separate from this musical representation.
+Runtime code is loaded before playback; it is not read from disk during ticks.
+
+It is consumed before playback and is not an explanation of the original
+Konami music data's small size.
+
+Validation and limits:
+  validation/gradius3f-packed-20261022/ retains candidate builds, failed runs,
+  immutable source measurements, full register captures, timings and WAVs.
+  A full playback completion alone is not a real-time pass. Check the final
+  qualification report for exact binary identities, every frame's deadlines,
+  original output ordering, mapper release and repeat-run results.
+  These tests use openMSXTK's normal Z80/512KiB machine configuration. They do
+  not establish listening approval or measurements on a physical MSX.
+
+Memory and runtime modules (stage-one build, 2026-10-23): compiled music DATA
+remains bounded to 96KiB (98,304 bytes), in six output banks. MUCPLAY.COM and
+MUBPLAY.COM each require their matching MUCPLAY.MXR or MUBPLAY.MXR, found in
+the current DOS directory or PATH. The module is verified and loaded before
+playback. No executable module is read from disk during a music tick.
+
+Each player retains two immutable 16KiB code banks (32,768 bytes total),
+plus a separate OPLL code/state bank. Five temporary startup banks are freed
+before application entry. MUC2MUB.COM with MUC2MUB.MXR retains only its first
+immutable code bank. Legacy SCC waves use a distinct, lazily allocated cache
+bank. Executable storage packing never compresses music DATA.
+
+The first immutable bank uses 14,970/16,384 bytes, leaving 1,414 bytes at its
+tail. The second reserves separate 8KiB storage slots for the PN2/PN4 engine
+and the loading bridge. Their current payloads are 4,992 and 854 bytes, leaving
+3,200 and 7,338 storage bytes respectively. These storage gaps do not form
+one contiguous execution area: the PN engine's existing 5,376-byte installation
+window has 384 bytes beyond its padded payload (412 bytes beyond the actual
+code end); the bridge's existing 960-byte loading limit leaves 106 bytes.
+Using more of those storage slots requires a corresponding execution-layout
+or banked-helper change, rather than simply appending resident instructions.
+
+OPLL code uses 5,873 of its 10,240-byte executable window, leaving 4,367 bytes
+before the separate 4KiB score copy and 2KiB work area. This is an independent
+OPLL-bank gap, not a claim of a spare contiguous 16KiB resident code region.
+
+Space Manbow extensions (PN2):
+  @eA,B,1: fractional envelope; @eA,B,2: original integer envelope.
+  @vN: envelope floor; @aN: packed attack/start settings.
+  @gS,N: one-shot period sweep; @wV,R: strided SCC waveform morph.
+  @W1=@W0: share an earlier waveform without duplicating its 32 samples.
+  @b0 ... @bN: one marker/counter, including bodies over 255 bytes.
+  See the MSX_MML guides for operand ranges and corresponding off commands.
+  PN2 preserves five independent SCC+ waves. Ordinary SCC still shares CH4/5.
+  Morph sources may continue into the following stored waves; reads are
+  checked against the sample-pool boundary, never into musical commands.
+
+Both note profiles retain 16-bit durations up to 255*16=4080 ticks. PN1 scores
+whose unit operands are conservatively proven <=16 use a shorter execution
+path; ambiguous bytes retain the general counter path. The generated MUB is
+unchanged. PN2 code is loaded from its own immutable code bank. Installation
+completes before playback, with no executable code or decompressor in the
+music object.
+
+OPLL extension: native MSXA/B/C/H/I/J and MSXG use PN3 / msPb0105/0106.
+See OPLL_NATIVE.TXT for channel scope, common user voices, rhythm and limits.
+
+Stage-one controls and PN4 / msPb0107/0108: see MSX_STAGE1.TXT.
+Legacy @e modes 0/1/2, @a byte and @d byte keep their original semantics.
+@eA,B,C,3, @aN,1/2 and @dS,1 add explicit new behavior on MSX channels.
+
+Scoped compact PSG/SCC additions
+  F8 42 packed: vLEVEL,TARGET; target in the high nibble, level in the low.
+  F8 41 17 policy: @kTYPE,POLICY, SCC-only MML; policies 0/1/2.
+  F8 41 18 byte: @aN,3, PSG/SCC note-start attenuation; zero clears.
+  These PN2 controls need no empty OPLL directory. Existing byte commands
+  and OPNA A..K notation retain their meanings. PN2..5 PSG/SCC allow two
+  call levels and reuse a prior return address on repeated phrase entry.
+  OPLL retains its single return slot. Operand bounds remain checked.
+
+Early SCC integer envelopes (PSG/SCC only): F8 43 variant A B.
+The variant byte is 0=global Q check, 1=periodic-sustain Q check,
+2=Q release only after sustain completion. All hold level at Q equality.
+MUC spellings: @eA,B,4 / @eA,B,5 / @eA,B,6. PN2 object family.
+Invalid variant or truncated operands are rejected before dispatch.
+Under SCC waveform policy 1, selecting a static wave stops its animation
+but retains the original morph gate tail; explicit @w- cancels the tail.

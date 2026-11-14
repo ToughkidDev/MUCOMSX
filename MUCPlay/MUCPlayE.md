@@ -1,10 +1,20 @@
 # MUCPLAY User Guide
 
-## Update — 2026-10-13
+MSX PSG `MSXD/E/F`, SCC+ `SCCA..E` and OPLL `MSXA/B/C/H/I/J` with rhythm `MSXG` coexist with OPNA rows without a global mode tag. See [MSX MML](../docs/MSX_MML_EN.TXT), [new envelopes and detune](../docs/MSX_STAGE1.TXT), and [OPLL commands](../docs/OPLL_NATIVE.TXT).
 
-[Release changes](../shared/docs/RELEASE_UPDATE_261013.en.md) cover SCC/SCC+ SSG, PCMInvert, compiler optimization and session rhythm-mask restoration. Release the old session with `/RELEASE` before replacing all five COMs. Do not overwrite edited voice DAT banks with factory presets. Recompile MUBs with missing music DATA. MSX-MUSIC/PSG and playback acceleration already shipped in public v0.81.
+Install and replace `MUCPLAY.COM` together with **the matching build of `MUCPLAY.MXR`**, in the current DOS directory or `PATH`. The module loads at startup; playback ticks do not read executable code from disk. Old PMC/PNC/EXP files are not used. Runtime code banks and the SCC waveform cache are separate. Compiled music DATA is limited to **96KiB (98,304 bytes)**.
 
-> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 122,880 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
+## Updates
+
+All changes in the **2026-11 update (since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
+
+[Release changes](../shared/docs/RELEASE_UPDATE_261013.en.md) cover SCC/SCC+ SSG, PCMInvert, compiler optimization and session rhythm-mask restoration. Release the old session with `/RELEASE` before replacing all four COMs. Do not overwrite edited voice DAT banks with factory presets. Recompile MUBs with missing music DATA. MSX-MUSIC/PSG and playback acceleration already shipped in public v0.81.
+
+### 2026-11: MUCVOICE removed — edit voices and PCM in MUCPlayground
+
+The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the toolchain's official editor, which runs in a web browser. Open the `#voice`, `#sccvoice` and `#pcm` files in its **FM bank**, **SCC bank** and **PCM bank**, adjust them while listening in the FM voice editor, SCC wave editor and PCM sample editor, then download them with **Save**. Put the downloaded files beside the MUC on the MSX under DOS 8.3 names, then compile and play with this tool. The MSX compiler does not convert WAVs from `#@pcm`, so always save PCM as a BIN bank. Screenshots and step-by-step instructions are in the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md); buttons and keys are in the [official MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks). The toolchain ZIP's FMVOICE.DAT and SCCVOICE.DAT can be loaded in MUCPlayground as a starting point (MUCPlayground does not read INIT.TFI). An old MUCVOICE.COM left in your folder is not updated; you may delete it.
+
+> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
 
 Compiling MUC files on an MSX, playing them through Makoto, and saving the finished music to a file
@@ -19,7 +29,7 @@ Written against: September 14, 2026 · MUCPLAY for YM2608 (Makoto)
 
 MUCPLAY is a program that compiles and plays MUC files, the music source format of MUCOM88, on an MSX. You can run a MUC file directly and listen to it, or you can load the source into memory and then run compilation and playback as separate steps.
 
-The second approach is convenient when you are revising music and checking the same song many times. Because the compiled data is kept in memory, you do not have to compile the whole source again every time you play it. When you get a result you like, you can save it as a MUB or VGM file.
+The second approach is convenient when you are revising music and checking the same song many times. Because the compiled data is kept in memory, you do not have to compile the whole source again every time you play it. When you get a result you like, you can save it as a MUB file.
 
 You do not need to memorize every option from the start. Play one song first, then get comfortable with the three commands `/LOAD`, `/COMPILE`, and `/PLAY`.
 
@@ -29,7 +39,7 @@ This guide focuses on how to use MUCPLAY. It does not cover MUC syntax or detail
 
 | Program | What it does |
 |---|---|
-| `MUCPLAY.COM` | Compiles and plays MUC, and saves the in-memory result as MUB or VGM. The subject of this guide. |
+| `MUCPLAY.COM` | Compiles and plays MUC, and saves the in-memory result as MUB. The subject of this guide. |
 | `MUBPLAY.COM` | Reads and plays an already-built MUB file. |
 | `MUCEDIT.COM` | Edits MUC and works with MUCPLAY to run compilation, playback, and export. |
 | `MUC2MUB.COM` | A separate compiler that converts MUC into a MUB file. |
@@ -45,7 +55,7 @@ MUCPLAY includes the compiler it needs. For ordinary use you do not have to run 
 - [Working with a memory session](#6-working-with-a-memory-session)
 - [Repeat playback and stopping](#7-repeat-playback-and-stopping)
 - [Saving as a MUB file](#8-saving-as-a-mub-file)
-- [Saving as a VGM file](#9-saving-as-a-vgm-file)
+- [VGM output removed](#9-vgm-output-removed)
 - [Clearing memory and moving between albums](#10-clearing-memory-and-moving-between-albums)
 - [Managing voice and PCM files](#11-managing-voice-and-pcm-files)
 - [Using it with MUCEDIT](#12-using-it-with-mucedit)
@@ -82,7 +92,6 @@ MUCPLAY /LOAD SONG.MUC
 MUCPLAY /COMPILE
 MUCPLAY /PLAY
 MUCPLAY /MUB SONG.MUB
-MUCPLAY /VGM SONG.VGM
 MUCPLAY /RELEASE
 ```
 
@@ -106,6 +115,8 @@ Prepare the following.
 - Disk space to write the session file and the output files
 
 If you are setting up an environment for the first time, it is best to plan around a configuration with 512KB or more of mapper RAM. Installed RAM capacity and actually usable free memory are different things. Other programs and any session you are holding also consume memory.
+
+When an internal and an external mapper are both present, the program works in the one with more free memory at startup. It does not combine the two, and on some configurations it uses only the mapper DOS runs in. Supported Panasonic machines play with the fast Z80 (5.37 MHz) and turbo R machines with the R800, selected automatically. On a One Chip MSX (OCM), with or without `/N`, the cartridge slot clock is set to 3.58 MHz and the CPU raised to 8.06 MHz. The original speed is restored at exit. `/N` turns off the automatic Panasonic/turbo R acceleration.
 
 The program for YM2610B/Neotron-B is a separate target. Even if the filenames are similar, do not confuse it with the Makoto executable this guide describes.
 
@@ -132,7 +143,6 @@ Type names as MSX-DOS shows them. Using short 8.3 names without spaces at first 
 ```text
 SONG.MUC
 SONG.MUB
-SONG.VGM
 ```
 
 It is best not to assume that long filenames, or quoted paths containing spaces, are handled the way a modern shell handles them. The compile path in particular has its own filename handling limits, so rather than a long full path, run from that directory with a short filename.
@@ -148,14 +158,13 @@ When openMSX's host folder name differs from the name DOS shows, check with `DIR
 | `MUCPLAY /COMPILE` | Compile the loaded source and keep the result in memory | Not needed |
 | `MUCPLAY /PLAY` | Play the compiled data in memory | Not needed |
 | `MUCPLAY /MUB SONG.MUB` | Save the compiled result as MUB | Output MUB |
-| `MUCPLAY /VGM SONG.VGM` | Generate a VGM from the compiled result | Output VGM |
 | `MUCPLAY /RELEASE` | Release the session memory and delete the session file | Not needed |
 
 Command options are not case-sensitive. This guide writes them in uppercase for legibility.
 
-`/LOAD`, `/COMPILE`, `/PLAY`, `/MUB`, `/VGM`, and `/RELEASE` are step-by-step commands. At first, run them one at a time rather than mixing several action options on one line. The `/L` option, which specifies a repeat count, is attached to the playback or VGM-saving command.
+`/LOAD`, `/COMPILE`, `/PLAY`, `/MUB`, and `/RELEASE` are step-by-step commands. At first, run them one at a time rather than mixing several action options on one line. The `/L` option, which specifies a repeat count, is attached to the playback command.
 
-The MUB and VGM examples include the extension. I recommend typing the output names you choose the same way.
+The MUB examples include the extension. I recommend typing the output names you choose the same way.
 
 ## 5. Playing one song right away
 
@@ -167,11 +176,13 @@ MUCPLAY SONG.MUC
 
 This command reads the input MUC, compiles it, and plays it. Running the same command again reads the source and compiles it again as well.
 
-This approach is convenient when you just want to hear a song. If you plan to save it as MUB or VGM afterward, use the session approach in the next chapter. **Do not treat a single direct run as a persistent session that has completed `/LOAD` and `/COMPILE`.**
+This approach is convenient when you just want to hear a song. If you plan to save it as MUB afterward, use the session approach in the next chapter. **Do not treat a single direct run as a persistent session that has completed `/LOAD` and `/COMPILE`.**
 
 ### The preparation time before playback starts
 
 Sound does not come out the instant you type the command. It takes time to read and compile the source, and, when needed, to transfer PCM into Makoto's sample memory.
+
+On MSX2 or later and on turbo R, the start of the song is computed ahead and stored in one memory segment (16KB) before playback begins, so sound can take a moment to start after the song information appears. Computing ahead continues during playback, so a short burst of disk or display work does not delay the sound. If computing ahead cannot keep up, playback switches to direct output and continues. Without a free segment the song plays with direct output from the start.
 
 ### If you already have a MUB file
 
@@ -239,7 +250,7 @@ MUCPLAY /COMPILE
 
 You can compile repeatedly. The loaded MUC and voice data are kept, the existing MUB segment is released, and a fresh compile is performed.
 
-The previous compile result is not kept separately. Only once the new compile has completed is there a result ready for the next `/PLAY`, `/MUB`, or `/VGM`.
+The previous compile result is not kept separately. Only once the new compile has completed is there a result ready for the next `/PLAY` or `/MUB`.
 
 ### If you edited the source on disk, `/LOAD` again
 
@@ -260,10 +271,9 @@ Omitting `/LOAD` means recompiling the older source still sitting in memory. Wor
 | Command run | Source loaded in memory | Compile result | Disk output |
 |---|---|---|---|
 | `/LOAD` | Replaced with the new source | Existing result released | Session management file |
-| `/COMPILE` | Kept | New result generated | Does not save MUB/VGM |
+| `/COMPILE` | Kept | New result generated | Does not save MUB |
 | `/PLAY` | Kept | Kept | Does not save a music file |
 | `/MUB` | Kept | Kept | Creates the specified MUB |
-| `/VGM` | Kept | Kept | Creates the specified VGM |
 | `/RELEASE` | Released | Released | Deletes the session management file |
 
 This table assumes each operation completed normally.
@@ -303,15 +313,13 @@ Repeat playback is not the same as re-running the whole song file from the begin
 
 A song with no loop ends when all channels finish. Adding `/L0` does not make a loopless song replay infinitely from the beginning on its own.
 
-The repeat count is judged from the progress of the reference channel that has the loop. In songs where channel lengths are structured unusually, the ending point may differ from what you expect.
+The repeat count follows the channels that have an `L` loop point. Native MSX scores (msPb0103–0109) have no MUCOM88 `L` loop point; each channel jumps back on its own. For these songs repeats are counted per channel, and the n-th pass ends when every active channel has repeated at least n times. The channel with the longest repeat therefore sets one pass, and a channel still playing without repeating is waited for. A song whose channels all end by themselves stops at its end.
 
 ### Stopping partway through
 
 Pressing an ordinary character key or Esc during playback stops it and returns. Using a character key is more reliable than pressing only a modifier such as Ctrl or Shift.
 
 Stopping is not the same as releasing the session. Stopping `/PLAY` does not discard the loaded source or the compile result. Run `/RELEASE` when you are completely finished.
-
-Do not think of the playback stop key as a way to cancel VGM generation. File generation runs until the completion message and the return to DOS.
 
 ## 8. Saving as a MUB file
 
@@ -353,56 +361,11 @@ You can save the same compile result under several names. To change the music it
 
 Saving under the same name as an existing file can overwrite it. To keep an earlier result, use a different name. If you need an output directory, prepare it in advance.
 
-## 9. Saving as a VGM file
+## 9. VGM output removed
 
-A VGM is a file recording in what order and at what time intervals the sound chip is controlled. It is not a recording of the final sound waveform the way a WAV is. To listen to the generated file you need a VGM playback program that supports the YM2608.
+On 2026-10-30, VGM output was removed from MUCPLAY to free memory for code: both `/VGM filename` and the short `/V` form (which recorded a VGM while playing a file) are gone. MUCEDIT's F1→5 VGM export was removed at the same time. The freed code space is reserved for future features. MUCPLAY's usage is now `MUCPLAY file.muc [/L<n>]`, or `/LOAD f`, `/COMPILE`, `/PLAY`, `/MUB f`, `/RELEASE`.
 
-```text
-MUCPLAY /LOAD SONG.MUC
-MUCPLAY /COMPILE
-MUCPLAY /VGM SONG.VGM
-```
-
-There is no need to save a MUB file to disk beforehand. `/VGM` builds its output directly from the compile result in memory.
-
-### Specifying how many playthroughs to save
-
-```text
-MUCPLAY /VGM SONG.VGM /L2
-```
-
-In MUCPLAY's VGM output, `/L2` means **two playthroughs' worth**. It does not mean two seconds.
-
-| Specification | Extent of VGM generated |
-|---|---|
-| `/L` omitted | The default, one playthrough |
-| `/L1` | One playthrough |
-| `/L2` … `/L9` | The specified number of playthroughs |
-| `/L0` or `/L` without a number | Does not create an endless file; treated as one playthrough |
-
-When the song itself has no loop, it finishes at the end of the song. VGM generation also follows the loop and ending conditions of the original musical data.
-
-### While the VGM is being made
-
-The real time it takes to generate the file and the playing time of the music produced are not necessarily the same. Processing time varies with disk speed, memory, the song's content, and PCM size.
-
-This operation uses a path that records the sound chip control into a file instead of driving the actual Makoto output. Hearing nothing from the speakers during VGM generation does not mean it failed. You can use this output path without Makoto hardware for actual playback, but the DOS and mapper environment is still required.
-
-Do not change the disk or the mounted directory until the output finishes and you are back at DOS.
-
-### What is `Total samples`?
-
-The `Total samples` shown on completion is the reference value for the playing time recorded in the file. It does not indicate the MUC file size or the PCM file size.
-
-Using VGM's time base, you can calculate the approximate playing time like this.
-
-```text
-playing time (seconds) = Total samples ÷ 44100
-```
-
-For example, `441000` is 10 seconds' worth. The value actually shown varies with the song and the repeat count.
-
-Saving a VGM under the same name again also overwrites the existing file. To compare against an earlier output, separate the names as `SONG01.VGM`, `SONG02.VGM`, and so on.
+MUBPLAY's VGM output (`/V`) was removed on the same day (2026-10-30), so no tool in the MucoMSX toolchain (MUC2MUB, MUCPLAY, MUBPLAY, MUCEDIT) provides VGM export any more. To keep a song as a finished playback file, save a MUB with `MUCPLAY /MUB SONG.MUB`.
 
 ## 10. Clearing memory and moving between albums
 
@@ -414,7 +377,7 @@ MUCPLAY /RELEASE
 
 Releases the current session's MUC, voice, and MUB data along with the management header memory, and deletes `MUCPLAY.SES`.
 
-The original MUC kept on disk and any MUB and VGM files you already saved remain untouched. `/RELEASE` is not a command that deletes music files.
+The original MUC kept on disk and any MUB files you already saved remain untouched. `/RELEASE` is not a command that deletes music files.
 
 ### What is `MUCPLAY.SES`?
 
@@ -424,7 +387,7 @@ So think of it this way.
 
 - You cannot copy `MUCPLAY.SES` alone and restore the song on another computer or in another boot environment.
 - After powering off or resetting, you cannot continue using the earlier memory session.
-- To archive a song, save the MUC and, as needed, export a MUB or VGM as well.
+- To archive a song, save the MUC and, as needed, export a MUB as well.
 - To clear memory, use `/RELEASE` rather than deleting the session file yourself.
 
 Deleting only the session file first can make it harder for the program to find and release the existing memory.
@@ -450,6 +413,8 @@ Running `/RELEASE` from a different directory does not go and release sessions i
 
 ## 11. Managing voice and PCM files
 
+> **Making voice and PCM files:** edit FM voice files, SCC wave files and PCM banks in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), download them with **Save** and copy them into this folder. See the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md#3-the-round-trip-with-the-msx) for the steps.
+
 Copying just the MUC sometimes will not give you the same sound as the original song. Think of the voice data and PCM data included with the album as part of the music too.
 
 ### Voice data
@@ -465,7 +430,10 @@ A song using PCM reads samples from the file at playback time and puts them into
 | `/COMPILE` | This is not the stage that transfers PCM to the chip. |
 | `/PLAY` | Reads the external PCM it needs and prepares for playback. |
 | `/MUB` | There is a process that reads the PCM file and attaches it to the output MUB. |
-| `/VGM` | Records the sound chip control needed for VGM playback, including sample transfer. |
+
+If the PCM file named in a `#pcm` tag is missing, compilation does not start and stops with error 19 (`PCM file in #pcm tag not found`). The song is not played and no MUB is written. Only when there is no tag and the default `MUCOMPCM.BIN` is missing does it warn and continue, as before.
+
+A song with no `#pcm` line and no default `MUCOMPCM.BIN` shows the warning and plays without its ADPCM part. PCM left in Makoto by an earlier song is never played instead.
 
 The companion PCM file must be MUCOM data matching that song. You cannot just change a WAV or AIFF file's extension to BIN and use it.
 
@@ -491,10 +459,10 @@ The basic working order is as follows.
 3. Run the editor's compile function.
 4. Check the result with the playback function.
 5. Stop, return to the editor, and continue working.
-6. Save the original source and, if needed, export MUB or VGM.
+6. Save the original source and, if needed, export a MUB.
 
 Leave the integration options and the return handling that the editor uses to the editor.
-**Exporting a MUB or VGM and saving the edited MUC original are separate operations.** Even after exporting a music file, save the source you will edit next time separately in the editor.
+**Exporting a MUB and saving the edited MUC original are separate operations.** Even after exporting a music file, save the source you will edit next time separately in the editor.
 
 For the exact menu layout and editing keys, see the MUCEDIT guide. This guide covers only the compile, playback, and output flow that MUCPLAY handles.
 
@@ -527,18 +495,17 @@ MUCPLAY /PLAY
 
 `/LOAD` is included so that the older source does not get recompiled.
 
-### Listening, then keeping both MUB and VGM
+### Listening, then keeping a MUB
 
 ```text
 MUCPLAY /LOAD SONG.MUC
 MUCPLAY /COMPILE
 MUCPLAY /PLAY
 MUCPLAY /MUB SONG.MUB
-MUCPLAY /VGM SONG.VGM /L2
 MUCPLAY /RELEASE
 ```
 
-An example that saves the compile result into the MUB and records two playthroughs into the VGM. It does not fix the MUB's own playback count via `/MUB`.
+An example that saves the compile result you listened to into a MUB. It does not fix the MUB's own playback count via `/MUB`.
 
 ### Switching to the next song in the same album
 
@@ -562,7 +529,6 @@ The second `/LOAD` releases the first song's loaded data and compile result and 
 MUCPLAY /LOAD SONG.MUC
 MUCPLAY /COMPILE
 MUCPLAY /MUB SONG.MUB
-MUCPLAY /VGM SONG.VGM
 MUCPLAY /RELEASE
 ```
 
@@ -590,18 +556,6 @@ Check whether you re-ran `/LOAD` on the file you saved externally. Repeating onl
 
 You write the name of the MUB to save. For example, `MUCPLAY /MUB SONG.MUB`. Check the extension so you do not mistakenly give the original name as the output name.
 
-### Do I have to do `/MUB` before `/VGM`?
-
-No. Both create their own output file from the compiled session.
-
-### Does `/VGM /L5` save 5 seconds?
-
-In MUCPLAY it is five playthroughs' worth. Do not mix it up with the same-named option in other programs. Write the output filename as well.
-
-```text
-MUCPLAY /VGM SONG.VGM /L5
-```
-
 ### I used `/L0` but the song ends.
 
 If the song data has no loop, it ends when all channels finish. Specifying infinite repeat means continuing to use the loop inside the song.
@@ -620,15 +574,15 @@ That file alone cannot restore the song from memory. On a fresh boot, `/LOAD` th
 
 ### Should I include `MUCPLAY.SES` when distributing?
 
-No. To distribute an editable source, prepare the MUC and the companion files it needs; to distribute a finished playable file, prepare a MUB or VGM. Also check that the MUB properly includes the PCM it needs.
+No. To distribute an editable source, prepare the MUC and the companion files it needs; to distribute a finished playable file, prepare a MUB. Also check that the MUB properly includes the PCM it needs.
 
 ### At which stage — compiling or playback — is the PCM file needed?
 
-Do not put the PCM files away just because the session's `/COMPILE` has finished. Keep them in the same album until the work is done, so that `/PLAY`, `/MUB`, and `/VGM` can read the samples.
+Do not put the PCM files away just because the session's `/COMPILE` has finished. Keep them in the same album until the work is done, so that `/PLAY` and `/MUB` can read the samples.
 
 ### Does `/RELEASE` delete the music I saved?
 
-No. It tidies up the memory session and the management file; the MUC, MUB, and VGM you saved remain.
+No. It tidies up the memory session and the management file; the MUC and MUB you saved remain.
 
 ## 16. Commands to remember
 
@@ -640,11 +594,10 @@ MUCPLAY /COMPILE
 MUCPLAY /PLAY
 ```
 
-To keep the result, run whichever of these you need.
+To keep the result, run this command.
 
 ```text
 MUCPLAY /MUB SONG.MUB
-MUCPLAY /VGM SONG.VGM
 ```
 
 When the work is done, tidy up.
@@ -662,3 +615,18 @@ The integrated build adds MSX-prefixed parts, native msPb output and automatic p
 [MSX target guide](../shared/docs/MSX_TARGETS.en.md)
 
 For `#SSGExtend`, `@I`, `@W`, `pe` and `#PCMInvert`, see the [SCC+ SSG guide](../shared/docs/SSG_EXTEND.en.md). This extends msPb with approximate SCC+ playback, not bit-exact PC virtual SSG.
+
+## Dedicated SCC scores
+
+`SCCA`–`SCCE` select SCC/SCC+ channels 1–5, with multi-channel selectors such as `SCCABC` and pages 0–9. Put `#sccvoice SCCVOICE.DAT` in the initial header and use `@0`–`@255` to select defined waves from an SCWD v1 bank (saved from MUCPlayground's SCC bank). Keep the bank beside the MUC in the working directory under a plain DOS 8.3 name. The default is `SCCVOICE.DAT`.
+
+Example: `SCCA @0 o4 v15 l8 cdefgab>c`
+
+MUB embeds the waveforms and needs no DAT at playback time. MUCEDIT compilation, playback and MUB export use the same commands. Install current MUC2MUB/MUCPLAY/MUCEDIT/MUBPLAY together for the new `msPb0102` profile. Ordinary SCC shares CH4/5 wave RAM; five independent waves require SCC+. Do not mix this with `#SSGExtend On` or raw SCC. The 512KiB mapper requirement, 60,000-byte MUCEDIT document limit and 96KiB music DATA limit remain. See the dedicated SCC section in the common MSX_TARGETS guide for details.
+
+
+## Inline SCC waveforms in MUC
+
+Define a 32-byte SCC waveform with `@Wnumber:{ ... }`, following the brace form of OPNA voice definitions, and select it with `@number` in a part. When all required SCC waves are defined inline, compilation, playback and MUB export need neither `#sccvoice` nor an external DAT.
+
+`@Wnumber:{ ... }` definitions inserted by MUCPlayground's SCC wave editor work as they are ([SCC wave editing guide](../shared/docs/MUCPLAYGROUND.en.md#5-scc-waves)). IDs are 0–255, with exactly 32 samples in -128–127. Inline definitions override external waves of the same ID; an explicitly named `#sccvoice` file must still exist. See the SCC wave section of MSX_TARGETS for examples and compatibility forms.

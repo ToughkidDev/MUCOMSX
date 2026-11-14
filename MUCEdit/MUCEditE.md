@@ -1,10 +1,16 @@
 # MUCEdit User Guide
 
-## Update — 2026-10-13
+## Updates
 
-The normalized document limit remains 60,000 bytes. Current MUCPLAY integration supplies SCC/SCC+ SSG, PCMInvert, compiler optimization and rhythm-mask restoration. Read [release changes and safe replacement](../shared/docs/RELEASE_UPDATE_261013.en.md), exit normally, then replace all four COMs together. The same toolchain ZIP also includes the MUCVOICE v0.5beta voice editor.
+All changes in the **2026-11 update (since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
 
-> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 122,880 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
+The normalized document limit remains 60,000 bytes. Current MUCPLAY integration supplies SCC/SCC+ SSG, PCMInvert, compiler optimization and rhythm-mask restoration. Read [release changes and safe replacement](../shared/docs/RELEASE_UPDATE_261013.en.md), exit normally, then replace all four COMs together. MUCVOICE, included in earlier toolchain ZIPs, has been removed; edit voices and PCM in MUCPlayground as described below.
+
+### 2026-11: MUCVOICE removed — edit voices and PCM in MUCPlayground
+
+The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the toolchain's official editor, which runs in a web browser. Open the `#voice`, `#sccvoice` and `#pcm` files in its **FM bank**, **SCC bank** and **PCM bank**, adjust them while listening in the FM voice editor, SCC wave editor and PCM sample editor, then download them with **Save**. Put the downloaded files beside the MUC on the MSX under DOS 8.3 names, then compile and play with this tool. The MSX compiler does not convert WAVs from `#@pcm`, so always save PCM as a BIN bank. Screenshots and step-by-step instructions are in the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md); buttons and keys are in the [official MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks). The toolchain ZIP's FMVOICE.DAT and SCCVOICE.DAT can be loaded in MUCPlayground as a starting point (MUCPlayground does not read INIT.TFI). An old MUCVOICE.COM left in your folder is not updated; you may delete it.
+
+> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
 
 ## Edit, compile, and listen to MUC music on your MSX
@@ -12,7 +18,7 @@ The normalized document limit remains 60,000 bytes. Current MUCPLAY integration 
 **MUCEdit v0.8 by ToughkidCST**  
 Document date: September 14, 2026
 
-MUCEdit is a text editor for opening and editing MUCOM88 MUC files directly on an MSX. Used together with MUCPLAY, it lets you compile and hear the song without leaving the editor, then go straight back and keep working. You can also export a finished song as MUB or VGM.
+MUCEdit is a text editor for opening and editing MUCOM88 MUC files directly on an MSX. Used together with MUCPLAY, it lets you compile and hear the song without leaving the editor, then go straight back and keep working. You can also export a finished song as MUB.
 
 You do not need to memorize every command up front. Open a file, change one thing, compile it, and listen. This guide is arranged in that order. The later sections cover MUC syntax, errors and warnings, and what to check when something goes wrong.
 
@@ -39,7 +45,7 @@ Once that distinction is clear, MUCEdit becomes much easier to use.
 10. [Finding text and making partial edits](#10)
 11. [The full F1 menu](#11)
 12. [Compiling and playing without saving](#12)
-13. [Exporting MUB and VGM](#13)
+13. [Exporting MUB](#13)
 14. [The basic structure of a MUC file](#14)
 15. [Notes, lengths, octaves, tempo](#15)
 16. [Voices, volume, pan, per-channel expression](#16)
@@ -62,13 +68,12 @@ The names are similar, but the jobs are not.
 | Component | What it does |
 |---|---|
 | `MUCEDIT.COM` | Editing MUC text, file I/O, block selection, search, undo/redo, the command menu |
-| `MUCPLAY.COM` | Loading and compiling MUC, playback, MUB/VGM output, showing compile results and errors |
+| `MUCPLAY.COM` | Loading and compiling MUC, playback, MUB output, showing compile results and errors |
 | `MUBPLAY.COM` | A standalone player for already-compiled `.MUB` files. For Makoto (YM2608) |
 | `.MUC` | The human-readable, editable source text of a song. Can be played directly from DOS with `MUCPLAY SONG.MUC`, which compiles it internally and then plays it. |
 | `.MUB` | Compiled song data. Includes voices, tags, and PCM as needed, and can be played directly from DOS with `MUBPLAY SONG.MUB`. |
-| `.VGM` | A file recording the sound chip commands and timing of a playback. Can be played directly from DOS with `VGMPLAY SONG.VGM`. |
 
-In the commands above, `SONG.MUC`, `SONG.MUB`, and `SONG.VGM` are examples. Substitute the name of the file you actually want to hear. Each player also needs a runtime environment that supports that song's sound chip.
+In the commands above, `SONG.MUC` and `SONG.MUB` are examples. Substitute the name of the file you actually want to hear. Each player also needs a runtime environment that supports that song's sound chip.
 
 MUCEdit alone is enough to edit and save text. To use Compile, Play, and Export from the F1 menu, you need a compatible MUCPLAY alongside it. You do not need to run a separate `MUC2MUB.COM` for this — the compiler is part of MUCPLAY.
 
@@ -88,7 +93,11 @@ MUCEdit is not a port of Windows VS Code to the MSX. It is an MSX editor arrange
 
 Use at least 512KiB mapper RAM with sufficient allocatable free segments. DOS, resident programs and retained music sessions also consume memory.
 
+When an internal and an external mapper are both present, the program works in the one with more free memory at startup. It does not combine the two, and on some configurations it uses only the mapper DOS runs in. On a One Chip MSX the editor sets the cartridge slots to 3.58 MHz and raises the CPU to 8.06 MHz at startup, and restores the original speed at exit and just before handing over to MUCPLAY.
+
 ### 2.2 Keep the files in one directory to start with
+
+> **Making voice and PCM files:** edit FM voice files, SCC wave files and PCM banks in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), download them with **Save** and copy them into this folder. See the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md#3-the-round-trip-with-the-msx) for the steps.
 
 At first, a per-song folder like this is recommended.
 
@@ -116,16 +125,16 @@ If you bring in a different voice or PCM file that merely has a similar name, th
 ### 2.3 Notes on filenames and paths
 
 - Direct filename entry in the editor is limited to 63 bytes.
-- **The document name and path used for compile integration are limited to 24 bytes and cannot contain spaces.**
+- **Compile using a local filename in the current working folder. Drive/directory prefixes and spaces are not accepted; the 24-byte name limit also applies.**
 - The compiler's FCB paths for reading voice and PCM files are subject to the DOS 8.3 name constraints. Do not assume a long name will be handled as typed.
 - Entering a different path in the file list window does not change the DOS current directory.
-- In particular, opening only a MUC from another folder by path makes it easy to lose track of where the voice, PCM, and MUCPLAY files are. At first, `CD` into the song folder and run from there.
+- You may open a path-qualified MUC for editing, but compilation is refused to prevent using a missing or unrelated voice/PCM bank. `CD` into the song folder and reopen the document by its local name. Keep the matching voice/PCM files and `MUCPLAY.COM`/`MUCEDIT.COM` in that folder.
 
 ### 2.4 The disk must be writable
 
 Even a compile that does not save the original MUC uses a temporary file, so integration work is limited on a read-only disk.
 
-About 73 KiB is needed for the state file, space equal to the current document size for the temporary MUC, and exporting requires additional space for the MUB or VGM. Songs with large PCM produce large result files. Do not assume that "the original MUC is a few KB, so a few KB free is enough" — leave yourself plenty of room.
+About 73 KiB is needed for the state file, space equal to the current document size for the temporary MUC, and exporting requires additional space for the MUB. Songs with large PCM produce large result files. Do not assume that "the original MUC is a few KB, so a few KB free is enough" — leave yourself plenty of room.
 
 <a id="03"></a>
 ## 3. First run: hearing a song
@@ -362,7 +371,7 @@ Pressing F1 shows these two rows.
 
 ```text
 E Save/Exit     Q Quit       S Save      N Save/New    A Discard/New   O Reload
-1 Open/MUC      2 Compile    3 Play/Muc                4 Exp/MUB       5 Exp/VGM
+1 Open/MUC      2 Compile    3 Play/Muc                4 Exp/MUB
 ```
 
 | Key | Menu name | Description |
@@ -377,7 +386,6 @@ E Save/Exit     Q Quit       S Save      N Save/New    A Discard/New   O Reload
 | `2` | Compile | Compile **the editing buffer currently in memory** |
 | `3` | Play/Muc | Play the most recent compile result |
 | `4` | Exp/MUB | Save the most recent compile result as MUB |
-| `5` | Exp/VGM | Output the most recent compile result as VGM |
 
 Pressing Esc in the menu returns without running a command. `O` is the letter O, not the digit 0.
 
@@ -417,7 +425,7 @@ Read the error screen, return to the editor, fix it, and compile again. A failed
 `Compiled into session.` is the message announcing a successful compile. But you also need to look at **whether there were any Warnings before it**. Seeing only the success message and skipping past a warning can leave you listening to a song you did not intend.
 
 <a id="13"></a>
-## 13. Exporting MUB and VGM
+## 13. Exporting MUB
 
 ### 13.1 MUB: F1→4
 
@@ -427,13 +435,9 @@ A MUB contains the compiled song data and the necessary voices and tags, plus th
 
 To produce a MUB reflecting your edits, you must recompile with F1→2 first. If you want to compare against a previous output, keep the existing MUB under a different name. Exporting does not do version control or backups for you.
 
-### 13.2 VGM: F1→5
+### 13.2 VGM export removed (2026-10-30)
 
-Outputs the most recent compile result as a stream of sound chip commands and timing. The default output name for `SONG.MUC` is `SONG.VGM`.
-
-VGM is not a recorded audio file like WAV or MP3. It needs a VGM playback environment that supports the recorded chip commands, such as those of the YM2608. Nor is it a source file for composing by editing text the way MUC is.
-
-The VGM export in the MUCEdit menu does not simply reuse Play's `/L2`. Because it passes no separate loop count, it uses the current MUCPLAY default for VGM, which is **a single playthrough**. Large songs and songs with PCM can take a while to write out, so wait until you see the completion message.
+On 2026-10-30, VGM export was removed from MUCEdit and MUCPLAY to free memory for code. The `5 Exp/VGM` item is gone from the F1 menu, and pressing `5` now does nothing. MUBPLAY's VGM output (`/V`) was removed on the same day, so no tool in the MucoMSX toolchain (MUC2MUB, MUCPLAY, MUBPLAY, MUCEDIT) provides VGM export any more. If you need a finished playback file, create `SONG.MUB` with F1→4.
 
 ### 13.3 Checks before exporting
 
@@ -459,7 +463,7 @@ A MUC is a text file that writes a song in MML. As a rule it reads most easily w
 #date 2026/09/14
 #comment First test on MSX
 
-D t200 C128 @0 o4 l8 v10 cdefgab>c4
+D t200 C128 o4 l8 v10 cdefgab>c4
 ```
 
 | Tag | Purpose |
@@ -607,6 +611,8 @@ Tempo affects the song's playback clock. Rather than scattering different tempos
 <a id="16"></a>
 ## 16. Voices, volume, pan, per-channel expression
 
+> **Editing FM voices:** MUCPlayground's **FM bank** and **FM voice editor** make and change VOICE.DAT-form files or inline voices in the MUC. [Guide chapter 4](../shared/docs/MUCPLAYGROUND.en.md#4-fm-voices) · [Official user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks)
+
 ### 16.1 Volume: v
 
 `v` sets volume. However, the handling and the practical valid range differ by channel type.
@@ -675,8 +681,6 @@ SSG is channels D, E, and F. Beyond the basic note, length, octave, and volume, 
 | `E...` | Software envelope. Six values separated by commas |
 | `SN` | Hardware envelope shape |
 | `mN` | Hardware envelope period |
-
-**An SSG channel stays silent until it has a preset or an envelope, and a volume.** Before the first note, put `@0` (a plain, steady tone) or an `E` envelope, and a `v` such as `v10`. A hardware envelope (`S`) also works. This is MUCOM88's own behaviour, and the internal MSX PSG channels (`MSXD`–`MSXF`) work the same way. The dedicated SCC channels of the msPb0102 format (`SCCA`–`SCCE`) are different: they need only `v`.
 
 Changing presets and envelopes all at once makes it hard to tell which setting changed the sound. Check that a simple SSG melody plays correctly first, then add one item at a time.
 
@@ -748,10 +752,12 @@ The current safe limits are 1023 bytes for a macro body and 8 levels of call nes
 ### 17.5 Portamento
 
 ```muc
-D o4 l4 {c4>c} d4
+D o4 l4 {c>c}4 d4
 ```
 
-This notation slides between the notes inside the braces. The length goes **right after the first note**: `{c4>c}` slides from C to the C above over a quarter note. Without a length the `l` value is used. Do not write the length after the closing brace: `{c>c}4` is not MUCOM88 syntax, and the mucomDotNET compiler (MUCPlayground, MDPlayer4Mac v0.2.3) rejects it. The braces are the same characters as a macro definition's, but play a different role. When editing an existing phrase, check the brace positions and the length together.
+This notation slides between the notes inside the braces. It uses the same characters as a macro definition's braces, but plays a different role. When editing an existing phrase, check the brace positions together with the length specification that follows.
+
+Specify the length in one place: `{c>c}4` or `{c4>c}`. `{c>c}4.` is dotted; `{c>c}%48` lasts 48 clocks. Conflicting explicit lengths such as `{c4>c}8` are an error. A tie or length extension may follow a repeat: `[c%7]4 &c%50` or `[c%7]4 ^%50`. Recompile the original MUC if an older version produced its MUB using these forms.
 
 ### 17.6 Advanced command quick guide
 
@@ -797,9 +803,9 @@ Type the following into a new document and use the name `FIRST.MUC`.
 #author ToughkidCST
 #comment Simple SSG test
 
-D T120 C128 @0 o4 l8 v10 q0 cdef gab>c4 r4
-E C128 @0 o3 l4 v8 c r g r c r g r
-F C128 @0 o2 l2 v7 c g c g
+D T120 C128 o4 l8 v10 q0 cdef gab>c4 r4
+E C128 o3 l4 v8 c r g r c r g r
+F C128 o2 l2 v7 c g c g
 ```
 
 1. Save `FIRST.MUC` with Ctrl+S.
@@ -810,7 +816,7 @@ F C128 @0 o2 l2 v7 c g c g
 6. If you do not like it, undo and compile again.
 7. When you have the state you want to keep, press Ctrl+S.
 
-`@0` gives each SSG channel a plain tone. Without it, or an `E` envelope, the channels stay silent. This example uses only SSG so that it needs no PCM or external FM voices. Even so, actually playing it from the editor still requires the MUCPLAY-supported sound environment described earlier.
+This example uses only SSG so that it needs no PCM or external FM voices. Even so, actually playing it from the editor still requires the MUCPLAY-supported sound environment described earlier.
 
 ### 18.2 Using repeats and macros together
 
@@ -821,8 +827,8 @@ F C128 @0 o2 l2 v7 c g c g
 
 # *1{o4 l8 cdef}
 # *2{g4 e4 c4 r4}
-D t200 C128 @0 v10 [*1]2 *2
-E C128 @0 o3 l4 v8 [c r g r]2
+D t200 C128 v10 [*1]2 *2
+E C128 o3 l4 v8 [c r g r]2
 ```
 
 Changing `*1` applies the change everywhere that macro is called. That is easier to manage than editing the same phrase separately in each place you copied it.
@@ -892,7 +898,8 @@ The following describes the current diagnostic codes. The same code can have sev
 | 15 | Macro not found | A call to an undefined `*number` |
 | 16 | Invalid macro definition | Macro structure problems such as an unclosed definition or excessive nesting or recursion |
 | 17 | MML line or macro too long | Exceeded the 1,023-byte limit for one MML body line or the 1023-byte limit for a macro body |
-| 18 | Output buffer overflow | The compiled song data exceeded the 122,880 bytes output buffer limit |
+| 18 | Output buffer overflow | The compiled song data exceeded the 98,304 bytes output buffer limit |
+| 19 | PCM file in #pcm tag not found | The PCM file named in a `#pcm` tag does not exist. Compilation does not start and no MUB is written |
 
 This table is not a guarantee that every invalid number and every MML combination is fully checked. Syntax checking, file checking, and what something means on the actual sound chip are three different things. Even when it compiles without errors, you still have to listen to confirm it sounds as intended.
 
@@ -917,7 +924,7 @@ A *99 c         → code 15: macro 99 was never defined
 - Split a long macro into several shorter definitions.
 - Exceeding the output capacity is not the same as the source file size. Look for places where repeated notes are written out at unnecessary length.
 - Use `[ ]` repeats where you can. Macros reduce text, but they are expanded, so using a macro does not necessarily reduce the output size.
-- PCM size has a large effect on the overall MUB size, but that is a different limit from the **122,880 bytes of song data** in code 18.
+- PCM size has a large effect on the overall MUB size, but that is a different limit from the **98,304 bytes of song data** in code 18.
 
 <a id="21"></a>
 ## 21. Warning messages and invalid input
@@ -971,6 +978,14 @@ Try moving `#voice`, `#pcm`, and the like into the header at the top of the file
 
 ### 21.5 Missing PCM file
 
+If the file named in a `#pcm` tag is not found, compiling (F1→2, F1→3, F1→4) does not start and stops with error 19. No MUB is written.
+
+```text
+Error line 3 (code 19): PCM file in #pcm tag not found
+```
+
+When there is no `#pcm` tag and the default name `MUCOMPCM.BIN` is looked up, only a warning is shown and work continues.
+
 ```text
 Warning: PCM file not found: MUCOMPCM.BIN
 ```
@@ -989,7 +1004,7 @@ Check in this order.
 4. Does the 8.3 filename DOS actually shows match the tag?
 5. Is it the PCM bank that originally came with the song?
 
-For compatibility, a MUB may be generated without PCM. **Do not conclude from a MUB written. message alone that you have a proper file with PCM included.** If the song needs PCM, resolve the missing-file warning and export again.
+For a song with no `#pcm` tag, a MUB may be generated without PCM for compatibility. **Do not conclude from a MUB written. message alone that you have a proper file with PCM included.** If the song needs PCM, resolve the missing-file warning and export again.
 
 Warnings do not check every implication of invalid input. For example, whether a date matches the real calendar, or whether each sample in the PCM is the instrument the song expects, cannot be confirmed from these warnings.
 
@@ -1009,7 +1024,7 @@ Warnings do not check every implication of invalid input. For example, whether a
 | `Text not found. Press a key.` | Check the search spelling and letter case |
 | `Save the document first. Press a key.` | Check whether the current command lacks a document name, and save or name it |
 | `Compile this document first: F1 then 2.` | Compile the current document before playing or exporting |
-| `Compiler path: max 24 bytes, no spaces.` | Use a short filename and path with no spaces |
+| `Compile: local name, no spaces. Start in song folder.` | Run from the song folder and reopen using only a local filename without spaces |
 | `MUCPLAY.COM not found.` | Check that MUCPLAY can be found in the current working directory |
 | `Use the matching /E2 MUCPLAY.COM.` | Use a MUCPLAY that supports the new editor's E2 return protocol |
 | `Cannot create MUCEDIT.RET.` | Failed to write the state file. Check free disk space and whether the disk is writable |
@@ -1057,7 +1072,7 @@ A normal launch does not auto-recover an old RET just because one exists. `/R` i
 | Macro call nesting | Up to 8 levels |
 | Repeat nesting | Up to 16 levels |
 | Distinct FM voices used | Up to 32 |
-| Compiled song data | Up to 122,880 bytes. Not the same as the total MUB file size including PCM |
+| Compiled song data | Up to 98,304 bytes. Not the same as the total MUB file size including PCM |
 
 ### 23.1 Four document banks and auxiliary workspace
 
@@ -1107,7 +1122,7 @@ FM data and the PCM bank are separate. Hearing FM does not mean the PCM is fine.
 
 ### I exported a MUB and the PCM sound is missing
 
-You may have exported while ignoring the missing-file warning. The current policy allows generating a MUB without PCM in some missing-PCM situations. Prepare the correct bank and export again.
+You may have exported while ignoring the missing-file warning. A missing file named in a `#pcm` tag stops with error 19, but when there is no tag and the default `MUCOMPCM.BIN` is missing, a MUB without PCM is still allowed. Prepare the correct bank and export again.
 
 ### I get no sound at all
 
@@ -1155,7 +1170,7 @@ The working habits I recommend are not difficult.
 2. Save the file you will work on under a different name before you start.
 3. Leave an intermediate save before deleting a large block or changing all the voices.
 4. Every time you listen to a change, check both the compile success and the warnings.
-5. When finished, keep the MUC, the needed voices and PCM, and the MUB/VGM separately.
+5. When finished, keep the MUC, the needed voices and PCM, and the MUB separately.
 6. When you are done, exit normally through the menu whenever possible.
 
 ### Replacing the executables
@@ -1204,7 +1219,7 @@ Rather than deleting files that need recovering and then reporting, please prese
 | Find / find next | Ctrl+F / F3 |
 | Compile | F1→2 |
 | Play the latest compile result | F1→3 |
-| Export MUB / VGM | F1→4 / F1→5 |
+| Export MUB | F1→4 |
 | Save and exit | F1→E |
 
 ### Movement and line editing
@@ -1244,3 +1259,18 @@ The integrated build adds MSX-prefixed parts, native msPb output and automatic p
 [MSX target guide](../shared/docs/MSX_TARGETS.en.md)
 
 For `#SSGExtend`, `@I`, `@W`, `pe` and `#PCMInvert`, see the [SCC+ SSG guide](../shared/docs/SSG_EXTEND.en.md). This extends msPb with approximate SCC+ playback, not bit-exact PC virtual SSG.
+
+## Dedicated SCC scores
+
+`SCCA`–`SCCE` select SCC/SCC+ channels 1–5, with multi-channel selectors such as `SCCABC` and pages 0–9. Put `#sccvoice SCCVOICE.DAT` in the initial header and use `@0`–`@255` to select defined waves from an SCWD v1 bank (saved from MUCPlayground's SCC bank). Keep the bank beside the MUC in the working directory under a plain DOS 8.3 name. The default is `SCCVOICE.DAT`.
+
+Example: `SCCA @0 o4 v15 l8 cdefgab>c`
+
+MUB embeds the waveforms and needs no DAT at playback time. MUCEDIT compilation, playback and MUB export use the same commands. Install current MUC2MUB/MUCPLAY/MUCEDIT/MUBPLAY together for the new `msPb0102` profile. Ordinary SCC shares CH4/5 wave RAM; five independent waves require SCC+. Do not mix this with `#SSGExtend On` or raw SCC. The 512KiB mapper requirement, 60,000-byte MUCEDIT document limit and 96KiB music DATA limit remain. See the dedicated SCC section in the common MSX_TARGETS guide for details.
+
+
+## Inline SCC waveforms in MUC
+
+Define a 32-byte SCC waveform with `@Wnumber:{ ... }`, following the brace form of OPNA voice definitions, and select it with `@number` in a part. When all required SCC waves are defined inline, compilation, playback and MUB export need neither `#sccvoice` nor an external DAT.
+
+`@Wnumber:{ ... }` definitions inserted by MUCPlayground's SCC wave editor work as they are ([SCC wave editing guide](../shared/docs/MUCPLAYGROUND.en.md#5-scc-waves)). IDs are 0–255, with exactly 32 samples in -128–127. Inline definitions override external waves of the same ID; an explicitly named `#sccvoice` file must still exist. See the SCC wave section of MSX_TARGETS for examples and compatibility forms.

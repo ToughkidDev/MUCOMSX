@@ -8,7 +8,7 @@ New features and fixes since v0.81-beta, file compatibility and safe updating in
 
 | Item | v0.81-beta | Current version |
 | --- | --- | --- |
-| 60,000-byte editor, 64KiB source, 120KiB music DATA | Included | Retained |
+| 60,000-byte editor, 64KiB source, 120KiB music DATA | Included | Editor/source retained; music DATA now 96KiB |
 | Single-YM2608 extensions, general pages and FM3 slots | Included | Retained |
 | MSX-MUSIC / internal PSG / msPb0100 | Included | Corrected stale separate-build documentation |
 | Playback CPU acceleration and `/N` | Included | Documentation corrected; not automatic compilation acceleration |
@@ -46,16 +46,18 @@ Empty-page scanning is skipped and active-row search narrowed. Macro definition 
 | --- | --- |
 | MUC2MUB / MUCPLAY source | 65,536 bytes |
 | MUCEDIT document | 60,000 bytes after newline normalization |
-| Total compiled music DATA | 122,880 bytes, including structures and voice tables |
+| Total compiled music DATA | 98,304 bytes, including structures and voice tables |
 | One OPNA page stream | 59,546 bytes |
 | One native MSX page stream | 59,106 bytes |
 | Mapper RAM minimum | 512KiB; not a guarantee for every simultaneous maximum-size session |
 
-120KiB is not the complete MUB-file limit. Headers, tags and appended ADPCM are separate. PCM is appended after music/voice DATA during disk output; PCM/chip limits also apply during playback. More installed RAM does not automatically expand these DATA limits.
+96KiB is not the complete MUB-file limit. Headers, tags and appended ADPCM are separate. PCM is appended after music/voice DATA during disk output; PCM/chip limits also apply during playback. More installed RAM does not automatically expand these DATA limits.
 
 Nested part branches, extra OPNA/OPNB/OPM chips, `@M`, `PCn`, IDE notes and WAV conversion through `#@pcm` remain unsupported. YM2413/PSG/SCC approximations are not acoustically identical to YM2608 or PC virtual SSG. Heavy scores are not guaranteed to meet every normal-Z80 tick deadline. Automatic acceleration is used during live playback and the previous CPU mode is restored on exit; `/N` disables automatic selection.
 
 ## MUCVOICE: edit and audition voices on the MSX
+
+> **Note (2026-11):** MUCVOICE has since been removed from the toolchain. Edit FM voices, SCC waves and PCM in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/). The text below records the 2026-10-13 release.
 
 MUCVOICE v0.5beta is included in the same toolchain ZIP as the original four tools. Copy all five COMs and the synthetic factory voice data to one working directory; open `MUCVOICE/START.MD` for voice-editor help. Complete Korean, English and Japanese manuals are in the separate documentation ZIP. This MSX-DOS2/Nextor Screen 2 editor supports YM2608 FM and SCC/SCC+ voices, DAT/TFI/MUC/VGM import/export, not PCM-bank construction.
 

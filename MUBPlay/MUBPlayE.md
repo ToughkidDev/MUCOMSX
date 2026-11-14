@@ -1,10 +1,20 @@
 # MUBPLAY User Guide
 
-## Update — 2026-10-13
+MSX PSG `MSXD/E/F`, SCC+ `SCCA..E` and OPLL `MSXA/B/C/H/I/J` with rhythm `MSXG` coexist with OPNA rows without a global mode tag. See [MSX MML](../docs/MSX_MML_EN.TXT), [new envelopes and detune](../docs/MSX_STAGE1.TXT), and [OPLL commands](../docs/OPLL_NATIVE.TXT).
+
+Install and replace `MUBPLAY.COM` together with **the matching build of `MUBPLAY.MXR`**, in the current DOS directory or `PATH`. The module loads at startup; playback ticks do not read executable code from disk. Old PMC/PNC/EXP files are not used. Runtime code banks and the SCC waveform cache are separate. Compiled music DATA is limited to **96KiB (98,304 bytes)**.
+
+## Updates
+
+All changes in the **2026-11 update (since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
 
 This version supports SCC/SCC+ SSG msPb0101 in addition to MUB8, muPb and msPb0100. See [release changes](../shared/docs/RELEASE_UPDATE_261013.en.md) for detection, mono approximation, capacity and usage limits. A player replacement cannot restore music DATA missing from an old faulty compilation; recompile it.
 
-> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 122,880 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
+### 2026-11: MUCVOICE removed — edit voices and PCM in MUCPlayground
+
+The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the toolchain's official editor, which runs in a web browser. Open the `#voice`, `#sccvoice` and `#pcm` files in its **FM bank**, **SCC bank** and **PCM bank**, adjust them while listening in the FM voice editor, SCC wave editor and PCM sample editor, then download them with **Save**. Put the downloaded files beside the MUC on the MSX under DOS 8.3 names, then compile and play with this tool. The MSX compiler does not convert WAVs from `#@pcm`, so always save PCM as a BIN bank. Screenshots and step-by-step instructions are in the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md); buttons and keys are in the [official MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks). The toolchain ZIP's FMVOICE.DAT and SCCVOICE.DAT can be loaded in MUCPlayground as a starting point (MUCPlayground does not read INIT.TFI). An old MUCVOICE.COM left in your folder is not updated; you may delete it.
+
+> Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
 
 MUCOM88 MUB Player for MSX  
@@ -43,7 +53,9 @@ Ordinary music playback needs the following.
 
 Required memory and loading time differ from song to song. The fact that DOS runs does not by itself mean every size of song can be played.
 
-It can be used on an ordinary Z80 MSX2+ environment, and turbo R environments are being taken into account as well. Even so, the same song may show slight differences in playback depending on the machine and how much processing headroom there is.
+When an internal and an external mapper are both present, the program works in the one with more free memory at startup. It does not combine the two, and on some configurations it uses only the mapper DOS runs in.
+
+It runs on ordinary Z80 MSX2/2+ machines, in Panasonic fast mode, on turbo R and on a One Chip MSX. Supported Panasonic machines play with the fast Z80 (5.37 MHz) and turbo R machines with the R800, selected automatically. On a One Chip MSX (OCM), with or without `/N`, the cartridge slot clock is set to 3.58 MHz and the CPU raised to 8.06 MHz. The original speed is restored at exit. `/N` turns off the automatic Panasonic/turbo R acceleration. The same song may still show slight differences in playback depending on the machine and its processing headroom.
 
 On real hardware, also check that Makoto's sound actually reaches the speakers or mixer you have connected. If you can hear the MSX itself but not Makoto, it is best to check the audio connection and volume first.
 
@@ -112,6 +124,8 @@ Once loading finishes, it shows the song information and, after the final notice
 
 Songs containing PCM data may need time to transfer that data to Makoto, so it can pause for a while at `Loading MUB file with Makoto (YM2608)`. How long it takes also depends on the file size and disk speed.
 
+On MSX2 or later and on turbo R, the start of the song is computed ahead and stored in one memory segment (16KB) before playback begins, so sound can take a moment to start after the song information appears. Computing ahead continues during playback, so a short burst of disk or display work does not delay the sound. If computing ahead cannot keep up, playback switches to direct output and continues. Without a free segment the song plays with direct output from the start.
+
 ### To stop playback
 
 While a song is playing, **press an ordinary key such as ESC or space** and it stops and returns to DOS. ESC is not the only key that works. Do not rely on key operations that produce no character input, such as pressing only Shift or Ctrl.
@@ -143,6 +157,8 @@ Press a key when you want it to stop.
 The repeat here follows **the music's repeat section as specified inside the MUB**. It is not a matter of re-reading the file each time and replaying from the intro. If the song was written to return to a particular point after the intro, it repeats from there.
 
 Specifying `/L0` for a song with no repeat section does not create one. In that case it ends when the song ends.
+
+Native MSX scores (msPb0103–0109) have no MUCOM88 `L` loop point; each channel jumps back on its own. For these songs repeats are counted per channel, and the n-th pass ends when every active channel has repeated at least n times. The channel with the longest repeat therefore sets one pass, and a channel still playing without repeating is waited for. A song whose channels all end by themselves stops at its end.
 
 At present the number is a single digit, `0` through `9`. It cannot be used to specify a two-digit number such as `/L10` or `/L30`. Do not put a space before the number as in `/L 3` — write `/L3`.
 
@@ -186,13 +202,19 @@ At present, the player does not automatically switch to a kanji screen even on m
 
 ## 6. Do I need to include VOICE.DAT or PCM files too?
 
+> **Making voice and PCM files:** edit FM voice files, SCC wave files and PCM banks in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), download them with **Save** and copy them into this folder. See the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md#3-the-round-trip-with-the-msx) for the steps.
+
 When playing a finished MUB, **a separate `VOICE.DAT` is not needed.** The player uses the FM voice data contained in the MUB.
 
-PCM likewise comes from the PCM block contained in the MUB. Even if you see a record such as `#voice voice.dat` or `#pcm mucompcm.bin` in the tags, that does not mean an external file of the same name is looked up and read at playback time.
+The PCM is chosen in this order:
+
+1. A PCM block inside the MUB is used. The `#pcm` record in the tags is then for reference only; no external file of that name is read.
+2. If the MUB contains no PCM, the file named by its `#pcm` tag is looked up **in the MUB's folder** and uploaded to Makoto. MSX-DOS reads only the first 8 characters of a name, so for `#pcm schemepcm.bin` the file must be `SCHEMEPC.BIN`.
+3. If that file is missing too, only the song's ADPCM part stays silent; the other parts play normally. PCM left in Makoto by an earlier song is never played instead.
 
 To begin with, you only need `MUBPLAY.COM` and the MUB file you want to play.
 
-That said, if a song uses PCM but the required PCM data was not included when the MUB was built, the player will not go looking for an external PCM file to fill the gap. In that case, check whether it was included at the stage where the MUB is created.
+A MUB with embedded PCM is the easiest to handle. Compiling with the current MUC2MUB, MUCPLAY or MUCEDIT embeds the PCM in the MUB.
 
 Also, `.MUC` is the music source before compilation. The file you hand directly to `MUBPLAY` is the compiled `.MUB`.
 
@@ -201,7 +223,7 @@ Also, `.MUC` is the music source before compilation. The file you hand directly 
 The basic form is:
 
 ```text
-MUBPLAY filename.MUB [/Lnumber] [/T] [/V]
+MUBPLAY filename.MUB [/Lnumber] [/N] [/T]
 ```
 
 The square brackets mean you include only the options you need. You do not type `[` or `]` in the actual command.
@@ -210,12 +232,23 @@ The square brackets mean you include only the options you need. You do not type 
 | --- | --- |
 | `/L0` | Unlimited repeat in normal playback |
 | `/L1` – `/L9` | Specify the repeat count in normal playback |
+| `/N` | No automatic Panasonic/turbo R acceleration (not shown in the usage screen) |
 | `/T` | Check the loading path without starting playback |
-| `/V` | Output the playback data as a VGM file |
+
+The usage text printed by the program is:
+
+```text
+Usage: mubplay <filename.mub> [/L<n>] [/T]
+  <filename.mub>  MUB music file to play
+  /L<n>           Repeat count 0-9 (0=infinite)
+  /T              Load test only (no hardware playback)
+```
+
+`/V` (VGM output) was removed on 2026-10-30. If you add `/V` out of habit, it is ignored and the song simply plays.
 
 Option letters are not case-sensitive. `/l2` works too, but this guide uses uppercase throughout for readability.
 
-For everyday listening, the filename and the `/L` option when you need it are all you have to know. Use the two features below when you need to check files or make comparisons.
+For everyday listening, the filename and the `/L` option when you need it are all you have to know. Use the feature below when you need to check files.
 
 ## 9. Checking only the loading: /T (for debugging)
 
@@ -235,40 +268,9 @@ One caution. The current `/T` is **a mode that does not start playing music**, n
 
 `Load test OK.` means the loading path succeeded. It does not mean the song's voices and every playback command have been verified.
 
-## 10. Outputting a VGM file: /V
+## 10. VGM output removed (2026-10-30)
 
-A feature that saves the MUB's playback data as VGM. It does not record audio into a WAV or MP3; it records the commands sent to the sound chip and their timing into a file.
-
-```text
-MUBPLAY SIN002.MUB /V
-```
-
-The output name is made by changing the input MUB's extension to `.VGM`. In the example above it becomes `SIN002.VGM`. If the input path includes a directory, the output is based on that same path.
-
-**If a VGM of the same name already exists, it is overwritten with no confirmation prompt.** To keep the previous file, move it to another name before running. The input MUB is neither converted nor deleted.
-
-### /L means something different alongside /V
-
-In the current version, when `/V` is specified, the number given to `/L` is used as **the length of music to output in seconds, not a repeat count**.
-
-```text
-MUBPLAY SIN002.MUB /V /L5
-```
-
-This command outputs roughly 5 seconds' worth. That does not mean the work itself finishes within 5 seconds of wall-clock time. How long it takes depends on file writing and PCM data processing speed.
-
-| Example input | Amount of VGM output |
-| --- | --- |
-| `MUBPLAY SIN002.MUB /V` | The default, about 30 seconds |
-| `MUBPLAY SIN002.MUB /V /L5` | About 5 seconds |
-| `MUBPLAY SIN002.MUB /V /L9` | About 9 seconds |
-| `MUBPLAY SIN002.MUB /V /L0` | The default, about 30 seconds |
-
-Here too, only a single digit is handled. Do not try to specify 30 seconds with `/L30`. If you want the default 30 seconds, just use `/V`. Because recording follows the music's processing units, the resulting length may differ slightly from the number of seconds you asked for.
-
-`/V` does not offer the same key-press interruption as normal playback. Wait until the specified amount has been written out. If `/T` and `/V` are specified together, `/T` takes precedence, so use the two options separately.
-
-This feature is a supporting one for comparison and checking. To check the output file, you need a VGM playback environment that supports the YM2608. If you check it with VGMPLAY on an MSX, use an environment with Makoto (YM2608).
+On 2026-10-30, VGM output (the `/V` option that wrote `SONG.VGM`) was removed from MUBPLAY to free memory for code. `/V` is now ignored and the song simply plays, and the `/L` digit always means a repeat count. VGM export was removed from MUCPLAY and MUCEDIT on the same day, so no tool in the current MucoMSX toolchain (MUC2MUB, MUCPLAY, MUBPLAY, MUCEDIT) creates VGM files.
 
 ## 11. When something goes wrong
 
@@ -310,7 +312,7 @@ That is normal behavior. It means the title contains characters the current scre
 
 ### There is no sound, or some sounds differ
 
-First check Makoto's audio output and volume. If only the ADPCM of a particular song is missing, you also need to check whether the required PCM is included in the MUB. This is not a problem solved by copying `VOICE.DAT` alongside it.
+First check Makoto's audio output and volume. If only the ADPCM of a particular song is missing, check whether the MUB contains PCM and, if it does not, whether the file named by its `#pcm` tag is in the MUB's folder under an 8.3 name. This is not a problem solved by copying `VOICE.DAT` alongside it.
 
 If the voices or tempo differ from the original even with the same file, let me know what the difference is. Differences between Z80 and turbo R environments, the processing load in particular sections, and the playback commands in the file all need checking too.
 
@@ -368,12 +370,6 @@ Check loading in an environment with Makoto connected:
 MUBPLAY GH002.MUB /T
 ```
 
-Output about 5 seconds of VGM for comparison:
-
-```text
-MUBPLAY GH002.MUB /V /L5
-```
-
 Start with a single song and no options. Once you are used to it, try `/L0` to listen to a favorite song on repeat.
 
 Enjoy.
@@ -387,3 +383,18 @@ The integrated build adds MSX-prefixed parts, native msPb output and automatic p
 [MSX target guide](../shared/docs/MSX_TARGETS.en.md)
 
 For `#SSGExtend`, `@I`, `@W`, `pe` and `#PCMInvert`, see the [SCC+ SSG guide](../shared/docs/SSG_EXTEND.en.md). This extends msPb with approximate SCC+ playback, not bit-exact PC virtual SSG.
+
+## Dedicated SCC scores
+
+`SCCA`–`SCCE` select SCC/SCC+ channels 1–5, with multi-channel selectors such as `SCCABC` and pages 0–9. Put `#sccvoice SCCVOICE.DAT` in the initial header and use `@0`–`@255` to select defined waves from an SCWD v1 bank (saved from MUCPlayground's SCC bank). Keep the bank beside the MUC in the working directory under a plain DOS 8.3 name. The default is `SCCVOICE.DAT`.
+
+Example: `SCCA @0 o4 v15 l8 cdefgab>c`
+
+MUB embeds the waveforms and needs no DAT at playback time. MUCEDIT compilation, playback and MUB export use the same commands. Install current MUC2MUB/MUCPLAY/MUCEDIT/MUBPLAY together for the new `msPb0102` profile. Ordinary SCC shares CH4/5 wave RAM; five independent waves require SCC+. Do not mix this with `#SSGExtend On` or raw SCC. The 512KiB mapper requirement, 60,000-byte MUCEDIT document limit and 96KiB music DATA limit remain. See the dedicated SCC section in the common MSX_TARGETS guide for details.
+
+
+## Inline SCC waveforms in MUC
+
+Define a 32-byte SCC waveform with `@Wnumber:{ ... }`, following the brace form of OPNA voice definitions, and select it with `@number` in a part. When all required SCC waves are defined inline, compilation, playback and MUB export need neither `#sccvoice` nor an external DAT.
+
+`@Wnumber:{ ... }` definitions inserted by MUCPlayground's SCC wave editor work as they are ([SCC wave editing guide](../shared/docs/MUCPLAYGROUND.en.md#5-scc-waves)). IDs are 0–255, with exactly 32 samples in -128–127. Inline definitions override external waves of the same ID; an explicitly named `#sccvoice` file must still exist. See the SCC wave section of MSX_TARGETS for examples and compatibility forms.
