@@ -6,6 +6,8 @@ MUCScope는 MUC 음악 소스를 MSX에서 컴파일한 뒤 재생하는 비주�
 
 ## 목차
 
+- [영상으로 보기](#영상으로-보기)
+- [화면 둘러보기](#화면-둘러보기)
 - [실행 환경](#실행-환경)
 - [설치와 실행](#설치와-실행)
 - [키보드 조작](#키보드-조작)
@@ -17,6 +19,64 @@ MUCScope는 MUC 음악 소스를 MSX에서 컴파일한 뒤 재생하는 비주�
 - [설정 저장](#설정-저장)
 - [MUC 컴파일](#muc-컴파일)
 - [문제 해결](#문제-해결)
+
+## 영상으로 보기
+
+MUCScope가 MUC를 MSX에서 바로 컴파일하고 재생하는 모습을 먼저 영상으로 보세요. 그림을 누르면 YouTube에서 열리고, 표의 시각을 누르면 그 장면부터 재생합니다.
+
+<a href="https://www.youtube.com/watch?v=CJvW9Itukdw"><img src="https://img.youtube.com/vi/CJvW9Itukdw/hqdefault.jpg" width="480" alt="MUCScope 시연 영상"></a>
+
+**[MucoMSX] MucoMSX에 포함된 MUC 전용 Player인 MUCScope Player도 많이 애용해 주세요.** (7분 22초, 2026-10-16 공개). openMSX의 Panasonic FS-A1GT(turbo R)에서 SCC, MSX-MUSIC, OPNA로 쓴 MUC를 열어 컴파일하고 재생합니다. 왼쪽 창은 openMSX의 Audio channel viewer입니다.
+
+| 시각 | 장면 | 이 설명서의 절 |
+| --- | --- | --- |
+| [0:00](https://www.youtube.com/watch?v=CJvW9Itukdw) | SCC 곡의 스펙트럼과 S1~S5 파형 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+| [0:10](https://www.youtube.com/watch?v=CJvW9Itukdw&t=10s) | 다른 MUC를 열면 바로 컴파일: 맨 윗줄에 단계(`PARSE`)와 진행 바 | [진행 표시](#진행-표시) |
+| [0:20](https://www.youtube.com/watch?v=CJvW9Itukdw&t=20s) | 컴파일한 MSX-MUSIC 곡 재생: 스펙트럼, [0:26](https://www.youtube.com/watch?v=CJvW9Itukdw&t=26s) 채널뷰 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+| [0:30](https://www.youtube.com/watch?v=CJvW9Itukdw&t=30s) | 채널 스킨 선택, [0:48](https://www.youtube.com/watch?v=CJvW9Itukdw&t=48s) 스펙트럼 스킨 선택 | [스킨 선택](#스킨-선택) |
+| [1:40](https://www.youtube.com/watch?v=CJvW9Itukdw&t=100s) | MSX-MUSIC 곡의 채널뷰 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+| [2:16](https://www.youtube.com/watch?v=CJvW9Itukdw&t=136s) | OPNA 곡(MUCOM88)의 채널뷰 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+| [3:00](https://www.youtube.com/watch?v=CJvW9Itukdw&t=180s) | OPNA 곡의 스펙트럼 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+| [4:40](https://www.youtube.com/watch?v=CJvW9Itukdw&t=280s) | 다른 폴더의 OPNA 곡 컴파일(`PREPARE`), [5:40](https://www.youtube.com/watch?v=CJvW9Itukdw&t=340s) `LINK` 단계 | [진행 표시](#진행-표시) |
+
+### 영상 속 장면
+
+그림을 누르면 그 시각부터 영상을 재생합니다.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=2s"><img src="img/VIDEO_MUC_0002_SCC_SPECTRUM.png" width="400" alt="SCC 곡의 스펙트럼과 파형"></a><br><sub>0:02 SCC 곡의 스펙트럼과 파형</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=10s"><img src="img/VIDEO_MUC_0010_COMPILE_PARSE.png" width="400" alt="컴파일 중(PARSE 단계)"></a><br><sub>0:10 컴파일 중(PARSE 단계)</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=38s"><img src="img/VIDEO_MUC_0038_CHANNEL_SKINS.png" width="400" alt="채널 스킨 선택(8/10쪽)"></a><br><sub>0:38 채널 스킨 선택(8/10쪽)</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=162s"><img src="img/VIDEO_MUC_0242_OPNA_CHANNEL.png" width="400" alt="OPNA 곡의 채널뷰"></a><br><sub>2:42 OPNA 곡의 채널뷰</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=192s"><img src="img/VIDEO_MUC_0312_OPNA_SPECTRUM.png" width="400" alt="OPNA 곡의 스펙트럼"></a><br><sub>3:12 OPNA 곡의 스펙트럼</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=340s"><img src="img/VIDEO_MUC_0540_COMPILE_LINK.png" width="400" alt="컴파일 중(LINK 단계)"></a><br><sub>5:40 컴파일 중(LINK 단계)</sub></td>
+</tr>
+</table>
+
+영상은 v1.0-Stable(2026-10-16) 화면입니다. 지금 빌드와 비교하면 칩 표시 줄(`SCC RAW` → `SCC+/PSG` 등)과 SCC·PSG를 한 페이지에 함께 보여 주는 점이 다르고, 키 배치와 화면 구성, 컴파일 단계 표시는 같습니다. 이 설명서의 다른 그림은 지금 빌드를 WebMSX(turbo R 구성)에서 찍은 것입니다.
+
+MUB를 재생하는 MUBScope 영상도 참고하세요. 볼륨 믹서와 스펙트럼 스킨 선택이 나옵니다: [[MucoMSX] v1.0-Stable released](https://www.youtube.com/watch?v=Xk4awiKuZGc) (2분 15초).
+
+## 화면 둘러보기
+
+<p align="center"><img src="img/MUCSCOPE_SCC.png" width="544" alt="MUCScope 채널뷰"><br><sub>지금 빌드의 채널뷰. turbo R에서 SCC와 PSG를 쓰는 MUC를 컴파일해 재생하는 중</sub></p>
+
+| 영역 | 표시 내용 |
+| --- | --- |
+| 맨 윗줄 | 곡 제목, 상태(`PLAY`·`PAUSE`·`STOP`), 배속(`1X`), 재생 모드. 컴파일 중에는 `MUC COMPILE / ENTER NEW / ESC`와 단계, 진행 바 |
+| 둘째 줄 | 곡이 쓰는 칩(`SCC+/PSG`, `OPNA`, `OPLL` 등)과 지금 화면(`CHANNEL` 또는 `SPECTRUM`) |
+| 채널 행 | 채널 이름(`SCC1`~`SCC5`, `PSGA`~`PSGC` 등), 건반(지금 울리는 음은 빨간 점), 음 이름, 레벨 막대 |
+| 파형 줄 | SCC 곡에서 S1~S5 각 채널의 현재 파형 |
+| 리듬 행 | OPNA·OPLL 리듬 표시등과 ADPCM-B 레벨(`ADPB`) |
+| 작은 파일 목록 | 현재 폴더 경로와 MUC 파일명·제목·크기 |
+| 맨 아래 | 키 표시(`F10 1 2 … V RETURN`)와 그 키의 버튼 |
+
+각 영역의 자세한 내용은 [화면과 스킨](#화면과-스킨), [파일 브라우저](#파일-브라우저), [MUC 컴파일](#muc-컴파일)에 있습니다.
 
 ## 실행 환경
 
@@ -172,6 +232,8 @@ SCC 파형은 채널당 가로 32픽셀로 표시합니다. 음색의 32개 샘�
 
 커서로 선택한 항목과 현재 재생 중인 곡은 서로 다를 수 있습니다. 커서를 움직이기만 하면 재생곡은 바뀌지 않습니다. `RETURN`을 누르면 선택한 곡으로 바뀝니다.
 
+<p align="center"><img src="img/MUCSCOPE_BROWSER.png" width="544" alt="MUCScope 전체 파일 목록"><br><sub><code>F</code>로 연 전체 파일 목록. MUC의 제목과 크기를 표시</sub></p>
+
 | 키 | 파일 목록에서의 동작 |
 | --- | --- |
 | `↑` / `↓` | 선택 항목 이동 |
@@ -233,6 +295,15 @@ ONCE의 추가 연주는 곡의 루프 위치에서 시작합니다. 인트로�
 - **채널뷰**: 사용 칩에 맞춘 채널 이름, 건반의 현재 음, 음량, 음표와 지원되는 팬 정보를 표시합니다. SCC 곡은 파형과 게인도 확인할 수 있습니다.
 - **스펙트럼**: 주파수별 활동 표시와 채널별 레벨을 보여줍니다. 배치와 색상은 선택한 스킨에 따라 달라집니다.
 
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_SPECTRUM.png" width="400" alt="MUCScope 스펙트럼"><br><sub>스펙트럼: MSX-MUSIC 곡</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_OPLL.png" width="400" alt="MUCScope MSX-MUSIC 채널뷰"><br><sub>MSX-MUSIC 곡의 채널뷰: OPL1~OPL6과 리듬</sub></td>
+</tr>
+</table>
+
+▶ 영상: [0:00 SCC 스펙트럼과 파형](https://www.youtube.com/watch?v=CJvW9Itukdw) · [0:26 MSX-MUSIC 채널뷰](https://www.youtube.com/watch?v=CJvW9Itukdw&t=26s) · [2:16 OPNA 채널뷰](https://www.youtube.com/watch?v=CJvW9Itukdw&t=136s) · [3:00 OPNA 스펙트럼](https://www.youtube.com/watch?v=CJvW9Itukdw&t=180s)
+
 제목 아래에는 곡이 사용하는 칩을 모두 `OPNA`, `SCC+`, `OPLL`, `PSG` 순서로 표시합니다. 예를 들어 `OPNA/SCC+`, `SCC+/PSG`, `OPNA/OPLL`처럼 나옵니다. 곡 데이터로는 SCC와 SCC+를 구분할 수 없으므로 SCC는 항상 `SCC+`로 표시합니다. 칩 페이지를 바꿔도 이 표시는 같습니다.
 
 음 이름은 MUCOM 표기대로 `+`를 사용합니다. 예를 들어 `C+4`는 C#4입니다. ADP1 행의 음 칸에는 현재 ADPCM 샘플 번호를 `P03`처럼 10진수로 표시합니다. MML의 `@3`에 해당합니다.
@@ -257,6 +328,10 @@ MSX PSG와 OPLL 행도 연주 중의 음, 건반과 레벨을 표시합니다. O
 6. `RETURN`으로 적용하고 저장합니다. `Esc`는 적용하지 않고 돌아옵니다.
 
 채널뷰는 **C01~C40**, 스펙트럼은 **V01~V40**입니다. 카테고리마다 4개씩 10페이지로 배치되어 있으며, 두 화면의 스킨은 따로 선택합니다.
+
+<p align="center"><img src="img/MUCSCOPE_SKINS.png" width="544" alt="MUCScope 스킨 선택"><br><sub>채널뷰 스킨 선택 화면(1/10쪽). 선택한 스킨은 아래 이름 칸이 강조됨</sub></p>
+
+▶ 영상: [0:30 채널 스킨 고르기](https://www.youtube.com/watch?v=CJvW9Itukdw&t=30s) · [0:48 스펙트럼 스킨](https://www.youtube.com/watch?v=CJvW9Itukdw&t=48s)
 
 ### 플레이어 버튼 스타일
 
@@ -286,6 +361,13 @@ SOLID → OUTLINE → BADGE → KEYCAP → CUTOUT → BRACKET → SOLID
 SCC 음량은 **MSX SCC**에서 조절합니다. OPNA SSG나 MSX PSG와 별도입니다. 곡에서 사용하지 않는 그룹을 조절해도 소리가 달라지지 않습니다.
 
 `I`로 곡 정보를 엽니다. 현재 제목, 파일 경로, 사용 칩과 키보드 도움말을 볼 수 있습니다. 정보·믹서를 닫으려면 `Esc`, `Tab`, 또는 같은 메뉴 키를 다시 누릅니다.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_MIXER.png" width="400" alt="MUCScope 볼륨 믹서"><br><sub><code>V</code> 볼륨 믹서</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_INFO.png" width="400" alt="MUCScope 곡 정보"><br><sub><code>I</code> 곡 정보: 제목, 경로, 사용 칩, 키 도움말</sub></td>
+</tr>
+</table>
 
 ## 설정 저장
 
@@ -332,6 +414,15 @@ ALBUM/
 | READY | 재생 준비 완료 |
 
 진행 바는 현재 작업 위치를 나타냅니다. 전체 완료 백분율이나 남은 시간이 아닙니다. 긴 매크로를 처리하면 같은 위치에서 오래 움직이지 않을 수 있습니다.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_COMPILE.png" width="400" alt="MUCScope 컴파일 READ 단계"><br><sub><code>READ</code> 단계: 소스를 읽는 중</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_COMPILE2.png" width="400" alt="MUCScope 컴파일 PREPARE 단계"><br><sub><code>PREPARE</code> 단계: 음색 읽기와 사전 준비</sub></td>
+</tr>
+</table>
+
+▶ 영상: [0:10 PARSE](https://www.youtube.com/watch?v=CJvW9Itukdw&t=10s) · [4:40 PREPARE](https://www.youtube.com/watch?v=CJvW9Itukdw&t=280s) · [5:40 LINK](https://www.youtube.com/watch?v=CJvW9Itukdw&t=340s)
 
 ### 컴파일 중 탐색과 곡 변경
 

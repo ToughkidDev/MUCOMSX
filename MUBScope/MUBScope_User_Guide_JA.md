@@ -6,6 +6,8 @@ MUBScopeはコンパイル済みのMUB音楽をMSXで再生するビジュアル
 
 ## 目次
 
+- [動画で見る](#動画で見る)
+- [画面の見方](#画面の見方)
 - [動作環境](#動作環境)
 - [インストールと起動](#インストールと起動)
 - [キーボード操作](#キーボード操作)
@@ -16,6 +18,62 @@ MUBScopeはコンパイル済みのMUB音楽をMSXで再生するビジュアル
 - [音量と曲情報](#音量と曲情報)
 - [設定の保存](#設定の保存)
 - [トラブルシューティング](#トラブルシューティング)
+
+## 動画で見る
+
+まず動画でMUBScopeの動きを見てください。画像をクリックするとYouTubeで開き、表の時刻をクリックするとその場面から再生します。
+
+<a href="https://www.youtube.com/watch?v=Xk4awiKuZGc"><img src="https://img.youtube.com/vi/Xk4awiKuZGc/hqdefault.jpg" width="480" alt="MUBScope 紹介動画: [MucoMSX] v1.0-Stable released"></a>
+
+**[MucoMSX] v1.0-Stable released 첫 정식버전 릴리즈**（2分15秒、2026-10-16公開）。openMSXのPanasonic FS-A1GT（turbo R）で、MSX-MUSIC、SCC、OPNAの曲を順に再生します。左のウィンドウはopenMSXのAudio channel viewerです。
+
+| 時刻 | 場面 | このガイドの節 |
+| --- | --- | --- |
+| [0:00](https://www.youtube.com/watch?v=Xk4awiKuZGc) | MSX-MUSIC（OPLL）曲のチャンネル表示 | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+| [0:15](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=15s) | `Tab`でスペクトラムに切り替え | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+| [0:31](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=31s) | 音量ミキサー（`V`） | [音量と曲情報](#音量と曲情報) |
+| [0:54](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=54s) | スペクトラムのスキン選択画面 | [スキンの選択](#スキンの選択) |
+| [1:07](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=67s) | SCC曲：SCC 5チャンネルとS1～S5の波形 | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+| [1:21](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=81s) | SCC曲のスペクトラム | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+| [1:52](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=112s) | OPNA曲（MUCOM88）のスペクトラム、[1:59](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=119s)から2列のチャンネル表示 | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+
+### 動画の場面
+
+画像をクリックすると、その時刻から動画を再生します。
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=5s"><img src="img/VIDEO_MUB_0005_OPLL_CHANNEL.png" width="400" alt="MSX-MUSIC曲のチャンネル表示"></a><br><sub>0:05 MSX-MUSIC曲のチャンネル表示</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=24s"><img src="img/VIDEO_MUB_0024_OPLL_SPECTRUM.png" width="400" alt="同じ曲のスペクトラム"></a><br><sub>0:24 同じ曲のスペクトラム</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=55s"><img src="img/VIDEO_MUB_0055_SPECTRUM_SKINS.png" width="400" alt="スペクトラムのスキン選択（3/10ページ）"></a><br><sub>0:55 スペクトラムのスキン選択（3/10ページ）</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=72s"><img src="img/VIDEO_MUB_0112_SCC_CHANNEL.png" width="400" alt="SCC曲のチャンネル表示と波形"></a><br><sub>1:12 SCC曲のチャンネル表示と波形</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=127s"><img src="img/VIDEO_MUB_0207_OPNA_CHANNEL.png" width="400" alt="OPNA曲の2列チャンネル表示"></a><br><sub>2:07 OPNA曲の2列チャンネル表示</sub></td>
+<td width="50%"></td>
+</tr>
+</table>
+
+動画はv1.0-Stable（2026-10-16）の画面です。現在のビルドとはチップ表示の行（`OPLL RAW` → `OPLL`、`SCC RAW` → `SCC+/PSG`）と、SCCとPSGを1ページにまとめて表示する点が異なります。キー配置と画面構成は同じです。このガイドのほかの画像は、現在のビルドをWebMSX（turbo R構成）で撮影したものです。
+
+同じ画面を使うMUCScopeの動画も参考にしてください。MUCソースをMSX上で直接コンパイルして再生する様子と、チャンネルスキンの選択を見られます：[[MucoMSX] MUC専用プレイヤー MUCScope Player](https://www.youtube.com/watch?v=CJvW9Itukdw)（7分22秒）。
+
+## 画面の見方
+
+<p align="center"><img src="img/MUBSCOPE_CHANNEL.png" width="544" alt="MUBScope チャンネル表示"><br><sub>現在のビルドのチャンネル表示。turbo RでOPNAとADPCMを使う曲を再生中</sub></p>
+
+| 領域 | 表示内容 |
+| --- | --- |
+| 最上行 | 曲名、状態（`PLAY`・`PAUSE`・`STOP`）、再生速度（`1X`）、再生モード（`ONCE`・`LOOP`・`RANDOM`） |
+| 2行目 | 曲が使うチップ（`OPNA`、`SCC+/PSG`など）と現在の表示（`CHANNEL`または`SPECTRUM`） |
+| チャンネル行 | チャンネル名（`FM1`～`FM6`、`SSGA`～`SSGC`、`ADP1`など）、鍵盤（鳴っている音は赤い点）、音名、レベルバー |
+| リズム行 | OPNA・OPLLのリズムランプ（`BD` `SD` `CY` `HH` `TM` `RM`）とADPCM-Bのレベル（`ADPB`） |
+| 小さいファイル一覧 | 現在のフォルダーのパス、ファイル名・タイトル・サイズ。PCM入りのMUBは`4KB+49KB`のようにMUBとPCMのサイズを分けて表示 |
+| 最下部 | キー表示（`F10 1 2 … V RETURN`）とそのボタン |
+
+詳しくは[表示とスキン](#表示とスキン)と[ファイルブラウザー](#ファイルブラウザー)を参照してください。
 
 ## 動作環境
 
@@ -156,6 +214,8 @@ SCC波形は各チャンネル横32ピクセルで表示し、音色の32サン�
 - チャンネル表示、スペクトラム、チップページ、スキン選択、全画面ファイル一覧、音量ミキサーは使えません。下のボタンのうち`F10`、`F`、`V`のアイコンは暗く表示します。
 - 再生中は、チャンネル表示のためのチップ状態の記録や描画を行いません。音は高速CPUの場合と同じです。
 
+<p align="center"><img src="img/MUBSCOPE_Z80.png" width="544" alt="MUBScope 通常Z80モード"><br><sub>通常Z80モード（<code>/N</code>）：最上行の状態とファイルブラウザーだけを表示し、<code>F10</code>・<code>F</code>・<code>V</code>のボタンは暗く表示</sub></p>
+
 | キー | 動作 |
 | --- | --- |
 | `↑` `↓` `←` `→`、`RETURN`、`Backspace`、`+` `=` `-`、`D` | ファイルブラウザーの操作 |
@@ -174,6 +234,8 @@ SCC波形は各チャンネル横32ピクセルで表示し、音色の32サン�
 ## ファイルブラウザー
 
 選択中の項目と再生中の曲は別です。カーソル移動だけでは再生曲は変わりません。`RETURN`で選択した曲を開きます。
+
+<p align="center"><img src="img/MUBSCOPE_BROWSER.png" width="544" alt="MUBScope ファイル一覧"><br><sub><code>F</code>で開いたファイル一覧。サイズ列の<code>4KB+49KB</code>はMUBとPCMのサイズ</sub></p>
 
 | キー | 一覧での操作 |
 | --- | --- |
@@ -238,6 +300,15 @@ ONCEの追加演奏はイントロの先頭ではなく、曲のループ位置�
 - **チャンネル表示:** 使用チップに応じたチャンネル名、鍵盤上の音、レベル、音名、対応するパン情報を表示します。SCCでは波形とゲインも表示します。
 - **スペクトラム:** 周波数ごとの活動と各チャンネルのレベルを表示します。配置と色はスキンで変わります。
 
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_SPECTRUM.png" width="400" alt="MUBScope スペクトラム"><br><sub>スペクトラム：OPNA曲</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_SCC.png" width="400" alt="MUBScope SCC チャンネル表示"><br><sub>SCC+/PSG曲：SCC 5チャンネルとPSG 3チャンネル、下の行はS1～S5の波形</sub></td>
+</tr>
+</table>
+
+▶ 動画：[0:00 MSX-MUSICのチャンネル表示](https://www.youtube.com/watch?v=Xk4awiKuZGc) · [0:15 スペクトラムへ切り替え](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=15s) · [1:07 SCC曲](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=67s) · [1:59 OPNAの2列表示](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=119s)
+
 タイトルの下には、曲で使用するチップをすべて`OPNA`、`SCC+`、`OPLL`、`PSG`の順に表示します。たとえば`OPNA/SCC+`、`SCC+/PSG`、`OPNA/OPLL`のようになります。曲データからはSCCとSCC+を区別できないため、SCCは常に`SCC+`と表示します。チップページを切り替えてもこの表示は変わりません。
 
 音名はMUCOMの表記どおり`+`を使います。たとえば`C+4`はC#4です。ADP1行の音名欄には、現在のADPCMサンプル番号を`P03`のように10進数で表示します。MMLの`@3`に当たります。
@@ -262,6 +333,10 @@ MSX PSGとOPLLの行も演奏中の音、鍵盤、レベルを表示します。
 6. `RETURN`で適用・保存、`Esc`で適用せずに戻ります。
 
 チャンネル用は**C01～C40**、スペクトラム用は**V01～V40**です。各カテゴリーは1画面4つ、10ページです。2種類の表示のスキンは別々に選べます。
+
+<p align="center"><img src="img/MUBSCOPE_SKINS.png" width="544" alt="MUBScope スキン選択"><br><sub>チャンネル表示のスキン選択画面（1/10ページ）。選択中のスキンは名前が強調表示される</sub></p>
+
+▶ 動画：[0:54 スペクトラムのスキンを選ぶ](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=54s)
 
 ### プレイヤーボタンのスタイル
 
@@ -291,6 +366,15 @@ SOLID → OUTLINE → BADGE → KEYCAP → CUTOUT → BRACKET → SOLID
 SCCの音量は**MSX SCC**で調整します。OPNA SSG、MSX PSGとは独立しています。未使用グループの操作では曲の音量は変わりません。
 
 `I`でタイトル、パス、使用チップ、操作説明を表示します。情報/ミキサーは`Esc`、`Tab`または同じメニューキーで閉じます。
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_MIXER.png" width="400" alt="MUBScope 音量ミキサー"><br><sub><code>V</code> 音量ミキサー</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_INFO.png" width="400" alt="MUBScope 曲情報"><br><sub><code>I</code> 曲情報：タイトル、パス、使用チップ、キーのヘルプ</sub></td>
+</tr>
+</table>
+
+▶ 動画：[0:31 音量ミキサー](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=31s)
 
 ## 設定の保存
 

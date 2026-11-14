@@ -6,6 +6,8 @@ MUCScopeはMUC音楽ソースをMSX上でコンパイルして再生するビジ
 
 ## 目次
 
+- [動画で見る](#動画で見る)
+- [画面の見方](#画面の見方)
 - [動作環境](#動作環境)
 - [インストールと起動](#インストールと起動)
 - [キーボード操作](#キーボード操作)
@@ -17,6 +19,64 @@ MUCScopeはMUC音楽ソースをMSX上でコンパイルして再生するビジ
 - [設定の保存](#設定の保存)
 - [MUCのコンパイル](#mucのコンパイル)
 - [トラブルシューティング](#トラブルシューティング)
+
+## 動画で見る
+
+MUCScopeがMUCをMSX上で直接コンパイルして再生する様子を、まず動画で見てください。画像をクリックするとYouTubeで開き、表の時刻をクリックするとその場面から再生します。
+
+<a href="https://www.youtube.com/watch?v=CJvW9Itukdw"><img src="https://img.youtube.com/vi/CJvW9Itukdw/hqdefault.jpg" width="480" alt="MUCScope 紹介動画"></a>
+
+**[MucoMSX] MucoMSXに含まれるMUC専用プレイヤー MUCScope Player**（7分22秒、2026-10-16公開。YouTubeのタイトルは韓国語）。openMSXのPanasonic FS-A1GT（turbo R）で、SCC、MSX-MUSIC、OPNA向けのMUCを開いてコンパイルし、再生します。左のウィンドウはopenMSXのAudio channel viewerです。
+
+| 時刻 | 場面 | このガイドの節 |
+| --- | --- | --- |
+| [0:00](https://www.youtube.com/watch?v=CJvW9Itukdw) | SCC曲のスペクトラムとS1～S5の波形 | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+| [0:10](https://www.youtube.com/watch?v=CJvW9Itukdw&t=10s) | 別のMUCを開くとすぐにコンパイル：最上行に段階（`PARSE`）と進捗バー | [進捗表示](#進捗表示) |
+| [0:20](https://www.youtube.com/watch?v=CJvW9Itukdw&t=20s) | コンパイルしたMSX-MUSIC曲を再生：スペクトラム、[0:26](https://www.youtube.com/watch?v=CJvW9Itukdw&t=26s)からチャンネル表示 | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+| [0:30](https://www.youtube.com/watch?v=CJvW9Itukdw&t=30s) | チャンネルのスキン選択、[0:48](https://www.youtube.com/watch?v=CJvW9Itukdw&t=48s)からスペクトラムのスキン選択 | [スキンの選択](#スキンの選択) |
+| [1:40](https://www.youtube.com/watch?v=CJvW9Itukdw&t=100s) | MSX-MUSIC曲のチャンネル表示 | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+| [2:16](https://www.youtube.com/watch?v=CJvW9Itukdw&t=136s) | OPNA曲（MUCOM88）のチャンネル表示 | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+| [3:00](https://www.youtube.com/watch?v=CJvW9Itukdw&t=180s) | OPNA曲のスペクトラム | [チャンネル表示とスペクトラム](#チャンネル表示とスペクトラム) |
+| [4:40](https://www.youtube.com/watch?v=CJvW9Itukdw&t=280s) | 別フォルダーのOPNA曲をコンパイル（`PREPARE`）、[5:40](https://www.youtube.com/watch?v=CJvW9Itukdw&t=340s)から`LINK`段階 | [進捗表示](#進捗表示) |
+
+### 動画の場面
+
+画像をクリックすると、その時刻から動画を再生します。
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=2s"><img src="img/VIDEO_MUC_0002_SCC_SPECTRUM.png" width="400" alt="SCC曲のスペクトラムと波形"></a><br><sub>0:02 SCC曲のスペクトラムと波形</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=10s"><img src="img/VIDEO_MUC_0010_COMPILE_PARSE.png" width="400" alt="コンパイル中（PARSE段階）"></a><br><sub>0:10 コンパイル中（PARSE段階）</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=38s"><img src="img/VIDEO_MUC_0038_CHANNEL_SKINS.png" width="400" alt="チャンネルのスキン選択（8/10ページ）"></a><br><sub>0:38 チャンネルのスキン選択（8/10ページ）</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=162s"><img src="img/VIDEO_MUC_0242_OPNA_CHANNEL.png" width="400" alt="OPNA曲のチャンネル表示"></a><br><sub>2:42 OPNA曲のチャンネル表示</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=192s"><img src="img/VIDEO_MUC_0312_OPNA_SPECTRUM.png" width="400" alt="OPNA曲のスペクトラム"></a><br><sub>3:12 OPNA曲のスペクトラム</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=340s"><img src="img/VIDEO_MUC_0540_COMPILE_LINK.png" width="400" alt="コンパイル中（LINK段階）"></a><br><sub>5:40 コンパイル中（LINK段階）</sub></td>
+</tr>
+</table>
+
+動画はv1.0-Stable（2026-10-16）の画面です。現在のビルドとはチップ表示の行（`SCC RAW` → `SCC+/PSG`など）と、SCCとPSGを1ページにまとめて表示する点が異なります。キー配置、画面構成、コンパイル段階の表示は同じです。このガイドのほかの画像は、現在のビルドをWebMSX（turbo R構成）で撮影したものです。
+
+MUBを再生するMUBScopeの動画も参考にしてください。音量ミキサーとスペクトラムのスキン選択が出てきます：[[MucoMSX] v1.0-Stable released](https://www.youtube.com/watch?v=Xk4awiKuZGc)（2分15秒）。
+
+## 画面の見方
+
+<p align="center"><img src="img/MUCSCOPE_SCC.png" width="544" alt="MUCScope チャンネル表示"><br><sub>現在のビルドのチャンネル表示。turbo RでSCCとPSGを使うMUCをコンパイルして再生中</sub></p>
+
+| 領域 | 表示内容 |
+| --- | --- |
+| 最上行 | 曲名、状態（`PLAY`・`PAUSE`・`STOP`）、再生速度（`1X`）、再生モード。コンパイル中は`MUC COMPILE / ENTER NEW / ESC`と段階、進捗バー |
+| 2行目 | 曲が使うチップ（`SCC+/PSG`、`OPNA`、`OPLL`など）と現在の表示（`CHANNEL`または`SPECTRUM`） |
+| チャンネル行 | チャンネル名（`SCC1`～`SCC5`、`PSGA`～`PSGC`など）、鍵盤（鳴っている音は赤い点）、音名、レベルバー |
+| 波形の行 | SCC曲で、S1～S5各チャンネルの現在の波形 |
+| リズム行 | OPNA・OPLLのリズムランプとADPCM-Bのレベル（`ADPB`） |
+| 小さいファイル一覧 | 現在のフォルダーのパスと、MUCのファイル名・タイトル・サイズ |
+| 最下部 | キー表示（`F10 1 2 … V RETURN`）とそのボタン |
+
+詳しくは[表示とスキン](#表示とスキン)、[ファイルブラウザー](#ファイルブラウザー)、[MUCのコンパイル](#mucのコンパイル)を参照してください。
 
 ## 動作環境
 
@@ -172,6 +232,8 @@ SCC波形は各チャンネル横32ピクセルで表示し、音色の32サン�
 
 選択中の項目と再生中の曲は別です。カーソル移動だけでは再生曲は変わりません。`RETURN`で選択した曲を開きます。
 
+<p align="center"><img src="img/MUCSCOPE_BROWSER.png" width="544" alt="MUCScope ファイル一覧"><br><sub><code>F</code>で開いたファイル一覧。MUCのタイトルとサイズを表示</sub></p>
+
 | キー | 一覧での操作 |
 | --- | --- |
 | `↑` / `↓` | 選択を移動 |
@@ -231,6 +293,15 @@ ONCEの追加演奏はイントロの先頭ではなく、曲のループ位置�
 - **チャンネル表示:** 使用チップに応じたチャンネル名、鍵盤上の音、レベル、音名、対応するパン情報を表示します。SCCでは波形とゲインも表示します。
 - **スペクトラム:** 周波数ごとの活動と各チャンネルのレベルを表示します。配置と色はスキンで変わります。
 
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_SPECTRUM.png" width="400" alt="MUCScope スペクトラム"><br><sub>スペクトラム：MSX-MUSIC曲</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_OPLL.png" width="400" alt="MUCScope MSX-MUSIC チャンネル表示"><br><sub>MSX-MUSIC曲のチャンネル表示：OPL1～OPL6とリズム</sub></td>
+</tr>
+</table>
+
+▶ 動画：[0:00 SCCのスペクトラムと波形](https://www.youtube.com/watch?v=CJvW9Itukdw) · [0:26 MSX-MUSICのチャンネル表示](https://www.youtube.com/watch?v=CJvW9Itukdw&t=26s) · [2:16 OPNAのチャンネル表示](https://www.youtube.com/watch?v=CJvW9Itukdw&t=136s) · [3:00 OPNAのスペクトラム](https://www.youtube.com/watch?v=CJvW9Itukdw&t=180s)
+
 タイトルの下には、曲で使用するチップをすべて`OPNA`、`SCC+`、`OPLL`、`PSG`の順に表示します。たとえば`OPNA/SCC+`、`SCC+/PSG`、`OPNA/OPLL`のようになります。曲データからはSCCとSCC+を区別できないため、SCCは常に`SCC+`と表示します。チップページを切り替えてもこの表示は変わりません。
 
 音名はMUCOMの表記どおり`+`を使います。たとえば`C+4`はC#4です。ADP1行の音名欄には、現在のADPCMサンプル番号を`P03`のように10進数で表示します。MMLの`@3`に当たります。
@@ -255,6 +326,10 @@ MSX PSGとOPLLの行も演奏中の音、鍵盤、レベルを表示します。
 6. `RETURN`で適用・保存、`Esc`で適用せずに戻ります。
 
 チャンネル用は**C01～C40**、スペクトラム用は**V01～V40**です。各カテゴリーは1画面4つ、10ページです。2種類の表示のスキンは別々に選べます。
+
+<p align="center"><img src="img/MUCSCOPE_SKINS.png" width="544" alt="MUCScope スキン選択"><br><sub>チャンネル表示のスキン選択画面（1/10ページ）。選択中のスキンは名前が強調表示される</sub></p>
+
+▶ 動画：[0:30 チャンネルのスキンを選ぶ](https://www.youtube.com/watch?v=CJvW9Itukdw&t=30s) · [0:48 スペクトラムのスキン](https://www.youtube.com/watch?v=CJvW9Itukdw&t=48s)
 
 ### プレイヤーボタンのスタイル
 
@@ -284,6 +359,13 @@ SOLID → OUTLINE → BADGE → KEYCAP → CUTOUT → BRACKET → SOLID
 SCCの音量は**MSX SCC**で調整します。OPNA SSG、MSX PSGとは独立しています。未使用グループの操作では曲の音量は変わりません。
 
 `I`でタイトル、パス、使用チップ、操作説明を表示します。情報/ミキサーは`Esc`、`Tab`または同じメニューキーで閉じます。
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_MIXER.png" width="400" alt="MUCScope 音量ミキサー"><br><sub><code>V</code> 音量ミキサー</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_INFO.png" width="400" alt="MUCScope 曲情報"><br><sub><code>I</code> 曲情報：タイトル、パス、使用チップ、キーのヘルプ</sub></td>
+</tr>
+</table>
 
 ## 設定の保存
 
@@ -330,6 +412,15 @@ ALBUM/
 | READY | 再生準備完了 |
 
 バーは現在の処理位置を示し、全体の完了率や残り時間ではありません。長いマクロの処理では同じ位置にとどまることがあります。
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_COMPILE.png" width="400" alt="MUCScope コンパイル READ段階"><br><sub><code>READ</code>段階：ソースを読み込み中</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_COMPILE2.png" width="400" alt="MUCScope コンパイル PREPARE段階"><br><sub><code>PREPARE</code>段階：音色の読み込みと事前準備</sub></td>
+</tr>
+</table>
+
+▶ 動画：[0:10 PARSE](https://www.youtube.com/watch?v=CJvW9Itukdw&t=10s) · [4:40 PREPARE](https://www.youtube.com/watch?v=CJvW9Itukdw&t=280s) · [5:40 LINK](https://www.youtube.com/watch?v=CJvW9Itukdw&t=340s)
 
 ### コンパイル中の探索と曲変更
 

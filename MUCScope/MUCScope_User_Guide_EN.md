@@ -6,6 +6,8 @@ MUCScope compiles MUC music sources on the MSX and plays the result with channel
 
 ## Contents
 
+- [Watch the video](#watch-the-video)
+- [Screen tour](#screen-tour)
 - [Requirements](#requirements)
 - [Installation and startup](#installation-and-startup)
 - [Keyboard controls](#keyboard-controls)
@@ -17,6 +19,64 @@ MUCScope compiles MUC music sources on the MSX and plays the result with channel
 - [Saved settings](#saved-settings)
 - [MUC compilation](#muc-compilation)
 - [Troubleshooting](#troubleshooting)
+
+## Watch the video
+
+See MUCScope compile and play MUC sources directly on the MSX. Click the picture to open the video on YouTube, or click a time in the table to start at that scene.
+
+<a href="https://www.youtube.com/watch?v=CJvW9Itukdw"><img src="https://img.youtube.com/vi/CJvW9Itukdw/hqdefault.jpg" width="480" alt="MUCScope demo video"></a>
+
+**[MucoMSX] MUCScope Player, the MUC player included in MucoMSX** (7:22, published 2026-10-16; the title on YouTube is in Korean). MUCScope opens, compiles and plays MUC files written for SCC, MSX-MUSIC and OPNA on a Panasonic FS-A1GT (turbo R) in openMSX. The window on the left is openMSX's Audio channel viewer.
+
+| Time | Scene | Section in this guide |
+| --- | --- | --- |
+| [0:00](https://www.youtube.com/watch?v=CJvW9Itukdw) | Spectrum and S1–S5 waveforms of an SCC song | [Channel view and spectrum](#channel-view-and-spectrum) |
+| [0:10](https://www.youtube.com/watch?v=CJvW9Itukdw&t=10s) | Opening another MUC starts compilation: stage (`PARSE`) and progress bar on the top line | [Progress display](#progress-display) |
+| [0:20](https://www.youtube.com/watch?v=CJvW9Itukdw&t=20s) | The compiled MSX-MUSIC song plays: spectrum, channel view at [0:26](https://www.youtube.com/watch?v=CJvW9Itukdw&t=26s) | [Channel view and spectrum](#channel-view-and-spectrum) |
+| [0:30](https://www.youtube.com/watch?v=CJvW9Itukdw&t=30s) | Channel skin selection, spectrum skins at [0:48](https://www.youtube.com/watch?v=CJvW9Itukdw&t=48s) | [Choosing a skin](#choosing-a-skin) |
+| [1:40](https://www.youtube.com/watch?v=CJvW9Itukdw&t=100s) | Channel view of an MSX-MUSIC song | [Channel view and spectrum](#channel-view-and-spectrum) |
+| [2:16](https://www.youtube.com/watch?v=CJvW9Itukdw&t=136s) | Channel view of an OPNA (MUCOM88) song | [Channel view and spectrum](#channel-view-and-spectrum) |
+| [3:00](https://www.youtube.com/watch?v=CJvW9Itukdw&t=180s) | Spectrum of the OPNA song | [Channel view and spectrum](#channel-view-and-spectrum) |
+| [4:40](https://www.youtube.com/watch?v=CJvW9Itukdw&t=280s) | Compiling an OPNA song from another folder (`PREPARE`), `LINK` stage at [5:40](https://www.youtube.com/watch?v=CJvW9Itukdw&t=340s) | [Progress display](#progress-display) |
+
+### Scenes from the video
+
+Click a picture to play the video from that point.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=2s"><img src="img/VIDEO_MUC_0002_SCC_SPECTRUM.png" width="400" alt="SCC song, spectrum and waveforms"></a><br><sub>0:02 SCC song, spectrum and waveforms</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=10s"><img src="img/VIDEO_MUC_0010_COMPILE_PARSE.png" width="400" alt="Compiling (PARSE stage)"></a><br><sub>0:10 Compiling (PARSE stage)</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=38s"><img src="img/VIDEO_MUC_0038_CHANNEL_SKINS.png" width="400" alt="Channel skin selection (page 8/10)"></a><br><sub>0:38 Channel skin selection (page 8/10)</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=162s"><img src="img/VIDEO_MUC_0242_OPNA_CHANNEL.png" width="400" alt="OPNA song, channel view"></a><br><sub>2:42 OPNA song, channel view</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=192s"><img src="img/VIDEO_MUC_0312_OPNA_SPECTRUM.png" width="400" alt="OPNA song, spectrum"></a><br><sub>3:12 OPNA song, spectrum</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=CJvW9Itukdw&t=340s"><img src="img/VIDEO_MUC_0540_COMPILE_LINK.png" width="400" alt="Compiling (LINK stage)"></a><br><sub>5:40 Compiling (LINK stage)</sub></td>
+</tr>
+</table>
+
+The video shows v1.0-Stable (2026-10-16). Compared with the current build, the chip line differs (`SCC RAW` → `SCC+/PSG` and so on) and SCC and PSG now share one page; the key layout, screen structure and compilation stages are the same. The other pictures in this guide were taken from the current build in WebMSX (turbo R configuration).
+
+The MUBScope video shows the volume mixer and the spectrum skin selection: [[MucoMSX] v1.0-Stable released](https://www.youtube.com/watch?v=Xk4awiKuZGc) (2:15).
+
+## Screen tour
+
+<p align="center"><img src="img/MUCSCOPE_SCC.png" width="544" alt="MUCScope channel view"><br><sub>Channel view in the current build: a MUC using SCC and PSG, compiled and playing on turbo R</sub></p>
+
+| Area | What it shows |
+| --- | --- |
+| Top line | Song title, state (`PLAY`, `PAUSE`, `STOP`), speed (`1X`) and playback mode. During compilation: `MUC COMPILE / ENTER NEW / ESC`, the stage and a progress bar |
+| Second line | Chips the song uses (`SCC+/PSG`, `OPNA`, `OPLL` and so on) and the current view (`CHANNEL` or `SPECTRUM`) |
+| Channel rows | Channel name (`SCC1`–`SCC5`, `PSGA`–`PSGC` and so on), keyboard (a red dot marks the sounding note), note name and level bar |
+| Waveform line | For SCC songs, the current waveform of each channel S1–S5 |
+| Rhythm rows | OPNA and OPLL rhythm lamps and the ADPCM-B level (`ADPB`) |
+| Mini file list | Current folder path and the MUC file names, titles and sizes |
+| Bottom | Key labels (`F10 1 2 … V RETURN`) and the matching buttons |
+
+See [Display and skins](#display-and-skins), [File browser](#file-browser) and [MUC compilation](#muc-compilation) for details.
 
 ## Requirements
 
@@ -172,6 +232,8 @@ On a normal Z80, changing directory or drive pauses the music while the list is 
 
 The highlighted item and the currently playing song may differ. Moving the cursor does not change playback; pressing `RETURN` opens the selection.
 
+<p align="center"><img src="img/MUCSCOPE_BROWSER.png" width="544" alt="MUCScope full file list"><br><sub>Full file list opened with <code>F</code>, with MUC titles and sizes</sub></p>
+
 | Key | Browser action |
 | --- | --- |
 | `↑` / `↓` | Move the selection |
@@ -231,6 +293,15 @@ Use `Tab` to switch views.
 - **Channel view:** chip-specific channel names, keyboard notes, levels, note names and supported pan information. SCC songs also show waveforms and gain.
 - **Spectrum:** frequency activity and per-channel levels. Layout and colors depend on the selected skin.
 
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_SPECTRUM.png" width="400" alt="MUCScope spectrum"><br><sub>Spectrum: an MSX-MUSIC song</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_OPLL.png" width="400" alt="MUCScope MSX-MUSIC channel view"><br><sub>Channel view of an MSX-MUSIC song: OPL1–OPL6 and rhythm</sub></td>
+</tr>
+</table>
+
+▶ Video: [0:00 SCC spectrum and waveforms](https://www.youtube.com/watch?v=CJvW9Itukdw) · [0:26 MSX-MUSIC channel view](https://www.youtube.com/watch?v=CJvW9Itukdw&t=26s) · [2:16 OPNA channel view](https://www.youtube.com/watch?v=CJvW9Itukdw&t=136s) · [3:00 OPNA spectrum](https://www.youtube.com/watch?v=CJvW9Itukdw&t=180s)
+
 The line under the title lists every chip the song uses, in the order `OPNA`, `SCC+`, `OPLL`, `PSG` — for example `OPNA/SCC+`, `SCC+/PSG` or `OPNA/OPLL`. The song data cannot tell SCC from SCC+, so SCC is always shown as `SCC+`. This line does not change when you switch chip pages.
 
 Note names use the MUCOM spelling with `+`: `C+4` is C#4. The note cell of the ADP1 row shows the current ADPCM sample number in decimal, such as `P03` for MML `@3`.
@@ -255,6 +326,10 @@ When a new song is loaded, the player automatically selects its primary chip pag
 6. Press `RETURN` to apply and save, or `Esc` to leave without applying.
 
 Channel skins are **C01–C40** and spectrum skins are **V01–V40**. Each category has 10 pages with four previews per page. Channel and spectrum skins are selected independently.
+
+<p align="center"><img src="img/MUCSCOPE_SKINS.png" width="544" alt="MUCScope skin selection"><br><sub>Channel skin selection (page 1/10). The name of the selected skin is highlighted</sub></p>
+
+▶ Video: [0:30 choosing a channel skin](https://www.youtube.com/watch?v=CJvW9Itukdw&t=30s) · [0:48 spectrum skins](https://www.youtube.com/watch?v=CJvW9Itukdw&t=48s)
 
 ### Toolbar styles
 
@@ -284,6 +359,13 @@ Open the mixer with `V`. Choose a group with `↑` / `↓` and adjust it with `�
 Use **MSX SCC** for SCC volume. It is independent of OPNA SSG and MSX PSG. Adjusting an unused group does not affect the song.
 
 `I` opens song information: title, path, sound chips and keyboard help. Close info/mixer with `Esc`, `Tab` or the same menu key.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_MIXER.png" width="400" alt="MUCScope volume mixer"><br><sub><code>V</code> volume mixer</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_INFO.png" width="400" alt="MUCScope song information"><br><sub><code>I</code> song information: title, path, chips and key help</sub></td>
+</tr>
+</table>
 
 ## Saved settings
 
@@ -330,6 +412,15 @@ Opening a source stops the previous song and starts compilation. The top of the 
 | READY | Ready to play |
 
 The bar shows the current work position, not an overall percentage or time remaining. A long macro can keep the indicator at the same position for a while.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_COMPILE.png" width="400" alt="MUCScope compile READ stage"><br><sub><code>READ</code> stage: reading the source</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUCSCOPE_COMPILE2.png" width="400" alt="MUCScope compile PREPARE stage"><br><sub><code>PREPARE</code> stage: loading voices and preparing</sub></td>
+</tr>
+</table>
+
+▶ Video: [0:10 PARSE](https://www.youtube.com/watch?v=CJvW9Itukdw&t=10s) · [4:40 PREPARE](https://www.youtube.com/watch?v=CJvW9Itukdw&t=280s) · [5:40 LINK](https://www.youtube.com/watch?v=CJvW9Itukdw&t=340s)
 
 ### Browsing and replacing a compilation
 

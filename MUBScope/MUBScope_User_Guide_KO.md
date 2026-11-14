@@ -6,6 +6,8 @@ MUBScope는 컴파일된 MUB 음악 파일을 MSX에서 재생하는 비주얼 �
 
 ## 목차
 
+- [영상으로 보기](#영상으로-보기)
+- [화면 둘러보기](#화면-둘러보기)
 - [실행 환경](#실행-환경)
 - [설치와 실행](#설치와-실행)
 - [키보드 조작](#키보드-조작)
@@ -16,6 +18,62 @@ MUBScope는 컴파일된 MUB 음악 파일을 MSX에서 재생하는 비주얼 �
 - [음량과 곡 정보](#음량과-곡-정보)
 - [설정 저장](#설정-저장)
 - [문제 해결](#문제-해결)
+
+## 영상으로 보기
+
+MUBScope가 실제로 어떻게 움직이는지 먼저 영상으로 보세요. 그림을 누르면 YouTube에서 열리고, 표의 시각을 누르면 그 장면부터 재생합니다.
+
+<a href="https://www.youtube.com/watch?v=Xk4awiKuZGc"><img src="https://img.youtube.com/vi/Xk4awiKuZGc/hqdefault.jpg" width="480" alt="MUBScope 시연 영상: [MucoMSX] v1.0-Stable released"></a>
+
+**[MucoMSX] v1.0-Stable released 첫 정식버전 릴리즈** (2분 15초, 2026-10-16 공개). openMSX의 Panasonic FS-A1GT(turbo R)에서 MSX-MUSIC, SCC, OPNA 곡을 차례로 재생합니다. 왼쪽 창은 openMSX의 Audio channel viewer입니다.
+
+| 시각 | 장면 | 이 설명서의 절 |
+| --- | --- | --- |
+| [0:00](https://www.youtube.com/watch?v=Xk4awiKuZGc) | MSX-MUSIC(OPLL) 곡의 채널뷰 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+| [0:15](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=15s) | `Tab`으로 스펙트럼 전환 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+| [0:31](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=31s) | 볼륨 믹서(`V`) | [음량과 곡 정보](#음량과-곡-정보) |
+| [0:54](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=54s) | 스펙트럼 스킨 선택 화면 | [스킨 선택](#스킨-선택) |
+| [1:07](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=67s) | SCC 곡: SCC 5채널과 S1~S5 파형 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+| [1:21](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=81s) | SCC 곡의 스펙트럼 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+| [1:52](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=112s) | OPNA 곡(MUCOM88)의 스펙트럼, [1:59](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=119s)부터 2열 채널뷰 | [채널뷰와 스펙트럼](#채널뷰와-스펙트럼) |
+
+### 영상 속 장면
+
+그림을 누르면 그 시각부터 영상을 재생합니다.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=5s"><img src="img/VIDEO_MUB_0005_OPLL_CHANNEL.png" width="400" alt="MSX-MUSIC 곡 채널뷰"></a><br><sub>0:05 MSX-MUSIC 곡 채널뷰</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=24s"><img src="img/VIDEO_MUB_0024_OPLL_SPECTRUM.png" width="400" alt="같은 곡의 스펙트럼"></a><br><sub>0:24 같은 곡의 스펙트럼</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=55s"><img src="img/VIDEO_MUB_0055_SPECTRUM_SKINS.png" width="400" alt="스펙트럼 스킨 선택(3/10쪽)"></a><br><sub>0:55 스펙트럼 스킨 선택(3/10쪽)</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=72s"><img src="img/VIDEO_MUB_0112_SCC_CHANNEL.png" width="400" alt="SCC 곡 채널뷰와 파형"></a><br><sub>1:12 SCC 곡 채널뷰와 파형</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=127s"><img src="img/VIDEO_MUB_0207_OPNA_CHANNEL.png" width="400" alt="OPNA 곡의 2열 채널뷰"></a><br><sub>2:07 OPNA 곡의 2열 채널뷰</sub></td>
+<td width="50%"></td>
+</tr>
+</table>
+
+영상은 v1.0-Stable(2026-10-16) 화면입니다. 지금 빌드와 비교하면 칩 표시 줄(`OPLL RAW` → `OPLL`, `SCC RAW` → `SCC+/PSG`)과 SCC·PSG를 한 페이지에 함께 보여 주는 점이 다르고, 키 배치와 화면 구성은 같습니다. 이 설명서의 다른 그림은 지금 빌드를 WebMSX(turbo R 구성)에서 찍은 것입니다.
+
+같은 화면을 쓰는 MUCScope 영상도 참고하세요. MUC 소스를 MSX에서 바로 컴파일해 재생하는 모습과 채널 스킨 선택을 볼 수 있습니다: [[MucoMSX] MUC 전용 Player인 MUCScope Player](https://www.youtube.com/watch?v=CJvW9Itukdw) (7분 22초).
+
+## 화면 둘러보기
+
+<p align="center"><img src="img/MUBSCOPE_CHANNEL.png" width="544" alt="MUBScope 채널뷰"><br><sub>지금 빌드의 채널뷰. turbo R에서 OPNA와 ADPCM을 쓰는 곡을 재생하는 중</sub></p>
+
+| 영역 | 표시 내용 |
+| --- | --- |
+| 맨 윗줄 | 곡 제목, 상태(`PLAY`·`PAUSE`·`STOP`), 배속(`1X`), 재생 모드(`ONCE`·`LOOP`·`RANDOM`) |
+| 둘째 줄 | 곡이 쓰는 칩(`OPNA`, `SCC+/PSG` 등)과 지금 화면(`CHANNEL` 또는 `SPECTRUM`) |
+| 채널 행 | 채널 이름(`FM1`~`FM6`, `SSGA`~`SSGC`, `ADP1` 등), 건반(지금 울리는 음은 빨간 점), 음 이름, 레벨 막대 |
+| 리듬 행 | OPNA·OPLL 리듬 표시등(`BD` `SD` `CY` `HH` `TM` `RM`)과 ADPCM-B 레벨(`ADPB`) |
+| 작은 파일 목록 | 현재 폴더 경로와 파일명·제목·크기. PCM이 든 MUB는 `4KB+49KB`처럼 MUB와 PCM 크기를 나눠 표시 |
+| 맨 아래 | 키 표시(`F10 1 2 … V RETURN`)와 그 키의 버튼 |
+
+각 영역의 자세한 내용은 [화면과 스킨](#화면과-스킨)과 [파일 브라우저](#파일-브라우저)에 있습니다.
 
 ## 실행 환경
 
@@ -156,6 +214,8 @@ SCC 파형은 채널당 가로 32픽셀로 표시합니다. 음색의 32개 샘�
 - 채널뷰, 스펙트럼, 칩 페이지, 스킨 선택, 전체 파일 목록, 볼륨 믹서는 사용할 수 없습니다. 아래 버튼 중 `F10`, `F`, `V` 아이콘은 어둡게 표시됩니다.
 - 재생 중에는 채널 표시를 위한 칩 상태 기록과 화면 처리를 하지 않습니다. 소리는 고속 CPU에서와 같습니다.
 
+<p align="center"><img src="img/MUBSCOPE_Z80.png" width="544" alt="MUBScope 일반 Z80 모드"><br><sub>일반 Z80 모드(<code>/N</code>): 맨 윗줄 상태와 파일 브라우저만 표시하고 <code>F10</code>·<code>F</code>·<code>V</code> 버튼은 어둡게 표시</sub></p>
+
 | 키 | 동작 |
 | --- | --- |
 | `↑` `↓` `←` `→`, `RETURN`, `Backspace`, `+` `=` `-`, `D` | 파일 브라우저 조작 |
@@ -174,6 +234,8 @@ SCC 파형은 채널당 가로 32픽셀로 표시합니다. 음색의 32개 샘�
 ## 파일 브라우저
 
 커서로 선택한 항목과 현재 재생 중인 곡은 서로 다를 수 있습니다. 커서를 움직이기만 하면 재생곡은 바뀌지 않습니다. `RETURN`을 누르면 선택한 곡으로 바뀝니다.
+
+<p align="center"><img src="img/MUBSCOPE_BROWSER.png" width="544" alt="MUBScope 전체 파일 목록"><br><sub><code>F</code>로 연 전체 파일 목록. 크기 열의 <code>4KB+49KB</code>는 MUB와 PCM 크기</sub></p>
 
 | 키 | 파일 목록에서의 동작 |
 | --- | --- |
@@ -240,6 +302,15 @@ ONCE의 추가 연주는 곡의 루프 위치에서 시작합니다. 인트로�
 - **채널뷰**: 사용 칩에 맞춘 채널 이름, 건반의 현재 음, 음량, 음표와 지원되는 팬 정보를 표시합니다. SCC 곡은 파형과 게인도 확인할 수 있습니다.
 - **스펙트럼**: 주파수별 활동 표시와 채널별 레벨을 보여줍니다. 배치와 색상은 선택한 스킨에 따라 달라집니다.
 
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_SPECTRUM.png" width="400" alt="MUBScope 스펙트럼"><br><sub>스펙트럼: OPNA 곡</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_SCC.png" width="400" alt="MUBScope SCC 채널뷰"><br><sub>SCC+/PSG 곡: SCC 5채널과 PSG 3채널, 아래 줄은 S1~S5 파형</sub></td>
+</tr>
+</table>
+
+▶ 영상: [0:00 MSX-MUSIC 채널뷰](https://www.youtube.com/watch?v=Xk4awiKuZGc) · [0:15 스펙트럼 전환](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=15s) · [1:07 SCC 곡](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=67s) · [1:59 OPNA 2열 채널뷰](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=119s)
+
 제목 아래에는 곡이 사용하는 칩을 모두 `OPNA`, `SCC+`, `OPLL`, `PSG` 순서로 표시합니다. 예를 들어 `OPNA/SCC+`, `SCC+/PSG`, `OPNA/OPLL`처럼 나옵니다. 곡 데이터로는 SCC와 SCC+를 구분할 수 없으므로 SCC는 항상 `SCC+`로 표시합니다. 칩 페이지를 바꿔도 이 표시는 같습니다.
 
 음 이름은 MUCOM 표기대로 `+`를 사용합니다. 예를 들어 `C+4`는 C#4입니다. ADP1 행의 음 칸에는 현재 ADPCM 샘플 번호를 `P03`처럼 10진수로 표시합니다. MML의 `@3`에 해당합니다.
@@ -264,6 +335,10 @@ MSX PSG와 OPLL 행도 연주 중의 음, 건반과 레벨을 표시합니다. O
 6. `RETURN`으로 적용하고 저장합니다. `Esc`는 적용하지 않고 돌아옵니다.
 
 채널뷰는 **C01~C40**, 스펙트럼은 **V01~V40**입니다. 카테고리마다 4개씩 10페이지로 배치되어 있으며, 두 화면의 스킨은 따로 선택합니다.
+
+<p align="center"><img src="img/MUBSCOPE_SKINS.png" width="544" alt="MUBScope 스킨 선택"><br><sub>채널뷰 스킨 선택 화면(1/10쪽). 선택한 스킨은 아래 이름 칸이 강조됨</sub></p>
+
+▶ 영상: [0:54 스펙트럼 스킨 고르기](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=54s)
 
 ### 플레이어 버튼 스타일
 
@@ -293,6 +368,15 @@ SOLID → OUTLINE → BADGE → KEYCAP → CUTOUT → BRACKET → SOLID
 SCC 음량은 **MSX SCC**에서 조절합니다. OPNA SSG나 MSX PSG와 별도입니다. 곡에서 사용하지 않는 그룹을 조절해도 소리가 달라지지 않습니다.
 
 `I`로 곡 정보를 엽니다. 현재 제목, 파일 경로, 사용 칩과 키보드 도움말을 볼 수 있습니다. 정보·믹서를 닫으려면 `Esc`, `Tab`, 또는 같은 메뉴 키를 다시 누릅니다.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_MIXER.png" width="400" alt="MUBScope 볼륨 믹서"><br><sub><code>V</code> 볼륨 믹서</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_INFO.png" width="400" alt="MUBScope 곡 정보"><br><sub><code>I</code> 곡 정보: 제목, 경로, 사용 칩, 키 도움말</sub></td>
+</tr>
+</table>
+
+▶ 영상: [0:31 볼륨 믹서](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=31s)
 
 ## 설정 저장
 

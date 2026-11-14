@@ -6,6 +6,8 @@ MUBScope plays compiled MUB music on the MSX with channel keyboards, levels, spe
 
 ## Contents
 
+- [Watch the video](#watch-the-video)
+- [Screen tour](#screen-tour)
 - [Requirements](#requirements)
 - [Installation and startup](#installation-and-startup)
 - [Keyboard controls](#keyboard-controls)
@@ -16,6 +18,62 @@ MUBScope plays compiled MUB music on the MSX with channel keyboards, levels, spe
 - [Volume and song information](#volume-and-song-information)
 - [Saved settings](#saved-settings)
 - [Troubleshooting](#troubleshooting)
+
+## Watch the video
+
+See MUBScope in action first. Click the picture to open the video on YouTube, or click a time in the table to start at that scene.
+
+<a href="https://www.youtube.com/watch?v=Xk4awiKuZGc"><img src="https://img.youtube.com/vi/Xk4awiKuZGc/hqdefault.jpg" width="480" alt="MUBScope demo video: [MucoMSX] v1.0-Stable released"></a>
+
+**[MucoMSX] v1.0-Stable released** (2:15, published 2026-10-16). MUBScope plays MSX-MUSIC, SCC and OPNA songs on a Panasonic FS-A1GT (turbo R) in openMSX. The window on the left is openMSX's Audio channel viewer.
+
+| Time | Scene | Section in this guide |
+| --- | --- | --- |
+| [0:00](https://www.youtube.com/watch?v=Xk4awiKuZGc) | Channel view of an MSX-MUSIC (OPLL) song | [Channel view and spectrum](#channel-view-and-spectrum) |
+| [0:15](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=15s) | `Tab` switches to the spectrum | [Channel view and spectrum](#channel-view-and-spectrum) |
+| [0:31](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=31s) | Volume mixer (`V`) | [Volume and song information](#volume-and-song-information) |
+| [0:54](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=54s) | Spectrum skin selection | [Choosing a skin](#choosing-a-skin) |
+| [1:07](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=67s) | SCC song: five SCC channels and the S1–S5 waveforms | [Channel view and spectrum](#channel-view-and-spectrum) |
+| [1:21](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=81s) | Spectrum of the SCC song | [Channel view and spectrum](#channel-view-and-spectrum) |
+| [1:52](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=112s) | Spectrum of an OPNA (MUCOM88) song, two-column channel view from [1:59](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=119s) | [Channel view and spectrum](#channel-view-and-spectrum) |
+
+### Scenes from the video
+
+Click a picture to play the video from that point.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=5s"><img src="img/VIDEO_MUB_0005_OPLL_CHANNEL.png" width="400" alt="MSX-MUSIC song, channel view"></a><br><sub>0:05 MSX-MUSIC song, channel view</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=24s"><img src="img/VIDEO_MUB_0024_OPLL_SPECTRUM.png" width="400" alt="Same song, spectrum"></a><br><sub>0:24 Same song, spectrum</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=55s"><img src="img/VIDEO_MUB_0055_SPECTRUM_SKINS.png" width="400" alt="Spectrum skin selection (page 3/10)"></a><br><sub>0:55 Spectrum skin selection (page 3/10)</sub></td>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=72s"><img src="img/VIDEO_MUB_0112_SCC_CHANNEL.png" width="400" alt="SCC song, channel view and waveforms"></a><br><sub>1:12 SCC song, channel view and waveforms</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top" width="50%"><a href="https://www.youtube.com/watch?v=Xk4awiKuZGc&t=127s"><img src="img/VIDEO_MUB_0207_OPNA_CHANNEL.png" width="400" alt="OPNA song, two-column channel view"></a><br><sub>2:07 OPNA song, two-column channel view</sub></td>
+<td width="50%"></td>
+</tr>
+</table>
+
+The video shows v1.0-Stable (2026-10-16). Compared with the current build, the chip line differs (`OPLL RAW` → `OPLL`, `SCC RAW` → `SCC+/PSG`) and SCC and PSG now share one page; the key layout and screen structure are the same. The other pictures in this guide were taken from the current build in WebMSX (turbo R configuration).
+
+The MUCScope video uses the same screens. It shows MUC sources being compiled and played directly on the MSX, and the channel skin selection: [[MucoMSX] MUCScope Player, the MUC player in MucoMSX](https://www.youtube.com/watch?v=CJvW9Itukdw) (7:22).
+
+## Screen tour
+
+<p align="center"><img src="img/MUBSCOPE_CHANNEL.png" width="544" alt="MUBScope channel view"><br><sub>Channel view in the current build: an OPNA song with ADPCM playing on turbo R</sub></p>
+
+| Area | What it shows |
+| --- | --- |
+| Top line | Song title, state (`PLAY`, `PAUSE`, `STOP`), speed (`1X`) and playback mode (`ONCE`, `LOOP`, `RANDOM`) |
+| Second line | Chips the song uses (`OPNA`, `SCC+/PSG` and so on) and the current view (`CHANNEL` or `SPECTRUM`) |
+| Channel rows | Channel name (`FM1`–`FM6`, `SSGA`–`SSGC`, `ADP1` and so on), keyboard (a red dot marks the sounding note), note name and level bar |
+| Rhythm rows | OPNA and OPLL rhythm lamps (`BD` `SD` `CY` `HH` `TM` `RM`) and the ADPCM-B level (`ADPB`) |
+| Mini file list | Current folder path, file names, titles and sizes. A MUB with PCM shows both sizes, as in `4KB+49KB` |
+| Bottom | Key labels (`F10 1 2 … V RETURN`) and the matching buttons |
+
+See [Display and skins](#display-and-skins) and [File browser](#file-browser) for details.
 
 ## Requirements
 
@@ -156,6 +214,8 @@ On a normal Z80 (3.58 MHz), or when automatic acceleration is disabled with `/N`
 - Channel view, spectrum, chip pages, skin selection, the full file list and the volume mixer are not available. The `F10`, `F` and `V` toolbar icons are dimmed.
 - No chip-state capture or drawing for the channel display runs during playback. The sound is the same as on the faster CPUs.
 
+<p align="center"><img src="img/MUBSCOPE_Z80.png" width="544" alt="MUBScope normal Z80 mode"><br><sub>Normal Z80 mode (<code>/N</code>): only the status line and the file browser; the <code>F10</code>, <code>F</code> and <code>V</code> buttons are dimmed</sub></p>
+
 | Key | Action |
 | --- | --- |
 | `↑` `↓` `←` `→`, `RETURN`, `Backspace`, `+` `=` `-`, `D` | File browser |
@@ -174,6 +234,8 @@ On a normal Z80, changing directory or drive pauses the music while the list is 
 ## File browser
 
 The highlighted item and the currently playing song may differ. Moving the cursor does not change playback; pressing `RETURN` opens the selection.
+
+<p align="center"><img src="img/MUBSCOPE_BROWSER.png" width="544" alt="MUBScope full file list"><br><sub>Full file list opened with <code>F</code>. <code>4KB+49KB</code> in the size column is the MUB and PCM size</sub></p>
 
 | Key | Browser action |
 | --- | --- |
@@ -238,6 +300,15 @@ Use `Tab` to switch views.
 - **Channel view:** chip-specific channel names, keyboard notes, levels, note names and supported pan information. SCC songs also show waveforms and gain.
 - **Spectrum:** frequency activity and per-channel levels. Layout and colors depend on the selected skin.
 
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_SPECTRUM.png" width="400" alt="MUBScope spectrum"><br><sub>Spectrum: an OPNA song</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_SCC.png" width="400" alt="MUBScope SCC channel view"><br><sub>SCC+/PSG song: five SCC and three PSG channels, S1–S5 waveforms below</sub></td>
+</tr>
+</table>
+
+▶ Video: [0:00 MSX-MUSIC channel view](https://www.youtube.com/watch?v=Xk4awiKuZGc) · [0:15 switching to the spectrum](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=15s) · [1:07 SCC song](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=67s) · [1:59 OPNA two-column view](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=119s)
+
 The line under the title lists every chip the song uses, in the order `OPNA`, `SCC+`, `OPLL`, `PSG` — for example `OPNA/SCC+`, `SCC+/PSG` or `OPNA/OPLL`. The song data cannot tell SCC from SCC+, so SCC is always shown as `SCC+`. This line does not change when you switch chip pages.
 
 Note names use the MUCOM spelling with `+`: `C+4` is C#4. The note cell of the ADP1 row shows the current ADPCM sample number in decimal, such as `P03` for MML `@3`.
@@ -262,6 +333,10 @@ When a new song is loaded, the player automatically selects its primary chip pag
 6. Press `RETURN` to apply and save, or `Esc` to leave without applying.
 
 Channel skins are **C01–C40** and spectrum skins are **V01–V40**. Each category has 10 pages with four previews per page. Channel and spectrum skins are selected independently.
+
+<p align="center"><img src="img/MUBSCOPE_SKINS.png" width="544" alt="MUBScope skin selection"><br><sub>Channel skin selection (page 1/10). The name of the selected skin is highlighted</sub></p>
+
+▶ Video: [0:54 choosing a spectrum skin](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=54s)
 
 ### Toolbar styles
 
@@ -291,6 +366,15 @@ Open the mixer with `V`. Choose a group with `↑` / `↓` and adjust it with `�
 Use **MSX SCC** for SCC volume. It is independent of OPNA SSG and MSX PSG. Adjusting an unused group does not affect the song.
 
 `I` opens song information: title, path, sound chips and keyboard help. Close info/mixer with `Esc`, `Tab` or the same menu key.
+
+<table>
+<tr>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_MIXER.png" width="400" alt="MUBScope volume mixer"><br><sub><code>V</code> volume mixer</sub></td>
+<td align="center" valign="top" width="50%"><img src="img/MUBSCOPE_INFO.png" width="400" alt="MUBScope song information"><br><sub><code>I</code> song information: title, path, chips and key help</sub></td>
+</tr>
+</table>
+
+▶ Video: [0:31 volume mixer](https://www.youtube.com/watch?v=Xk4awiKuZGc&t=31s)
 
 ## Saved settings
 
