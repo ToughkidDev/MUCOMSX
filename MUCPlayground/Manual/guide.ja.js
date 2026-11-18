@@ -302,7 +302,7 @@ export default [
 </ul>
 
 <h3>音色・PCMファイルの添付</h3>
-<p>曲が<code>#voice</code>（FM音色）、<code>#sccvoice</code>（SCC波形）、<code>#pcm</code>（ADPCMサンプル）タグでファイルを指定したり、既定のファイル（<code>voice.dat</code>、<code>SCCVOICE.DAT</code>、<code>mucompcm.bin</code>）を使ったりする場合は、そのファイルが必要です。ブラウザは自分が開いたファイルの隣にあるファイルを読めないため、次のいずれかで添付します。</p>
+<p>曲が<code>#voice</code>（FM音色）、<code>#sccvoice</code>（SCC波形）、<code>#pcm</code>（ADPCMサンプル）タグでファイルを指定したり、既定のファイル（<code>voice.dat</code>、<code>SCCVOICE.DAT</code>）を使ったりする場合は、そのファイルが必要です。名前のない<code>#pcm</code>は<code>MUCOMPCM.BIN</code>を意味し、<code>#pcm</code>タグがなければPCMファイルは読みません。Kパートに音符がある場合はタグが必須です（エラーMSX20、MucoMSXと同じ）。長い名前のファイルはMSXのSDカードと同じく8.3の名前（<code>bosco_pcm.bin</code> → <code>BOSCO_PC.BIN</code>）でも探します。ブラウザは自分が開いたファイルの隣にあるファイルを読めないため、次のいずれかで添付します。</p>
 <ol>
   <li><b>開く…</b>で曲と一緒に選ぶ</li>
   <li><b>フォルダ…</b>でフォルダごと開く</li>
@@ -398,7 +398,7 @@ export default [
 <p><b>〰 SCCバンク</b>は、SCC波形（<code>#sccvoice</code>ファイル、MUCの<code>@Wn:{…}</code>、<code>?WDn={…}</code>）を同じ方法で扱います。波形の図と形（サイン、のこぎり、矩形、パルス、三角）が表示され、<code>.dat</code>（SCWD）、<code>.muc</code>、<code>.vgm</code>/<code>.vgz</code>、Furnaceの<code>.fur</code>/<code>.fuw</code>からインポートできます。</p>
 
 <h3>PCMバンク</h3>
-<p><b>🥁 PCMバンク</b>は、ADPCMパート（<code>K</code>）のサンプル<code>@1</code>–<code>@32</code>を表示します。PCMファイル（<code>#pcm</code>、<code>mucompcm.bin</code>）やMUCの<code>#@pcm</code>行から読み込み、波形、長さ、サイズ、使われている回数と、チップ容量（256 KB）のうちの使用量が表示されます。押すとチップと同じ音で聴けます。<code>.wav</code>、mp3・ogg・flacなどブラウザが読める音声、PCMバンク、<code>.mub</code>、<code>.vgm</code>/<code>.vgz</code>からインポートできます。</p>
+<p><b>🥁 PCMバンク</b>は、ADPCMパート（<code>K</code>）のサンプル<code>@1</code>–<code>@32</code>を表示します。PCMファイル（<code>#pcm</code>、名前がなければ<code>MUCOMPCM.BIN</code>）やMUCの<code>#@pcm</code>行から読み込み、波形、長さ、サイズ、使われている回数と、チップ容量（256 KB）のうちの使用量が表示されます。押すとチップと同じ音で聴けます。<code>.wav</code>、mp3・ogg・flacなどブラウザが読める音声、PCMバンク、<code>.mub</code>、<code>.vgm</code>/<code>.vgz</code>からインポートできます。</p>
 
 <h3>FM音色エディタ</h3>
 <p>FM音色のプレビューやFMバンクの<b>編集</b>で開きます。FurnaceのFM楽器エディタを模した画面で、8種類のアルゴリズムの図、OP1のフィードバック、オペレータごとにAR、DR（D1R）、SL（D1L）、D2R、RR、TL、KS、MULT、DTのスライダーとエンベロープの図があります。キャリアのTLが0でないと警告します。<b>▶ 試聴</b>（o1–o7、近似の音）、オペレータのコピー・貼り付け、<b>初期化</b>、元に戻すが使え、<b>適用</b>/<b>完了</b>は元の行の形とコメントを保ったまま書き直します。</p>

@@ -302,7 +302,7 @@ export default [
 </ul>
 
 <h3>Attaching voice and PCM files</h3>
-<p>A song needs a file when it names one with a <code>#voice</code> (FM voices), <code>#sccvoice</code> (SCC waves) or <code>#pcm</code> (ADPCM samples) tag, or when it uses a default file (<code>voice.dat</code>, <code>SCCVOICE.DAT</code>, <code>mucompcm.bin</code>). The browser cannot read the files next to a file you opened, so attach them in one of these ways.</p>
+<p>A song needs a file when it names one with a <code>#voice</code> (FM voices), <code>#sccvoice</code> (SCC waves) or <code>#pcm</code> (ADPCM samples) tag, or when it uses a default file (<code>voice.dat</code>, <code>SCCVOICE.DAT</code>). A <code>#pcm</code> tag without a name means <code>MUCOMPCM.BIN</code>; without a <code>#pcm</code> tag no PCM file is read, and a K part that plays notes needs the tag (error MSX20, as in MucoMSX). A long name is also found under its 8.3 name (<code>bosco_pcm.bin</code> → <code>BOSCO_PC.BIN</code>), as on an MSX SD card. The browser cannot read the files next to a file you opened, so attach them in one of these ways.</p>
 <ol>
   <li>Pick them together with the song in <b>Open…</b></li>
   <li>Open the whole folder with <b>Folder…</b></li>
@@ -398,7 +398,7 @@ export default [
 <p><b>〰 SCC bank</b> handles SCC waves (the <code>#sccvoice</code> file, and <code>@Wn:{…}</code> and <code>?WDn={…}</code> in the MUC) the same way. It shows a picture of each wave and its shape (sine, saw, square, pulse, triangle), and can import from <code>.dat</code> (SCWD), <code>.muc</code>, <code>.vgm</code>/<code>.vgz</code> and Furnace <code>.fur</code>/<code>.fuw</code>.</p>
 
 <h3>PCM bank</h3>
-<p><b>🥁 PCM bank</b> shows the samples <code>@1</code>–<code>@32</code> of the ADPCM part (<code>K</code>). It reads them from the PCM file (<code>#pcm</code>, <code>mucompcm.bin</code>) or from the <code>#@pcm</code> lines of the MUC, and shows each sample's wave, length, size and how many times it is used, and how much of the chip's memory (256 KB) is in use. Click a sample to hear it as the chip plays it. It can import from <code>.wav</code>, any sound the browser can read (mp3, ogg, flac and so on), PCM banks, <code>.mub</code> and <code>.vgm</code>/<code>.vgz</code>.</p>
+<p><b>🥁 PCM bank</b> shows the samples <code>@1</code>–<code>@32</code> of the ADPCM part (<code>K</code>). It reads them from the PCM file (<code>#pcm</code>; without a name, <code>MUCOMPCM.BIN</code>) or from the <code>#@pcm</code> lines of the MUC, and shows each sample's wave, length, size and how many times it is used, and how much of the chip's memory (256 KB) is in use. Click a sample to hear it as the chip plays it. It can import from <code>.wav</code>, any sound the browser can read (mp3, ogg, flac and so on), PCM banks, <code>.mub</code> and <code>.vgm</code>/<code>.vgz</code>.</p>
 
 <h3>FM voice editor</h3>
 <p>Open it from an FM voice preview or with <b>Edit</b> in the FM bank. Modelled on Furnace's FM instrument editor, it has pictures of the 8 algorithms, OP1 feedback, and for each operator sliders for AR, DR (D1R), SL (D1L), D2R, RR, TL, KS, MULT and DT, with a picture of the envelope. It warns you when a carrier's TL is not 0. You can use <b>▶ Listen</b> (o1–o7, an approximate sound), copy and paste operators, <b>Init</b> and undo. <b>Apply</b>/<b>Done</b> write the voice back, keeping the original line layout and comments.</p>

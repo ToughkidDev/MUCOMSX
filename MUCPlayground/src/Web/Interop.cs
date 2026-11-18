@@ -35,8 +35,31 @@ public static partial class Interop
     [JSExport]
     public static byte[] EncodeShiftJis(string text) => MucEngine.ShiftJis.GetBytes(text ?? "");
 
+    // A file the song names, by name in any letter case, else by the name MSX-DOS would
+    // read (8.3: bosco_pcm.bin -> BOSCO_PC.BIN), as MDPlayer4Mac 0.3.2 finds companions.
     static Stream Open(string name)
-        => name != null && files.TryGetValue(Path.GetFileName(name.Replace('\\', '/')), out byte[] d) ? new MemoryStream(d, false) : null;
+    {
+        if (name == null) return null;
+        string file = Path.GetFileName(name.Replace('\\', '/'));
+        // Not for the driver's own default bank names of the other chips (mucompcm_2nd.bin …):
+        // cut to 8.3 they read MUCOMPCM.BIN, the first OPNA's bank, which is not theirs.
+        bool driverDefault = file.StartsWith("mucompcm_", StringComparison.OrdinalIgnoreCase);
+        if (files.TryGetValue(file, out byte[] d) || (!driverDefault && ShortName(file) is string s83 && files.TryGetValue(s83, out d)))
+            return new MemoryStream(d, false);
+        return null;
+    }
+
+    static string ShortName(string name)
+    {
+        int dot = name.IndexOf('.');
+        string stem = dot < 0 ? name : name[..dot], ext = dot < 0 ? "" : name[(dot + 1)..];
+        int next = ext.IndexOf('.');
+        if (next >= 0) ext = ext[..next];
+        if (stem.Length <= 8 && ext.Length <= 3 && next < 0) return null;
+        stem = stem.Length > 8 ? stem[..8] : stem;
+        ext = ext.Length > 3 ? ext[..3] : ext;
+        return ext.Length == 0 ? stem : stem + "." + ext;
+    }
 
     // MUC text from the editor. MUCOM88 reads Shift-JIS, so encode before compiling.
     [JSExport]
@@ -99,6 +122,7 @@ public static partial class Interop
             w.WriteBoolean("msx", player.Msx);
             w.WriteString("title", player.Title);
             w.WriteString("composer", player.Composer);
+            w.WriteString("missingPcm", ok ? player.Notice : "");
         });
     }
 
@@ -117,6 +141,7 @@ public static partial class Interop
             w.WriteBoolean("msx", player.Msx);
             w.WriteString("title", player.Title);
             w.WriteString("composer", player.Composer);
+            w.WriteString("missingPcm", ok ? player.Notice : "");
         });
     }
 

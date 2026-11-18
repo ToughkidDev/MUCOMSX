@@ -76,7 +76,21 @@ const baseOf = (path) => path.slice(path.lastIndexOf('/') + 1).toLowerCase();
 // file of that name in the folder, else one in a folder that also holds a file named like
 // the song. null when there is none.
 export function findRef(folder, songPath, ref) {
-  const want = ref.replace(/\\/g, '/').split('/').pop().toLowerCase();
+  const name = ref.replace(/\\/g, '/').split('/').pop();
+  return findName(folder, songPath, name.toLowerCase())
+    // as MSX-DOS reads a long name (MDPlayer4Mac 0.3.2): cut to 8.3, bosco_pcm.bin -> BOSCO_PC.BIN
+    || (shortName(name) ? findName(folder, songPath, shortName(name).toLowerCase()) : null);
+}
+function shortName(name) {
+  const dot = name.indexOf('.');
+  let stem = dot < 0 ? name : name.slice(0, dot), ext = dot < 0 ? '' : name.slice(dot + 1);
+  const next = ext.indexOf('.');
+  if (next >= 0) ext = ext.slice(0, next);
+  if (stem.length <= 8 && ext.length <= 3 && next < 0) return null;
+  stem = stem.slice(0, 8); ext = ext.slice(0, 3);
+  return ext ? `${stem}.${ext}` : stem;
+}
+function findName(folder, songPath, want) {
   const near = songPath !== null ? dirOf(songPath).toLowerCase() : null;
   if (near !== null) {
     const hit = folder.entries.find((e) => e.path.toLowerCase() === near + want);

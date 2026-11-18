@@ -147,10 +147,12 @@ public static class MucEngine
                 return result;
             }
 
-            // As MDPlayer4Mac's MucomDotNET.CompileMuc does since 0.3.0, following MucoMSX:
+            // As MDPlayer4Mac's MucomDotNET.CompileMuc does (0.3.0, 0.3.2), following MucoMSX:
             // a source MucoMSX refuses before compiling (a #pcm tag naming a file that is not
-            // there, a row over 1023 bytes) is refused with its code and message.
-            string refused = MucoMsxSourceRules.CheckPcm(source, openFile) ?? MucoMsxSourceRules.CheckRows(source);
+            // there, a row over 1023 bytes, macros nested more than eight deep) is refused
+            // with its code and message.
+            string refused = MucoMsxSourceRules.CheckPcm(source, openFile) ?? MucoMsxSourceRules.CheckRows(source)
+                ?? MucoMsxSourceRules.CheckMacroDepth(source);
             if (refused != null)
             {
                 result.Errors.Add(Refusal(refused));
@@ -165,12 +167,15 @@ public static class MucEngine
             // numbers for the messages and the playing marks.
             byte[] normalized = NormalizeTrackDeclarationIndentation(source);
             if (classic) normalized = normalized.Concat(Encoding.ASCII.GetBytes("\r\n#driver mucom88\r\n")).ToArray();
+            // The same #pcm rules as the MUB (0.3.2): without a #pcm tag the compiler's default
+            // PCM file is not opened; a #pcm tag without a name opens MUCOMPCM.BIN.
+            Func<string, Stream> pcmFiles = MucoMsxSourceRules.PcmAsset(source, openFile);
             MmlDatum[] Run()
             {
                 mucomDotNET.Compiler.Compiler compiler = new();
                 compiler.Init();
                 using MemoryStream input = new(normalized, writable: false);
-                MmlDatum[] output = compiler.Compile(input, openFile);
+                MmlDatum[] output = compiler.Compile(input, pcmFiles);
                 CompilerInfo info = compiler.GetCompilerInfo();
                 if (info?.warningList != null)
                     foreach (var w in info.warningList) result.Warnings.Add(new(w.Item1, w.Item2, w.Item3, IdentifyCode(w.Item3)));
@@ -178,9 +183,13 @@ public static class MucEngine
                     foreach (var e in info.errorList) result.Errors.Add(new(e.Item1, e.Item2, e.Item3, IdentifyCode(e.Item3)));
                 return output;
             }
-            MmlDatum[] compiled = classic ? Run() : mucomDotNET.Compiler.Muc88.CompileMucoMsxExtended(Run);
+            // A score without t/T plays at MucoMSX's default Timer-B (225), as its MUB does.
+            int[] tempo = { -1 };
+            MmlDatum[] compiled = classic ? mucomDotNET.Compiler.Muc88.CaptureTempo(tempo, Run)
+                : mucomDotNET.Compiler.Muc88.CompileMucoMsxExtended(Run, tempo);
+            if (compiled != null && tempo[0] < 0) SetDefaultTempo(compiled);
             if (mub == null && result.Errors.Count == 0)
-                result.Errors.Add(new(-1, -1, string.IsNullOrEmpty(modeError) ? "MUCOM88 compilation failed." : modeError));
+                result.Errors.Add(string.IsNullOrEmpty(modeError) ? new(-1, -1, "MUCOM88 compilation failed.") : Refusal(modeError));
             if (result.Errors.Count == 0)
             {
                 result.Mub = mub;
@@ -193,8 +202,9 @@ public static class MucEngine
         }
         catch (Exception ex)
         {
+            // (MucoMSX's refusals from the native MSX compiler come as exceptions: code 9, 16 …)
             result.Mub = null;
-            result.Errors.Add(new(-1, -1, ex.Message));
+            result.Errors.Add(Refusal(ex.Message));
         }
         return result;
     }
@@ -227,10 +237,24 @@ public static class MucEngine
     // point at the editor's lines.
     // "Error line 3 (code 19): PCM file in #pcm tag not found\n> #pcm X.BIN" (MucoMsxSourceRules)
     // as a message on that row, with the code as MucoMSX numbers it.
+    // "Error, line unknown (code 20): K part needs a #pcm tag" has no row.
     static CompileMessage Refusal(string text)
     {
-        var m = System.Text.RegularExpressions.Regex.Match(text, @"^Error line (\d+) \(code (\d+)\): ([^\n]*)");
-        return m.Success ? new(int.Parse(m.Groups[1].Value), 1, m.Groups[3].Value, "MSX" + m.Groups[2].Value) : new(-1, -1, text);
+        var m = System.Text.RegularExpressions.Regex.Match(text, @"^Error,? line (\d+|unknown) \(code (\d+)\): ([^\n]*)");
+        if (!m.Success) return new(-1, -1, text);
+        int row = int.TryParse(m.Groups[1].Value, out int r) ? r : -1;
+        return new(row, row > 0 ? 1 : -1, m.Groups[3].Value, "MSX" + m.Groups[2].Value);
+    }
+
+    // The tempo byte of a MUB8's DATA block (DATA + 5), as MucoMsxMubWriter sets it for a
+    // score without t/T.
+    static void SetDefaultTempo(MmlDatum[] mub)
+    {
+        if (mub.Length < 0x50 || mub[0]?.dat != 'M' || mub[1]?.dat != 'U' || mub[3]?.dat != '8') return;
+        int offset = 0;
+        for (int i = 0; i < 4; i++) offset |= (mub[4 + i]?.dat ?? 0) << (8 * i);
+        int at = offset + 5;
+        if (at < mub.Length) mub[at] = new MmlDatum(MucoMsxMubWriter.DefaultTempo);
     }
 
     internal static byte[] NormalizeTrackDeclarationIndentation(byte[] source)
@@ -302,6 +326,9 @@ public sealed class MucPlayer
     // A MUCOMSX song (msPb): its second chip's parts are MSXA.., the third's SCCA..
     public bool Msx => msx != null;
     public string Error { get; private set; } = "";
+    // Not an error (MucoMSX's MUBPLAY): a MUB without embedded PCM whose #pcm file is not
+    // there plays without its ADPCM part.
+    public string Notice => string.IsNullOrEmpty(driver?.MissingPcmFile) ? "" : driver.MissingPcmFile;
     public string Chips { get; private set; } = "";
     // The chips in VGM terms for the channel view: "type:id:clock" joined by ';'.
     public string ChipList { get; private set; } = "";

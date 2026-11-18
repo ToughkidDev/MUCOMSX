@@ -302,7 +302,7 @@ export default [
 </ul>
 
 <h3>음색·PCM 파일 첨부</h3>
-<p>곡이 <code>#voice</code>(FM 음색), <code>#sccvoice</code>(SCC 파형), <code>#pcm</code>(ADPCM 샘플) 태그로 파일을 지정하거나 기본 파일(<code>voice.dat</code>, <code>SCCVOICE.DAT</code>, <code>mucompcm.bin</code>)을 쓰면 그 파일이 필요합니다. 브라우저는 내가 연 파일 옆의 파일을 읽을 수 없으므로 다음 중 하나로 첨부합니다.</p>
+<p>곡이 <code>#voice</code>(FM 음색), <code>#sccvoice</code>(SCC 파형), <code>#pcm</code>(ADPCM 샘플) 태그로 파일을 지정하거나 기본 파일(<code>voice.dat</code>, <code>SCCVOICE.DAT</code>)을 쓰면 그 파일이 필요합니다. 이름 없는 <code>#pcm</code>은 <code>MUCOMPCM.BIN</code>을 뜻하고, <code>#pcm</code> 태그가 없으면 PCM 파일을 읽지 않습니다. K 파트에 음표가 있으면 태그가 꼭 있어야 합니다(오류 MSX20, MucoMSX와 같음). 긴 이름의 파일은 MSX의 SD 카드처럼 8.3 이름(<code>bosco_pcm.bin</code> → <code>BOSCO_PC.BIN</code>)으로도 찾습니다. 브라우저는 내가 연 파일 옆의 파일을 읽을 수 없으므로 다음 중 하나로 첨부합니다.</p>
 <ol>
   <li><b>열기…</b>에서 곡과 함께 고르기</li>
   <li><b>폴더…</b>로 폴더째 열기</li>
@@ -398,7 +398,7 @@ export default [
 <p><b>〰 SCC 뱅크</b>는 SCC 파형(<code>#sccvoice</code> 파일, MUC의 <code>@Wn:{…}</code>, <code>?WDn={…}</code>)을 같은 방식으로 다룹니다. 파형 그림과 모양(사인, 톱니, 사각, 펄스, 삼각)이 나오며, <code>.dat</code>(SCWD), <code>.muc</code>, <code>.vgm</code>/<code>.vgz</code>, Furnace <code>.fur</code>/<code>.fuw</code>에서 가져올 수 있습니다.</p>
 
 <h3>PCM 뱅크</h3>
-<p><b>🥁 PCM 뱅크</b>는 ADPCM 파트(<code>K</code>)의 샘플 <code>@1</code>–<code>@32</code>를 보여 줍니다. PCM 파일(<code>#pcm</code>, <code>mucompcm.bin</code>)이나 MUC의 <code>#@pcm</code> 줄에서 읽으며, 파형, 길이, 크기, 쓰인 횟수와 칩 용량(256 KB) 중 사용량이 나옵니다. 누르면 칩과 같은 소리로 들립니다. <code>.wav</code>, mp3·ogg·flac 등 브라우저가 읽을 수 있는 소리, PCM 뱅크, <code>.mub</code>, <code>.vgm</code>/<code>.vgz</code>에서 가져올 수 있습니다.</p>
+<p><b>🥁 PCM 뱅크</b>는 ADPCM 파트(<code>K</code>)의 샘플 <code>@1</code>–<code>@32</code>를 보여 줍니다. PCM 파일(<code>#pcm</code>, 이름이 없으면 <code>MUCOMPCM.BIN</code>)이나 MUC의 <code>#@pcm</code> 줄에서 읽으며, 파형, 길이, 크기, 쓰인 횟수와 칩 용량(256 KB) 중 사용량이 나옵니다. 누르면 칩과 같은 소리로 들립니다. <code>.wav</code>, mp3·ogg·flac 등 브라우저가 읽을 수 있는 소리, PCM 뱅크, <code>.mub</code>, <code>.vgm</code>/<code>.vgz</code>에서 가져올 수 있습니다.</p>
 
 <h3>FM 음색 편집기</h3>
 <p>FM 음색 미리보기나 FM 뱅크의 <b>편집</b>으로 엽니다. Furnace의 FM 악기 편집기를 본뜬 화면으로 알고리즘 8가지 그림, OP1 피드백, 오퍼레이터마다 AR, DR(D1R), SL(D1L), D2R, RR, TL, KS, MULT, DT 슬라이더와 엔벨로프 그림이 있습니다. 캐리어의 TL이 0이 아니면 경고합니다. <b>▶ 듣기</b>(o1–o7, 근사 소리), 오퍼레이터 복사·붙여넣기, <b>초기화</b>, 되돌리기를 쓸 수 있고, <b>적용</b>/<b>완료</b>는 원래 줄 모양과 주석을 지키며 다시 씁니다.</p>

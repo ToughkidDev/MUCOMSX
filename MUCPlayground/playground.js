@@ -186,6 +186,7 @@ const T = {
     missingFile_sccvoice: (f) => `${f} (#sccvoice) is not attached, so SCC waves the MUC does not define itself cannot be found.`, missingFile_atpcm: (f, n) => `${f} (#@pcm ${n}) is not attached, so PCM sample @${n} is silent.`,
     missingAttach: 'Attach file…', missingAttachTip: (f) => `Pick ${f} (and any other files the song needs) from your computer; several can be picked at once`,
     missingFolder: 'Find in folder', missingFolderTip: (f) => `Look for ${f} in the song's folder: the folder opened with Folder… (or the one remembered), else pick the folder the song is in; every file the song names is attached from there`,
+    pcmNotFound: (n) => `PCM file not found: ${n}. Playing without the ADPCM part (put the file next to the .mub, or drop it on the page with it).`,
     underrun: 'Playback is catching up; this device renders slowly.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     guardTitle: 'Your song has changes', guardText: (n) => `${n} in the editor has changes that are not saved to a file. Save it before it is replaced?\n(Either way it is also kept aside: "Bring it back" returns it.)`, guardSave: 'Save as .muc, then go on', guardDiscard: 'Go on without saving', guardCancel: 'Cancel',
     plAskTitle: 'The playlist has songs', plAskText: (n, m) => `The playlist has ${n} songs. Replace them with the ${m} new ones, or add these at the end?`, plAskReplace: 'New playlist', plAskAppend: 'Add at the end',
@@ -364,6 +365,7 @@ const T = {
     missingFile_sccvoice: (f) => `${f}(#sccvoice)가 첨부되지 않아 MUC에 정의되지 않은 SCC 파형을 찾을 수 없습니다.`, missingFile_atpcm: (f, n) => `${f}(#@pcm ${n})가 첨부되지 않아 PCM 샘플 @${n}이 소리 나지 않습니다.`,
     missingAttach: '파일 첨부…', missingAttachTip: (f) => `내 컴퓨터에서 ${f}(와 곡에 필요한 다른 파일)를 고릅니다. 여러 개를 한 번에 고를 수 있습니다`,
     missingFolder: '폴더에서 찾기', missingFolderTip: (f) => `곡의 폴더에서 ${f}를 찾습니다. 폴더…로 연 폴더(또는 기억된 폴더)를 쓰고, 없으면 곡이 있는 폴더를 고르게 합니다. 곡이 쓰는 파일을 모두 거기서 첨부합니다`,
+    pcmNotFound: (n) => `PCM 파일을 찾지 못했습니다: ${n}. ADPCM 파트 없이 연주합니다(.mub과 함께 그 파일을 열거나 끌어다 놓으세요).`,
     underrun: '렌더링이 재생을 따라잡는 중입니다. 이 기기에서는 느릴 수 있습니다.', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     guardTitle: '고친 곡이 있습니다', guardText: (n) => `에디터의 ${n}에 파일로 저장하지 않은 변경이 있습니다. 바꾸기 전에 저장할까요?\n(어느 쪽이든 따로 보관해 두므로 "되돌리기"로 되돌릴 수 있습니다.)`, guardSave: '.muc로 저장하고 계속', guardDiscard: '저장하지 않고 계속', guardCancel: '취소',
     plAskTitle: '플레이리스트에 곡이 있습니다', plAskText: (n, m) => `플레이리스트에 ${n}곡이 있습니다. 새 ${m}곡으로 바꿀까요, 아니면 목록 끝에 추가할까요?`, plAskReplace: '새 목록으로 바꾸기', plAskAppend: '끝에 추가',
@@ -542,6 +544,7 @@ const T = {
     missingFile_sccvoice: (f) => `${f}（#sccvoice）が添付されていないため、MUCで定義していないSCC波形が見つかりません。`, missingFile_atpcm: (f, n) => `${f}（#@pcm ${n}）が添付されていないため、PCMサンプル@${n}が鳴りません。`,
     missingAttach: 'ファイルを添付…', missingAttachTip: (f) => `自分のパソコンから${f}（と曲に必要な他のファイル）を選びます。複数まとめて選べます`,
     missingFolder: 'フォルダから探す', missingFolderTip: (f) => `曲のフォルダで${f}を探します。フォルダ…で開いたフォルダ（または記憶したフォルダ）を使い、なければ曲のあるフォルダを選びます。曲が使うファイルをすべてそこから添付します`,
+    pcmNotFound: (n) => `PCMファイルが見つかりません: ${n}。ADPCMパートなしで演奏します（.mubと一緒にそのファイルを開くかドロップしてください）。`,
     underrun: 'レンダリングが再生に追いつこうとしています。この端末では遅い場合があります。', row: (r, c) => c > 0 ? `${r}:${c}` : `${r}`,
     guardTitle: '変更した曲があります', guardText: (n) => `エディタの${n}にファイルへ保存していない変更があります。置き換える前に保存しますか？\n（どちらでも別に保管するので「元に戻す」で戻せます。）`, guardSave: '.mucで保存して続ける', guardDiscard: '保存せずに続ける', guardCancel: 'キャンセル',
     plAskTitle: 'プレイリストに曲があります', plAskText: (n, m) => `プレイリストに${n}曲あります。新しい${m}曲に置き換えますか、それとも最後に追加しますか？`, plAskReplace: '新しいリストにする', plAskAppend: '最後に追加',
@@ -975,18 +978,28 @@ function withSilenceWarnings(result) {
   for (const m of shortMorphs(code.value)) extra.push({ row: m.row, col: m.col, code: 'PG04', text: t('shortMorph', m.wave, m.have) });
   return extra.length ? { ...result, warnings: [...result.warnings, ...extra] } : result;
 }
+// Attached under its name, or under the 8.3 name MSX-DOS (and the engine) reads it as.
+function isAttached(name) {
+  const base = name.split(/[\\/]/).pop();
+  return files.has(base.toLowerCase()) || (!!shortName83(base) && files.has(shortName83(base).toLowerCase()));
+}
 function missingFileRefs() {
   const out = [];
   lines.forEach((line, i) => {
     let m = /^#(voice|pcm|sccvoice)[ \t]+([^\s;]+)/i.exec(line);
     if (m) {
       const file = m[2].replace(/^"|"$/g, '');
-      if (!files.has(file.split(/[\\/]/).pop().toLowerCase())) out.push({ row: i + 1, tag: m[1].toLowerCase(), file });
+      if (!isAttached(file)) out.push({ row: i + 1, tag: m[1].toLowerCase(), file });
+      return;
+    }
+    // a #pcm without a name: MUCOMPCM.BIN
+    if (/^#pcm[ \t]*(;.*)?$/i.test(line)) {
+      if (!isAttached('MUCOMPCM.BIN')) out.push({ row: i + 1, tag: 'pcm', file: 'MUCOMPCM.BIN' });
       return;
     }
     if (/^#@pcm[ \t]/i.test(line)) {
       const d = mucPcms(line)[0];
-      if (d?.file && !files.has(d.file.split(/[\\/]/).pop().toLowerCase())) out.push({ row: i + 1, tag: 'atpcm', file: d.file, n: d.n });
+      if (d?.file && !isAttached(d.file)) out.push({ row: i + 1, tag: 'atpcm', file: d.file, n: d.n });
     }
   });
   return out;
@@ -1107,11 +1120,14 @@ const sjisBytes = (text) => { let b = 0; for (const ch of text) { const c = ch.c
 // ---------- attached files ----------
 const files = new Map();   // lower-case name -> { name, data:ArrayBuffer }
 
+const BARE_PCM = /^#pcm[ \t]*(;.*)?$/im;
 function referencedFiles() {
   const names = [];
   const re = /^#(voice|pcm|sccvoice)[ \t]+([^\s;]+)/gim;
   let m;
   while ((m = re.exec(code.value))) names.push(m[2].replace(/^"|"$/g, ''));
+  // MucoMSX (MDPlayer4Mac 0.3.2): a #pcm tag without a name means MUCOMPCM.BIN.
+  if (BARE_PCM.test(code.value) && !/^#pcm[ \t]+[^\s;]/im.test(code.value)) names.push('MUCOMPCM.BIN');
   for (const d of mucPcms(code.value)) if (d.file) names.push(d.file);
   return names;
 }
@@ -1242,10 +1258,21 @@ $('filesInput').addEventListener('change', async (e) => {
 // SCCVOICE.DAT next to it when it names none), found by name, whatever their case.
 let currentFolder = null;     // the folder last opened (this visit)
 let songFolderPath = null;    // the song's path in it, when it came from there
-const DEFAULT_FILES = [['voice', 'voice.dat'], ['pcm', 'mucompcm.bin'], ['sccvoice', 'SCCVOICE.DAT']];
+// (No PCM default: since MDPlayer4Mac 0.3.2, as in MucoMSX, the compiler opens a PCM file
+// only for a #pcm tag, MUCOMPCM.BIN for one without a name.)
+const DEFAULT_FILES = [['voice', 'voice.dat'], ['sccvoice', 'SCCVOICE.DAT']];
 
+// (A long name also counts as there under the name MSX-DOS reads, 8.3, as the engine finds it.)
 function missingFiles() {
-  return [...new Set(referencedFiles())].filter((n) => !files.has(n.split(/[\\/]/).pop().toLowerCase()));
+  return [...new Set(referencedFiles())].filter((n) => !isAttached(n));
+}
+function shortName83(name) {
+  const dot = name.indexOf('.');
+  let stem = dot < 0 ? name : name.slice(0, dot), ext = dot < 0 ? '' : name.slice(dot + 1);
+  const next = ext.indexOf('.');
+  if (next >= 0) ext = ext.slice(0, next);
+  if (stem.length <= 8 && ext.length <= 3 && next < 0) return null;
+  return ext ? `${stem.slice(0, 8)}.${ext.slice(0, 3)}` : stem.slice(0, 8);
 }
 
 // Attaches what the song needs from the folder; returns the names attached.
@@ -1830,6 +1857,8 @@ function onEngineMessage(m, source) {
       $('nowTitle').textContent = m.info.title || playingName || sourceName;
       $('nowMeta').textContent = [m.info.composer, (m.info.chips || '').replace(/=\d+Hz/g, ''), playingName].filter(Boolean).join(' · ');
       if (!playingName) setStatus(`${playingRows ? t('playingLines', ...playingRows) : t('playing')} · ${statusEl.textContent}`);
+      // MucoMSX's MUBPLAY: a .mub whose #pcm file is not there plays without its ADPCM part
+      if (m.info.missingPcm) setStatus(t('pcmNotFound', m.info.missingPcm), true);
       if (ctx && ctx.state !== 'running') waitForClick();
       playing = true;
       updateLinePlay();
@@ -3765,9 +3794,11 @@ for (const p of panes) {
 // definitions; changes go to the attached file or the text.
 function attachedTagFile(tag, fallback) {
   const m = new RegExp(`^#${tag}[ \\t]+([^\\s;]+)`, 'im').exec(code.value);
-  const name = (m ? m[1].replace(/^"|"$/g, '') : fallback).split(/[\\/]/).pop();
+  // a bare #pcm names MUCOMPCM.BIN
+  const bare = !m && tag === 'pcm' && BARE_PCM.test(code.value);
+  const name = (m ? m[1].replace(/^"|"$/g, '') : bare ? 'MUCOMPCM.BIN' : fallback).split(/[\\/]/).pop();
   const f = files.get(name.toLowerCase());
-  return { tagged: !!m, name, file: f };
+  return { tagged: !!m || bare, name, file: f };
 }
 function usageFor(parts) {
   // Notes per @n in the parts the bank is for.
