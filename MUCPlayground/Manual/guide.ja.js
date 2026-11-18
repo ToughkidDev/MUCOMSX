@@ -350,7 +350,7 @@ export default [
   <tr><td>MSX PSG、チップ拡張</td><td><code>?XD</code>エフェクトで作ったドラムパート。</td></tr>
   <tr><td>MSX-MUSIC、チップ拡張</td><td><code>@n</code>・<code>?IU</code>の楽器、<code>?QP</code>ゲート、<code>?IS</code>サステイン、<code>?ID</code>ドラムと<code>?IT</code>キット。</td></tr>
 </table>
-<p>リポジトリの<code>Samples/Muc/Templates</code>には、基礎、チップ別、ドラムライブラリ、ジャンル別の伴奏、SCC波形集、完成したデモ（<i>Midnight Pier</i>、<i>Killer Coast Land OPNA Arrange</i>）もあります。</p>
+<p>リポジトリの<code>Samples/Muc/Templates</code>には、基礎、チップ別、ドラムライブラリ、ジャンル別の伴奏、SCC波形集、完成したデモ（<i>Midnight Pier</i>）もあります。</p>
 `,
   },
   {

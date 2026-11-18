@@ -350,7 +350,7 @@ export default [
   <tr><td>MSX PSG, chip extension</td><td>A drum part made of <code>?XD</code> effects.</td></tr>
   <tr><td>MSX-MUSIC, chip extension</td><td><code>@n</code> and <code>?IU</code> instruments, <code>?QP</code> gate, <code>?IS</code> sustain, <code>?ID</code> drums and <code>?IT</code> kits.</td></tr>
 </table>
-<p>The repository's <code>Samples/Muc/Templates</code> also has basics, templates for each chip, a drum library, accompaniments by genre, a collection of SCC waves, and finished demos (<i>Midnight Pier</i>, <i>Killer Coast Land OPNA Arrange</i>).</p>
+<p>The repository's <code>Samples/Muc/Templates</code> also has basics, templates for each chip, a drum library, accompaniments by genre, a collection of SCC waves, and a finished demo (<i>Midnight Pier</i>).</p>
 `,
   },
   {

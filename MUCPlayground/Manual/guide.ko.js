@@ -350,7 +350,7 @@ export default [
   <tr><td>MSX 확장: PSG</td><td><code>?XD</code> 효과로 만든 드럼 파트.</td></tr>
   <tr><td>MSX 확장: MSX-MUSIC</td><td><code>@n</code>·<code>?IU</code> 악기, <code>?QP</code> 게이트, <code>?IS</code> 서스테인, <code>?ID</code> 드럼과 <code>?IT</code> 키트.</td></tr>
 </table>
-<p>저장소의 <code>Samples/Muc/Templates</code>에는 기초, 칩별, 드럼 라이브러리, 장르별 반주, SCC 파형 모음, 완성된 데모(<i>Midnight Pier</i>, <i>Killer Coast Land OPNA Arrange</i>)도 있습니다.</p>
+<p>저장소의 <code>Samples/Muc/Templates</code>에는 기초, 칩별, 드럼 라이브러리, 장르별 반주, SCC 파형 모음, 완성된 데모(<i>Midnight Pier</i>)도 있습니다.</p>
 `,
   },
   {
