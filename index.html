@@ -237,9 +237,12 @@ footer p{margin:5px 0}
       <a class="news-all" href="https://github.com/ToughkidDev/MUCOMSX/blob/main/NEWS.md">All news</a>
     </div>
     <ul class="news-list">
+      <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCView/readme.md">
+        <time datetime="2026-11-21">2026-11-21</time><span class="tag">TOOLS</span>
+        <span class="text">MUCVIEW — a read-only MUC viewer that compiles, plays and exports through MUCPLAY<span class="new">NEW</span></span></a></li>
       <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_NOTES.md">
         <time datetime="2026-11-14">2026-11-14</time><span class="tag">DOCS</span>
-        <span class="text">Toolchain documents updated: MUCVOICE removed, MUCPlayground is the official voice / wave / PCM editor, MucoMSX chip extension guide<span class="new">NEW</span></span></a></li>
+        <span class="text">Toolchain documents updated: MUCVOICE removed, MUCPlayground is the official voice / wave / PCM editor, MucoMSX chip extension guide</span></a></li>
       <li><a href="https://toughkiddev.github.io/MUCOMSX/MUCPlayground/">
         <time datetime="2026-11-10">2026-11-10</time><span class="tag">WEB</span>
         <span class="text">MUCPlayground follows MDPlayer4Mac v0.3.0: MUC compiles and plays as MucoMSX does</span></a></li>
@@ -376,7 +379,7 @@ footer p{margin:5px 0}
 <section id="tools">
   <div class="wrap">
     <h2>The toolchain <span class="ko">구성 도구 · ツール構成</span></h2>
-    <p class="lead">Four programs cover the MSX side of the workflow. Every manual is available in Korean, Japanese and English. Voices, SCC waves and PCM banks are edited in MUCPlayground.</p>
+    <p class="lead">Five programs cover the MSX side of the workflow. Every manual is available in Korean, Japanese and English. Voices, SCC waves and PCM banks are edited in MUCPlayground.</p>
 
     <div class="tools">
       <div class="tool">
@@ -387,6 +390,16 @@ footer p{margin:5px 0}
           <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEdit.md">한국어</a>
           <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditJ.md">日本語</a>
           <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditE.md">English</a>
+        </div>
+      </div>
+      <div class="tool">
+        <p class="name">MUCVIEW.COM</p>
+        <p class="role">Viewer</p>
+        <p>Read-only <code>.MUC</code> viewer for MSX2 or later: 80-column text, search and a file list. Its F1 menu calls MUCPLAY to compile, play and export the song. No editing and no state file — nothing is written to disk but the exported <code>.MUB</code>.</p>
+        <div class="docs">
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCView/MUCView.md">한국어</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCView/MUCViewJ.md">日本語</a>
+          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCView/MUCViewE.md">English</a>
         </div>
       </div>
       <div class="tool">
@@ -444,6 +457,7 @@ footer p{margin:5px 0}
         <thead><tr><th>If you want to…</th><th>Use</th><th>Why</th></tr></thead>
         <tbody>
           <tr><td>Write and revise a song, hearing each change</td><td><strong>MUCEDIT</strong> (+ MUCPLAY)</td><td>Edit, compile and play without leaving the editor</td></tr>
+          <tr><td>Read a song you received and hear it, without an editor</td><td><strong>MUCVIEW</strong> (+ MUCPLAY)</td><td>Opens the source read-only; compile, play and export from the F1 menu</td></tr>
           <tr><td>Hear a <code>.MUC</code> once, right now</td><td><strong>MUCPLAY</strong></td><td><code>MUCPLAY SONG.MUC</code> compiles and plays in one step</td></tr>
           <tr><td>Iterate from the DOS prompt and export</td><td><strong>MUCPLAY</strong> session</td><td><code>/LOAD</code> → <code>/COMPILE</code> → <code>/PLAY</code> → <code>/MUB</code></td></tr>
           <tr><td>Convert a whole album unattended</td><td><strong>MUC2MUB</strong></td><td>One song per run, driven by a <code>.BAT</code>; exit codes to check</td></tr>
@@ -729,6 +743,12 @@ F C128 o2 l2 v7 c g c g</code></pre>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCEdit/MUCEditE.md">MUCEditE.md</a></td>
           </tr>
           <tr>
+            <td><strong>MUCView</strong> — viewer</td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCView/MUCView.md">MUCView.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCView/MUCViewJ.md">MUCViewJ.md</a></td>
+            <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCView/MUCViewE.md">MUCViewE.md</a></td>
+          </tr>
+          <tr>
             <td><strong>MUCPlay</strong> — compiler &amp; player</td>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCPlay/MUCPlay.md">MUCPlay.md</a></td>
             <td><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCPlay/MUCPlayJ.md">MUCPlayJ.md</a></td>
@@ -809,7 +829,7 @@ F C128 o2 l2 v7 c g c g</code></pre>
   <div class="wrap">
     <h2>Downloads <span class="ko">다운로드 · ダウンロード</span></h2>
     <p class="lead">Find downloads on the releases page. The current package layout is
-       <code>MucoMSX_YYMMDD.zip</code> for all four tools with their <code>.MXR</code> modules, starter voice data and quick help, plus
+       <code>MucoMSX_YYMMDD.zip</code> for the toolchain programs with their <code>.MXR</code> modules (MUCVIEW from the packages dated 2026-11-21), starter voice data and quick help, plus
        <code>MucoMSX_Docs_YYMMDD.zip</code> for complete Korean, English and Japanese manuals.
        Optional <code>.sha256</code> files check download integrity.
        Earlier releases may contain only the original four tools; check each release's contents.</p>

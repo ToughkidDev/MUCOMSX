@@ -35,7 +35,8 @@ Compose in MML · Compile on the MSX itself · Play on real hardware · Export M
 
 | Date | | |
 |---|---|---|
-| **2026-11-14** | `DOCS` | [Toolchain documents updated: MUCVOICE removed, MUCPlayground is the official voice / wave / PCM editor, MucoMSX chip extension guide](shared/docs/RELEASE_NOTES.md) **NEW** |
+| **2026-11-21** | `TOOLS` | [MUCVIEW — a read-only MUC viewer that compiles, plays and exports through MUCPLAY](MUCView/readme.md) **NEW** |
+| 2026-11-14 | `DOCS` | [Toolchain documents updated: MUCVOICE removed, MUCPlayground is the official voice / wave / PCM editor, MucoMSX chip extension guide](shared/docs/RELEASE_NOTES.md) |
 | 2026-11-10 | `WEB` | [MUCPlayground follows MDPlayer4Mac v0.3.0: MUC compiles and plays as MucoMSX does](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) |
 | 2026-10-27 | `WEB` | [MUCPlayground follows MDPlayer4Mac v0.2.6 and offers chip extension templates in New](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) |
 | 2026-10-27 | `WEB` | [MUCPlayground plays the MucoMSX chip extension commands (MDPlayer4Mac v0.2.5) and adds their manual](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) |
@@ -158,11 +159,12 @@ Errors are listed with their line numbers, and the repository's sample songs loa
 
 ## 🧰 The toolchain / 구성 도구 / ツール構成
 
-Four programs cover the MSX side of the workflow. Each has its own manual in Korean, Japanese and English. Voices, SCC waves and PCM banks are edited in MUCPlayground.
+Five programs cover the MSX side of the workflow. Each has its own manual in Korean, Japanese and English. Voices, SCC waves and PCM banks are edited in MUCPlayground.
 
 | Program | Role | Manual |
 |---|---|---|
 | **`MUCEDIT.COM`** | Full-screen MML **editor** for the MSX. 80-column, VS Code-style keys, block select, undo/redo, search. Calls MUCPLAY to compile, play and export without leaving the editor. | [KO](MUCEdit/MUCEdit.md) · [JA](MUCEdit/MUCEditJ.md) · [EN](MUCEdit/MUCEditE.md) |
+| **`MUCVIEW.COM`** | Read-only MUC **viewer** (new, 2026-11-21). Opens a `.MUC` on the 80-column screen with search and a file list, and calls MUCPLAY from its F1 menu to compile, play and export the song. No editing and no state file: nothing is written to disk but the exported `.MUB`. MSX2 or later. | [KO](MUCView/MUCView.md) · [JA](MUCView/MUCViewJ.md) · [EN](MUCView/MUCViewE.md) |
 | **`MUCPLAY.COM`** | **Compiler and player.** Compiles `.MUC` and plays it, or keeps a song resident in memory so you can recompile and replay without reloading. Exports `.MUB`. | [KO](MUCPlay/MUCPlay.md) · [JA](MUCPlay/MUCPlayJ.md) · [EN](MUCPlay/MUCPlayE.md) |
 | **`MUC2MUB.COM`** | **Batch compiler.** One command, one `.MUC` in, one `.MUB` out — no session, no playback, no sound hardware needed. Takes sources up to 64 KiB, returns a DOS exit code, and saves through a temporary file so a failure never destroys the previous `.MUB`. | [KO](MUC2MUB/Muc2Mub.md) · [JA](MUC2MUB/Muc2MubJ.md) · [EN](MUC2MUB/Muc2MubE.md) |
 | **`MUBPLAY.COM`** | Standalone **player** for finished `.MUB` files. Repeat control and load testing. | [KO](MUBPlay/MUBPlay.md) · [JA](MUBPlay/MUBPlayJ.md) · [EN](MUBPlay/MUBPlayE.md) |
@@ -173,6 +175,7 @@ MUC2MUB, MUCPLAY and MUBPLAY are each a small `.COM` plus a `.MXR` module from t
 | If you want to… | Use | Why |
 |---|---|---|
 | Write and revise a song, hearing each change | **MUCEDIT** (+ MUCPLAY) | Edit, compile and play without leaving the editor |
+| Read a song you received and hear it, without an editor | **MUCVIEW** (+ MUCPLAY) | Opens the source read-only; compile, play and export from the F1 menu |
 | Hear a `.MUC` once, right now | **MUCPLAY** | `MUCPLAY SONG.MUC` compiles and plays in one step |
 | Iterate from the DOS prompt and export | **MUCPLAY** session | `/LOAD` → `/COMPILE` → `/PLAY` → `/MUB` |
 | Convert a whole album unattended | **MUC2MUB** | One song per run, driven by a `.BAT`; exit codes to check |
@@ -418,6 +421,7 @@ The [extension guides (KO)](shared/docs/MUCOMDOTNET_EXTENSIONS.md), [EN](shared/
 | Tool | 한국어 | 日本語 | English |
 |---|---|---|---|
 | MUCEdit — editor | [MUCEdit.md](MUCEdit/MUCEdit.md) | [MUCEditJ.md](MUCEdit/MUCEditJ.md) | [MUCEditE.md](MUCEdit/MUCEditE.md) |
+| MUCView — viewer | [MUCView.md](MUCView/MUCView.md) | [MUCViewJ.md](MUCView/MUCViewJ.md) | [MUCViewE.md](MUCView/MUCViewE.md) |
 | MUCPlay — compiler & player | [MUCPlay.md](MUCPlay/MUCPlay.md) | [MUCPlayJ.md](MUCPlay/MUCPlayJ.md) | [MUCPlayE.md](MUCPlay/MUCPlayE.md) |
 | MUC2MUB — batch compiler | [Muc2Mub.md](MUC2MUB/Muc2Mub.md) | [Muc2MubJ.md](MUC2MUB/Muc2MubJ.md) | [Muc2MubE.md](MUC2MUB/Muc2MubE.md) |
 | MUBPlay — MUB player | [MUBPlay.md](MUBPlay/MUBPlay.md) | [MUBPlayJ.md](MUBPlay/MUBPlayJ.md) | [MUBPlayE.md](MUBPlay/MUBPlayE.md) |
@@ -455,7 +459,7 @@ See [mucomDotNET extensions](https://github.com/ToughkidDev/MUCOMSX/wiki/MucomDo
 
 ## 💿 Downloads / 다운로드 / ダウンロード
 
-Find downloads on the repository's releases page. The current package layout is `MucoMSX_YYMMDD.zip` for the four tools (with their `.MXR` modules), starter voice data and quick help, and `MucoMSX_Docs_YYMMDD.zip` for complete Korean, English and Japanese documentation. Optional `.sha256` files let you check the downloads. Earlier releases may contain only the original four tools; check each release's contents.
+Find downloads on the repository's releases page. The current package layout is `MucoMSX_YYMMDD.zip` for the toolchain programs (with their `.MXR` modules; MUCVIEW from the packages dated 2026-11-21), starter voice data and quick help, and `MucoMSX_Docs_YYMMDD.zip` for complete Korean, English and Japanese documentation. Optional `.sha256` files let you check the downloads. Earlier releases may contain only the original four tools; check each release's contents.
 
 ### ➡️ [**Download from Releases**](https://github.com/ToughkidDev/MUCOMSX/releases)
 
@@ -480,7 +484,7 @@ When reporting a playback or compile problem, these details narrow it down faste
 
 | | |
 |---|---|
-| **Which tool and build** | `MUCEDIT.COM` / `MUCPLAY.COM` / `MUC2MUB.COM` / `MUBPLAY.COM` / MUCScope / MUBScope, and its version or the date you obtained it |
+| **Which tool and build** | `MUCEDIT.COM` / `MUCVIEW.COM` / `MUCPLAY.COM` / `MUC2MUB.COM` / `MUBPLAY.COM` / MUCScope / MUBScope, and its version or the date you obtained it |
 | **Machine** | Real MSX model, or emulator + machine settings; CPU mode |
 | **System** | MSX-DOS2 or Nextor version, memory mapper, cartridges, storage |
 | **The exact command** | The full command line you typed |
