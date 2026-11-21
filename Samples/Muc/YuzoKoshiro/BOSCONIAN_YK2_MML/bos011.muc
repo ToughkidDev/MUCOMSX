@@ -3,7 +3,7 @@
 #composer Yuzo Koshiro
 #author WING GHOST
 #voice voice.dat
-#pcm bosco_pcm.bin
+#pcm bosco_pc.bin
 #date 2019/1/2
 #comment X68000 BOSCONIAN
 
