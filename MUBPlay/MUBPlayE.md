@@ -6,13 +6,34 @@ Install and replace `MUBPLAY.COM` together with **the matching build of `MUBPLAY
 
 ## Updates
 
-All changes in the **2026-11 update (since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
+All changes in **MucoMSX v1.5-Stable (the 2026-11 update, since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
 
 This version supports SCC/SCC+ SSG msPb0101 in addition to MUB8, muPb and msPb0100. See [release changes](../shared/docs/RELEASE_UPDATE_261013.en.md) for detection, mono approximation, capacity and usage limits. A player replacement cannot restore music DATA missing from an old faulty compilation; recompile it.
 
 ### 2026-11: MUCVOICE removed — edit voices and PCM in MUCPlayground
 
 The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the toolchain's official editor, which runs in a web browser. Open the `#voice`, `#sccvoice` and `#pcm` files in its **FM bank**, **SCC bank** and **PCM bank**, adjust them while listening in the FM voice editor, SCC wave editor and PCM sample editor, then download them with **Save**. Put the downloaded files beside the MUC on the MSX under DOS 8.3 names, then compile and play with this tool. The MSX compiler does not convert WAVs from `#@pcm`, so always save PCM as a BIN bank. Screenshots and step-by-step instructions are in the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md); buttons and keys are in the [official MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks). The toolchain ZIP's FMVOICE.DAT and SCCVOICE.DAT can be loaded in MUCPlayground as a starting point (MUCPlayground does not read INIT.TFI). An old MUCVOICE.COM left in your folder is not updated; you may delete it.
+
+### 2026-11-15: MSX1 support, 40-column messages, MUCOMSXE
+
+- MUBPLAY also runs on an MSX1 (MSX-DOS2 or Nextor and at least 512 KiB of mapper RAM). Songs that use SCC no longer end at once with "An exception occurred." on a 60 Hz MSX1. On an MSX1 the song plays with direct output, without computing ahead. Of the toolchain, only MUCEDIT needs an MSX2 or later, for its 80-column screen.
+- Messages printed at the DOS prompt now fit in 36 characters per line, so they no longer wrap on the 40-column screen of an MSX1. Some error and warning texts and their line breaks therefore differ from earlier versions; the examples in this guide use the new texts.
+- The launcher `MUCOMSXE.COM` for file managers such as MM (Multi Mente) was added. Since 2026-11-18 MUBPLAY starts directly from MM, so MUCOMSXE is not needed; it was removed from the package on 2026-11-19 (see below).
+
+### 2026-11-18: MUBs without PCM, MSX-DOS 2, running from MM
+
+- **MUBs without embedded PCM:** MUC2MUB, MUCPLAY and MUCEDIT no longer embed the PCM unless asked to. For such a MUB, MUBPLAY looks up the file named by its `#pcm` tag in the MUB's folder. A `#pcm` tag without a name means `MUCOMPCM.BIN`, and when the name in the tag is not an 8.3 name (an older MUB with a stem over 8 characters) the file is not looked up (2026-11-19). If the file is missing, MUBPLAY prints `PCM file not found:`, the file name and `Playing without PCM.`, and plays without PCM.
+- **MSX-DOS 2:** the program runs on MSX-DOS 2 (verified on 2.20) as well as on Nextor. Earlier versions could not start on MSX-DOS 2, where the top of memory is lower.
+- **Running from MM:** add the line `.MUB<TAB>MUBPLAY $C` to MM's `MMRET.DAT` and RETURN on a MUB plays it and comes back to MM. `MUCOMSXE.COM` is not needed and was removed from the package on 2026-11-19. If your `MMRET.DAT` names MUCOMSXE, change it to this line. After an error it waits at `Press any key to return.` so that the message can be read.
+- **MSX1 speed:** songs no longer play about 20% fast on some 60 Hz MSX1 machines (for example the Sony HB-10).
+- **512 KiB mappers:** the program no longer asks for 64 KiB it does not use at start. This fixes "Not enough mapper memory to start." after a MUCEDIT session.
+
+### 2026-11-21: speed on an MSX1, Makoto required, `/L` repeat count
+
+- **Speed on an MSX1:** songs faster than 60 ticks per second (50 on a 50 Hz machine) no longer play slowly on an MSX1. Earlier versions played one tick per video frame (VBlank) there, so fast songs were stretched. On an MSX1 the tempo now comes from Makoto's own timer (YM2608 Timer B), and 50 Hz and 60 Hz machines play at the same speed. MSX2 or later and turbo R are unchanged.
+- **Makoto required:** MucoMSX takes the Makoto (YM2608) cartridge as its base hardware. Without it MUBPLAY shows `ERROR: YM2608 (Makoto) not detected.` and ends, also for songs that use only PSG, SCC or OPLL.
+- An MSX1 plays with direct output, without computing ahead, so a song that is too heavy for 3.58 MHz can still stretch a little.
+- **`/L` repeat count:** `/L<n>` no longer ends early in songs whose parts loop with different lengths or from different points. Earlier versions counted only the first part that has a loop point. A pass now counts when every looping part has come round once more. Songs whose parts all loop together end at the same point as before.
 
 > Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
@@ -45,9 +66,9 @@ I hope you will use it to keep a set of small song files on a disk and pull them
 
 Ordinary music playback needs the following.
 
-- An MSX environment running MSX-DOS2 or Nextor
+- An MSX1 or later running MSX-DOS 2 (verified on 2.20) or Nextor
 - Enough free memory and a memory mapper environment to hold the program and the song data
-- A Makoto (YM2608) cartridge
+- A Makoto (YM2608) cartridge (required; nothing plays without it)
 - `MUBPLAY.COM`
 - The `.MUB` file to play
 
@@ -110,21 +131,27 @@ When loading succeeds, you see something like the following. The song informatio
 MUBPLAY - MUCOM88 MUB Player for MSX
 Written by ToughkidCST
 
-Loading MUB file with Makoto (YM2608)
+Loading MUB file (Makoto YM2608)
 Title : THE SHINOBI
 Composer : Yuzo Koshiro
 Author : Yuzo Koshiro
 Date : 2018/12/12
 Comment : sin002
+PCM 100% Buffer 100%
 Press any key to stop.
 
 ```
 
 Once loading finishes, it shows the song information and, after the final notice and the screen scroll, starts playing automatically. You do not have to press another key to begin.
 
-Songs containing PCM data may need time to transfer that data to Makoto, so it can pause for a while at `Loading MUB file with Makoto (YM2608)`. How long it takes also depends on the file size and disk speed.
+The line after the song information shows the preparation (since 2026-11-20). The numbers change in place, in steps of 5%.
 
-On MSX2 or later and on turbo R, the start of the song is computed ahead and stored in one memory segment (16KB) before playback begins, so sound can take a moment to start after the song information appears. Computing ahead continues during playback, so a short burst of disk or display work does not delay the sound. If computing ahead cannot keep up, playback switches to direct output and continues. Without a free segment the song plays with direct output from the start.
+- `PCM nn%`: the PCM data is being transferred to Makoto. Shown only for songs that use PCM. How long it takes depends on the PCM size and disk speed.
+- `Buffer nn%`: the start of the song is being computed ahead, as described below. Not shown when the song plays without computing ahead (MSX1, or no free segment).
+
+When both are done, `Press any key to stop.` appears and playback starts. A key pressed during the preparation stops the song as soon as it starts.
+
+On MSX2 or later and on turbo R, the start of the song is computed ahead and stored in one memory segment (16KB) before playback begins, so sound can take a moment to start after the song information appears. Computing ahead continues during playback, so a short burst of disk or display work does not delay the sound. If computing ahead cannot keep up, playback switches to direct output and continues. Without a free segment the song plays with direct output from the start. An MSX1 VDP has no line interrupt, so on an MSX1 the song plays with direct output from the start, without computing ahead.
 
 ### To stop playback
 
@@ -209,12 +236,18 @@ When playing a finished MUB, **a separate `VOICE.DAT` is not needed.** The playe
 The PCM is chosen in this order:
 
 1. A PCM block inside the MUB is used. The `#pcm` record in the tags is then for reference only; no external file of that name is read.
-2. If the MUB contains no PCM, the file named by its `#pcm` tag is looked up **in the MUB's folder** and uploaded to Makoto. MSX-DOS reads only the first 8 characters of a name, so for `#pcm schemepcm.bin` the file must be `SCHEMEPC.BIN`.
-3. If that file is missing too, only the song's ADPCM part stays silent; the other parts play normally. PCM left in Makoto by an earlier song is never played instead.
+2. If the MUB contains no PCM, the file named by its `#pcm` tag is looked up **in the MUB's folder** and uploaded to Makoto. A `#pcm` tag without a name means `MUCOMPCM.BIN`. When the name in the tag is not an 8.3 name (an older MUB with a stem over 8 characters, such as `schemepcm.bin`), the file is not looked up and step 3 applies. The long name is no longer searched for or cut to 8.3 as in earlier versions, so compile such a MUB again with an 8.3 name in the tag, or build it with the PCM inside (`/P`).
+3. If that file is missing too, the message below is shown (for a song that has a K part) and only the song's ADPCM part stays silent; the other parts play normally. PCM left in Makoto by an earlier song is never played instead. A MUB with no `#pcm` tag at all plays without PCM and without a message.
+
+   ```text
+   PCM file not found:
+    SCHEMEPC.BIN
+   Playing without PCM.
+   ```
 
 To begin with, you only need `MUBPLAY.COM` and the MUB file you want to play.
 
-A MUB with embedded PCM is the easiest to handle. Compiling with the current MUC2MUB, MUCPLAY or MUCEDIT embeds the PCM in the MUB.
+A MUB with embedded PCM is the easiest to handle. The PCM goes into the MUB with `/P` in MUC2MUB, with `/MUB name /P` in MUCPLAY, and by answering `Y` to the question MUCEDIT asks when exporting. For a MUB built without the option, keep the PCM file in the MUB's folder.
 
 Also, `.MUC` is the music source before compilation. The file you hand directly to `MUBPLAY` is the compiled `.MUB`.
 
@@ -238,10 +271,9 @@ The square brackets mean you include only the options you need. You do not type 
 The usage text printed by the program is:
 
 ```text
-Usage: mubplay <filename.mub> [/L<n>] [/T]
-  <filename.mub>  MUB music file to play
-  /L<n>           Repeat count 0-9 (0=infinite)
-  /T              Load test only (no hardware playback)
+Usage: MUBPLAY file.MUB [/Ln] [/T]
+  /Ln  Repeat count 0-9 (0=endless)
+  /T   Load test (no playback)
 ```
 
 `/V` (VGM output) was removed on 2026-10-30. If you add `/V` out of habit, it is ignored and the song simply plays.
@@ -312,7 +344,7 @@ That is normal behavior. It means the title contains characters the current scre
 
 ### There is no sound, or some sounds differ
 
-First check Makoto's audio output and volume. If only the ADPCM of a particular song is missing, check whether the MUB contains PCM and, if it does not, whether the file named by its `#pcm` tag is in the MUB's folder under an 8.3 name. This is not a problem solved by copying `VOICE.DAT` alongside it.
+First check Makoto's audio output and volume. If only the ADPCM of a particular song is missing, see whether `PCM file not found:` appeared when playback started. If it did, the MUB contains no PCM and the file named by its `#pcm` tag is not in the MUB's folder either. This is not a problem solved by copying `VOICE.DAT` alongside it.
 
 If the voices or tempo differ from the original even with the same file, let me know what the difference is. Differences between Z80 and turbo R environments, the processing load in particular sections, and the playback commands in the file all need checking too.
 

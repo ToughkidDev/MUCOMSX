@@ -35,7 +35,9 @@ Compose in MML · Compile on the MSX itself · Play on real hardware · Export M
 
 | Date | | |
 |---|---|---|
-| **2026-11-21** | `TOOLS` | [MUCVIEW — a read-only MUC viewer that compiles, plays and exports through MUCPLAY](MUCView/readme.md) **NEW** |
+| **2026-11-22** | `TOOLS` | [MSX1 tempo from the Makoto timer, Makoto required for playback; `/L<n>` and scope ONCE count a pass when every looping part has come round](shared/docs/RELEASE_NOTES.md) **NEW** |
+| 2026-11-21 | `TOOLS` | [MUCVIEW — a read-only MUC viewer that compiles, plays and exports through MUCPLAY](MUCView/readme.md) |
+| 2026-11-19 | `TOOLS` | [MSX-DOS 2 support, direct start from MM (MUCOMSXE removed), `#pcm` embedded only on request, 8.3 names in `#pcm` / `#voice`](shared/docs/RELEASE_NOTES.md) |
 | 2026-11-14 | `DOCS` | [Toolchain documents updated: MUCVOICE removed, MUCPlayground is the official voice / wave / PCM editor, MucoMSX chip extension guide](shared/docs/RELEASE_NOTES.md) |
 | 2026-11-10 | `WEB` | [MUCPlayground follows MDPlayer4Mac v0.3.0: MUC compiles and plays as MucoMSX does](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) |
 | 2026-10-27 | `WEB` | [MUCPlayground follows MDPlayer4Mac v0.2.6 and offers chip extension templates in New](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) |
@@ -51,9 +53,9 @@ Compose in MML · Compile on the MSX itself · Play on real hardware · Export M
 
 ### Latest features / 최신 기능 / 最新機能
 
-MUCOMSX supports **60,000-byte editing**, **64KiB MUC input**, **96KiB (98,304-byte) music DATA** and the **512KiB mapper minimum**. Since v1.0-Stable: each of MUC2MUB, MUCPLAY and MUBPLAY is a small COM plus a matching `.MXR` module, VGM output was removed (2026-10-30), One Chip MSX support, songs start from a prepared queue on MSX2 and turbo R, native MSX scores end after `/L<n>` passes, and many compiler and player fixes. **MUCVOICE has been removed; FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)**, the toolchain's official browser editor.
+MUCOMSX supports **60,000-byte editing**, **64KiB MUC input**, **96KiB (98,304-byte) music DATA** and the **512KiB mapper minimum**. **MucoMSX v1.5-Stable** (2026-11-15), since v1.0-Stable: MSX-DOS 2 as well as Nextor, direct start from file managers such as MM, MUBPLAY, MUCPLAY and MUC2MUB on MSX1, DOS messages that fit 40 columns, each of MUC2MUB, MUCPLAY and MUBPLAY is a small COM plus a matching `.MXR` module, VGM output was removed (2026-10-30), One Chip MSX support, songs start from a prepared queue on MSX2 and turbo R, native MSX scores end after `/L<n>` passes, and many compiler and player fixes. **MUCVOICE has been removed; FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)**, the toolchain's official browser editor.
 
-- Changes since v1.0-Stable and known limits: [RELEASE_NOTES](shared/docs/RELEASE_NOTES.md) (한국어 · English · 日本語)
+- v1.5-Stable changes since v1.0-Stable and known limits: [RELEASE_NOTES](shared/docs/RELEASE_NOTES.md) (한국어 · English · 日本語)
 - MUCPlayground editing guide (FM voices, SCC waves, PCM): [한국어](shared/docs/MUCPLAYGROUND.md) · [English](shared/docs/MUCPLAYGROUND.en.md) · [日本語](shared/docs/MUCPLAYGROUND.ja.md) · [MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/)
 - MucoMSX chip extension commands (SCC/SCC+, OPLL, PSG): [MucoMSXExtension](MucoMSXExtension/readme.md) · [한국어](MucoMSXExtension/readme.ko.md) · [日本語](MucoMSXExtension/readme.ja.md)
 - Single-YM2608 mucomDotNET extensions: [한국어 확장 명령](MucomDotNetExtension/MUCOMDOTNET_EXTENSIONS.md) · [English extension guide](MucomDotNetExtension/MUCOMDOTNET_EXTENSIONS.en.md) · [日本語拡張ガイド](MucomDotNetExtension/MUCOMDOTNET_EXTENSIONS.ja.md) · [Usage limits / 사용 제한 / 使用制限](shared/docs/RELEASE_NOTES.md)
@@ -159,7 +161,7 @@ Errors are listed with their line numbers, and the repository's sample songs loa
 
 ## 🧰 The toolchain / 구성 도구 / ツール構成
 
-Five programs cover the MSX side of the workflow. Each has its own manual in Korean, Japanese and English. Voices, SCC waves and PCM banks are edited in MUCPlayground.
+Five programs cover the MSX side of the workflow; file managers such as MM start them directly (`MMRET.DAT`: `.MUB<Tab>MUBPLAY $C`, `.MUC<Tab>MUCPLAY $C`). Each has its own manual in Korean, Japanese and English. Voices, SCC waves and PCM banks are edited in MUCPlayground. MUC2MUB, MUCPLAY and MUBPLAY run on an MSX1 or later; MUCEDIT needs an MSX2 or later.
 
 | Program | Role | Manual |
 |---|---|---|
@@ -301,7 +303,7 @@ The table below describes the core toolchain environment. For the MSX1-compatibl
 
 | | |
 |---|---|
-| **Machine** | MSX2 or later with an 80-column text screen (MSX2+ class recommended; turbo R and One Chip MSX supported) |
+| **Machine** | MSX1 or later for MUC2MUB, MUCPLAY and MUBPLAY; MSX2 or later with an 80-column text screen for MUCEDIT and MUCVIEW (MSX2+ class recommended; turbo R and One Chip MSX supported) |
 | **OS** | MSX-DOS 2, or Nextor providing the same functionality |
 | **Memory** | At least **512 KiB mapper RAM**, with enough free segments; not a guarantee that every large retained session fits |
 | **Sound** | **MAKOTO cartridge (YM2608)** — for playback. Compiling with MUC2MUB needs no sound device |

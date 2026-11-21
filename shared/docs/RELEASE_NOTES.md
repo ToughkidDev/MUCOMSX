@@ -2,14 +2,232 @@
 
 2026-10-13 업데이트 안내(기록): [한국어](RELEASE_UPDATE_261013.md) · [English](RELEASE_UPDATE_261013.en.md) · [日本語](RELEASE_UPDATE_261013.ja.md)
 
-## 2026-11 업데이트 (v1.0-Stable, 2026-10-16 배포 이후)
+## 2026-11-21 업데이트 — MSX1의 빠르기, Makoto 필수, `/L` 반복 횟수
 
-- MUCVOICE 제거: 툴체인 ZIP은 MUCEDIT·MUCPLAY·MUC2MUB·MUBPLAY 네 도구만 담습니다. FM 음색, SCC/SCC+ 파형, ADPCM PCM 뱅크 편집은 [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)가 맡습니다(FM·SCC·PCM 뱅크 읽기·저장, FM 음색·SCC 파형·PCM 편집기). 기본 데이터 FMVOICE.DAT·SCCVOICE.DAT·INIT.TFI는 그대로 들어 있습니다. 순서와 화면은 문서 ZIP의 MUCPlayground 편집 가이드(`shared/docs/MUCPLAYGROUND.md`)와 [공식 사용 설명서](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#banks)를 보세요.
+MSX1에서 초당 60틱(50Hz 기종은 50틱)보다 빠른 곡이 MUBPLAY·MUCPLAY에서 느리게
+연주되던 문제를 고쳤습니다. 이전 판은 MSX1에서 화면 주사(VBlank)마다 한 틱씩만
+연주해, 템포가 빠른 곡은 길게 늘어졌습니다(예: 초당 약 93틱인 곡은 1.5배 길이).
+이제 MSX1에서는 Makoto(YM2608)의 내부 타이머(Timer B)로 박자를 맞춥니다. 50Hz
+기종과 60Hz 기종의 빠르기도 같아집니다. MSX2 이상과 turbo R의 동작은 바뀌지
+않았습니다. MSX1은 미리 계산 없이 직접 출력하므로, 3.58MHz로 계산이 벅찬 곡은
+조금 늘어질 수 있습니다.
+
+MucoMSX는 Makoto(YM2608) 카트리지를 기본 사양으로 합니다. MUBPLAY와 MUCPLAY는
+Makoto가 없으면 `ERROR: YM2608 (Makoto) not detected.`를 표시하고 끝납니다.
+PSG·SCC·OPLL만 쓰는 곡도 마찬가지입니다. MUC2MUB의 컴파일에는 필요하지 않습니다.
+
+파트마다 반복 길이나 반복 시작점이 다른 곡에서 MUBPLAY·MUCPLAY의 `/L<n>`이
+일찍 끝나던 문제를 고쳤습니다. 이전 판은 반복점이 있는 첫 파트만 세었습니다.
+이제 반복하는 파트가 모두 한 번씩 되돌아갔을 때를 한 번으로 셉니다. 모든
+파트가 함께 반복하는 곡은 이전과 같은 시점에 끝납니다.
+
+On an MSX1, songs faster than 60 ticks per second (50 on a 50 Hz machine) no
+longer play slowly in MUBPLAY and MUCPLAY. Earlier versions played one tick per
+video frame (VBlank) there, so fast songs were stretched (a song of about 93
+ticks per second took 1.5 times as long). On an MSX1 the tempo now comes from
+Makoto's own timer (YM2608 Timer B), and 50 Hz and 60 Hz machines play at the
+same speed. MSX2 or later and turbo R are unchanged. An MSX1 plays with direct
+output, without computing ahead, so a song that is too heavy for 3.58 MHz can
+still stretch a little.
+
+MucoMSX takes the Makoto (YM2608) cartridge as its base hardware. Without it
+MUBPLAY and MUCPLAY show `ERROR: YM2608 (Makoto) not detected.` and end, also
+for songs that use only PSG, SCC or OPLL. MUC2MUB compiles without it.
+
+`/L<n>` in MUBPLAY and MUCPLAY no longer ends early in songs whose parts loop
+with different lengths or from different points. Earlier versions counted only
+the first part that has a loop point. A pass now counts when every looping part
+has come round once more. Songs whose parts all loop together end at the same
+point as before.
+
+MSX1で、毎秒60ティック（50Hz機は50ティック）より速い曲がMUBPLAY・MUCPLAYで遅く
+演奏される問題を直しました。以前の版はMSX1で画面の垂直帰線（VBlank）ごとに
+1ティックずつしか演奏せず、テンポの速い曲は長く伸びていました（毎秒約93ティックの
+曲は1.5倍の長さ）。MSX1ではMakoto（YM2608）の内部タイマー（Timer B）で拍を刻む
+ようになり、50Hz機と60Hz機の速さも同じになります。MSX2以降とturbo Rの動作は
+変わりません。MSX1は先の計算をせず直接出力するため、3.58MHzでは計算が追いつか
+ない重い曲は少し伸びることがあります。
+
+MucoMSXはMakoto（YM2608）カートリッジを基本仕様とします。MUBPLAYとMUCPLAYは
+Makotoがないと`ERROR: YM2608 (Makoto) not detected.`を表示して終了します。
+PSG・SCC・OPLLだけを使う曲でも同じです。MUC2MUBのコンパイルには不要です。
+
+パートごとにループの長さや開始位置が違う曲で、MUBPLAY・MUCPLAYの`/L<n>`が
+早く終わる問題を直しました。以前の版はループ点のある最初のパートだけを数えて
+いました。ループするパートがすべて一度ずつ戻った時点を1回と数えるように
+なりました。すべてのパートが同時にループする曲は、以前と同じ位置で終わります。
+
+## 2026-11-20 업데이트 — 세션 기록을 RAM으로, CPU 자동 전환 확대
+
+MUCPLAY가 세션 위치를 적어 두던 `MUCPLAY.SES` 파일을 없애고, 시스템 RAM(F600h)의
+11바이트 기록으로 바꿨습니다. MUCPLAY의 `/LOAD`·`/COMPILE`·`/PLAY`·`/RELEASE`는
+디스크에 쓰지 않고(`/MUB`로 내보낸 파일만 씁니다), MUC2MUB·MUBPLAY·MUCPLAY를 시작할
+때마다 하던 파일 확인도 없어졌습니다. MUCEDIT이 편집 상태를 넘기려고 쓰는 자기 파일은
+그대로입니다. 세션은 작업 폴더와 무관하게
+찾으며, 리셋하면 기록과 함께 사라집니다. MUCPLAY·MUCEDIT은 같은 릴리스끼리 써야 하고,
+맞지 않으면 `Use the matching /E3 MUCPLAY.COM.`을 표시합니다. 예전 버전이 남긴
+`MUCPLAY.SES` 파일은 지워도 됩니다. 곡 폴더에 예전 MUCPLAY.COM·MXR이 남아 있어도 PATH에
+같은 릴리스의 한 쌍이 있으면 그것을 찾아 씁니다. MUB 출력은 바뀌지 않았습니다.
+
+같은 날, Panasonic MSX2+의 5.37MHz와 turbo R의 R800 자동 전환을 연주 밖으로 넓혔습니다.
+MUC2MUB는 시작부터 종료까지, MUCPLAY는 적재·컴파일을 포함해 실행하는 동안 내내, MUCEDIT은
+편집하는 동안 빠른 CPU로 돌고, 끝나면 원래대로 되돌립니다. One Chip MSX의 8.06MHz 전환은
+전과 같습니다.
+
+MUBPLAY·MUCPLAY는 연주를 준비하는 동안 진행 상황을 한 줄로 보여 줍니다: `PCM 45% Buffer 0%`처럼
+PCM을 Makoto로 전송하는 과정(`PCM`)과 곡의 앞부분을 미리 계산하는 과정(`Buffer`)이 5% 단위로
+같은 자리에서 바뀝니다. MUBPLAY는 곡 정보를 PCM 전송 전에 먼저 표시합니다.
+
+같은 날 두 번째 빌드에서 MUCPLAY의 메모리 부족 대처를 다듬었습니다. `MUCPLAY /RELEASE`는 빈 매퍼
+메모리가 없어도 세션을 해제합니다(전에는 빈 세그먼트가 7개보다 적으면 `Not enough mapper memory
+to start.`가 나와 해제할 수 없었습니다). `/RELEASE`만 적었을 때는 프로그램 이름 없이 결과 한 줄만
+표시합니다. 끝까지 가지 못한 `/LOAD`는 세션을 남기지 않고 쓰던 메모리를 모두 돌려줍니다.
+`/COMPILE`이 메모리 부족으로 실패하면 `Error: not enough mapper memory.`를 함께 표시합니다.
+중단했을 때 오류 문구가 진행률 줄 뒤에 붙던 것을 새 줄에서 시작하게 했고, 편집기·뷰어로 돌아가기
+전의 안내를 `Press a key to return.`으로 바꿨습니다. MUCEDIT은 디스크가 가득 차 상태 파일을 쓰지
+못했을 때 0바이트 `MUCEDIT.RET`를 남기지 않습니다. MUB 출력은 바뀌지 않았습니다.
+
+MUC를 열어 보고 그 자리에서 컴파일·연주·MUB 내보내기를 하는 뷰어 MUCVIEW(v0.2)를 추가했습니다.
+편집 기능이 없고 디스크에 상태 파일을 쓰지 않습니다. 2026-11-21부터 릴리스 패키지에 들어 있으며,
+설명서는 문서 ZIP의 `MUCView/`에 있습니다(한국어·English·日本語).
+
+MUCPLAY no longer writes the `MUCPLAY.SES` file; the session location is an 11-byte
+record in system RAM (F600h). MUCPLAY's `/LOAD`, `/COMPILE`, `/PLAY` and `/RELEASE`
+no longer write to disk (only the file exported with `/MUB` is written), and
+MUC2MUB, MUBPLAY and MUCPLAY no longer look for that file at every start. The
+files MUCEDIT writes to hand over its own editing state are unchanged. The
+session is found from any folder and disappears with the record at reset. MUCPLAY
+and MUCEDIT must be of the same release; otherwise `Use the matching /E3
+MUCPLAY.COM.` is shown. A `MUCPLAY.SES` file left by an earlier version can be
+deleted. An older MUCPLAY.COM/MXR pair left in a song folder is passed over when a
+pair of the same release is on the PATH. MUB output is unchanged.
+
+On the same day the automatic switch to 5.37 MHz (Panasonic MSX2+) and to the R800
+(turbo R) was extended beyond playback: MUC2MUB runs fast from start to exit,
+MUCPLAY for its whole run including loading and compiling, and MUCEDIT while
+editing; each puts the CPU back when it ends. The One Chip MSX 8.06 MHz handling
+is unchanged.
+
+MUBPLAY and MUCPLAY show one status line while they prepare to play, for example
+`PCM 45% Buffer 0%`: the transfer of the PCM to Makoto (`PCM`) and the computing ahead
+of the start of the song (`Buffer`), rewritten in place in steps of 5%. MUBPLAY
+prints the song information before the PCM transfer.
+
+A second build on the same day tidied up what MUCPLAY does when memory is short.
+`MUCPLAY /RELEASE` releases the session even with no free mapper memory (before,
+with fewer than 7 free segments it stopped with `Not enough mapper memory to
+start.` and the session could not be released). With `/RELEASE` alone on the
+command line only the result line is shown, without the program name. A `/LOAD`
+that does not finish leaves no session and gives back all the memory it used. A
+`/COMPILE` that fails for lack of memory also prints `Error: not enough mapper
+memory.` After an interruption the error text starts on a new line instead of
+after the progress line, and the prompt before going back to the editor or viewer
+now reads `Press a key to return.` MUCEDIT no longer leaves a 0-byte `MUCEDIT.RET`
+when the disk is full and its state file cannot be written. MUB output is unchanged.
+
+MUCVIEW (v0.2) is new: a viewer that opens a MUC and compiles, plays and exports
+it to MUB on the spot. It has no editing functions and writes no state file.
+It is part of the release package from 2026-11-21; its manuals are in `MUCView/` of the
+documentation ZIP (Korean, English, Japanese).
+
+MUCPLAYは`MUCPLAY.SES`ファイルを作らなくなり、セッションの場所はシステムRAM(F600h)の
+11バイトの記録になりました。MUCPLAYの`/LOAD`・`/COMPILE`・`/PLAY`・`/RELEASE`は
+ディスクに書き込みません(`/MUB`で書き出すファイルだけを書きます)。MUC2MUB・MUBPLAY・
+MUCPLAYが起動のたびに行っていたファイル確認もなくなりました。MUCEDITが編集状態を
+引き継ぐために書く自分のファイルはそのままです。セッションは
+どのフォルダからでも見つかり、リセットすると記録とともに消えます。MUCPLAYとMUCEDITは
+同じリリースのものを使ってください。合わない場合は`Use the matching /E3 MUCPLAY.COM.`
+と表示します。以前のバージョンが残した`MUCPLAY.SES`ファイルは削除してかまいません。
+曲フォルダに古いMUCPLAY.COM・MXRが残っていても、PATHに同じリリースの一組があれば
+そちらを使います。MUBの出力は変わりません。
+
+同じ日に、Panasonic MSX2+の5.37MHzとturbo RのR800への自動切り替えを演奏以外にも広げました。
+MUC2MUBは起動から終了まで、MUCPLAYは読み込み・コンパイルを含む実行中ずっと、MUCEDITは
+編集中に高速CPUで動き、終わると元に戻します。One Chip MSXの8.06MHzの扱いは変わりません。
+
+MUBPLAY・MUCPLAYは演奏の準備中に進み具合を1行で表示します。`PCM 45% Buffer 0%`のように、
+PCMをMakotoへ転送する処理(`PCM`)と曲の冒頭を先に計算する処理(`Buffer`)が5%刻みで
+同じ位置に書き換えられます。MUBPLAYは曲情報をPCM転送の前に表示します。
+
+同じ日の2つ目のビルドで、メモリ不足時のMUCPLAYの動作を整えました。`MUCPLAY /RELEASE`は
+空きマッパーメモリがなくてもセッションを解放します(以前は空きセグメントが7個より少ないと
+`Not enough mapper memory to start.`と表示され、解放できませんでした)。`/RELEASE`だけを
+指定したときは、プログラム名を表示せず結果の1行だけを表示します。最後まで進まなかった`/LOAD`は
+セッションを残さず、使っていたメモリをすべて返します。`/COMPILE`がメモリ不足で失敗したときは
+`Error: not enough mapper memory.`も表示します。中断したときにエラー文が進行表示の行の
+後ろに続いていたのを新しい行から始めるようにし、エディタ・ビューアへ戻る前の案内を
+`Press a key to return.`に変えました。MUCEDITは、ディスクがいっぱいで状態ファイルを書けなかった
+ときに0バイトの`MUCEDIT.RET`を残しません。MUBの出力は変わりません。
+
+MUCを開いて、その場でコンパイル・演奏・MUB書き出しを行うビューアMUCVIEW(v0.2)を追加しました。
+編集機能はなく、ディスクに状態ファイルを書きません。2026-11-21からリリースパッケージに含まれ、
+説明書は文書ZIPの`MUCView/`にあります(韓国語・English・日本語)。
+
+## 2026-11-18 업데이트 — v1.5-Stable(2026-11-15) 이후 변경
+
+- PCM 포함 옵션: 컴파일할 때 `#pcm` 파일을 MUB에 넣을지 고릅니다. MUC2MUB는 `/P`, MUCPLAY는 `/MUB 이름 /P`, MUCEDIT는 내보낼 때 `Include the PCM file in the MUB? (Y/N)`에 `Y`. **옵션이 없으면 MUB에 PCM을 넣지 않습니다**(이전 판은 늘 넣었습니다). 예전처럼 한 파일로 만들려면 `/P`를 쓰세요. `/P`로 만든 MUB는 이전 판의 출력과 같습니다.
+- PCM이 들어 있지 않은 MUB의 연주: MUBPLAY는 MUB와 같은 폴더에서 `#pcm` 파일을 찾아 읽습니다. 없으면 `PCM file not found:`와 파일 이름, `Playing without PCM.`을 표시하고 PCM 없이 연주합니다.
+- `#pcm` 규칙: K 파트(ADPCM)에 음표가 있는 곡은 `#pcm` 태그가 꼭 있어야 합니다(없으면 새 오류 20 "K part needs a #pcm tag"). `#pcm` 뒤에 이름을 적지 않으면 `MUCOMPCM.BIN`을 쓰고, 그 파일이 없으면 오류 19입니다. `#pcm` 태그가 없는 곡에서는 `MUCOMPCM.BIN`을 찾지 않으며, 예전의 `Warning: PCM not found` 경고는 없어졌습니다. `#pcm`에는 폴더 없이 파일 이름만 씁니다.
+- 태그의 파일 이름은 8.3만(2026-11-19): `#pcm`과 `#voice`에는 8.3 형식의 파일 이름만 쓸 수 있습니다(이름 8자, 확장자 3자까지). 더 긴 이름이나 `?`·`*`가 든 이름은 새 오류 21 "Name not 8.3"로 컴파일하지 않습니다. 이전 판은 긴 `#voice` 이름을 앞 8자로 잘라서 열었습니다. 긴 이름을 쓰던 곡은 태그와 실제 파일 이름을 8.3으로 바꿔 주세요. MUBPLAY도 MUB의 `#pcm` 이름이 8.3 형식이 아니면 그 파일을 찾지 않고 PCM 없이 연주합니다. 입력 MUC 이름과 태그의 이름에 `~`를 쓸 수 있습니다(`LONGSO~1.MUC`).
+- MSX-DOS 2 지원: 네 도구가 Nextor뿐 아니라 MSX-DOS 2(2.20에서 확인)에서도 동작합니다. 이전 판은 메모리 끝이 512바이트 낮은 MSX-DOS 2에서 시작하지 못했습니다.
+- MM에서 바로 실행: MUBPLAY·MUCPLAY·MUC2MUB·MUCEDIT를 MM(Multi Mente) 같은 파일 관리자에서 바로 실행할 수 있습니다. `MMRET.DAT`에 `.MUB<탭>MUBPLAY $C`, `.MUC<탭>MUCPLAY $C`를 넣으세요. MUCOMSXE.COM은 필요하지 않아 2026-11-19에 패키지에서 뺐습니다(`MMRET.DAT`에 MUCOMSXE를 적어 두었다면 위 두 줄로 바꾸세요). 오류 문구로 끝났을 때는 `Press any key to return.`에서 키를 기다린 뒤 돌아갑니다.
+- `#CarrierCorrection`이 MUC를 바로 연주할 때(MUCPLAY, MUCEDIT의 연주) 적용되지 않던 문제를 고쳤습니다.
+- 일부 60Hz MSX1(예: Sony HB-10)에서 MUBPLAY·MUCPLAY가 약 20% 빠르게 연주하던 문제를 고쳤습니다.
+- 512KiB 매퍼에서 MUCEDIT로 컴파일한 뒤 연주나 MUBPLAY가 "Not enough mapper memory to start."로 시작하지 못하던 문제를 고쳤습니다(시작할 때 쓰지 않는 64KiB를 더 요구하지 않습니다).
+
+### 알려진 제한 (2026-11-18)
+
+- 8.3 이름의 음색 파일을 열지 못하면 `Warning: voice not found:` 경고 뒤 음색 없이 컴파일을 계속합니다(오류가 아닙니다).
+- MSX 칩 확장 문법 MUC의 원본 한도는 14,976바이트입니다(v1.5-Stable 안내의 "약 14,900바이트"를 다시 잰 값). 넘으면 code 9입니다.
+- MUC2MUB와 MUCPLAY는 곡 파일을 경로 없이 이름만 받습니다. 다른 드라이브·폴더의 곡은 그 폴더로 가서 실행하세요. MUBPLAY는 경로를 받습니다.
+- MM에서 `MUC2MUB.COM` 자체를 실행하면 끝날 때 키를 두 번 누릅니다(프로그램의 대기와 MM의 대기).
+
+### English
+
+- PCM option: choose at compile time whether the `#pcm` file goes into the MUB. `/P` in MUC2MUB, `/MUB name /P` in MUCPLAY, and `Y` at `Include the PCM file in the MUB? (Y/N)` when exporting from MUCEDIT. **Without the option the MUB carries no PCM** (earlier versions always embedded it). Use `/P` to get a single file as before; a MUB built with `/P` is the same as the earlier output.
+- Playing a MUB without embedded PCM: MUBPLAY looks up the `#pcm` file in the MUB's folder. If it is missing it prints `PCM file not found:`, the file name and `Playing without PCM.`, and plays without PCM.
+- `#pcm` rules: a song whose K part (ADPCM) has a note must have a `#pcm` tag (new error 20, "K part needs a #pcm tag"). A `#pcm` tag without a name means `MUCOMPCM.BIN`, and error 19 when that file is missing. A song without a `#pcm` tag never looks for `MUCOMPCM.BIN`, and the old `Warning: PCM not found` is gone. `#pcm` takes a file name only, without a folder.
+- Tag file names are 8.3 only (2026-11-19): `#pcm` and `#voice` take 8.3 file names only (a stem of up to 8 characters and an extension of up to 3). A longer name, or one with `?` or `*`, is refused with the new error 21, "Name not 8.3". Earlier versions opened a long `#voice` name cut to its first 8 characters. A song that used long names needs its tags and the actual files renamed to 8.3. MUBPLAY likewise does not look up a `#pcm` name in a MUB that is not an 8.3 name, and plays without PCM. `~` is accepted in the input MUC name and in tag names (`LONGSO~1.MUC`).
+- MSX-DOS 2: the four tools run on MSX-DOS 2 (verified on 2.20) as well as on Nextor. Earlier versions could not start on MSX-DOS 2, where the top of memory is 512 bytes lower.
+- Running from MM: MUBPLAY, MUCPLAY, MUC2MUB and MUCEDIT start directly from a file manager such as MM (Multi Mente). Put `.MUB<TAB>MUBPLAY $C` and `.MUC<TAB>MUCPLAY $C` in `MMRET.DAT`. MUCOMSXE.COM is not needed and was removed from the package on 2026-11-19 (if your `MMRET.DAT` names MUCOMSXE, change it to the two lines above). After an error message the program waits at `Press any key to return.` before going back.
+- `#CarrierCorrection` was not applied when a MUC was played directly (MUCPLAY, Play in MUCEDIT); fixed.
+- MUBPLAY and MUCPLAY no longer play about 20% fast on some 60 Hz MSX1 machines (for example the Sony HB-10).
+- On a 512 KiB mapper, Play after compiling in MUCEDIT, or MUBPLAY afterwards, no longer fails with "Not enough mapper memory to start." (64 KiB that was not used is no longer requested at start).
+
+### Known limits (2026-11-18)
+
+- When a voice file with an 8.3 name cannot be opened, `Warning: voice not found:` is shown and the compile continues without those voices (it is not an error).
+- The source limit of a MUC in the MSX chip extension grammar is 14,976 bytes (a re-measurement of the "about 14,900 bytes" in the v1.5-Stable notes). Beyond it: code 9.
+- MUC2MUB and MUCPLAY take the song as a bare file name, without a path; change to the song's folder first. MUBPLAY accepts a path.
+- Starting `MUC2MUB.COM` itself from MM needs two key presses at the end (the program's wait and MM's own).
+
+### 日本語
+
+- PCM同梱オプション: コンパイル時に`#pcm`のファイルをMUBに入れるかどうかを選びます。MUC2MUBは`/P`、MUCPLAYは`/MUB 名前 /P`、MUCEDITは書き出し時の`Include the PCM file in the MUB? (Y/N)`に`Y`。**オプションがなければMUBにPCMを入れません**（以前の版は常に入れていました）。従来どおり1ファイルにするには`/P`を使ってください。`/P`で作ったMUBは以前の版の出力と同じです。
+- PCMが入っていないMUBの演奏: MUBPLAYはMUBと同じフォルダーで`#pcm`ファイルを探して読みます。なければ`PCM file not found:`とファイル名、`Playing without PCM.`を表示し、PCMなしで演奏します。
+- `#pcm`の規則: Kパート（ADPCM）に音符がある曲には`#pcm`タグが必要です（なければ新しいエラー20「K part needs a #pcm tag」）。`#pcm`のあとに名前を書かなければ`MUCOMPCM.BIN`を使い、そのファイルがなければエラー19です。`#pcm`タグのない曲では`MUCOMPCM.BIN`を探さず、以前の`Warning: PCM not found`の警告はなくなりました。`#pcm`にはフォルダーを付けず、ファイル名だけを書きます。
+- タグのファイル名は8.3のみ（2026-11-19）: `#pcm`と`#voice`には8.3形式のファイル名だけを書けます（主名8文字まで、拡張子3文字まで）。それより長い名前や`?`・`*`を含む名前は、新しいエラー21「Name not 8.3」となり、コンパイルしません。以前の版は長い`#voice`名を先頭8文字に切り詰めて開いていました。長い名前を使っていた曲は、タグと実際のファイル名を8.3に変えてください。MUBPLAYも、MUBの`#pcm`の名前が8.3形式でなければそのファイルを探さず、PCMなしで演奏します。入力MUCの名前とタグの名前に`~`を使えます（`LONGSO~1.MUC`）。
+- MSX-DOS 2対応: 4ツールがNextorだけでなくMSX-DOS 2（2.20で確認）でも動作します。以前の版は、メモリーの上端が512バイト低いMSX-DOS 2では起動できませんでした。
+- MMからの直接起動: MUBPLAY・MUCPLAY・MUC2MUB・MUCEDITを、MM（Multi Mente）などのファイル管理ソフトから直接起動できます。`MMRET.DAT`に`.MUB<タブ>MUBPLAY $C`、`.MUC<タブ>MUCPLAY $C`を入れてください。MUCOMSXE.COMは不要なため、2026-11-19にパッケージから外しました（`MMRET.DAT`にMUCOMSXEを書いている場合は、上の2行に変えてください）。エラーの文言で終了したときは`Press any key to return.`でキーを待ってから戻ります。
+- MUCを直接演奏するとき（MUCPLAY、MUCEDITの演奏）に`#CarrierCorrection`が適用されなかった問題を直しました。
+- 一部の60Hz MSX1（例: Sony HB-10）でMUBPLAY・MUCPLAYが約20%速く演奏する問題を直しました。
+- 512KiBマッパーで、MUCEDITでコンパイルしたあとの演奏やMUBPLAYが「Not enough mapper memory to start.」で起動できなかった問題を直しました（起動時に使わない64KiBを要求しなくなりました）。
+
+### 既知の制限 (2026-11-18)
+
+- 8.3の名前の音色ファイルを開けないときは、`Warning: voice not found:`の警告のあと、音色なしでコンパイルを続けます（エラーではありません）。
+- MSXチップ拡張文法のMUCのソースの上限は14,976バイトです（v1.5-Stableの案内の「約14,900バイト」を測り直した値）。超えるとcode 9です。
+- MUC2MUBとMUCPLAYは、曲ファイルをパスなしの名前だけで受け取ります。別のドライブ・フォルダーの曲は、そのフォルダーへ移動して実行してください。MUBPLAYはパスを受け取ります。
+- MMから`MUC2MUB.COM`自体を起動すると、終了時にキーを2回押します（プログラムの待ちとMMの待ち）。
+
+## MucoMSX v1.5-Stable (2026-11-15) — v1.0-Stable(2026-10-16 배포) 이후 변경
+
+- MUCVOICE 제거: 툴체인 ZIP은 MUCEDIT·MUCPLAY·MUC2MUB·MUBPLAY 네 도구를 담습니다. FM 음색, SCC/SCC+ 파형, ADPCM PCM 뱅크 편집은 [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)가 맡습니다(FM·SCC·PCM 뱅크 읽기·저장, FM 음색·SCC 파형·PCM 편집기). 기본 데이터 FMVOICE.DAT·SCCVOICE.DAT·INIT.TFI는 그대로 들어 있습니다. 순서와 화면은 문서 ZIP의 MUCPlayground 편집 가이드(`shared/docs/MUCPLAYGROUND.md`)와 [공식 사용 설명서](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#banks)를 보세요.
 - 실행 파일 구성: MUC2MUB·MUCPLAY·MUBPLAY는 같은 빌드의 COM과 MXR을 함께 설치합니다. MXR은 현재 폴더, 프로그램 폴더, `PATH` 순서로 찾습니다.
 - MUBPLAY·MUCPLAY의 VGM 출력(`/V`)을 없앴습니다(2026-10-30). `/V`는 무시합니다.
 - One Chip MSX: 네 도구가 카트리지 슬롯 3.58MHz, CPU 8.06MHz로 실행하고 종료 때 되돌립니다.
 - 메모리: 내장·외장 매퍼 중 빈 메모리가 더 많은 매퍼를 골라 씁니다.
-- MSX2 이상과 turbo R에서는 연주 전에 곡의 앞부분을 미리 계산해 두고 연주합니다.
+- MSX2 이상과 turbo R에서는 연주 전에 곡의 앞부분을 미리 계산해 두고 연주합니다. MSX1에서는 미리 계산 없이 직접 출력 방식으로 연주합니다.
 - 네이티브 MSX 악보(msPb0103~0109)도 `/L<n>`으로 정해진 횟수 뒤에 끝납니다. 반복은 채널마다 셉니다.
 - MUBPLAY: PCM이 내장되지 않은 MUB는 `#pcm` 태그의 파일을 MUB와 같은 폴더에서 읽습니다. 파일이 없으면 ADPCM만 무음입니다.
 - MUCPLAY·MUCEDIT·MUC2MUB: `#pcm`에 적힌 파일이 없으면 컴파일하지 않고 오류 19를 냅니다. `#pcm`이 없고 `MUCOMPCM.BIN`도 없는 곡은 경고 뒤 ADPCM 없이 연주합니다.
@@ -18,6 +236,9 @@
 - SCC 파형(`#sccvoice` 파일·인라인 파형)을 쓰는 일부 곡이 메모리가 있는데도 "Mapper unavailable" 오류로 실패하거나 컴파일이 끝나지 않던 문제를 고쳤습니다(예: `MSX_All_Chips`, City pop demo, ARG011).
 - 컴파일 중 Ctrl-STOP을 눌러도 정상 프롬프트나 MUCEDIT로 돌아옵니다. MUCEDIT에서 Ç·ü·é 같은 문자와 CP932 문자를 입력할 수 있고, `MEDSAVE.BAK`·`MEDSAVE.$$$`가 남아 있으면 이름을 바꾸라고 알려 줍니다. 줄바꿈 없이 1,023바이트를 넘는 줄은 code 17, `#pcm`의 빈 값은 경고로 처리합니다.
 - 복귀 명령으로 되도는 네이티브 곡(예: GOFER MUS0042)도 `/L<n>` 뒤에 끝납니다.
+- 실행기 MUCOMSXE.COM (2026-11-15에 넣었고 2026-11-19에 뺌): MM(Multi Mente) 같은 파일 관리자에서 `.MUC`·`.MUB`를 MUCPLAY·MUBPLAY로 여는 실행기였습니다. 지금은 도구가 MM에서 바로 실행되므로 패키지와 문서에서 뺐습니다. 위 "2026-11-18 업데이트"의 "MM에서 바로 실행"을 보세요.
+- MSX1 지원 (2026-11-15): MUBPLAY·MUCPLAY·MUC2MUB는 MSX1에서도 동작합니다(MSX-DOS2 또는 Nextor와 512KiB 이상 매퍼 필요). 60Hz MSX1에서 SCC를 쓰는 곡이 "An exception occurred."로 바로 끝나던 문제를 고쳤습니다. MUCEDIT는 80컬럼 화면이 필요해 MSX2 이상에서 동작하며, MSX1에서는 "MUCEDIT: MSX2 required."를 보여 주고 바로 끝납니다.
+- 40컬럼 메시지 (2026-11-15): DOS 프롬프트에 나오는 메시지를 한 줄 36자 이하로 다듬어, MSX1의 40컬럼 화면에서도 줄이 넘치지 않습니다. 그래서 일부 오류·경고 문구가 짧아졌습니다(예: `Error: not enough mapper memory.`, `Bad channel prefix (use A-K+space)`).
 
 ### 알려진 제한
 
@@ -29,12 +250,12 @@
 
 ### English
 
-- MUCVOICE removed: the toolchain ZIP contains only the four tools MUCEDIT, MUCPLAY, MUC2MUB and MUBPLAY. Edit FM voices, SCC/SCC+ waves and ADPCM PCM banks in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) (FM/SCC/PCM banks that read and save the files, plus FM voice, SCC wave and PCM editors). The starter data FMVOICE.DAT, SCCVOICE.DAT and INIT.TFI are still included. See the MUCPlayground editing guide (`shared/docs/MUCPLAYGROUND.en.md` in the documentation ZIP) and the [official user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks).
+- MUCVOICE removed: the toolchain ZIP contains the four tools MUCEDIT, MUCPLAY, MUC2MUB and MUBPLAY. Edit FM voices, SCC/SCC+ waves and ADPCM PCM banks in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/) (FM/SCC/PCM banks that read and save the files, plus FM voice, SCC wave and PCM editors). The starter data FMVOICE.DAT, SCCVOICE.DAT and INIT.TFI are still included. See the MUCPlayground editing guide (`shared/docs/MUCPLAYGROUND.en.md` in the documentation ZIP) and the [official user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks).
 - Package: install each COM with the MXR of the same build for MUC2MUB, MUCPLAY and MUBPLAY. The MXR is looked up in the current folder, the program folder, then `PATH`.
 - VGM output (`/V`) was removed from MUBPLAY and MUCPLAY (2026-10-30); `/V` is ignored.
 - One Chip MSX: all four tools run with the cartridge slots at 3.58 MHz and the CPU at 8.06 MHz, restored at exit.
 - Memory: the mapper (internal or external) with more free memory is used.
-- On MSX2 or later and turbo R, the start of the song is computed ahead before playback.
+- On MSX2 or later and turbo R, the start of the song is computed ahead before playback. On an MSX1 the song plays with direct output, without computing ahead.
 - Native MSX scores (msPb0103–0109) now end after `/L<n>` passes; repeats are counted per channel.
 - MUBPLAY: a MUB without embedded PCM loads the file named by its `#pcm` tag from the MUB's folder; without it only the ADPCM part is silent.
 - MUCPLAY/MUCEDIT/MUC2MUB: a missing `#pcm` file stops compilation with error 19; a song without `#pcm` and without `MUCOMPCM.BIN` plays without ADPCM after a warning.
@@ -42,6 +263,9 @@
 - Fixed songs that use SCC waves (a `#sccvoice` file or inline waves) failing with "Mapper unavailable" although memory was free, or never finishing compilation (for example `MSX_All_Chips`, the City pop demo, ARG011).
 - Ctrl-STOP during compilation now returns to the prompt or to MUCEDIT. MUCEDIT accepts characters such as Ç, ü, é and CP932 text, and asks you to rename a leftover `MEDSAVE.BAK` or `MEDSAVE.$$$`. A line longer than 1,023 bytes without a line break gives code 17; an empty `#pcm` value is a warning.
 - Native songs that loop through a return command (for example GOFER MUS0042) also end after `/L<n>`.
+- Launcher MUCOMSXE.COM (added on 2026-11-15, removed on 2026-11-19): it opened `.MUC` and `.MUB` files with MUCPLAY and MUBPLAY from file managers such as MM (Multi Mente). The tools now start directly from MM, so the launcher and its manual are no longer in the packages. See "Running from MM" in the 2026-11-18 update above.
+- MSX1 support (2026-11-15): MUBPLAY, MUCPLAY and MUC2MUB also run on an MSX1 (MSX-DOS2 or Nextor and at least 512 KiB of mapper RAM). Songs that use SCC no longer end at once with "An exception occurred." on a 60 Hz MSX1. MUCEDIT needs an 80-column screen and runs on an MSX2 or later; on an MSX1 it shows "MUCEDIT: MSX2 required." and ends at once.
+- 40-column messages (2026-11-15): messages at the DOS prompt fit in 36 characters per line, so they no longer wrap on the 40-column screen of an MSX1. Some error and warning texts became shorter (for example `Error: not enough mapper memory.` and `Bad channel prefix (use A-K+space)`).
 
 ### Known limits
 
@@ -53,12 +277,12 @@
 
 ### 日本語
 
-- MUCVOICE削除：ツールチェーンZIPはMUCEDIT・MUCPLAY・MUC2MUB・MUBPLAYの4ツールのみです。FM音色、SCC/SCC+波形、ADPCMのPCMバンクの編集は[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)で行います（FM・SCC・PCMバンクの読み込み・保存、FM音色・SCC波形・PCMエディター）。初期データFMVOICE.DAT・SCCVOICE.DAT・INIT.TFIは引き続き同梱します。手順と画面は文書ZIPのMUCPlayground編集ガイド（`shared/docs/MUCPLAYGROUND.ja.md`）と[公式ユーザーガイド](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ja#banks)を参照してください。
+- MUCVOICE削除：ツールチェーンZIPはMUCEDIT・MUCPLAY・MUC2MUB・MUBPLAYの4ツールです。FM音色、SCC/SCC+波形、ADPCMのPCMバンクの編集は[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)で行います（FM・SCC・PCMバンクの読み込み・保存、FM音色・SCC波形・PCMエディター）。初期データFMVOICE.DAT・SCCVOICE.DAT・INIT.TFIは引き続き同梱します。手順と画面は文書ZIPのMUCPlayground編集ガイド（`shared/docs/MUCPLAYGROUND.ja.md`）と[公式ユーザーガイド](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ja#banks)を参照してください。
 - 構成：MUC2MUB・MUCPLAY・MUBPLAYは同じビルドのCOMとMXRを一緒に置きます。MXRは現在のフォルダー、プログラムのフォルダー、`PATH`の順に探します。
 - MUBPLAY・MUCPLAYのVGM出力（`/V`）を削除しました（2026-10-30）。`/V`は無視します。
 - One Chip MSX：4ツールともカートリッジスロット3.58MHz、CPU 8.06MHzで動作し、終了時に戻します。
 - メモリー：内蔵・外付けマッパーのうち空きメモリーの多い方を使います。
-- MSX2以降とturbo Rでは、演奏前に曲の冒頭を先に計算してから演奏します。
+- MSX2以降とturbo Rでは、演奏前に曲の冒頭を先に計算してから演奏します。MSX1では先の計算をせず、直接出力方式で演奏します。
 - ネイティブMSX楽譜（msPb0103〜0109）も`/L<n>`の回数で終わります。繰り返しはチャンネルごとに数えます。
 - MUBPLAY：PCMを内蔵しないMUBは、`#pcm`タグのファイルをMUBと同じフォルダーから読みます。ファイルがなければADPCMだけ無音です。
 - MUCPLAY・MUCEDIT・MUC2MUB：`#pcm`のファイルがないとコンパイルせずエラー19を出します。`#pcm`がなく`MUCOMPCM.BIN`もない曲は警告のあとADPCMなしで演奏します。
@@ -66,6 +290,9 @@
 - SCC波形（`#sccvoice`ファイル・インライン波形）を使う一部の曲が、メモリに空きがあるのに"Mapper unavailable"で失敗したり、コンパイルが終わらなかったりする問題を修正しました（例: `MSX_All_Chips`、City pop demo、ARG011）。
 - コンパイル中にCtrl-STOPを押しても、プロンプトやMUCEDITへ正常に戻ります。MUCEDITでÇ・ü・éなどの文字とCP932文字を入力でき、`MEDSAVE.BAK`・`MEDSAVE.$$$`が残っていると名前の変更を促します。改行なしで1,023バイトを超える行はcode 17、`#pcm`の空の値は警告になります。
 - 戻り命令で繰り返すネイティブ曲（例: GOFER MUS0042）も`/L<n>`のあとに終わります。
+- 起動ツールMUCOMSXE.COM（2026-11-15に追加、2026-11-19に削除）：MM（Multi Mente）などのファイル管理ソフトから`.MUC`・`.MUB`をMUCPLAY・MUBPLAYで開くツールでした。現在はツールをMMから直接起動できるため、パッケージと文書から外しました。上の「2026-11-18の更新」の「MMからの直接起動」を参照してください。
+- MSX1対応（2026-11-15）：MUBPLAY・MUCPLAY・MUC2MUBはMSX1でも動作します（MSX-DOS2またはNextorと512KiB以上のマッパーが必要）。60HzのMSX1でSCCを使う曲が「An exception occurred.」ですぐに終了する問題を直しました。MUCEDITは80桁画面が必要なためMSX2以上で動作し、MSX1では「MUCEDIT: MSX2 required.」を表示してすぐに終了します。
+- 40桁メッセージ（2026-11-15）：DOSプロンプトに出るメッセージを1行36文字以内に整え、MSX1の40桁画面でも行があふれないようにしました。そのため一部のエラー・警告の文言が短くなりました（例：`Error: not enough mapper memory.`、`Bad channel prefix (use A-K+space)`）。
 
 ### 既知の制限
 
@@ -166,7 +393,7 @@ v0.81-beta는 일반 다중 페이지, 120KiB 음악 DATA, FM3 독립 슬롯, �
 
 ## CPU 가속 사용법
 
-MUCPLAY·MUBPLAY는 지원 하드웨어에서 **연주 중에만** 자동 가속합니다. 지원 Panasonic MSX2+는 5.37MHz Z80, turbo R은 Z80에서 들어온 경우 R800 ROM을 선택합니다. 이미 사용 중인 R800 모드는 유지하며 정상 종료·사용자 중단·처리 가능한 오류 후에는 원래 CPU 모드로 돌아갑니다.
+MUBPLAY는 지원 하드웨어에서 **연주 중에** 자동 가속합니다. 2026-11-20부터 MUCPLAY는 적재·컴파일을 포함해 실행하는 동안 내내, MUC2MUB는 시작부터 종료까지, MUCEDIT은 편집하는 동안 자동 가속합니다. 지원 Panasonic MSX2+는 5.37MHz Z80, turbo R은 Z80에서 들어온 경우 R800 ROM을 선택합니다. 이미 사용 중인 R800 모드는 유지하며 정상 종료·사용자 중단·처리 가능한 오류 후에는 원래 CPU 모드로 돌아갑니다.
 
 ```dos
 MUCPLAY SONG.MUC /N
@@ -174,7 +401,7 @@ MUCPLAY /PLAY /N
 MUBPLAY SONG.MUB /N
 ```
 
-`/N`은 자동 전환을 끄고 현재 CPU 모드를 유지합니다. R800을 Z80으로 강제 바꾸는 옵션은 아닙니다. 적재·컴파일·VGM 출력은 자동 가속 대상이 아닙니다.
+`/N`(MUCPLAY·MUBPLAY)은 자동 전환을 끄고 현재 CPU 모드를 유지합니다. R800을 Z80으로 강제 바꾸는 옵션은 아닙니다. MUC2MUB와 MUCEDIT에는 끄는 옵션이 없습니다. 이미 빠른 상태(`TURBO`를 먼저 실행했거나 R800으로 부팅)에서는 아무것도 바꾸지 않고, 종료할 때도 그대로 둡니다.
 
 ## 용량과 호환성
 
@@ -190,7 +417,7 @@ Fixed repeat-ending ties/length extensions that could overwrite music DATA, corr
 
 New since v0.81: SCC/SCC+ SSG/msPb0101, PCMInvert, compiler optimizations, rhythm-mute/session fixes and MUCVOICE v0.5beta. MUCVOICE was included with the four original tools in the 10-16 toolchain ZIP and has been removed in the 2026-11 version in favour of MUCPlayground; complete multilingual manuals are in the separate documentation ZIP. Native MSX targets and playback CPU acceleration were already included in v0.81. Recompile affected rhythm-mute MUBs; replacing a player cannot recover missing DATA.
 
-Automatic acceleration is playback-only. `/N` keeps the current CPU; it does not force Z80. Editor/source/DATA limits are 60,000 / 65,536 / 98,304 bytes. 512KiB does not guarantee every simultaneous maximum-size session. Read the [update guide](RELEASE_UPDATE_261013.en.md) for compatibility and safe replacement.
+Automatic acceleration covers playback in MUBPLAY and, since 2026-11-20, the whole run of MUCPLAY (loading and compiling included), MUC2MUB from start to exit, and MUCEDIT while editing. `/N` (MUCPLAY, MUBPLAY) keeps the current CPU; it does not force Z80. A machine that is already fast is left as it is. Editor/source/DATA limits are 60,000 / 65,536 / 98,304 bytes. 512KiB does not guarantee every simultaneous maximum-size session. Read the [update guide](RELEASE_UPDATE_261013.en.md) for compatibility and safe replacement.
 
 ## 日本語
 
@@ -198,4 +425,4 @@ Automatic acceleration is playback-only. `/N` keeps the current CPU; it does not
 
 v0.81後の追加はSCC/SCC+ SSG/msPb0101、PCMInvert、コンパイル最適化、リズム/セッション修正、MUCVOICE v0.5betaです。MUCVOICEは10-16配布では従来の4ツールと同じツールチェーンZIPに含まれていましたが、2026-11版で削除し、MUCPlaygroundに置き換えました。完全な多言語マニュアルは別の文書ZIPに収録されています。MSX対象・演奏CPU高速化はv0.81にも収録済みです。影響を受けた旧MUBは再コンパイルしてください。
 
-自動高速化は演奏中のみで、`/N`は現在CPUを維持します。編集60,000・入力65,536・音楽DATA98,304バイトが上限です。512KiBは最大サイズの同時保持保証ではありません。[更新ガイド](RELEASE_UPDATE_261013.ja.md)で互換性・交換手順を確認してください。
+自動高速化はMUBPLAYでは演奏中、2026-11-20からMUCPLAYでは読み込み・コンパイルを含む実行中ずっと、MUC2MUBでは起動から終了まで、MUCEDITでは編集中に働きます。`/N`(MUCPLAY・MUBPLAY)は現在CPUを維持します。すでに高速な状態の機械はそのままにします。編集60,000・入力65,536・音楽DATA98,304バイトが上限です。512KiBは最大サイズの同時保持保証ではありません。[更新ガイド](RELEASE_UPDATE_261013.ja.md)で互換性・交換手順を確認してください。

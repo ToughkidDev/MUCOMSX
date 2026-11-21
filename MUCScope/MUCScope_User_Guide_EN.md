@@ -83,6 +83,7 @@ See [Display and skins](#display-and-skins), [File browser](#file-browser) and [
 - MSX1 or later. The display uses SCREEN 2, 256×192 pixels and the fixed 16-color palette. It works with 16KB VRAM on MSX1.
 - MSX-DOS2 or Nextor and a RAM mapper are required. A mapper with at least 512KB RAM is recommended. Available memory depends on DOS, resident programs and song size. When an internal and an external mapper are both present, the player uses the one with more free memory at startup. It does not combine the two, and on some configurations it uses only the mapper DOS runs in.
 - Use an SD card, HDD or other storage device with room for the player and the complete skin folder.
+- A MAKOTO (YM2608) cartridge. MucoMSX takes a machine with MAKOTO as its base hardware.
 
 The hardware must provide the sound chips required by the song. The filename extension alone does not identify those chips.
 
@@ -137,7 +138,7 @@ SKINS/
 
 Use `MUCSCOPE.MXR` from the same build as the executable. Startup requires a matching module. Do not substitute an MXR file from another player or the toolchain.
 
-Run the player from its directory, or put the player directory in `PATH` and start it from the directory that holds your songs. Wherever it starts, COM/BIN modules, the MXR, skins and `MUCSCOPE.CFG` are read from and written to the player directory; the file browser and relative song paths start from the directory you ran it in, and the player returns there at exit. Keep COM/BIN modules and skins from the same distribution together; replace the complete set when updating.
+Run the player from its directory, or put the player directory in `PATH` and start it from the directory that holds your songs. Wherever it starts, COM/BIN modules, the MXR, skins and `MUCSCOPE.CFG` are read from and written to the player directory; the file browser starts in the directory you ran it in, and the player returns there at exit. Keep COM/BIN modules and skins from the same distribution together; replace the complete set when updating.
 
 ```text
 MUCSCOPE
@@ -145,13 +146,13 @@ MUCSCOPE
 
 Select a song with the arrow keys and press `RETURN` to compile and play it.
 
-You can also specify a song at startup:
+Options may be added. A song file cannot be given on the command line (removed on 2026-11-19): a file name, as in `MUCSCOPE SONG.MUC`, is ignored and the player starts in the file browser.
 
 ```text
-MUCSCOPE SONG.MUC
-MUCSCOPE SONG.MUC /L1
-MUCSCOPE SONG.MUC /L0
-MUCSCOPE SONG.MUC /N
+MUCSCOPE /L1
+MUCSCOPE /L0
+MUCSCOPE /N
+MUCSCOPE /N /L0
 ```
 
 | Option | Behavior |
@@ -163,6 +164,16 @@ MUCSCOPE SONG.MUC /N
 The default is **ONCE**. Only MUC files can be selected; MUB files are hidden. Use MUBScope for MUB playback.
 
 On MSX2 or later with a MAKOTO, the player computes the start of the song ahead and fills one memory segment (16KB) before playback starts, so sound can take a moment to begin after you open a song; pressing a key during the fill starts playback at once. It keeps computing ahead while playing, so a short burst of display work does not delay the sound. If computing ahead cannot keep up, that song switches to direct output and keeps playing. Some native MSX scores use direct output from the start.
+
+### Running from MM (Multi Mente)
+
+MUCScope starts directly from a file manager such as MM. Run `MUCSCOPE.COM` from MM and it starts in the file browser; MM comes back when you leave MUCScope. It needs MSX-DOS2, and MM itself needs an MSX2. MUCScope takes no file name argument (2026-11-19), so there is no link that opens the song you pressed in MM with MUCScope. Point the `.MUC` line of `MMRET.DAT` at the toolchain's MUCPLAY (a TAB between the extension and the command):
+
+```text
+.MUC	MUCPLAY $C
+```
+
+Pressing `RETURN` on a `.MUC` file in MM then plays it with MUCPLAY, and MM comes back when it ends. The launcher `MUCOMSXE.COM` used before is not needed and was removed from the package on 2026-11-19. If your `MMRET.DAT` names `MUCOMSXE`, change it to the line above.
 
 ## Keyboard controls
 
@@ -265,6 +276,8 @@ Press `Esc` or `Tab` in the full list, info or mixer to return to playback. Arro
 | RANDOM | Select another song in the current directory at random. |
 
 The extra ONCE traversal starts at the song's loop point, not at the beginning of the intro. It uses the already loaded song data. Pressing `7` updates both the mode label and the toolbar mode icon. LOOP also uses the loaded result and never recompiles the MUC on each repetition.
+
+When the parts of a song loop with different lengths or from different points, one traversal is complete when every looping part has come round once. The part that comes round last decides the traversal.
 
 ### Pause, stop and fade
 
@@ -381,9 +394,9 @@ To restore the default design, exit the player, move `MUCSCOPE.CFG` to another n
 
 Keep each MUC with the assets it references. Use DOS 8.3 filenames, for example `TRACK01.MUC`, `VOICE.DAT` and `PCM.BIN`.
 
-**Use only letters, digits, `-` and `_` in MUC filenames.** Copying long-named files to an SD card on a Mac or PC creates short names containing `~`, such as `03PRAC~1.MUC`. Such a MUC appears in the list but does not compile, and `MUCSCOPE.LOG` reports `Invalid 8.3 name`. Rename the file before opening it.
+**MUC filenames may use letters, digits, `-`, `_` and `~`.** Copying long-named files to an SD card on a Mac or PC creates short names containing `~`, such as `03PRAC~1.MUC`. A MUC with such a name compiles and plays as it is (earlier versions refused it). A name with any other symbol appears in the list but does not compile, and `MUCSCOPE.LOG` reports `Invalid 8.3 name`. Rename the file before opening it.
 
-If `#voice` or `#pcm` names a long filename (for example `#voice shinobivoice.dat`), the file is visible on the SD card only under a short name such as `SHINOB~1.DAT`, so it is not found. Give the asset an 8.3 name and change the `#voice`/`#pcm` line in the MUC to match. In this case `MUCSCOPE.LOG` may not be written.
+`#voice` and `#pcm` take 8.3 file names only. With a long filename (for example `#voice shinobivoice.dat`), compilation does not start and `code 21 Name not 8.3` is shown (earlier versions opened the name cut to its first 8 characters). Give the asset an 8.3 name and change the `#voice`/`#pcm` line in the MUC to match.
 
 Files named by `#voice` and `#pcm` are resolved relative to **the MUC source directory**. Browsing elsewhere during compilation does not change that asset directory.
 
@@ -397,6 +410,8 @@ ALBUM/
 `#voice VOICE.DAT` uses the `VOICE.DAT` in that directory. Also supply any file specified by `#pcm`.
 
 If the file named by `#pcm` is missing, compilation does not start and `code 19 PCM file in #pcm tag not found` is shown. A song without a `#pcm` line looks for the default PCM file `MUCOMPCM.BIN`; if it is missing, `WARNING: MUCOMPCM.BIN NOT FOUND - NO PCM` is shown and the song plays without its ADPCM part. The previous song's PCM is never played instead.
+
+A song that uses the same PCM as the previous song starts faster: the player checks that the PCM already in the OPNA matches and skips the upload.
 
 ### Progress display
 
@@ -412,6 +427,8 @@ Opening a source stops the previous song and starts compilation. The top of the 
 | READY | Ready to play |
 
 The bar shows the current work position, not an overall percentage or time remaining. A long macro can keep the indicator at the same position for a while.
+
+For a song that uses PCM, the stage name changes to `PCM` while the ADPCM data is uploaded after the compile, and the bar shows the amount uploaded. In configurations that compute the song ahead, `BUF` and a bar follow and show how much has been filled before playback; when the fill is complete the top row shows the song title again. The `PCM` and `BUF` bars are not drawn while the information, mixer or full list screen is open.
 
 <table>
 <tr>
@@ -477,10 +494,11 @@ Check write access to the player directory and `MUCSCOPE.CFG`. Apply a skin with
 
 Read the on-screen error code/line number and `MUCSCOPE.LOG`. Check the `#voice`/`#pcm` names, asset files, source-directory write access and free storage. Correct the error and select again, or open another song.
 
-- `Invalid 8.3 name`: the MUC filename contains a symbol such as `~`. Rename it using only letters, digits, `-` and `_`.
+- `Invalid 8.3 name`: the MUC filename contains a symbol that is not allowed. Rename it using only letters, digits, `-`, `_` and `~`.
 - "MUC COMPILE FAILED" with no log: a voice or PCM file named by `#voice`/`#pcm` may be missing. Check that the asset has an 8.3 name and that the MUC names it exactly.
 - `code 11 Voice name not found`: the voice name was not found in the voice file. Check that the voice file is in the source folder under the expected name.
 - `code 19 PCM file in #pcm tag not found`: the PCM file named by `#pcm` is not in the MUC's folder. Check its 8.3 name and location.
+- `code 21 Name not 8.3`: the file name in `#voice` or `#pcm` is not an 8.3 name (a stem over 8 or an extension over 3 characters). Rename the asset and the tag to 8.3.
 - `PCM LOAD FAILED - CHECK THE PCM FILE AND FREE RAM`: compilation finished but the PCM could not be read or uploaded to the OPNA. Check that the PCM file is intact and that enough RAM is free.
 
 ### An edited MUC still plays the old result

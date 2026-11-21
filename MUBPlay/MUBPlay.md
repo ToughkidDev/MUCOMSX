@@ -6,13 +6,34 @@ MSX PSG `MSXD/E/F`, SCC+ `SCCA..E`와 OPLL `MSXA/B/C/H/I/J`·리듬 `MSXG`는 OP
 
 ## 업데이트 안내
 
-**2026-11 업데이트(v1.0-Stable 이후)**의 전체 변경과 알려진 제한은 [변경 내역](../shared/docs/RELEASE_NOTES.md)에 있습니다. MSX 칩 확장 명령은 [MucoMSXExtension](../MucoMSXExtension/readme.ko.md)을 보세요. 아래 첫 문단은 2026-10-13 업데이트 안내입니다.
+**MucoMSX v1.5-Stable(2026-11 업데이트, v1.0-Stable 이후)**의 전체 변경과 알려진 제한은 [변경 내역](../shared/docs/RELEASE_NOTES.md)에 있습니다. MSX 칩 확장 명령은 [MucoMSXExtension](../MucoMSXExtension/readme.ko.md)을 보세요. 아래 첫 문단은 2026-10-13 업데이트 안내입니다.
 
 현재 버전은 기존 MUB8·muPb·msPb0100에 더해 SCC/SCC+ SSG 확장의 msPb0101을 지원합니다. [최신 릴리즈 안내](../shared/docs/RELEASE_UPDATE_261013.md)에서 칩 탐색·모노 근사·용량·사용 제한를 확인하세요. 컴파일러 결함으로 음악 DATA가 빠진 예전 MUB는 플레이어만 바꿔 복구할 수 없으며 다시 컴파일해야 합니다.
 
 ### 2026-11: MUCVOICE 제거 — 음색·PCM 편집은 MUCPlayground로
 
 이번 버전부터 툴체인에 MUCVOICE가 들어 있지 않습니다. FM 음색, SCC/SCC+ 파형, ADPCM PCM 뱅크는 툴체인의 공식 편집 환경인 웹 브라우저용 [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)에서 편집합니다. **FM 뱅크**·**SCC 뱅크**·**PCM 뱅크**에서 `#voice`·`#sccvoice`·`#pcm` 파일을 열고, FM 음색 편집기·SCC 파형 편집기·PCM 샘플 편집기로 소리를 들으며 고친 뒤 **저장**으로 내려받습니다. 받은 파일을 MSX에서 MUC와 같은 폴더에 DOS 8.3 이름으로 두고 이 도구로 컴파일·연주하면 됩니다. MSX 컴파일러는 `#@pcm`의 WAV 변환을 하지 않으므로 PCM은 반드시 BIN 뱅크로 저장하세요. 화면 그림과 단계별 설명은 [MUCPlayground 편집 가이드](../shared/docs/MUCPLAYGROUND.md), 버튼과 단축키는 [MUCPlayground 공식 사용 설명서](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#banks)에 있습니다. 툴체인 ZIP의 FMVOICE.DAT·SCCVOICE.DAT는 MUCPlayground에서 로드해 출발점으로 쓸 수 있습니다(INIT.TFI는 MUCPlayground에서 읽지 않습니다). 폴더에 남은 예전 MUCVOICE.COM은 갱신되지 않으므로 지워도 됩니다.
+
+### 2026-11-15: MSX1 지원·40컬럼 메시지·MUCOMSXE
+
+- MUBPLAY는 MSX1에서도 동작합니다(MSX-DOS2 또는 Nextor와 512KiB 이상 매퍼 필요). 60Hz MSX1에서 SCC를 쓰는 곡이 "An exception occurred."로 바로 끝나던 문제를 고쳤습니다. MSX1에서는 미리 계산 없이 직접 출력 방식으로 연주합니다. 툴체인 중 MUCEDIT만 80컬럼 화면이 필요해 MSX2 이상에서 동작합니다.
+- DOS 프롬프트에 나오는 메시지를 MSX1의 40컬럼 화면에서도 줄이 넘치지 않도록 한 줄 36자 이하로 다듬었습니다. 그래서 일부 오류·경고 문구와 줄바꿈이 이전 판과 다릅니다. 이 설명서의 예시도 새 문구로 바꿨습니다.
+- MM(Multi Mente) 같은 파일 관리자용 실행기 `MUCOMSXE.COM`이 들어갔습니다. 2026-11-18부터는 MUBPLAY를 MM에서 바로 실행할 수 있어 MUCOMSXE가 필요하지 않으며, 2026-11-19에 패키지에서 뺐습니다(아래 항목).
+
+### 2026-11-18: PCM 없는 MUB·MSX-DOS 2·MM에서 바로 실행
+
+- **PCM이 들어 있지 않은 MUB:** MUC2MUB·MUCPLAY·MUCEDIT는 이제 옵션을 주지 않으면 MUB에 PCM을 넣지 않습니다. MUBPLAY는 그런 MUB의 `#pcm` 태그에 적힌 파일을 MUB와 같은 폴더에서 찾아 읽습니다. 이름 없는 `#pcm`이면 `MUCOMPCM.BIN`을 읽고, 태그의 이름이 8.3 형식이 아니면(이름이 8자를 넘는 예전 MUB) 그 파일은 찾지 않습니다(2026-11-19). 파일이 없으면 `PCM file not found:`와 파일 이름, `Playing without PCM.`을 표시하고 PCM 없이 연주합니다.
+- **MSX-DOS 2:** Nextor뿐 아니라 MSX-DOS 2(2.20에서 확인)에서도 동작합니다. 이전 판은 메모리 끝이 더 낮은 MSX-DOS 2에서 시작하지 못했습니다.
+- **MM에서 바로 실행:** MM의 `MMRET.DAT`에 `.MUB<탭>MUBPLAY $C` 줄을 넣으면 MUB에서 RETURN으로 바로 연주하고, 끝나면 MM으로 돌아옵니다. `MUCOMSXE.COM`은 필요하지 않아 2026-11-19에 패키지에서 뺐습니다. `MMRET.DAT`에 MUCOMSXE를 적어 두었다면 이 줄로 바꾸세요. 오류로 끝났을 때는 문구를 읽을 수 있게 `Press any key to return.`에서 키를 기다립니다.
+- **MSX1 빠르기:** 일부 60Hz MSX1(예: Sony HB-10)에서 곡이 약 20% 빠르게 연주되던 문제를 고쳤습니다.
+- **512KiB 매퍼:** 시작할 때 실제로 쓰지 않는 64KiB를 더 요구하던 것을 없앴습니다. MUCEDIT 세션 뒤에 "Not enough mapper memory to start."로 시작하지 못하던 경우가 해결됩니다.
+
+### 2026-11-21: MSX1의 빠르기·Makoto 필수·`/L` 반복 횟수
+
+- **MSX1의 빠르기:** MSX1에서 초당 60틱(50Hz 기종은 50틱)보다 빠른 곡이 느리게 연주되던 문제를 고쳤습니다. 이전 판은 MSX1에서 화면 주사(VBlank)마다 한 틱씩만 연주해, 템포가 빠른 곡은 길게 늘어졌습니다. 이제 MSX1에서는 Makoto(YM2608)의 내부 타이머(Timer B)로 박자를 맞춥니다. 50Hz 기종과 60Hz 기종의 빠르기도 같아집니다. MSX2 이상과 turbo R의 동작은 바뀌지 않았습니다.
+- **Makoto 필수:** MucoMSX는 Makoto(YM2608) 카트리지를 기본 사양으로 합니다. MUBPLAY는 Makoto가 없으면 `ERROR: YM2608 (Makoto) not detected.`를 표시하고 끝납니다. PSG·SCC·OPLL만 쓰는 곡도 마찬가지입니다.
+- MSX1은 미리 계산 없이 직접 출력하므로, 3.58MHz로 계산이 벅찬 곡은 조금 늘어질 수 있습니다.
+- **`/L` 반복 횟수:** 파트마다 반복 길이나 반복 시작점이 다른 곡에서 `/L<n>`이 일찍 끝나던 문제를 고쳤습니다. 이전 판은 반복점이 있는 첫 파트만 세었습니다. 이제 반복하는 파트가 모두 한 번씩 되돌아갔을 때를 한 번으로 셉니다. 모든 파트가 함께 반복하는 곡은 이전과 같은 시점에 끝납니다.
 
 > 입력 MUC는 65,536바이트(MUC2MUB·MUCPLAY), 편집 문서는 정규화 후 60,000바이트(MUCEDIT), 음악 DATA는 98,304바이트입니다. 페이지 스트림 상한은 OPNA 59,546·네이티브 MSX 59,106바이트이며 최소 매퍼는 512KiB입니다. 헤더·태그·PCM은 음악 DATA와 별도입니다.
 
@@ -45,9 +66,9 @@ VGM은 연주하면서 음원 칩에 보내는 명령과 그 사이의 시간을
 
 일반적인 음악 재생에는 다음이 필요합니다.
 
-- MSX-DOS2 또는 Nextor를 사용하는 MSX 환경
+- MSX-DOS 2(2.20에서 확인) 또는 Nextor를 사용하는 MSX1 이상 환경
 - 프로그램과 곡 데이터를 올릴 수 있는 여유 메모리와 메모리 매퍼 환경
-- Makoto(YM2608) 카트리지
+- Makoto(YM2608) 카트리지 (필수. 없으면 연주하지 않습니다)
 - `MUBPLAY.COM`
 - 재생할 `.MUB` 파일
 
@@ -110,21 +131,27 @@ MUBPLAY D:\MUSIC\SIN002.MUB
 MUBPLAY - MUCOM88 MUB Player for MSX
 Written by ToughkidCST
 
-Loading MUB file with Makoto (YM2608)
+Loading MUB file (Makoto YM2608)
 Title : THE SHINOBI
 Composer : Yuzo Koshiro
 Author : Yuzo Koshiro
 Date : 2018/12/12
 Comment : sin002
+PCM 100% Buffer 100%
 Press any key to stop.
 
 ```
 
 로딩이 끝나면 곡 정보를 표시하고, 마지막 안내와 화면 스크롤 처리를 마친 뒤 자동으로 연주를 시작합니다. 시작하려고 키를 한 번 더 누를 필요는 없습니다.
 
-PCM 데이터가 들어 있는 곡은 Makoto로 데이터를 전송하는 시간이 필요할 수 있습니다. 따라서 `Loading MUB file with Makoto (YM2608)`에서 잠시 머물 수 있습니다. 파일 크기와 디스크 속도에 따라 걸리는 시간도 달라집니다.
+곡 정보 다음 줄에는 준비 상황이 표시됩니다(2026-11-20부터). 숫자는 5% 단위로 같은 자리에서 바뀝니다.
 
-MSX2 이상과 turbo R에서는 연주를 시작하기 전에 곡의 앞부분을 미리 계산해 메모리 세그먼트 하나(16KB)에 채워 둡니다. 그래서 곡 정보가 나온 뒤 소리가 나기까지 잠깐 걸릴 수 있습니다. 연주 중에도 계속 미리 계산해 두므로 디스크나 화면 처리가 잠깐 몰려도 소리가 밀리지 않습니다. 미리 계산이 연주를 따라가지 못하면 직접 출력 방식으로 바꿔 계속 연주합니다. 빈 세그먼트가 없으면 처음부터 직접 출력 방식으로 연주합니다.
+- `PCM nn%`: PCM 데이터를 Makoto로 전송하는 과정입니다. PCM을 쓰는 곡에서만 나옵니다. 걸리는 시간은 PCM 크기와 디스크 속도에 따라 달라집니다.
+- `Buffer nn%`: 아래에서 설명하는, 곡의 앞부분을 미리 계산해 두는 과정입니다. 미리 계산하지 않고 연주하는 경우(MSX1, 빈 세그먼트가 없을 때)에는 나오지 않습니다.
+
+둘 다 끝나면 `Press any key to stop.`이 나오고 연주를 시작합니다. 준비하는 동안 누른 키는 연주가 시작되자마자 중단으로 처리됩니다.
+
+MSX2 이상과 turbo R에서는 연주를 시작하기 전에 곡의 앞부분을 미리 계산해 메모리 세그먼트 하나(16KB)에 채워 둡니다. 그래서 곡 정보가 나온 뒤 소리가 나기까지 잠깐 걸릴 수 있습니다. 연주 중에도 계속 미리 계산해 두므로 디스크나 화면 처리가 잠깐 몰려도 소리가 밀리지 않습니다. 미리 계산이 연주를 따라가지 못하면 직접 출력 방식으로 바꿔 계속 연주합니다. 빈 세그먼트가 없으면 처음부터 직접 출력 방식으로 연주합니다. MSX1은 VDP에 라인 인터럽트가 없어 미리 계산하지 않고 처음부터 직접 출력 방식으로 연주합니다.
 
 ### 재생을 중단하려면
 
@@ -209,12 +236,18 @@ Title : [Japanese Title]
 PCM은 다음 순서로 정합니다.
 
 1. MUB 안에 PCM 블록이 있으면 그것을 씁니다. 이때 태그의 `#pcm` 기록은 참고용이며 같은 이름의 외부 파일을 읽지 않습니다.
-2. MUB에 PCM이 들어 있지 않으면 MUB의 `#pcm` 태그에 적힌 파일을 **MUB와 같은 폴더**에서 찾아 Makoto에 올립니다. MSX-DOS는 파일 이름의 앞 8자만 보므로, 태그가 `schemepcm.bin`이면 파일은 `SCHEMEPC.BIN`으로 두어야 합니다.
-3. 그 파일도 없으면 그 곡의 ADPCM 파트만 소리를 내지 않고 나머지 파트는 정상 연주합니다. 이전에 Makoto에 올라가 있던 PCM이 대신 울리지 않습니다.
+2. MUB에 PCM이 들어 있지 않으면 MUB의 `#pcm` 태그에 적힌 파일을 **MUB와 같은 폴더**에서 찾아 Makoto에 올립니다. 이름 없는 `#pcm`이면 `MUCOMPCM.BIN`을 찾습니다. 태그의 이름이 8.3 형식이 아니면(`schemepcm.bin`처럼 이름이 8자를 넘는 예전 MUB) 파일을 찾지 않고 3번처럼 처리합니다. 이전 판처럼 긴 이름의 파일을 찾거나 8.3으로 잘라 열지 않으므로, 그런 MUB는 8.3 이름의 태그로 다시 컴파일하거나 PCM을 넣어(`/P`) 만드세요.
+3. 그 파일도 없으면 (K 파트가 있는 곡에서) 아래 메시지를 표시하고, 그 곡의 ADPCM 파트만 소리를 내지 않은 채 나머지 파트를 정상 연주합니다. 이전에 Makoto에 올라가 있던 PCM이 대신 울리지 않습니다. `#pcm` 태그가 아예 없는 MUB는 메시지 없이 PCM 없이 연주합니다.
+
+   ```text
+   PCM file not found:
+    SCHEMEPC.BIN
+   Playing without PCM.
+   ```
 
 처음에는 `MUBPLAY.COM`과 재생할 MUB 파일만 준비해서 사용하시면 됩니다.
 
-PCM이 내장된 MUB가 가장 다루기 쉽습니다. 현재 MUC2MUB·MUCPLAY·MUCEDIT로 컴파일하면 PCM이 MUB에 들어갑니다.
+PCM이 내장된 MUB가 가장 다루기 쉽습니다. MUC2MUB는 `/P`, MUCPLAY는 `/MUB 이름 /P`, MUCEDIT는 내보낼 때의 물음에 `Y`로 답해야 PCM이 MUB에 들어갑니다. 옵션 없이 만든 MUB는 PCM 파일을 MUB와 같은 폴더에 함께 두세요.
 
 또한 `.MUC`는 컴파일 전의 음악 소스입니다. `MUBPLAY`에 직접 넣는 파일은 컴파일이 끝난 `.MUB`입니다.
 
@@ -238,10 +271,9 @@ MUBPLAY 파일명.MUB [/L숫자] [/N] [/T]
 프로그램이 표시하는 사용법은 다음과 같습니다.
 
 ```text
-Usage: mubplay <filename.mub> [/L<n>] [/T]
-  <filename.mub>  MUB music file to play
-  /L<n>           Repeat count 0-9 (0=infinite)
-  /T              Load test only (no hardware playback)
+Usage: MUBPLAY file.MUB [/Ln] [/T]
+  /Ln  Repeat count 0-9 (0=endless)
+  /T   Load test (no playback)
 ```
 
 `/V`(VGM 출력)는 2026-10-30에 제거되었습니다. 예전 습관대로 `/V`를 붙여도 무시하고 그냥 연주합니다.
@@ -312,7 +344,7 @@ PCM이 큰 곡은 전송 시간이 필요합니다. 우선 다른 작은 곡과 
 
 ### 소리가 나지 않거나 일부 소리만 다릅니다
 
-먼저 Makoto의 오디오 출력과 볼륨을 확인해 주세요. 특정 곡의 ADPCM만 빠진다면 MUB에 PCM이 들어 있는지, 들어 있지 않다면 `#pcm` 태그에 적힌 파일이 MUB와 같은 폴더에 8.3 이름으로 있는지 확인해 주세요. `VOICE.DAT`를 옆에 복사하는 방식으로 해결되는 문제는 아닙니다.
+먼저 Makoto의 오디오 출력과 볼륨을 확인해 주세요. 특정 곡의 ADPCM만 빠진다면 연주를 시작할 때 `PCM file not found:`가 나왔는지 보세요. 나왔다면 MUB에 PCM이 들어 있지 않고 `#pcm` 태그에 적힌 파일도 MUB와 같은 폴더에 없는 것입니다. `VOICE.DAT`를 옆에 복사하는 방식으로 해결되는 문제는 아닙니다.
 
 같은 파일을 사용해도 원본과 음색·템포가 다르다면 그 차이를 알려 주세요. Z80과 turbo R 환경의 차이, 특정 구간의 처리 부하, 파일의 재생 명령 등도 확인해야 합니다.
 

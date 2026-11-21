@@ -2,13 +2,28 @@
 
 ## 업데이트 안내
 
-**2026-11 업데이트(v1.0-Stable 이후)**의 전체 변경과 알려진 제한은 [변경 내역](../shared/docs/RELEASE_NOTES.md)에 있습니다. MSX 칩 확장 명령은 [MucoMSXExtension](../MucoMSXExtension/readme.ko.md)을 보세요. 아래 첫 문단은 2026-10-13 업데이트 안내입니다.
+**MucoMSX v1.5-Stable(2026-11 업데이트, v1.0-Stable 이후)**의 전체 변경과 알려진 제한은 [변경 내역](../shared/docs/RELEASE_NOTES.md)에 있습니다. MSX 칩 확장 명령은 [MucoMSXExtension](../MucoMSXExtension/readme.ko.md)을 보세요. 아래 첫 문단은 2026-10-13 업데이트 안내입니다.
 
 편집 한계는 줄바꿈 정규화 후 60,000바이트로 유지합니다. 최신 MUCPLAY와 함께 사용하면 SCC/SCC+ SSG 확장·PCMInvert·컴파일 최적화·세션 리듬 마스크 수정이 적용됩니다. [릴리즈 변경과 교체 순서](../shared/docs/RELEASE_UPDATE_261013.md)를 읽고 정상 종료 후 네 COM을 함께 교체하세요. 이전 툴체인 ZIP에 있던 MUCVOICE는 이번 버전에서 빠졌으며, 음색·PCM 편집은 아래처럼 MUCPlayground에서 합니다.
 
 ### 2026-11: MUCVOICE 제거 — 음색·PCM 편집은 MUCPlayground로
 
 이번 버전부터 툴체인에 MUCVOICE가 들어 있지 않습니다. FM 음색, SCC/SCC+ 파형, ADPCM PCM 뱅크는 툴체인의 공식 편집 환경인 웹 브라우저용 [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)에서 편집합니다. **FM 뱅크**·**SCC 뱅크**·**PCM 뱅크**에서 `#voice`·`#sccvoice`·`#pcm` 파일을 열고, FM 음색 편집기·SCC 파형 편집기·PCM 샘플 편집기로 소리를 들으며 고친 뒤 **저장**으로 내려받습니다. 받은 파일을 MSX에서 MUC와 같은 폴더에 DOS 8.3 이름으로 두고 이 도구로 컴파일·연주하면 됩니다. MSX 컴파일러는 `#@pcm`의 WAV 변환을 하지 않으므로 PCM은 반드시 BIN 뱅크로 저장하세요. 화면 그림과 단계별 설명은 [MUCPlayground 편집 가이드](../shared/docs/MUCPLAYGROUND.md), 버튼과 단축키는 [MUCPlayground 공식 사용 설명서](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#banks)에 있습니다. 툴체인 ZIP의 FMVOICE.DAT·SCCVOICE.DAT는 MUCPlayground에서 로드해 출발점으로 쓸 수 있습니다(INIT.TFI는 MUCPlayground에서 읽지 않습니다). 폴더에 남은 예전 MUCVOICE.COM은 갱신되지 않으므로 지워도 됩니다.
+
+### 2026-11-15: MSX2 전용 안내·40컬럼 메시지·MUCOMSXE
+
+- MUCEDIT는 80컬럼 화면이 필요해 MSX2 이상에서만 동작합니다. MSX1에서 실행하면 `MUCEDIT: MSX2 required.`를 표시하고 바로 끝납니다.
+- DOS 프롬프트에 나오는 메시지를 MSX1의 40컬럼 화면에서도 줄이 넘치지 않도록 한 줄 36자 이하로 다듬었습니다. 그래서 일부 오류·경고 문구와 줄바꿈이 이전 판과 다릅니다. 이 설명서의 예시도 새 문구로 바꿨습니다.
+- MM 같은 파일 관리자용 실행기 `MUCOMSXE.COM`이 들어갔습니다(MUC·MUB를 MUCPLAY·MUBPLAY로 여는 도구). 2026-11-18부터는 MUCEDIT·MUCPLAY·MUBPLAY를 MM에서 바로 실행할 수 있어 MUCOMSXE가 필요하지 않으며, 2026-11-19에 패키지에서 뺐습니다(아래 항목).
+
+### 2026-11-18: 내보낼 때 PCM 포함 여부를 물음·`#pcm` 규칙·MSX-DOS 2·MM에서 바로 실행
+
+- **MUB 내보내기(F1→4):** `Include the PCM file in the MUB? (Y/N)`을 묻습니다. `Y`는 `#pcm` 파일을 MUB 안에 넣고, `N`과 Esc는 넣지 않습니다. 넣지 않은 MUB는 연주할 때 MUBPLAY·MUBScope가 MUB와 같은 폴더의 `#pcm` 파일을 읽습니다. 이전 판은 묻지 않고 늘 넣었습니다.
+- **`#pcm` 규칙:** K 파트(ADPCM)에 음표가 있는 곡은 `#pcm` 태그가 꼭 있어야 합니다(없으면 오류 20). `#pcm` 뒤에 이름을 적지 않으면 `MUCOMPCM.BIN`을 쓰고, 적은 파일이나 `MUCOMPCM.BIN`이 없으면 오류 19입니다. `#pcm` 태그가 없는 곡에서는 `MUCOMPCM.BIN`을 찾지 않으며 예전의 PCM 누락 경고는 없어졌습니다. `#pcm`과 `#voice`의 파일 이름은 8.3 형식만 쓸 수 있으며, 더 긴 이름은 오류 21(`Name not 8.3`)입니다(2026-11-19).
+- **`#CarrierCorrection`:** F1→3 연주에서 이 태그가 적용되지 않던 문제를 고쳤습니다. 내보낸 MUB를 연주할 때와 같은 소리가 납니다.
+- **MSX-DOS 2:** Nextor뿐 아니라 MSX-DOS 2(2.20에서 확인)에서도 동작합니다.
+- **MM에서 바로 실행:** MM(Multi Mente)에서 `MUCEDIT.COM`에 RETURN을 눌러 바로 실행할 수 있고, 끝나면 MM으로 돌아옵니다. 편집기 안의 컴파일·연주·내보내기도 그대로 동작합니다.
+- **512KiB 매퍼:** 곡을 컴파일한 뒤 F1→3 연주가 "Not enough mapper memory to start."로 시작하지 못하던 문제를 고쳤습니다.
 
 > 입력 MUC는 65,536바이트(MUC2MUB·MUCPLAY), 편집 문서는 정규화 후 60,000바이트(MUCEDIT), 음악 DATA는 98,304바이트입니다. 페이지 스트림 상한은 OPNA 59,546·네이티브 MSX 59,106바이트이며 최소 매퍼는 512KiB입니다. 헤더·태그·PCM은 음악 DATA와 별도입니다.
 
@@ -87,7 +102,7 @@ MUCEdit은 Windows용 VS Code 자체를 MSX로 옮긴 프로그램은 아닙니�
 ### 2.1 기본 환경
 
 - 80컬럼 텍스트 화면을 사용할 수 있는 MSX2 이상 환경
-- MSX-DOS2 계열 실행 환경과 최소 512 KiB 메모리 매퍼. 실제로 할당 가능한 여유 세그먼트가 필요합니다 (MegaFlashROM SCC+ SD, Carnivore2 등).
+- MSX-DOS 2(2.20에서 확인) 또는 Nextor와 최소 512 KiB 메모리 매퍼. 실제로 할당 가능한 여유 세그먼트가 필요합니다 (MegaFlashROM SCC+ SD, Carnivore2 등).
 - 읽고 쓸 수 있는 디스크 또는 저장장치
 - 연주할 경우 MUCPLAY가 지원하는 음원 장치 (Makoto YM2608 )
 
@@ -126,7 +141,7 @@ SONG/
 
 - 에디터의 직접 파일명 입력은 최대 63바이트입니다.
 - **컴파일할 때는 현재 작업 폴더의 파일명만 사용합니다. 드라이브·디렉터리 경로와 공백은 허용하지 않으며, 24바이트 이름 제한도 적용됩니다.**
-- 음색·PCM 파일을 읽는 컴파일러의 FCB 경로는 DOS의 8.3 이름 제약을 받습니다. 긴 이름이 그대로 처리될 것이라고 생각하지 마세요.
+- `#voice`와 `#pcm`에는 8.3 형식의 파일 이름만 쓸 수 있습니다(이름 8자, 확장자 3자까지). 더 긴 이름은 컴파일할 때 오류 21(`Name not 8.3`)이 됩니다. 이름이 긴 파일은 파일 이름을 8.3으로 바꾸고 태그도 같이 고치세요.
 - 파일 목록창에서 다른 경로를 입력해도 DOS의 현재 디렉터리가 바뀌지는 않습니다.
 - 다른 폴더의 MUC를 경로로 열어 편집할 수는 있지만, 잘못된 음색·PCM 파일을 참조하지 않도록 컴파일은 거부합니다. 곡 폴더로 `CD`한 뒤 파일명만으로 다시 열어 주세요. 같은 폴더에 해당 곡의 음색·PCM 파일과 `MUCPLAY.COM`, `MUCEDIT.COM`을 준비합니다.
 
@@ -431,7 +446,13 @@ MUCEdit의 Play는 `/L2`로 실행합니다. 반복하는 곡은 두 번의 재�
 
 마지막으로 컴파일한 세션을 MUB 파일로 저장합니다. 문서가 `SONG.MUC`이면 일반적으로 `SONG.MUB`라는 이름을 사용합니다.
 
-MUB에는 컴파일된 곡 데이터와 필요한 음색·태그가 들어가고, PCM을 사용하는 곡에서는 PCM 뱅크도 포함됩니다. **MUB가 만들어졌다고 원본 MUC가 저장되는 것은 아닙니다.** 소스를 함께 보관하려면 Ctrl+S도 해주세요.
+MUB에는 컴파일된 곡 데이터와 필요한 음색·태그가 들어갑니다. 내보낼 때마다 다음을 묻습니다.
+
+```text
+Include the PCM file in the MUB? (Y/N)
+```
+
+`Y`를 누르면 `#pcm` 파일을 MUB 안에 넣습니다(한 파일로 배포할 때). PCM을 쓰지 않는 곡은 어느 쪽으로 답해도 결과가 같습니다. `N`이나 Esc를 누르면 넣지 않으며, 그 MUB를 연주할 때는 MUBPLAY·MUBScope가 MUB와 같은 폴더의 `#pcm` 파일을 읽으므로 PCM 파일을 함께 두어야 합니다. **MUB가 만들어졌다고 원본 MUC가 저장되는 것은 아닙니다.** 소스를 함께 보관하려면 Ctrl+S도 해주세요.
 
 수정한 내용을 반영한 MUB를 만들려면 먼저 F1→2로 재컴파일해야 합니다. 이전 출력과 비교하고 싶다면 기존 MUB를 다른 이름으로 보관하세요. 내보내기가 자동 버전 관리나 백업을 해주지는 않습니다.
 
@@ -475,7 +496,7 @@ D t200 C128 o4 l8 v10 cdefgab>c4
 | `#comment` | 설명·주석 |
 | `#mucom88` | MUCOM88 관련 버전 정보 |
 | `#voice` | 외부 FM 음색 파일 지정 |
-| `#pcm` | PCM 뱅크 파일 지정 |
+| `#pcm` | PCM 뱅크 파일 지정. 폴더 없이 파일 이름만 씁니다. |
 | `#driver`, `#version`, `#uuid`, `#mucmd5` | 호환용 메타데이터 |
 
 태그 이름의 대소문자는 구분하지 않지만, **`#` 바로 뒤에 정확한 이름과 공백으로 구분한 값**을 적는 습관을 권합니다. `#title: My Song`, `# title My Song`, `#tittle My Song`은 같은 태그가 아닙니다.
@@ -700,7 +721,7 @@ K 채널은 PCM 샘플을 선택하고 연주하는 데 사용합니다. `@n`의
 #pcm PCM01.BIN
 ```
 
-이 태그는 단순한 설명이 아니라 사용할 파일을 지정합니다. `#`를 지우면 PCM 지정 기능이 사라지고 기본 이름인 `MUCOMPCM.BIN`을 찾게 될 수 있습니다.
+이 태그는 단순한 설명이 아니라 사용할 파일을 지정합니다. K 파트에 음표가 있는 곡에서 `#`를 지워 태그가 없어지면 오류 20이 납니다. 이름을 비운 `#pcm`은 `MUCOMPCM.BIN`을 뜻합니다.
 
 컴파일 단계는 PCM을 음원 칩에 전송하는 단계가 아닙니다. PCM 관련 문제는 연주할 때나 MUB로 붙여 넣을 때 드러날 수도 있습니다. “컴파일이 성공했으니 PCM도 모두 정상”이라고 판단하지 마세요.
 
@@ -860,7 +881,8 @@ A t200 C128 @1 o4 l8 v8 p3 q2 cdef gab>c4
 현재 컴파일러는 가능한 경우 **행 번호, 채널, 오류 코드, 이유와 원문 일부**를 표시합니다.
 
 ```text
-Error line 2, channel A (code 6): Note length out of range
+Error line 2, ch A (code 6):
+ Note length out of range
 > A l0 c
 ```
 
@@ -899,7 +921,9 @@ Error line 2, channel A (code 6): Note length out of range
 | 16 | Invalid macro definition | 닫히지 않은 정의, 과도한 중첩·재귀 호출 등 매크로 구조 문제 |
 | 17 | MML line or macro too long | MML 본문 한 행 1,023바이트 또는 매크로 본문 1023바이트 한도 초과 |
 | 18 | Output buffer overflow | 컴파일된 곡 데이터가 출력 버퍼 98,304바이트 한도를 초과 |
-| 19 | PCM file in #pcm tag not found | `#pcm` 태그에 적은 PCM 파일이 없음. 컴파일을 시작하지 않으며 MUB도 만들지 않음 |
+| 19 | PCM file in #pcm tag not found | `#pcm` 태그에 적은 PCM 파일이 없음(이름 없는 `#pcm`이면 `MUCOMPCM.BIN`이 없음). 컴파일을 시작하지 않으며 MUB도 만들지 않음 |
+| 20 | K part needs a #pcm tag | K 파트에 음표가 있는데 `#pcm` 태그가 없음. 컴파일 끝에서 확인하므로 줄 번호 없이 나옴 |
+| 21 | Name not 8.3 | `#pcm`·`#voice` 태그의 파일 이름이 8.3 형식이 아님(이름 8자·확장자 3자 초과, `?`·`*` 포함). 컴파일을 시작하지 않음. 태그와 실제 파일 이름을 8.3으로 변경 |
 
 이 표가 모든 잘못된 숫자와 모든 MML 조합을 완전히 검사한다는 보장은 아닙니다. 문법 검사, 파일 검사, 실제 음원에서의 의미는 서로 다릅니다. 오류 없이 컴파일되더라도 의도한 소리가 맞는지는 들어보셔야 합니다.
 
@@ -936,7 +960,8 @@ A *99 c         → 코드 15: 99번 매크로를 정의하지 않은 경우
 ### 21.1 잘못된 채널 접두부
 
 ```text
-Warning line 2: Invalid channel prefix; use A-K + space/tab
+Warning line 2:
+ Bad channel prefix (use A-K+space)
 > Ac4
 ```
 
@@ -963,37 +988,33 @@ Warning line 1: Unknown or malformed tag
 
 ```text
 Warning line 1: Missing tag value
-> #pcm
+> #title
 ```
 
-`#pcm PCM01.BIN`처럼 값을 넣어 주세요. 빈 `#comment`는 정상 주석 용도로 허용합니다.
+`#title 곡 이름`처럼 값을 넣어 주세요. 빈 `#comment`는 정상 주석 용도로 허용합니다. 이름 없는 `#pcm`은 `MUCOMPCM.BIN`을 뜻하므로 이 경고가 나오지 않습니다.
 
 ### 21.4 헤더 밖의 태그
 
 ```text
-Tag outside initial header is ignored
+Tag after the header is ignored
 ```
 
 `#voice`, `#pcm` 등을 파일 앞의 헤더로 옮겨 보세요. `#comment`와 매크로 정의는 별도로 취급됩니다. 파일 중간에 태그를 적었다고 그 시점에 PCM 뱅크나 음색 파일이 바뀌는 것은 아닙니다.
 
-### 21.5 PCM 파일 누락
+### 21.5 PCM 파일과 `#pcm` 태그의 오류
 
-`#pcm` 태그에 적은 파일을 찾지 못하면 컴파일(F1→2, F1→3, F1→4)을 시작하지 않고 오류 19로 멈춥니다. MUB도 만들지 않습니다.
+`#pcm` 태그에 적은 파일을 찾지 못하면 컴파일(F1→2, F1→3, F1→4)을 시작하지 않고 오류 19로 멈춥니다. MUB도 만들지 않습니다. 이름 없는 `#pcm`인데 `MUCOMPCM.BIN`이 없을 때도 같습니다. `#pcm`이나 `#voice`의 이름이 8.3 형식이 아니면 오류 21(`Name not 8.3`)로 멈춥니다.
 
 ```text
-Error line 3 (code 19): PCM file in #pcm tag not found
+Error line 3 (code 19):
+ PCM file in #pcm tag not found
 ```
 
-`#pcm` 태그가 없어 기본 이름 `MUCOMPCM.BIN`을 찾는 경우에는 경고만 표시하고 계속합니다.
+K 파트에 음표가 있는데 `#pcm` 태그가 없으면 컴파일 끝에서 오류 20으로 멈춥니다.
 
 ```text
-Warning: PCM file not found: MUCOMPCM.BIN
-```
-
-플레이어의 읽기 경로에 따라 다음과 같은 문구도 볼 수 있습니다.
-
-```text
-WARNING: cannot open #pcm file: MUCOMPCM.BIN
+Error, line unknown (code 20):
+ K part needs a #pcm tag
 ```
 
 확인 순서는 다음과 같습니다.
@@ -1001,10 +1022,10 @@ WARNING: cannot open #pcm file: MUCOMPCM.BIN
 1. `#pcm` 태그가 정확히 적혀 있는가?
 2. 파일 맨 앞의 헤더에 있는가?
 3. 지정한 PCM 파일이 현재 작업 환경에서 읽히는가?
-4. DOS에서 실제 보이는 8.3 파일명이 태그와 맞는가?
+4. DOS에서 실제 보이는 파일명이 태그와 맞는가? (태그에는 8.3 형식의 이름만 쓸 수 있습니다)
 5. 원래 곡에 들어 있던 PCM 뱅크가 맞는가?
 
-`#pcm` 태그가 없는 곡은 호환성을 위해 PCM이 없는 MUB가 생성될 수 있습니다. **MUB written.이라는 메시지만 보고 정상적인 PCM 포함 파일이라고 판단하면 안 됩니다.** PCM이 필요한 곡이라면 누락 경고를 해결한 후 다시 출력해 주세요.
+`#pcm` 태그가 없는 곡에서 `MUCOMPCM.BIN`을 찾다가 내던 예전의 PCM 누락 경고는 없어졌습니다. 내보낼 때 `N`을 골랐다면 MUB에는 PCM이 들어 있지 않습니다. **MUB written.이라는 메시지만 보고 PCM이 든 파일이라고 판단하면 안 됩니다.**
 
 경고는 잘못된 입력의 모든 의미까지 검사하지는 않습니다. 예를 들어 날짜가 실제 달력에 맞는지, PCM 안의 각 샘플이 곡이 기대하는 악기인지는 이 경고만으로 확인되지 않습니다.
 
@@ -1013,7 +1034,8 @@ WARNING: cannot open #pcm file: MUCOMPCM.BIN
 
 | 메시지 | 의미와 대처 |
 |---|---|
-| `mucEdit new requires MSX-DOS2.` | MSX-DOS2 계열 환경인지 확인 |
+| `MSX-DOS2 required.` | MSX-DOS2 계열 환경인지 확인 |
+| `MUCEDIT: MSX2 required.` | MSX1에서 실행함. MUCEdit은 80컬럼 화면이 필요해 MSX2 이상에서만 동작 |
 | `Open failed. Press a key.` | 이름·경로·디스크·파일 접근 가능 여부 확인 |
 | `Text exceeds 60000 bytes; not loaded.` | 정규화한 문서가 60,000바이트 초과. 외부 도구로 나누거나 줄여서 다시 열기 |
 | `Need 64 KiB free mapper RAM to load.` | 새 문서 적재에 임시 매퍼 4개가 필요함. 현재 작업을 저장하고 상주 프로그램·세션·RAM 구성 확인 |
@@ -1026,7 +1048,7 @@ WARNING: cannot open #pcm file: MUCOMPCM.BIN
 | `Compile this document first: F1 then 2.` | 현재 문서를 컴파일한 뒤 연주·내보내기 |
 | `Compile: local name, no spaces. Start in song folder.` | 곡 폴더에서 실행하고 경로·공백 없는 파일명만으로 문서를 다시 열기 |
 | `MUCPLAY.COM not found.` | 현재 작업 디렉터리에서 MUCPLAY를 찾을 수 있는지 확인 |
-| `Use the matching /E2 MUCPLAY.COM.` | 새 에디터의 E2 복귀 방식을 지원하는 MUCPLAY 사용 |
+| `Use the matching /E3 MUCPLAY.COM.` | 에디터와 같은 릴리스의 MUCPLAY 사용 (E3: 세션 기록을 RAM에 두는 방식) |
 | `Cannot create MUCEDIT.RET.` | 상태 보관 파일 작성 실패. 디스크 여유·쓰기 가능 여부 확인 |
 | `Cannot create MEDCOMP.MUC (exists or disk error).` | 동명의 임시 파일 충돌 또는 디스크 오류 |
 
@@ -1116,13 +1138,13 @@ MUCEdit은 바이트 기반의 MSX 텍스트 에디터입니다. UTF-8 BOM을 �
 
 모든 텍스트가 MML로 해석되는 것은 아닙니다. 설명문, 잘못된 채널 접두부, 알 수 없는 태그는 경고만 내고 넘어갈 수 있습니다. **오류가 없다는 것과 모든 행이 연주에 사용됐다는 것은 다릅니다.**
 
-### PCM 경고가 나오는데 FM은 들립니다
+### PCM 소리만 나오지 않고 FM은 들립니다
 
 FM 데이터와 PCM 뱅크는 별개입니다. FM이 들린다고 PCM도 정상이라는 뜻은 아닙니다. `#pcm`, 실제 DOS 파일명, 뱅크 파일 위치를 확인해 주세요.
 
 ### MUB를 출력했는데 PCM 소리가 빠졌습니다
 
-누락 경고를 무시하고 출력했을 수 있습니다. `#pcm` 태그로 지정한 파일이 없으면 오류 19로 멈추지만, 태그 없이 기본 `MUCOMPCM.BIN`이 없는 경우에는 PCM 없는 MUB 생성을 허용합니다. 올바른 뱅크를 준비하고 다시 내보내세요.
+내보낼 때 PCM 포함 물음에 `N`(또는 Esc)으로 답했을 수 있습니다. 그 MUB에는 PCM이 없으므로 `#pcm` 파일을 MUB와 같은 폴더에 두거나, `Y`로 다시 내보내세요. `#pcm` 태그로 지정한 파일이 없으면 오류 19, K 파트에 음표가 있는데 태그가 없으면 오류 20으로 멈춥니다.
 
 ### 소리가 전혀 안 납니다
 
@@ -1186,7 +1208,7 @@ MUCEdit과 MUCPLAY를 사용하는 도중 COM 파일을 덮어쓰지 마세요. 
 5. 새 COM을 사용할 디렉터리에 복사합니다.
 6. 새로 실행하고 작은 곡으로 컴파일·연주·복귀를 확인합니다.
 
-`MUCPLAY.SES`는 곡 전체를 디스크에 보관하는 프로젝트 파일이 아니라, 메모리에 유지된 세션을 찾는 데 사용하는 정보입니다. 다른 머신이나 리셋 후까지 곡 데이터를 그대로 되살리는 파일로 생각하지 마세요. 세션 파일을 지우는 것과 메모리 반환도 같은 작업이 아닙니다.
+MUCPLAY 세션의 위치는 파일이 아니라 시스템 RAM(F600h)의 작은 기록에 적어 둡니다(2026-11-20부터 `MUCPLAY.SES` 파일은 만들지 않습니다). 리셋하면 기록과 세션이 함께 사라지므로, 다른 머신이나 리셋 후까지 곡 데이터를 되살릴 수는 없습니다. MUCEDIT, MUCVIEW, MUCPLAY는 이 방식이 같은 버전끼리 함께 써야 합니다. 서로 다른 세대의 COM을 섞으면 MUCEDIT이 `Use the matching /E3 MUCPLAY.COM.`이라고 알리고 컴파일·연주를 하지 않습니다.
 
 ### 문제를 알려주실 때
 
@@ -1254,7 +1276,7 @@ MUCEDIT의 편집 한계는 줄바꿈 정규화 후 60,000바이트입니다. �
 
 ## MSX-MUSIC·내부 PSG 확장
 
-최신 통합 빌드는 MSX 접두어 파트와 전용 msPb 출력, 연주 CPU 자동 가속을 지원합니다. 기존 파트는 OPNA로 유지됩니다. 사용 조건·용량·근사 변환의 제한은 새 안내를 우선 확인해 주세요.
+최신 통합 빌드는 MSX 접두어 파트와 전용 msPb 출력, CPU 자동 가속을 지원합니다(Panasonic MSX2+ 5.37MHz, turbo R R800, One Chip MSX 8.06MHz. 2026-11-20부터 MUCEDIT도 편집하는 동안 빠른 CPU로 돌고, 종료하거나 MUCPLAY를 부를 때 되돌립니다. 이미 빠른 상태면 그대로 둡니다). 기존 파트는 OPNA로 유지됩니다. 사용 조건·용량·근사 변환의 제한은 새 안내를 우선 확인해 주세요.
 
 [MSX target guide](../shared/docs/MSX_TARGETS.md)
 

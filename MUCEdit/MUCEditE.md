@@ -2,13 +2,28 @@
 
 ## Updates
 
-All changes in the **2026-11 update (since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
+All changes in **MucoMSX v1.5-Stable (the 2026-11 update, since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
 
 The normalized document limit remains 60,000 bytes. Current MUCPLAY integration supplies SCC/SCC+ SSG, PCMInvert, compiler optimization and rhythm-mask restoration. Read [release changes and safe replacement](../shared/docs/RELEASE_UPDATE_261013.en.md), exit normally, then replace all four COMs together. MUCVOICE, included in earlier toolchain ZIPs, has been removed; edit voices and PCM in MUCPlayground as described below.
 
 ### 2026-11: MUCVOICE removed — edit voices and PCM in MUCPlayground
 
 The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the toolchain's official editor, which runs in a web browser. Open the `#voice`, `#sccvoice` and `#pcm` files in its **FM bank**, **SCC bank** and **PCM bank**, adjust them while listening in the FM voice editor, SCC wave editor and PCM sample editor, then download them with **Save**. Put the downloaded files beside the MUC on the MSX under DOS 8.3 names, then compile and play with this tool. The MSX compiler does not convert WAVs from `#@pcm`, so always save PCM as a BIN bank. Screenshots and step-by-step instructions are in the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md); buttons and keys are in the [official MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks). The toolchain ZIP's FMVOICE.DAT and SCCVOICE.DAT can be loaded in MUCPlayground as a starting point (MUCPlayground does not read INIT.TFI). An old MUCVOICE.COM left in your folder is not updated; you may delete it.
+
+### 2026-11-15: MSX2-only notice, 40-column messages, MUCOMSXE
+
+- MUCEDIT needs an 80-column screen and runs only on an MSX2 or later. On an MSX1 it shows `MUCEDIT: MSX2 required.` and ends at once.
+- Messages printed at the DOS prompt now fit in 36 characters per line, so they no longer wrap on the 40-column screen of an MSX1. Some error and warning texts and their line breaks therefore differ from earlier versions; the examples in this guide use the new texts.
+- The launcher `MUCOMSXE.COM` for file managers such as MM was added (it opens MUC and MUB files with MUCPLAY and MUBPLAY). Since 2026-11-18 MUCEDIT, MUCPLAY and MUBPLAY start directly from MM, so MUCOMSXE is not needed; it was removed from the package on 2026-11-19 (see below).
+
+### 2026-11-18: PCM question on export, `#pcm` rules, MSX-DOS 2, running from MM
+
+- **MUB export (F1→4):** the editor asks `Include the PCM file in the MUB? (Y/N)`. `Y` embeds the `#pcm` file in the MUB; `N` and Esc do not. For a MUB without it, MUBPLAY and MUBScope read the `#pcm` file from the MUB's folder when they play it. Earlier versions did not ask and always embedded it.
+- **`#pcm` rules:** a song whose K part (ADPCM) has a note must have a `#pcm` tag (error 20 without one). A `#pcm` tag without a name means `MUCOMPCM.BIN`; when the named file or `MUCOMPCM.BIN` is missing, that is error 19. A song without a `#pcm` tag never looks for `MUCOMPCM.BIN`, and the old missing-PCM warning is gone. File names in `#pcm` and `#voice` must be 8.3 names; a longer name is error 21 (`Name not 8.3`) (2026-11-19).
+- **`#CarrierCorrection`:** the tag was not applied by Play (F1→3). It now sounds the same as the exported MUB.
+- **MSX-DOS 2:** the editor runs on MSX-DOS 2 (verified on 2.20) as well as on Nextor.
+- **Running from MM:** MUCEDIT can be started directly from MM (Multi Mente) with RETURN on `MUCEDIT.COM`, and returns to MM when it ends. Compile, Play and Export inside the editor work as usual.
+- **512 KiB mappers:** Play (F1→3) after compiling a song no longer fails with "Not enough mapper memory to start."
 
 > Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
@@ -87,7 +102,7 @@ MUCEdit is not a port of Windows VS Code to the MSX. It is an MSX editor arrange
 ### 2.1 Basic environment
 
 - An MSX2 or later environment capable of an 80-column text screen
-- An MSX-DOS2-class runtime and at least 512 KiB mapper RAM, with enough allocatable free segments (MegaFlashROM SCC+ SD, Carnivore2, and similar).
+- MSX-DOS 2 (verified on 2.20) or Nextor, and a memory mapper of at least 512 KiB. Segments that can actually be allocated are needed (MegaFlashROM SCC+ SD, Carnivore2 and the like).
 - A readable and writable disk or storage device
 - For playback, a sound device supported by MUCPLAY (Makoto YM2608)
 
@@ -126,7 +141,7 @@ If you bring in a different voice or PCM file that merely has a similar name, th
 
 - Direct filename entry in the editor is limited to 63 bytes.
 - **Compile using a local filename in the current working folder. Drive/directory prefixes and spaces are not accepted; the 24-byte name limit also applies.**
-- The compiler's FCB paths for reading voice and PCM files are subject to the DOS 8.3 name constraints. Do not assume a long name will be handled as typed.
+- `#voice` and `#pcm` take 8.3 file names only (a stem of up to 8 characters and an extension of up to 3). A longer name is error 21 (`Name not 8.3`) at compile time. For a file with a long name, rename the file to 8.3 and change the tag to match.
 - Entering a different path in the file list window does not change the DOS current directory.
 - You may open a path-qualified MUC for editing, but compilation is refused to prevent using a missing or unrelated voice/PCM bank. `CD` into the song folder and reopen the document by its local name. Keep the matching voice/PCM files and `MUCPLAY.COM`/`MUCEDIT.COM` in that folder.
 
@@ -431,7 +446,13 @@ Read the error screen, return to the editor, fix it, and compile again. A failed
 
 Saves the most recently compiled session as a MUB file. If the document is `SONG.MUC`, the name used is normally `SONG.MUB`.
 
-A MUB contains the compiled song data and the necessary voices and tags, plus the PCM bank for songs that use PCM. **Creating a MUB does not save the original MUC.** If you want to keep the source as well, use Ctrl+S too.
+The MUB holds the compiled song data and the voices and tags it needs. Every export asks:
+
+```text
+Include the PCM file in the MUB? (Y/N)
+```
+
+`Y` embeds the `#pcm` file in the MUB (for distributing a single file). For a song that uses no PCM the answer makes no difference. `N` or Esc leaves it out; MUBPLAY and MUBScope then read the `#pcm` file from the MUB's folder when they play it, so keep the PCM file with the MUB. **Creating the MUB does not save the original MUC.** Press Ctrl+S as well to keep the source.
 
 To produce a MUB reflecting your edits, you must recompile with F1→2 first. If you want to compare against a previous output, keep the existing MUB under a different name. Exporting does not do version control or backups for you.
 
@@ -475,7 +496,7 @@ D t200 C128 o4 l8 v10 cdefgab>c4
 | `#comment` | Description or comment |
 | `#mucom88` | MUCOM88-related version information |
 | `#voice` | Specifies an external FM voice file |
-| `#pcm` | Specifies a PCM bank file |
+| `#pcm` | Specifies a PCM bank file. Write the file name only, without a folder. |
 | `#driver`, `#version`, `#uuid`, `#mucmd5` | Compatibility metadata |
 
 Tag names are not case-sensitive, but I recommend getting into the habit of writing **the exact name immediately after `#`, with the value separated by a space**. `#title: My Song`, `# title My Song`, and `#tittle My Song` are not the same tag.
@@ -700,7 +721,7 @@ The K channel is used to select and play PCM samples. What `@n` means, and what 
 #pcm PCM01.BIN
 ```
 
-This tag is not merely descriptive; it specifies the file to use. Removing the `#` loses the PCM specification, and the default name `MUCOMPCM.BIN` may be looked for instead.
+This tag is not a mere note; it names the file to use. In a song whose K part has notes, deleting the `#` removes the tag and gives error 20. A `#pcm` tag without a name means `MUCOMPCM.BIN`.
 
 The compile stage is not the stage that transfers PCM to the sound chip. PCM problems may only surface when playing or when embedding into a MUB. Do not conclude that "the compile succeeded, so the PCM must be fine too."
 
@@ -860,7 +881,8 @@ When changing voice values based on this example, keep the original and change o
 Where possible, the current compiler shows **the line number, the channel, an error code, the reason, and part of the source text**.
 
 ```text
-Error line 2, channel A (code 6): Note length out of range
+Error line 2, ch A (code 6):
+ Note length out of range
 > A l0 c
 ```
 
@@ -899,7 +921,9 @@ The following describes the current diagnostic codes. The same code can have sev
 | 16 | Invalid macro definition | Macro structure problems such as an unclosed definition or excessive nesting or recursion |
 | 17 | MML line or macro too long | Exceeded the 1,023-byte limit for one MML body line or the 1023-byte limit for a macro body |
 | 18 | Output buffer overflow | The compiled song data exceeded the 98,304 bytes output buffer limit |
-| 19 | PCM file in #pcm tag not found | The PCM file named in a `#pcm` tag does not exist. Compilation does not start and no MUB is written |
+| 19 | PCM file in #pcm tag not found | The PCM file named in a `#pcm` tag does not exist (for a `#pcm` tag without a name, `MUCOMPCM.BIN` does not exist). Compilation does not start and no MUB is written |
+| 20 | K part needs a #pcm tag | The K part has a note but there is no `#pcm` tag. Checked at the end of the compile, so it comes without a line number |
+| 21 | Name not 8.3 | The file name in a `#pcm` or `#voice` tag is not an 8.3 name (a stem over 8 or an extension over 3 characters, or `?`/`*` in it). Compilation does not start. Rename the tag and the actual file to 8.3 |
 
 This table is not a guarantee that every invalid number and every MML combination is fully checked. Syntax checking, file checking, and what something means on the actual sound chip are three different things. Even when it compiles without errors, you still have to listen to confirm it sounds as intended.
 
@@ -936,7 +960,8 @@ In the past, an invalid channel line or tag was silently ignored, which made it 
 ### 21.1 Invalid channel prefix
 
 ```text
-Warning line 2: Invalid channel prefix; use A-K + space/tab
+Warning line 2:
+ Bad channel prefix (use A-K+space)
 > Ac4
 ```
 
@@ -963,48 +988,44 @@ Check the spelling and any space or colon after `#`. A user-defined tag may also
 
 ```text
 Warning line 1: Missing tag value
-> #pcm
+> #title
 ```
 
-Supply a value, as in `#pcm PCM01.BIN`. An empty `#comment` is allowed as an ordinary comment.
+Give it a value, as in `#title Song name`. An empty `#comment` is allowed as an ordinary note. A `#pcm` tag without a name means `MUCOMPCM.BIN` and does not give this warning.
 
 ### 21.4 Tag outside the header
 
 ```text
-Tag outside initial header is ignored
+Tag after the header is ignored
 ```
 
 Try moving `#voice`, `#pcm`, and the like into the header at the top of the file. `#comment` and macro definitions are handled separately. Writing a tag in the middle of the file does not switch the PCM bank or voice file at that point.
 
-### 21.5 Missing PCM file
+### 21.5 Errors about the PCM file and the `#pcm` tag
 
-If the file named in a `#pcm` tag is not found, compiling (F1→2, F1→3, F1→4) does not start and stops with error 19. No MUB is written.
-
-```text
-Error line 3 (code 19): PCM file in #pcm tag not found
-```
-
-When there is no `#pcm` tag and the default name `MUCOMPCM.BIN` is looked up, only a warning is shown and work continues.
+If the file named in a `#pcm` tag is not found, compilation (F1→2, F1→3, F1→4) does not start and stops with error 19. No MUB is written. The same happens for a `#pcm` tag without a name when `MUCOMPCM.BIN` is missing. A `#pcm` or `#voice` name that is not an 8.3 name stops with error 21 (`Name not 8.3`).
 
 ```text
-Warning: PCM file not found: MUCOMPCM.BIN
+Error line 3 (code 19):
+ PCM file in #pcm tag not found
 ```
 
-Depending on the player's read path, you may also see wording like this.
+If the K part has a note and there is no `#pcm` tag, the compile stops at its end with error 20.
 
 ```text
-WARNING: cannot open #pcm file: MUCOMPCM.BIN
+Error, line unknown (code 20):
+ K part needs a #pcm tag
 ```
 
-Check in this order.
+Check in this order:
 
 1. Is the `#pcm` tag written correctly?
 2. Is it in the header at the top of the file?
-3. Can the specified PCM file be read in the current working environment?
-4. Does the 8.3 filename DOS actually shows match the tag?
-5. Is it the PCM bank that originally came with the song?
+3. Can the named PCM file be read in the current working environment?
+4. Does the file name DOS actually shows match the tag? (Tags take 8.3 names only)
+5. Is it the PCM bank that belonged to the original song?
 
-For a song with no `#pcm` tag, a MUB may be generated without PCM for compatibility. **Do not conclude from a MUB written. message alone that you have a proper file with PCM included.** If the song needs PCM, resolve the missing-file warning and export again.
+The old missing-PCM warning, shown when a song without a `#pcm` tag looked for `MUCOMPCM.BIN`, is gone. If you answered `N` when exporting, the MUB contains no PCM. **Do not take "MUB written." alone to mean the file contains the PCM.**
 
 Warnings do not check every implication of invalid input. For example, whether a date matches the real calendar, or whether each sample in the PCM is the instrument the song expects, cannot be confirmed from these warnings.
 
@@ -1013,7 +1034,8 @@ Warnings do not check every implication of invalid input. For example, whether a
 
 | Message | Meaning and what to do |
 |---|---|
-| `mucEdit new requires MSX-DOS2.` | Check that you are on an MSX-DOS2-class environment |
+| `MSX-DOS2 required.` | Check that you are on an MSX-DOS2-class environment |
+| `MUCEDIT: MSX2 required.` | Started on an MSX1. MUCEdit needs an 80-column screen, so it runs only on MSX2 or later |
 | `Open failed. Press a key.` | Check the name, path, disk, and whether the file is accessible |
 | `Text exceeds 60000 bytes; not loaded.` | The normalized document exceeds 60,000 bytes. Split or shrink it with an external tool and reopen |
 | `Need 64 KiB free mapper RAM to load.` | Loading a new document needs four temporary mapper segments. Check resident programs, sessions, and RAM configuration |
@@ -1026,7 +1048,7 @@ Warnings do not check every implication of invalid input. For example, whether a
 | `Compile this document first: F1 then 2.` | Compile the current document before playing or exporting |
 | `Compile: local name, no spaces. Start in song folder.` | Run from the song folder and reopen using only a local filename without spaces |
 | `MUCPLAY.COM not found.` | Check that MUCPLAY can be found in the current working directory |
-| `Use the matching /E2 MUCPLAY.COM.` | Use a MUCPLAY that supports the new editor's E2 return protocol |
+| `Use the matching /E3 MUCPLAY.COM.` | Use the MUCPLAY of the same release as the editor (E3: session record kept in RAM) |
 | `Cannot create MUCEDIT.RET.` | Failed to write the state file. Check free disk space and whether the disk is writable |
 | `Cannot create MEDCOMP.MUC (exists or disk error).` | A temporary file of the same name conflicts, or there was a disk error |
 
@@ -1116,13 +1138,13 @@ Also, if you changed only information such as comments or the title, the sound o
 
 Not all text is interpreted as MML. Prose, an invalid channel prefix, and unknown tags may pass with only a warning. **No errors is not the same as every line being used in playback.**
 
-### I get a PCM warning but I can hear FM
+### FM plays but the PCM does not
 
 FM data and the PCM bank are separate. Hearing FM does not mean the PCM is fine. Check `#pcm`, the actual DOS filename, and where the bank file is.
 
 ### I exported a MUB and the PCM sound is missing
 
-You may have exported while ignoring the missing-file warning. A missing file named in a `#pcm` tag stops with error 19, but when there is no tag and the default `MUCOMPCM.BIN` is missing, a MUB without PCM is still allowed. Prepare the correct bank and export again.
+You may have answered `N` (or pressed Esc) to the PCM question when exporting. That MUB has no PCM, so put the `#pcm` file in the MUB's folder or export again with `Y`. A missing file named by `#pcm` stops with error 19, and a K part with notes but no tag stops with error 20.
 
 ### I get no sound at all
 
@@ -1186,7 +1208,7 @@ The recommended order is:
 5. Copy the new COM files into the directory you will use.
 6. Start fresh and verify compile, playback, and return with a small song.
 
-`MUCPLAY.SES` is not a project file that stores the whole song on disk; it is information used to locate a session held in memory. Do not think of it as a file that restores song data intact on another machine or after a reset. Deleting the session file and releasing the memory are also not the same operation.
+The location of the MUCPLAY session is kept in a small record in system RAM (F600h), not in a file (since 2026-11-20 no `MUCPLAY.SES` file is created). A reset removes the record together with the session, so song data cannot be brought back on another machine or after a reset. MUCEDIT, MUCVIEW and MUCPLAY must be of the same generation in this respect. If COM files of different generations are mixed, MUCEDIT shows `Use the matching /E3 MUCPLAY.COM.` and does not compile or play.
 
 ### When you report a problem
 
@@ -1254,7 +1276,7 @@ Check for stale COMs in other folders/PATH. Use the included SHA256SUMS.txt to i
 
 ## Native MSX targets
 
-The integrated build adds MSX-prefixed parts, native msPb output and automatic playback CPU acceleration. Existing parts remain OPNA. Consult the new guide for requirements, limits and approximate sound conversion.
+The integrated build adds MSX-prefixed parts, native msPb output and automatic CPU acceleration (Panasonic MSX2+ 5.37 MHz, turbo R R800, One Chip MSX 8.06 MHz; since 2026-11-20 MUCEDIT itself also runs on the fast CPU while editing and puts it back when it ends or starts MUCPLAY; a machine that is already fast is left as it is). Existing parts remain OPNA. Consult the new guide for requirements, limits and approximate sound conversion.
 
 [MSX target guide](../shared/docs/MSX_TARGETS.en.md)
 

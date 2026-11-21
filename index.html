@@ -237,9 +237,18 @@ footer p{margin:5px 0}
       <a class="news-all" href="https://github.com/ToughkidDev/MUCOMSX/blob/main/NEWS.md">All news</a>
     </div>
     <ul class="news-list">
+      <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_NOTES.md">
+        <time datetime="2026-11-22">2026-11-22</time><span class="tag">TOOLS</span>
+        <span class="text">MSX1 tempo from the Makoto timer, Makoto required for playback; /L&lt;n&gt; and scope ONCE count a pass when every looping part has come round<span class="new">NEW</span></span></a></li>
       <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MUCView/readme.md">
         <time datetime="2026-11-21">2026-11-21</time><span class="tag">TOOLS</span>
-        <span class="text">MUCVIEW — a read-only MUC viewer that compiles, plays and exports through MUCPLAY<span class="new">NEW</span></span></a></li>
+        <span class="text">MUCVIEW — a read-only MUC viewer that compiles, plays and exports through MUCPLAY</span></a></li>
+      <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_NOTES.md">
+        <time datetime="2026-11-19">2026-11-19</time><span class="tag">TOOLS</span>
+        <span class="text">MSX-DOS 2 support, direct start from MM (MUCOMSXE removed), #pcm embedded only on request, 8.3 names in #pcm / #voice</span></a></li>
+      <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_NOTES.md">
+        <time datetime="2026-11-15">2026-11-15</time><span class="tag">TOOLS</span>
+        <span class="text">MUBPLAY, MUCPLAY and MUC2MUB on MSX1; 40-column messages</span></a></li>
       <li><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_NOTES.md">
         <time datetime="2026-11-14">2026-11-14</time><span class="tag">DOCS</span>
         <span class="text">Toolchain documents updated: MUCVOICE removed, MUCPlayground is the official voice / wave / PCM editor, MucoMSX chip extension guide</span></a></li>
@@ -280,7 +289,7 @@ footer p{margin:5px 0}
       <p><a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MucomDotNetExtension/MUCOMDOTNET_EXTENSIONS.md">한국어 확장 명령</a> ·
          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MucomDotNetExtension/MUCOMDOTNET_EXTENSIONS.en.md">English extension guide</a> ·
          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/MucomDotNetExtension/MUCOMDOTNET_EXTENSIONS.ja.md">日本語拡張ガイド</a></p>
-      <p>Since v1.0-Stable: COM + matching MXR modules, VGM output removed, One Chip MSX support, prepared playback queue, native <code>/L&lt;n&gt;</code> endings and many fixes.
+      <p><strong>MucoMSX v1.5-Stable</strong> (2026-11-15), since v1.0-Stable: MSX-DOS 2 and Nextor, direct start from MM, MSX1 support, 40-column messages, COM + matching MXR modules, VGM output removed, One Chip MSX support, prepared playback queue, native <code>/L&lt;n&gt;</code> endings and many fixes.
          MUCVOICE has been removed; FM voices, SCC waves and PCM banks are edited in <a href="https://toughkiddev.github.io/MUCOMSX/MUCPlayground/">MUCPlayground</a>
          (<a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/MUCPLAYGROUND.en.md">editing guide</a>).
          <a href="https://github.com/ToughkidDev/MUCOMSX/blob/main/shared/docs/RELEASE_NOTES.md">Changes and known limits / 변경과 제한 / 変更と制限</a></p>
@@ -613,7 +622,7 @@ footer p{margin:5px 0}
     <div class="tablewrap">
       <table>
         <tbody>
-          <tr><td><strong>Machine</strong></td><td>MSX2 or later with an 80-column text screen. MSX2+ class recommended; turbo R is taken into account.</td></tr>
+          <tr><td><strong>Machine</strong></td><td>MSX1 or later for MUC2MUB, MUCPLAY and MUBPLAY; MSX2 or later with an 80-column text screen for MUCEDIT. MSX2+ class recommended; turbo R is taken into account.</td></tr>
           <tr><td><strong>OS</strong></td><td>MSX-DOS 2, or Nextor providing the same functionality</td></tr>
           <tr><td><strong>Memory</strong></td><td>At least <strong>512 KiB mapper RAM</strong>, with enough allocatable free segments</td></tr>
           <tr><td><strong>Sound</strong></td><td><strong>MAKOTO cartridge (YM2608)</strong> — for playback. Compiling with MUC2MUB needs no sound device</td></tr>

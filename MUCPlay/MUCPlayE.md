@@ -6,13 +6,35 @@ Install and replace `MUCPLAY.COM` together with **the matching build of `MUCPLAY
 
 ## Updates
 
-All changes in the **2026-11 update (since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
+All changes in **MucoMSX v1.5-Stable (the 2026-11 update, since v1.0-Stable)** and the known limits are in the [release notes](../shared/docs/RELEASE_NOTES.md). For the MSX chip extension commands see [MucoMSXExtension](../MucoMSXExtension/readme.md). The first paragraph below is the 2026-10-13 update note.
 
 [Release changes](../shared/docs/RELEASE_UPDATE_261013.en.md) cover SCC/SCC+ SSG, PCMInvert, compiler optimization and session rhythm-mask restoration. Release the old session with `/RELEASE` before replacing all four COMs. Do not overwrite edited voice DAT banks with factory presets. Recompile MUBs with missing music DATA. MSX-MUSIC/PSG and playback acceleration already shipped in public v0.81.
 
 ### 2026-11: MUCVOICE removed — edit voices and PCM in MUCPlayground
 
 The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the toolchain's official editor, which runs in a web browser. Open the `#voice`, `#sccvoice` and `#pcm` files in its **FM bank**, **SCC bank** and **PCM bank**, adjust them while listening in the FM voice editor, SCC wave editor and PCM sample editor, then download them with **Save**. Put the downloaded files beside the MUC on the MSX under DOS 8.3 names, then compile and play with this tool. The MSX compiler does not convert WAVs from `#@pcm`, so always save PCM as a BIN bank. Screenshots and step-by-step instructions are in the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md); buttons and keys are in the [official MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks). The toolchain ZIP's FMVOICE.DAT and SCCVOICE.DAT can be loaded in MUCPlayground as a starting point (MUCPlayground does not read INIT.TFI). An old MUCVOICE.COM left in your folder is not updated; you may delete it.
+
+### 2026-11-15: MSX1 support, 40-column messages, MUCOMSXE
+
+- MUCPLAY also runs on an MSX1 (MSX-DOS2 or Nextor and at least 512 KiB of mapper RAM). Songs that use SCC no longer end at once with "An exception occurred." on a 60 Hz MSX1. On an MSX1 the song plays with direct output, without computing ahead. Of the toolchain, only MUCEDIT needs an MSX2 or later, for its 80-column screen.
+- Messages printed at the DOS prompt now fit in 36 characters per line, so they no longer wrap on the 40-column screen of an MSX1. Some error and warning texts and their line breaks therefore differ from earlier versions; the examples in this guide use the new texts.
+- The launcher `MUCOMSXE.COM` for file managers such as MM (Multi Mente) was added. Since 2026-11-18 MUCPLAY starts directly from MM, so MUCOMSXE is not needed; it was removed from the package on 2026-11-19 (see below).
+
+### 2026-11-18: the PCM option `/P`, `#pcm` rules, MSX-DOS 2, running from MM
+
+- **PCM option `/P`:** the `#pcm` file goes into the MUB only with `/P`, as in `MUCPLAY /MUB SONG.MUB /P`. Without `/P` the MUB carries no PCM, and MUBPLAY and MUBScope read the `#pcm` file from the MUB's folder when they play it. Earlier versions always embedded the PCM.
+- **`#pcm` rules:** a song whose K part (ADPCM) has a note must have a `#pcm` tag (error 20 without one). A `#pcm` tag without a name means `MUCOMPCM.BIN`; when the named file or `MUCOMPCM.BIN` is missing, error 19 stops both playing and exporting. A song without a `#pcm` tag never looks for `MUCOMPCM.BIN`, and the old missing-PCM warning is gone. File names in `#pcm` and `#voice` must be 8.3 names; a longer name is error 21 (`Name not 8.3`) (2026-11-19).
+- **`#CarrierCorrection`:** the tag was not applied when a MUC was played directly (MUCPLAY, Play in MUCEDIT). It now sounds the same as the MUB built from it.
+- **MSX-DOS 2:** the program runs on MSX-DOS 2 (verified on 2.20) as well as on Nextor. Earlier versions could not start on MSX-DOS 2, where the top of memory is lower.
+- **Running from MM:** add the line `.MUC<TAB>MUCPLAY $C` to MM's `MMRET.DAT` and RETURN on a MUC compiles and plays it and comes back to MM. `MUCOMSXE.COM` is not needed and was removed from the package on 2026-11-19. If your `MMRET.DAT` names MUCOMSXE, change it to this line. After a compile error or the like it waits at `Press any key to return.` so that the message can be read.
+- **MSX1 speed, 512 KiB mappers:** songs no longer play about 20% fast on some 60 Hz MSX1 machines (for example the Sony HB-10), and "Not enough mapper memory to start." after a MUCEDIT session on a 512 KiB mapper is fixed.
+
+### 2026-11-21: speed on an MSX1, Makoto required, `/L` repeat count
+
+- **Speed on an MSX1:** songs faster than 60 ticks per second (50 on a 50 Hz machine) no longer play slowly on an MSX1. Earlier versions played one tick per video frame (VBlank) there, so fast songs were stretched. On an MSX1 the tempo now comes from Makoto's own timer (YM2608 Timer B), and 50 Hz and 60 Hz machines play at the same speed. MSX2 or later and turbo R are unchanged.
+- **Makoto required:** MucoMSX takes the Makoto (YM2608) cartridge as its base hardware. Without it MUCPLAY shows `ERROR: YM2608 (Makoto) not detected.` and ends, also for songs that use only PSG, SCC or OPLL.
+- An MSX1 plays with direct output, without computing ahead, so a song that is too heavy for 3.58 MHz can still stretch a little.
+- **`/L` repeat count:** `/L<n>` no longer ends early in songs whose parts loop with different lengths or from different points. Earlier versions counted only the first part that has a loop point. A pass now counts when every looping part has come round once more. Songs whose parts all loop together end at the same point as before.
 
 > Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
@@ -107,12 +129,13 @@ This guide is based on **MUCPLAY for Makoto, which uses the YM2608**.
 
 Prepare the following.
 
-- MSX-DOS 2, or a Nextor environment providing the same functionality
+- An MSX1 or later
+- MSX-DOS 2 (verified on 2.20) or Nextor
 - Free mapper RAM for the program and for compilation work
-- Makoto (YM2608), if you want to actually hear sound
+- A Makoto (YM2608) cartridge (required for playback; without it MUCPLAY shows `ERROR: YM2608 (Makoto) not detected.` and ends)
 - `MUCPLAY.COM`
 - The MUC to play, plus the voice and PCM files that song uses
-- Disk space to write the session file and the output files
+- Disk space for the output files (the MUB exported with `/MUB`)
 
 If you are setting up an environment for the first time, it is best to plan around a configuration with 512KB or more of mapper RAM. Installed RAM capacity and actually usable free memory are different things. Other programs and any session you are holding also consume memory.
 
@@ -157,8 +180,9 @@ When openMSX's host folder name differs from the name DOS shows, check with `DIR
 | `MUCPLAY /LOAD SONG.MUC` | Load the source and compile-ready data into memory | Input MUC |
 | `MUCPLAY /COMPILE` | Compile the loaded source and keep the result in memory | Not needed |
 | `MUCPLAY /PLAY` | Play the compiled data in memory | Not needed |
-| `MUCPLAY /MUB SONG.MUB` | Save the compiled result as MUB | Output MUB |
-| `MUCPLAY /RELEASE` | Release the session memory and delete the session file | Not needed |
+| `MUCPLAY /MUB SONG.MUB` | Save the compiled result as MUB (without the PCM) | Output MUB |
+| `MUCPLAY /MUB SONG.MUB /P` | Save the compiled result as MUB together with the `#pcm` file | Output MUB |
+| `MUCPLAY /RELEASE` | Release the session memory and clear the session record | Not needed |
 
 Command options are not case-sensitive. This guide writes them in uppercase for legibility.
 
@@ -182,7 +206,19 @@ This approach is convenient when you just want to hear a song. If you plan to sa
 
 Sound does not come out the instant you type the command. It takes time to read and compile the source, and, when needed, to transfer PCM into Makoto's sample memory.
 
-On MSX2 or later and on turbo R, the start of the song is computed ahead and stored in one memory segment (16KB) before playback begins, so sound can take a moment to start after the song information appears. Computing ahead continues during playback, so a short burst of disk or display work does not delay the sound. If computing ahead cannot keep up, playback switches to direct output and continues. Without a free segment the song plays with direct output from the start.
+After compiling, one line shows the preparation (since 2026-11-20). The numbers change in place, in steps of 5%.
+
+```text
+PCM 100% Buffer 100%
+Press any key to stop.
+```
+
+- `PCM nn%`: the PCM is being transferred to Makoto. Shown only for songs that use PCM.
+- `Buffer nn%`: the start of the song is being computed ahead, as described just below. Not shown when the song plays without computing ahead (MSX1, or no free segment).
+
+To stop, press a key after `Press any key to stop.` has appeared. A key pressed earlier is dropped (while compiling or transferring PCM) or stops the song as soon as it starts (while `Buffer` is shown).
+
+On MSX2 or later and on turbo R, the start of the song is computed ahead and stored in one memory segment (16KB) before playback begins, so sound can take a moment to start after the song information appears. Computing ahead continues during playback, so a short burst of disk or display work does not delay the sound. If computing ahead cannot keep up, playback switches to direct output and continues. Without a free segment the song plays with direct output from the start. An MSX1 VDP has no line interrupt, so on an MSX1 the song plays with direct output from the start, without computing ahead.
 
 ### If you already have a MUB file
 
@@ -207,6 +243,8 @@ MUCPLAY /LOAD SONG.MUC
 Reads the MUC, prepares it for compilation, and returns to DOS. This step neither compiles nor plays.
 
 If an existing session still holds another song's source or compile result, that is released before the new source is loaded. If you want to keep the earlier work, save it to the files you need before you `/LOAD` a new song.
+
+A `/LOAD` that does not finish (the file cannot be read, memory runs out, Ctrl+STOP, and so on) leaves no session and gives back all the memory it used. The earlier session was already emptied when `/LOAD` started, so after a failure there is no session. When MUCPLAY cannot start at all (`Not enough mapper memory to start.`), nothing is changed.
 
 ### Step 2: Compile — `/COMPILE`
 
@@ -270,11 +308,11 @@ Omitting `/LOAD` means recompiling the older source still sitting in memory. Wor
 
 | Command run | Source loaded in memory | Compile result | Disk output |
 |---|---|---|---|
-| `/LOAD` | Replaced with the new source | Existing result released | Session management file |
+| `/LOAD` | Replaced with the new source | Existing result released | None |
 | `/COMPILE` | Kept | New result generated | Does not save MUB |
 | `/PLAY` | Kept | Kept | Does not save a music file |
 | `/MUB` | Kept | Kept | Creates the specified MUB |
-| `/RELEASE` | Released | Released | Deletes the session management file |
+| `/RELEASE` | Released | Released | None |
 
 This table assumes each operation completed normally.
 
@@ -337,9 +375,13 @@ The name after `/MUB` is **the output filename to save as**. It is not the name 
 
 It uses the current session's compile result. Running `/MUB` does not recompile the source.
 
-During MUB saving, the header, song data, and tag information are written, and companion PCM files are reflected in the output as well. This is where the in-memory result of the `/COMPILE` stage and the role of a distributable MUB file diverge.
+The MUB holds the header, the song data and the tags. The PCM is included only with `/P`.
 
-A MUB with PCM properly included can use the sample data inside it during playback. Keep the album's PCM files in their original location through the saving stage. Rather than looking only at the "saved" message, it is good practice to also check whether there were any PCM-related notices.
+```text
+MUCPLAY /MUB SONG.MUB /P
+```
+
+A MUB saved without `/P` has no PCM. When it is played, MUBPLAY and MUBScope look for the `#pcm` file in the MUB's folder, so keep the PCM file with the MUB. To distribute a single file, save with `/P`, and leave the album's PCM file where it is until the save has finished. A MUB saved with `/P` is the same as the output of MUC2MUB `/P`.
 
 ### Checking after saving
 
@@ -375,26 +417,27 @@ MUBPLAY's VGM output (`/V`) was removed on the same day (2026-10-30), so no tool
 MUCPLAY /RELEASE
 ```
 
-Releases the current session's MUC, voice, and MUB data along with the management header memory, and deletes `MUCPLAY.SES`.
+Releases the current session's MUC, voice, and MUB data along with the management header memory, and clears the record that says where the session is.
 
 The original MUC kept on disk and any MUB files you already saved remain untouched. `/RELEASE` is not a command that deletes music files.
 
-### What is `MUCPLAY.SES`?
+`/RELEASE` needs no free mapper memory. Every other command needs 7 free mapper segments (112 KiB) to start, so if another program (a RAM disk, for example) takes more mapper memory while a session exists, MUCPLAY may stop with `Not enough mapper memory to start.` Even then `MUCPLAY /RELEASE` releases the session and gives its memory back (versions before 2026-11-20 could not release it in that situation). When `/RELEASE` is the only thing on the command line, only the result is shown, without the program name: `Session mapper memory released.`, or `No session data to release.` when there is no session. With one 512 KiB mapper and only the toolchain in use there is room: with the largest song tested (a 112 KB MUB) 13 segments were still free while its session existed.
 
-It is a small management file used so that the same memory data can be found even when commands are run separately. The file itself does not contain the whole song.
+### Where the session location is kept
+
+So that the same memory data can be found even when commands are run separately, MUCPLAY keeps a small record (11 bytes) of where the session is in system RAM (F600h). Since 2026-11-20 it no longer creates a `MUCPLAY.SES` file. The only thing the session commands write to disk is the file exported with `/MUB`.
 
 So think of it this way.
 
-- You cannot copy `MUCPLAY.SES` alone and restore the song on another computer or in another boot environment.
-- After powering off or resetting, you cannot continue using the earlier memory session.
+- The record does not depend on the working folder. The same session is found after you move to another folder.
+- Powering off or resetting removes the record together with the session. You cannot continue using the earlier memory session.
+- This place is the tail of the MSX-BASIC line input buffer. MSX-DOS 2 and Nextor do not use it, but typing a long line in BASIC, or running a program that uses this place as scratch space, can erase the record. The session is then no longer found, and the memory it used does not come back until a reset. Run `/RELEASE` before you leave a session behind for other work.
 - To archive a song, save the MUC and, as needed, export a MUB as well.
-- To clear memory, use `/RELEASE` rather than deleting the session file yourself.
-
-Deleting only the session file first can make it harder for the program to find and release the existing memory.
+- A `MUCPLAY.SES` file left by an earlier version is no longer used. You can delete it.
 
 ### Please stay in the same working directory
 
-The session management file is looked up in the current working directory. PCM paths may be relative too, so finishing everything — loading, compiling, playing, exporting, releasing — in the same directory is the simplest approach.
+The session is found from any directory, but the voice and PCM files a song uses are looked up in the working directory, and PCM paths may be relative too. Finishing everything — loading, compiling, playing, exporting, releasing — in the same directory is the simplest approach.
 
 When moving to another album, use this order.
 
@@ -409,7 +452,7 @@ MUCPLAY /PLAY
 
 This example assumes `ALBUM2` is a directory DOS can reach, and that the program is placed so MUCPLAY can still be run after moving there.
 
-Running `/RELEASE` from a different directory does not go and release sessions in the previous directory as well. It is a good habit to tidy up before leaving an album folder.
+There is one session at a time, and `/RELEASE` releases it from whichever directory you run it in. It is a good habit to tidy up before leaving an album folder.
 
 ## 11. Managing voice and PCM files
 
@@ -429,11 +472,11 @@ A song using PCM reads samples from the file at playback time and puts them into
 |---|---|
 | `/COMPILE` | This is not the stage that transfers PCM to the chip. |
 | `/PLAY` | Reads the external PCM it needs and prepares for playback. |
-| `/MUB` | There is a process that reads the PCM file and attaches it to the output MUB. |
+| `/MUB` | Reads the PCM file and appends it to the output MUB only when `/P` is given. |
 
-If the PCM file named in a `#pcm` tag is missing, compilation does not start and stops with error 19 (`PCM file in #pcm tag not found`). The song is not played and no MUB is written. Only when there is no tag and the default `MUCOMPCM.BIN` is missing does it warn and continue, as before.
+If the PCM file named in a `#pcm` tag does not exist, compilation does not start and stops with error 19 (`PCM file in #pcm tag not found`). The song is not played and no MUB is written. A `#pcm` tag without a name means `MUCOMPCM.BIN`; when that file is missing it is error 19 as well.
 
-A song with no `#pcm` line and no default `MUCOMPCM.BIN` shows the warning and plays without its ADPCM part. PCM left in Makoto by an earlier song is never played instead.
+If the K part has a note and there is no `#pcm` tag, it stops with error 20 (`K part needs a #pcm tag`). A song without a `#pcm` tag never looks for `MUCOMPCM.BIN`. `#pcm` and `#voice` take 8.3 file names only (a stem of up to 8 characters and an extension of up to 3). A longer name stops with error 21 (`Name not 8.3`), and nothing is played or exported. Rename the tag and the actual file to 8.3.
 
 The companion PCM file must be MUCOM data matching that song. You cannot just change a WAV or AIFF file's extension to BIN and use it.
 
@@ -564,17 +607,17 @@ If the song data has no loop, it ends when all channels finish. Specifying infin
 
 If you worked with the session approach, yes. The data is kept so you can play and export again. Run `/RELEASE` when you no longer need it.
 
-### I went to another folder and back, and it cannot find the session.
+### Can I use the session after moving to another folder?
 
-Return to the directory where you created the session and work there. The management file and PCM's relative paths are affected by the current directory. It is better to finish and release the work in the previous folder before moving to a new one.
+The session is found from any folder. The PCM file, however, is looked up relative to the current directory, so play and export in the folder that holds the song. It is better to finish and release the work in the previous folder before moving to a new one.
 
-### I reset the machine but the `MUCPLAY.SES` file is still there.
+### Can I continue the earlier session after a reset?
 
-That file alone cannot restore the song from memory. On a fresh boot, `/LOAD` the source and `/COMPILE` again before working. The session file is not an archived copy of the music.
+No. A reset removes the session record together with the song in memory. On a fresh boot, `/LOAD` the source and `/COMPILE` again before working.
 
-### Should I include `MUCPLAY.SES` when distributing?
+### There is a `MUCPLAY.SES` file left in my folder.
 
-No. To distribute an editable source, prepare the MUC and the companion files it needs; to distribute a finished playable file, prepare a MUB. Also check that the MUB properly includes the PCM it needs.
+A version before 2026-11-20 made it. The current version neither creates nor reads this file, so you can delete it, and there is no need to include it when distributing. To distribute an editable source, prepare the MUC and the companion files it needs; to distribute a finished playable file, prepare a MUB. Also check that the MUB properly includes the PCM it needs.
 
 ### At which stage — compiling or playback — is the PCM file needed?
 
@@ -610,7 +653,7 @@ The flow you will use most is **load → compile → listen → save → release
 
 ## Native MSX targets
 
-The integrated build adds MSX-prefixed parts, native msPb output and automatic playback CPU acceleration. Existing parts remain OPNA. Consult the new guide for requirements, limits and approximate sound conversion.
+The integrated build adds MSX-prefixed parts, native msPb output and automatic CPU acceleration (Panasonic MSX2+ 5.37 MHz, turbo R R800, One Chip MSX 8.06 MHz; since 2026-11-20 for the whole run, loading and compiling included, and put back at the end; `/N` turns it off). Existing parts remain OPNA. Consult the new guide for requirements, limits and approximate sound conversion.
 
 [MSX target guide](../shared/docs/MSX_TARGETS.en.md)
 

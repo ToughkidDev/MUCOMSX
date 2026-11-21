@@ -6,13 +6,34 @@ MSX PSG `MSXD/E/F`、SCC+ `SCCA..E`、OPLL `MSXA/B/C/H/I/J`とリズム`MSXG`は
 
 ## 更新案内
 
-**2026-11更新（v1.0-Stable以降）**のすべての変更と既知の制限は[変更履歴](../shared/docs/RELEASE_NOTES.md)にあります。MSXチップ拡張命令は[MucoMSXExtension](../MucoMSXExtension/readme.ja.md)を参照してください。下の最初の段落は2026-10-13の更新案内です。
+**MucoMSX v1.5-Stable（2026-11更新、v1.0-Stable以降）**のすべての変更と既知の制限は[変更履歴](../shared/docs/RELEASE_NOTES.md)にあります。MSXチップ拡張命令は[MucoMSXExtension](../MucoMSXExtension/readme.ja.md)を参照してください。下の最初の段落は2026-10-13の更新案内です。
 
 MUB8・muPb・msPb0100に加えSCC/SCC+ SSGのmsPb0101に対応します。[最新案内](../shared/docs/RELEASE_UPDATE_261013.ja.md)で探査・モノ近似・容量・使用制限を確認してください。コンパイル不具合で欠落した音楽DATAはプレイヤー交換では復元できず再コンパイルが必要です。
 
 ### 2026-11: MUCVOICE削除 — 音色・PCMの編集はMUCPlaygroundで
 
 今回のバージョンからツールチェーンにMUCVOICEは含まれません。FM音色、SCC/SCC+波形、ADPCMのPCMバンクは、ツールチェーンの公式編集環境であるWebブラウザー用の[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)で編集します。**FMバンク**・**SCCバンク**・**PCMバンク**で`#voice`・`#sccvoice`・`#pcm`のファイルを開き、FM音色エディタ・SCC波形エディタ・PCMサンプルエディタで音を聴きながら直して、**保存**でダウンロードします。ダウンロードしたファイルをMSXでMUCと同じフォルダにDOS 8.3名で置き、このツールでコンパイル・演奏します。MSXのコンパイラは`#@pcm`のWAV変換を行わないため、PCMは必ずBINバンクで保存してください。画面の図と手順は[MUCPlayground編集ガイド](../shared/docs/MUCPLAYGROUND.ja.md)、ボタンとショートカットは[MUCPlayground公式ユーザーガイド](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ja#banks)にあります。ツールチェーンZIPのFMVOICE.DAT・SCCVOICE.DATはMUCPlaygroundでロードして出発点にできます（INIT.TFIはMUCPlaygroundでは読めません）。フォルダに残った以前のMUCVOICE.COMは更新されないため、削除してかまいません。
+
+### 2026-11-15: MSX1対応・40桁メッセージ・MUCOMSXE
+
+- MUBPLAYはMSX1でも動作します（MSX-DOS2またはNextorと512KiB以上のマッパーが必要）。60HzのMSX1でSCCを使う曲が「An exception occurred.」ですぐに終了する問題を直しました。MSX1では先の計算をせず、直接出力方式で演奏します。ツールチェーンのうちMUCEDITだけは80桁画面が必要なため、MSX2以上で動作します。
+- DOSプロンプトに出るメッセージを、MSX1の40桁画面でも行があふれないよう1行36文字以内に整えました。そのため一部のエラー・警告の文言と改行が以前の版と異なります。この説明書の例も新しい文言にしています。
+- MM（Multi Mente）などのファイル管理ソフト用の起動ツール`MUCOMSXE.COM`が入りました。2026-11-18からはMUBPLAYをMMから直接起動できるので、MUCOMSXEは不要です。2026-11-19にパッケージから外しました（次の項目）。
+
+### 2026-11-18: PCMのないMUB・MSX-DOS 2・MMからの直接起動
+
+- **PCMが入っていないMUB:** MUC2MUB・MUCPLAY・MUCEDITは、オプションを付けないかぎりMUBにPCMを入れなくなりました。MUBPLAYはそのようなMUBの`#pcm`タグに書かれたファイルを、MUBと同じフォルダーで探して読みます。名前のない`#pcm`なら`MUCOMPCM.BIN`を読み、タグの名前が8.3形式でなければ（主名が8文字を超える以前のMUB）、そのファイルは探しません（2026-11-19）。ファイルがなければ`PCM file not found:`とファイル名、`Playing without PCM.`を表示し、PCMなしで演奏します。
+- **MSX-DOS 2:** NextorだけでなくMSX-DOS 2（2.20で確認）でも動作します。以前の版は、メモリーの上端が低いMSX-DOS 2では起動できませんでした。
+- **MMからの直接起動:** MMの`MMRET.DAT`に`.MUB<タブ>MUBPLAY $C`の行を入れると、MUBでRETURNを押すだけで演奏し、終わるとMMに戻ります。`MUCOMSXE.COM`は不要なため、2026-11-19にパッケージから外しました。`MMRET.DAT`にMUCOMSXEを書いている場合は、この行に変えてください。エラーで終了したときは、文言を読めるよう`Press any key to return.`でキーを待ちます。
+- **MSX1の速さ:** 一部の60Hz MSX1（例: Sony HB-10）で曲が約20%速く演奏される問題を直しました。
+- **512KiBマッパー:** 起動時に実際には使わない64KiBを余分に要求していたのをやめました。MUCEDITのセッションのあと「Not enough mapper memory to start.」で起動できなかった問題が解決します。
+
+### 2026-11-21: MSX1の速さ・Makoto必須・`/L`の繰り返し回数
+
+- **MSX1の速さ:** MSX1で、毎秒60ティック（50Hz機は50ティック）より速い曲が遅く演奏される問題を直しました。以前の版はMSX1で画面の垂直帰線（VBlank）ごとに1ティックずつしか演奏せず、テンポの速い曲は長く伸びていました。MSX1ではMakoto（YM2608）の内部タイマー（Timer B）で拍を刻むようになり、50Hz機と60Hz機の速さも同じになります。MSX2以降とturbo Rの動作は変わりません。
+- **Makoto必須:** MucoMSXはMakoto（YM2608）カートリッジを基本仕様とします。MUBPLAYはMakotoがないと`ERROR: YM2608 (Makoto) not detected.`を表示して終了します。PSG・SCC・OPLLだけを使う曲でも同じです。
+- MSX1は先の計算をせず直接出力するため、3.58MHzでは計算が追いつかない重い曲は少し伸びることがあります。
+- **`/L`の繰り返し回数:** パートごとにループの長さや開始位置が違う曲で、`/L<n>`が早く終わる問題を直しました。以前の版はループ点のある最初のパートだけを数えていました。ループするパートがすべて一度ずつ戻った時点を1回と数えるようになりました。すべてのパートが同時にループする曲は、以前と同じ位置で終わります。
 
 > 上限：MUC入力65,536バイト、MUCEDIT編集は正規化後60,000バイト、音楽DATA98,304バイト。ページはOPNA59,546・ネイティブMSX59,106バイト。最低マッパー512KiB。ヘッダー・タグ・PCMは別です。
 
@@ -45,9 +66,9 @@ VGMは、演奏しながら音源チップへ送るコマンドと、その間�
 
 一般的な音楽再生には次のものが必要です。
 
-- MSX-DOS2またはNextorを使うMSX環境
+- MSX-DOS 2（2.20で確認）またはNextorを使うMSX1以上の環境
 - プログラムと曲データを載せられる空きメモリとメモリマッパー環境
-- Makoto(YM2608)カートリッジ
+- Makoto(YM2608)カートリッジ（必須。ないと演奏しません）
 - `MUBPLAY.COM`
 - 再生する`.MUB`ファイル
 
@@ -110,21 +131,27 @@ MUBPLAY D:\MUSIC\SIN002.MUB
 MUBPLAY - MUCOM88 MUB Player for MSX
 Written by ToughkidCST
 
-Loading MUB file with Makoto (YM2608)
+Loading MUB file (Makoto YM2608)
 Title : THE SHINOBI
 Composer : Yuzo Koshiro
 Author : Yuzo Koshiro
 Date : 2018/12/12
 Comment : sin002
+PCM 100% Buffer 100%
 Press any key to stop.
 
 ```
 
 ローディングが終わると曲情報を表示し、最後の案内と画面スクロール処理を終えてから自動的に演奏を始めます。開始のためにもう一度キーを押す必要はありません。
 
-PCMデータが入っている曲は、Makotoへデータを転送する時間が必要になることがあります。そのため`Loading MUB file with Makoto (YM2608)`でしばらく止まって見えることがあります。ファイルサイズとディスク速度によって、かかる時間も変わります。
+曲情報の次の行に、準備の進み具合が表示されます(2026-11-20から)。数字は5%刻みで同じ位置に書き換えられます。
 
-MSX2以降とturbo Rでは、演奏を始める前に曲の冒頭を先に計算し、メモリーセグメント1つ（16KB）に溜めます。そのため曲情報が出てから音が出るまで少し時間がかかることがあります。演奏中も先に計算し続けるため、ディスクや画面の処理が一時的に集中しても音は遅れません。先の計算が演奏に追いつかない場合は直接出力方式に切り替えて演奏を続けます。空きセグメントがない場合は最初から直接出力方式で演奏します。
+- `PCM nn%`: PCMデータをMakotoへ転送しています。PCMを使う曲だけに出ます。かかる時間はPCMのサイズとディスク速度によって変わります。
+- `Buffer nn%`: 下で説明する、曲の冒頭を先に計算して溜める処理です。先に計算せずに演奏する場合(MSX1、空きセグメントがないとき)は出ません。
+
+両方が終わると`Press any key to stop.`が出て演奏が始まります。準備中に押したキーは、演奏が始まるとすぐ中断として扱われます。
+
+MSX2以降とturbo Rでは、演奏を始める前に曲の冒頭を先に計算し、メモリーセグメント1つ（16KB）に溜めます。そのため曲情報が出てから音が出るまで少し時間がかかることがあります。演奏中も先に計算し続けるため、ディスクや画面の処理が一時的に集中しても音は遅れません。先の計算が演奏に追いつかない場合は直接出力方式に切り替えて演奏を続けます。空きセグメントがない場合は最初から直接出力方式で演奏します。MSX1はVDPにラインインターラプトがないため、先の計算をせず最初から直接出力方式で演奏します。
 
 ### 再生を中断するには
 
@@ -209,12 +236,18 @@ Title : [Japanese Title]
 PCMは次の順序で決めます。
 
 1. MUBの中にPCMブロックがあればそれを使います。このときタグの`#pcm`の記録は参考用で、同じ名前の外部ファイルは読みません。
-2. MUBにPCMが入っていなければ、MUBの`#pcm`タグに書かれたファイルを**MUBと同じフォルダー**で探してMakotoに転送します。MSX-DOSはファイル名の先頭8文字しか見ないため、タグが`schemepcm.bin`ならファイルは`SCHEMEPC.BIN`にしてください。
-3. そのファイルもなければ、その曲のADPCMパートだけが鳴らず、他のパートは通常どおり演奏します。以前にMakotoへ転送されていたPCMが代わりに鳴ることはありません。
+2. MUBにPCMが入っていなければ、MUBの`#pcm`タグに書かれたファイルを**MUBと同じフォルダー**で探してMakotoに転送します。名前のない`#pcm`なら`MUCOMPCM.BIN`を探します。タグの名前が8.3形式でなければ（`schemepcm.bin`のように主名が8文字を超える以前のMUB）、ファイルを探さず3番のように扱います。以前の版のように長い名前のファイルを探したり8.3に切り詰めて開いたりしないので、そのようなMUBは8.3の名前のタグでコンパイルし直すか、PCMを入れて（`/P`）作ってください。
+3. そのファイルもなければ（Kパートのある曲では）次のメッセージを表示し、その曲のADPCMパートだけが鳴らず、他のパートは通常どおり演奏します。以前にMakotoへ転送されていたPCMが代わりに鳴ることはありません。`#pcm`タグがまったくないMUBは、メッセージなしでPCMなしの演奏になります。
+
+   ```text
+   PCM file not found:
+    SCHEMEPC.BIN
+   Playing without PCM.
+   ```
 
 最初は`MUBPLAY.COM`と再生するMUBファイルだけを用意して使っていただければ大丈夫です。
 
-PCMを内蔵したMUBが最も扱いやすい形です。現在のMUC2MUB・MUCPLAY・MUCEDITでコンパイルすると、PCMはMUBに入ります。
+PCMを内蔵したMUBが最も扱いやすい形です。MUC2MUBは`/P`、MUCPLAYは`/MUB 名前 /P`、MUCEDITは書き出しのときの質問に`Y`と答えたときに、PCMがMUBに入ります。オプションなしで作ったMUBは、PCMファイルをMUBと同じフォルダーに一緒に置いてください。
 
 また`.MUC`はコンパイル前の音楽ソースです。`MUBPLAY`に直接渡すファイルは、コンパイルの終わった`.MUB`です。
 
@@ -238,10 +271,9 @@ MUBPLAY ファイル名.MUB [/L数字] [/N] [/T]
 プログラムが表示する使い方は次のとおりです。
 
 ```text
-Usage: mubplay <filename.mub> [/L<n>] [/T]
-  <filename.mub>  MUB music file to play
-  /L<n>           Repeat count 0-9 (0=infinite)
-  /T              Load test only (no hardware playback)
+Usage: MUBPLAY file.MUB [/Ln] [/T]
+  /Ln  Repeat count 0-9 (0=endless)
+  /T   Load test (no playback)
 ```
 
 `/V`（VGM出力）は2026-10-30に削除されました。以前の習慣で`/V`を付けても無視され、そのまま演奏します。
@@ -312,7 +344,7 @@ PCMの大きい曲は転送時間が必要です。まずは他の小さい曲�
 
 ### 音が出ない、または一部の音だけ違います
 
-まずMakotoのオーディオ出力と音量を確認してください。特定の曲のADPCMだけが抜けるなら、MUBにPCMが入っているか、入っていなければ`#pcm`タグに書かれたファイルがMUBと同じフォルダーに8.3形式の名前であるかを確認してください。`VOICE.DAT`を横にコピーする方法で解決する問題ではありません。
+まずMakotoのオーディオ出力と音量を確認してください。特定の曲のADPCMだけが抜けるなら、演奏開始時に`PCM file not found:`が出たかどうかを見てください。出ていれば、MUBにPCMが入っておらず、`#pcm`タグに書かれたファイルもMUBと同じフォルダーにありません。`VOICE.DAT`を横にコピーする方法で解決する問題ではありません。
 
 同じファイルを使っても原曲と音色・テンポが違う場合は、その違いを知らせてください。Z80とturbo R環境の差、特定区間の処理負荷、ファイルの再生コマンドなども確認する必要があります。
 

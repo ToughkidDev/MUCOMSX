@@ -80,6 +80,7 @@ See [Display and skins](#display-and-skins) and [File browser](#file-browser) fo
 - MSX1 or later. The display uses SCREEN 2, 256×192 pixels and the fixed 16-color palette. It works with 16KB VRAM on MSX1.
 - MSX-DOS2 or Nextor and a RAM mapper are required. A mapper with at least 512KB RAM is recommended. Available memory depends on DOS, resident programs and song size. When an internal and an external mapper are both present, the player uses the one with more free memory at startup. It does not combine the two, and on some configurations it uses only the mapper DOS runs in.
 - Use an SD card, HDD or other storage device with room for the player and the complete skin folder.
+- A MAKOTO (YM2608) cartridge. MucoMSX takes a machine with MAKOTO as its base hardware.
 
 The hardware must provide the sound chips required by the song. The filename extension alone does not identify those chips.
 
@@ -130,7 +131,7 @@ SKINS/
 
 Use `MUBSCOPE.MXR` from the same build as the executable. Startup requires a matching module. Do not substitute an MXR file from another player or the toolchain.
 
-Run the player from its directory, or put the player directory in `PATH` and start it from the directory that holds your songs. Wherever it starts, COM/BIN modules, the MXR, skins and `MUBSCOPE.CFG` are read from and written to the player directory; the file browser and relative song paths start from the directory you ran it in, and the player returns there at exit. Keep COM/BIN modules and skins from the same distribution together; replace the complete set when updating.
+Run the player from its directory, or put the player directory in `PATH` and start it from the directory that holds your songs. Wherever it starts, COM/BIN modules, the MXR, skins and `MUBSCOPE.CFG` are read from and written to the player directory; the file browser starts in the directory you ran it in, and the player returns there at exit. Keep COM/BIN modules and skins from the same distribution together; replace the complete set when updating.
 
 ```text
 MUBSCOPE
@@ -138,13 +139,13 @@ MUBSCOPE
 
 Select a song with the arrow keys and press `RETURN` to play it.
 
-You can also specify a song at startup:
+Options may be added. A song file cannot be given on the command line (removed on 2026-11-19): a file name, as in `MUBSCOPE SONG.MUB`, is ignored and the player starts in the file browser.
 
 ```text
-MUBSCOPE SONG.MUB
-MUBSCOPE SONG.MUB /L1
-MUBSCOPE SONG.MUB /L0
-MUBSCOPE SONG.MUB /N
+MUBSCOPE /L1
+MUBSCOPE /L0
+MUBSCOPE /N
+MUBSCOPE /N /L0
 ```
 
 | Option | Behavior |
@@ -153,17 +154,27 @@ MUBSCOPE SONG.MUB /N
 | `/L0` | Start in LOOP mode |
 | `/N` | Disable automatic CPU acceleration; may be combined with a playback-mode option |
 
-When a song is given on the command line, loading progress appears on the DOS screen before the SCREEN 2 display opens: dots follow `Loading MUB` while the song data is read and `Loading PCM` while the PCM is read. One dot appears at the start and one more for each 8KB. When a song is opened from the browser, the title row shows the stage (`READ` for the song data, `PCM` for the ADPCM upload) and a progress bar. The bar restarts for each stage and shows the amount read, not the time left. It is not drawn while the information, mixer or full list screen is open.
+When a song is opened from the browser, the title row shows the stage (`READ` for the song data, `PCM` for the ADPCM upload, `BUF` for filling the start of the song ahead of playback) and a progress bar. The bar restarts for each stage and shows the amount done, not the time left. `BUF` appears only in configurations that compute the song ahead; when the fill is complete the title row shows the song title again. It is not drawn while the information, mixer or full list screen is open.
 
 A song that uses the same PCM as the previous song starts faster: the player checks that the PCM already in the OPNA matches and skips the upload.
 
 The default is **ONCE**. MUB8 and supported muPb/msPb MUB files are playable. Use MUCScope for MUC sources. Voices come from the MUB itself. The PCM is chosen in this order:
 
 1. PCM embedded in the MUB.
-2. Otherwise, the file named by the MUB's `#pcm` tag, looked up in the MUB's directory and uploaded to the OPNA. MSX-DOS reads only the first 8 characters of a name, so for `#pcm schemepcm.bin` the file must be `SCHEMEPC.BIN`.
+2. Otherwise, the file named by the MUB's `#pcm` tag, looked up in the MUB's directory and uploaded to the OPNA. The file name in the tag must be an 8.3 name. For a tag whose stem is over 8 characters, such as `schemepcm.bin`, the file is not looked up and step 3 applies (earlier versions cut the name to its first 8 characters and opened `SCHEMEPC.BIN`). Compile such a MUB again with the tag and the file renamed to 8.3, or build it with the PCM inside.
 3. If that file is missing too, only the ADPCM part stays silent for that song; the other parts play normally. The previous song's PCM is never played instead.
 
 On MSX2 or later with a MAKOTO, the player computes the start of the song ahead and fills one memory segment (16KB) before playback starts, so sound can take a moment to begin after you open a song; pressing a key during the fill starts playback at once. It keeps computing ahead while playing, so a short burst of display work does not delay the sound. If computing ahead cannot keep up, that song switches to direct output and keeps playing. Some native MSX scores use direct output from the start.
+
+### Running from MM (Multi Mente)
+
+MUBScope starts directly from a file manager such as MM. Run `MUBSCOPE.COM` from MM and it starts in the file browser; MM comes back when you leave MUBScope. It needs MSX-DOS2, and MM itself needs an MSX2. MUBScope takes no file name argument (2026-11-19), so there is no link that opens the song you pressed in MM with MUBScope. Point the `.MUB` line of `MMRET.DAT` at the toolchain's MUBPLAY (a TAB between the extension and the command):
+
+```text
+.MUB	MUBPLAY $C
+```
+
+Pressing `RETURN` on a `.MUB` file in MM then plays it with MUBPLAY, and MM comes back when it ends. The launcher `MUCOMSXE.COM` used before is not needed and was removed from the package on 2026-11-19. If your `MMRET.DAT` names `MUCOMSXE`, change it to the line above.
 
 ## Keyboard controls
 
@@ -272,6 +283,8 @@ Press `Esc` or `Tab` in the full list, info or mixer to return to playback. Arro
 | RANDOM | Select another song in the current directory at random. |
 
 The extra ONCE traversal starts at the song's loop point, not at the beginning of the intro. It uses the already loaded song data. Pressing `7` updates both the mode label and the toolbar mode icon. LOOP also uses the already prepared song data.
+
+When the parts of a song loop with different lengths or from different points, one traversal is complete when every looping part has come round once. The part that comes round last decides the traversal.
 
 ### Pause, stop and fade
 
