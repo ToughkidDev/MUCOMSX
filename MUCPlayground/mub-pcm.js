@@ -5,8 +5,10 @@
 //   MUB8 / MUC8  header: data 0x04/0x08, tags 0x0C/0x10, PCM 0x14/0x18 (offset, size)
 //   muPb         mucomDotNET's paged layout (MUBHeader.cs): PCM set sizes after the
 //                instrument sizes, PCM data after the instruments, tags at 0x12/0x16
-//   msPb         MucoMSX packed scores use the muPb layout, but their tags do not carry
-//                #pcm, so their PCM cannot be left out (`separable: false`)
+//   msPb         MUCOMSX's MSX scores use the muPb layout too. msPb0100–0102 keep the
+//                song's header tags (with #pcm); the packed msPb0103–010A ones do not
+// The PCM can be left out (`separable`) when there is one bank and the tags name its file:
+// otherwise (a packed score, PCM from #@pcm WAVs) nothing would tell the player its file.
 //
 // mubPcm(bytes) -> null when the MUB has no PCM, else
 //   { kind, pcm: Uint8Array, name: the #pcm file name, separable, withoutPcm(): Uint8Array }
@@ -36,7 +38,6 @@ function mub8(bytes) {
     kind: 'mub8',
     pcm: bytes.slice(pcmOffset, pcmOffset + pcmSize),
     name: pcmName(bytes, tagOffset, tagSize),
-    separable: true,
     withoutPcm() {
       const out = new Uint8Array(bytes.length - pcmSize);
       out.set(bytes.subarray(0, pcmOffset));
@@ -52,11 +53,12 @@ function mub8(bytes) {
 function paged(bytes) {
   const chips = bytes[0x09], parts = u16(bytes, 0x0a), pages = u16(bytes, 0x0c), insts = u16(bytes, 0x0e), pcms = u16(bytes, 0x10);
   const tagOffset = u32(bytes, 0x12), tagSize = u32(bytes, 0x16);
-  let p = 0x22;
+  let p = 0x22, firstBank = -1;
   for (let c = 0; c < chips; c++) {
     p += 2 + 4 * 5;
     p += 1;                               // part count
     p += 1 + 2 * bytes[p];                // instrument numbers
+    if (c === 0 && bytes[p]) firstBank = u16(bytes, p + 1);   // the first OPNA's PCM set
     p += 1 + 2 * bytes[p];                // PCM numbers
   }
   p += parts;                             // pages per part
@@ -64,18 +66,17 @@ function paged(bytes) {
   for (let i = 0; i < pages; i++, p += 8) pageBytes += u32(bytes, p);
   let instBytes = 0;
   for (let i = 0; i < insts; i++, p += 4) instBytes += u32(bytes, p);
-  const sizeFields = [];
+  const sizeFields = [], filled = [];
   let pcmBytes = 0;
-  for (let i = 0; i < pcms; i++, p += 4) { sizeFields.push(p); pcmBytes += u32(bytes, p); }
+  for (let i = 0; i < pcms; i++, p += 4) { sizeFields.push(p); if (u32(bytes, p)) filled.push(i); pcmBytes += u32(bytes, p); }
   const pcmStart = p + pageBytes + instBytes;
   if (!pcmBytes || pcmStart + pcmBytes > bytes.length) return null;
-  const packed = magic(bytes) === 'msPb';
   return {
-    kind: packed ? 'mspb' : 'mupb',
+    kind: magic(bytes) === 'msPb' ? 'mspb' : 'mupb',
+    // the one bank there is, the first OPNA's (muPb has a set for every chip, most empty)
+    oneBank: filled.length === 1 && filled[0] === firstBank,
     pcm: bytes.slice(pcmStart, pcmStart + pcmBytes),
     name: pcmName(bytes, tagOffset, tagSize),
-    // one bank (the first OPNA's), and a tag that names it
-    separable: !packed && pcms === 1,
     withoutPcm() {
       const out = new Uint8Array(bytes.length - pcmBytes);
       out.set(bytes.subarray(0, pcmStart));
@@ -90,9 +91,12 @@ function paged(bytes) {
 export function mubPcm(bytes) {
   if (!bytes || bytes.length < 0x22) return null;
   const m = magic(bytes);
+  let found = null;
   try {
-    if (m === 'MUB8' || m === 'MUC8') return mub8(bytes);
-    if (m === 'muPb' || m === 'msPb') return paged(bytes);
+    if (m === 'MUB8' || m === 'MUC8') found = mub8(bytes);
+    else if (m === 'muPb' || m === 'msPb') found = paged(bytes);
   } catch { /* not a layout this reads */ }
-  return null;
+  // one bank (the first OPNA's), and a #pcm tag that names its file
+  if (found) found.separable = !!found.name && (found.kind === 'mub8' || found.oneBank);
+  return found;
 }

@@ -210,7 +210,7 @@ const T = {
     mubPcmEmbed: 'Inside the .mub', mubPcmZip: (file) => `Separate file (ZIP with ${file})`,
     mubPcmCancelled: 'The .mub was not saved.',
     mubPcmZipped: (zipName, mub, file) => `Saved ${zipName}: ${mub} without the PCM bank, and ${file}. Keep the two files in the same folder.`,
-    mubPcmInside: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes), with its PCM bank inside: a MucoMSX packed score does not name its PCM file, so it cannot be saved beside it.`,
+    mubPcmInside: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes), with its PCM bank inside: its tags name no #pcm file (PCM from #@pcm WAVs, or a packed MSX score), so a player could not find the bank beside it.`,
     exported: (name, n) => `Saved ${name} (${n.toLocaleString()} bytes).`, exportFailed: 'Could not export: ',
     followPart: (p) => `Part ${p} and what it plays now. Click: while playing, the text follows this part; click again to follow every part`, hintSuggest: 'suggestions', fontSize: 'Text', fontSizeTip: 'Editor text size',
     uiSize: 'Menus', uiSizeTip: 'Size of the menus, buttons and panels (100–200%; a narrow window allows less)',
@@ -395,7 +395,7 @@ const T = {
     mubPcmEmbed: '.mub 안에 넣기', mubPcmZip: (file) => `따로 저장 (.mub + ${file}, ZIP)`,
     mubPcmCancelled: '.mub를 저장하지 않았습니다.',
     mubPcmZipped: (zipName, mub, file) => `${zipName} 저장: PCM 뱅크를 뺀 ${mub}와 ${file}. 두 파일을 같은 폴더에 두세요.`,
-    mubPcmInside: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트), PCM 뱅크 포함. MucoMSX 압축 형식은 PCM 파일 이름을 담지 않아 따로 저장할 수 없습니다.`,
+    mubPcmInside: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트), PCM 뱅크 포함. 태그에 #pcm 파일 이름이 없어(#@pcm WAV로 넣은 PCM, 또는 MSX 압축 형식) 따로 두면 플레이어가 뱅크를 찾을 수 없습니다.`,
     exported: (name, n) => `${name} 저장 (${n.toLocaleString()} 바이트).`, exportFailed: '내보내지 못했습니다: ',
     followPart: (p) => `${p} 파트와 지금 연주하는 내용. 클릭하면 재생 중 텍스트가 이 파트를 따라가고, 다시 클릭하면 모든 파트를 따라갑니다`, hintSuggest: '명령 제안', fontSize: '글자', fontSizeTip: '에디터 글자 크기',
     uiSize: '메뉴', uiSizeTip: '메뉴, 버튼, 패널의 크기 (100–200%, 좁은 창에서는 덜 커짐)',
@@ -580,7 +580,7 @@ const T = {
     mubPcmEmbed: '.mubの中に入れる', mubPcmZip: (file) => `別ファイル（${file}とZIPで）`,
     mubPcmCancelled: '.mubを保存しませんでした。',
     mubPcmZipped: (zipName, mub, file) => `${zipName}を保存: PCMバンクを除いた${mub}と${file}。2つのファイルを同じフォルダに置いてください。`,
-    mubPcmInside: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）、PCMバンク入り。MucoMSXのパック形式はPCMファイル名を持たないため、別ファイルにできません。`,
+    mubPcmInside: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）、PCMバンク入り。タグに#pcmのファイル名がないため（#@pcmのWAVで入れたPCM、またはMSXのパック形式）、別ファイルにするとプレーヤーがバンクを見つけられません。`,
     exported: (name, n) => `${name}を保存しました（${n.toLocaleString()}バイト）。`, exportFailed: '書き出せませんでした: ',
     followPart: (p) => `${p}パートと今演奏している内容。クリックすると再生中テキストがこのパートを追い、もう一度クリックで全パートを追います`, hintSuggest: 'コマンド候補', fontSize: '文字', fontSizeTip: 'エディタの文字サイズ',
     uiSize: 'メニュー', uiSizeTip: 'メニュー・ボタン・パネルの大きさ（100–200%、狭いウィンドウでは控えめ）',
@@ -1612,8 +1612,8 @@ async function saveMub(name, bytes) {
   const p = mubPcm(bytes);
   if (!p) { download(name, bytes, 'application/octet-stream'); setStatus(t('exported', name, bytes.length)); return; }
   const kb = Math.round(p.pcm.length / 1024);
-  if (!p.separable || !p.name) {
-    // a MucoMSX packed score: its tags do not name the PCM file, so it stays inside
+  if (!p.separable) {
+    // its tags do not name a PCM file (a packed MSX score, PCM from #@pcm WAVs): it stays inside
     download(name, bytes, 'application/octet-stream');
     setStatus(t('mubPcmInside', name, bytes.length), false);
     return;
