@@ -1,0 +1,45 @@
+#mucom88 1.7
+#title Guessing-Game House
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -50,-45,-35,-23,-7,11,30,48,66,85,103,118,126,127,119,102,77,45,10,-23,-51,-72,-88,-97,-98,-92,-82,-72,-65,-59,-55,-53 }
+  @W1:{ 65,36,4,-12,15,26,-5,-19,14,57,56,28,23,38,23,-1,8,5,-47,-104,-116,-104,-104,-117,-114,-59,6,22,43,97,127,107 }
+  @W2:{ -13,-27,-34,-34,-33,-29,-27,-24,-27,-6,57,107,127,119,83,38,-3,-43,-77,-103,-103,-80,-57,-35,-12,11,32,46,52,49,34,9 }
+  @W3:{ -118,-84,-42,-16,-11,-16,-21,-13,-6,-11,-15,6,55,92,80,64,79,94,88,78,86,85,55,19,-16,-39,-43,-55,-63,-78,-108,-127 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{t210 r12 t211 r12}
+#*2{E255,0,0,255,0,255}
+#*3{>c8 D0f8 D-13<f8 a+8 D-39>d+8}
+#*4{@1E255,0,96,159,4,255}
+#*5{r8 D-48>c8 r8}
+#*6{D-38<a+8 D-48>c8 D-38<a+8 f+8 e8}
+#*7{e8 D-44d8 r8 D-38a+8 r8 g+8 a+8 g+8 e8 D-44d8 r4}
+#*8{q8f+4. q5g+4. g+4 q10f+2 q5e4 e4 q8d4. q5e4. e4 q10d2}
+#*9{D-22<a+8}
+#*10{<f8 v11>c8 f8 v10<f8 v11a+8 >d+8}
+#*11{e8 v11g+8 >d8 v9<d8 v10f+8 v11>c8}
+#*12{@1E255,0,96,159,3,255v8q5MF0D-33}
+
+; whole note = 96 clocks (C96), 1 clock(s) per driver tick
+A C96 [ *1 ]9 L [ *1 ]24 [ t210 r%7 t211 r16. ]12 [ *1 ]60
+SCCA C96 [ @0 *2 v11q3MF0D-40o6c8 D-10<a+8 ]3 >f8 q10D-39d+%60 L [ @0 *2
+SCCA v10q3MF0D-13<f8 v11D-40 *3 D-13<f8 D-40 *3 r4 c8 r8 ]2 [ [ v10D-19<e8 g+8
+SCCA v11>d8 v10<d8 f+8 v11D-40>c8 ]2 r4 D-10<a+8 r8 ]2 [ *4 v13D-48c8 D-38<a+8
+SCCA ]2 f+8 e8 *5 *6 r4 [ a+8 g+8 ]2 *7 >c8 *6 *5 *6 r4 [ a+8 g+8 ]2 *7
+SCCB C96 *4 v9q5MF0D-17o2g+4 g+4 f+4 v8q3f+8 q10f+%60 L *4 v8q3MF0D-17g+8 [
+SCCB D-34>g+8 <g+8 >g+8 [ <f+8 >f+8 ]2 <g+8 ]3 >g+8 <g+8 >g+8 [ <f+8 >f+8 ]2 [
+SCCB [ <e8 >e8 ]2 [ <d8 >d8 ]2 ]4 q5<g+4 v9g+4 *8 q5g+4 g+4 *8
+SCCC C96 *4 v9q5MF0D-34o3g+4 g+4 f+4 q3f+8 q10f+%60 L [ r8 *4 v9q3MF0D-34d+8
+SCCC ]16 [ r8 <b8 ]16 [ q5>g+4 g+4 *8 ]2
+SCCD C96 [ @2 *2 v9q3MF0D-48o5c8 *9 ]3 D-45>f8 q10d+%60 L
+SCCD @3E0,86,0,255,2,255v9q3MF0D-9 *10 v10 *10 r4 c8 r8 [ v10 *10 ]2 r4 c8 r8
+SCCD v9< *11 v10<e8 g+8 v11>d8 v9<d8 v10f+8 v11>c8 r4 <a+8 r8 v9 *11 v10< *11
+SCCD r4 <a+8 r8 [ [ @2 *2 v8D-48>c8 *9 ]2 D-34f+8 e8 *5 *9 D-48>c8 *9 D-34f+8
+SCCD e8 r4 [ a+8 g+8 ]2 e8 d8 r8 a+8 r8 g+8 a+8 g+8 e8 d8 r4 ]2
+SCCE C96 *12 o3d+4 d+4 c+4 q3c+8 q10c+%60 L r%255 r%255 r%255 r32 [ *12 d+4 d+4
+SCCE q8c+4. q5d+4. d+4 q10c+2 q5<b4 b4 q8a4. q5b4. b4 q10a2 ]2

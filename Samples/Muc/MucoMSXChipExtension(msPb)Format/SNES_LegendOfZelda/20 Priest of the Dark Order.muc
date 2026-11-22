@@ -1,0 +1,33 @@
+#mucom88 1.7
+#title Priest of the Dark Order
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -116,-75,-20,13,12,-2,-12,-9,-9,-26,-38,-13,46,88,74,55,71,89,79,64,71,76,54,22,-12,-32,-34,-47,-59,-77,-108,-127 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{@0E255,0,0,255,2,255}
+#*2{M26,1,4,5}
+#*3{M26,1,7,5}
+#*4{e4. M26,1,5,5g3 f+%56 a%52 g+4 M26,1,4,5}
+#*5{v7MF0a24 v9M26,1,4,5b%88 v7MF0a+24 v9M26,1,7,5>d%88 MF0c+24}
+#*6{q2M26,1,1,5D0o3c4 M26,1,2,5g4}
+#*7{f+2 f%88 g+%80 g4. a+3 a%56 M26,1,1,5>c%52 M26,1,2,5<b4}
+
+; whole note = 192 clocks (C192), 1 clock(s) per driver tick
+A C192 t185 r8 L [ t185 r%255 r%129 ]2 t185 r%255 r%255 r%142
+B C192 vm2 r8 L [ @31v122 *6 ]8 v121 *7 v120M26,1,1,5>d2
+C C192 vm2 r8 L [ r24 [ @31v117 *6 ]3 M26,1,1,5c4 M26,1,2,5g%40 ]2 r24 v116 *7
+C v115M26,1,1,5>d%88
+SCCA C192 r8 L [ *1 v15q2M26,1,6,5D0o3f%88 v8MF0e24 v15M26,1,6,5f+%88 v9MF0f24
+SCCA v15M26,1,6,5a%88 v10MF0g+24 v15 *2 b2 ]2 a+2 a%88 M26,1,8,5>c%80
+SCCA M26,1,4,5<b4. *3 >d3 c+%56 e%52 d+4 v14f+2
+SCCB C192 r8 L [ *1 v15q2 *2 D-16o3a+%88 v11MF0a24 v15 *2 b%88 v12MF0a+24
+SCCB v14M26,1,7,5>d%88 MF0c+24 *3 e2 ]2 d+2 d%88 f%80 *4 b2
+SCCC C192 r8 L r24 *1 v9q2 *2 D0o3a+%88 *5 *3 D-7e%88 r24 M26,1,4,5<a+%88 *5 *3
+SCCC e%88 r24 v10<d+2 d%88 v9>f%80 *4 b%88

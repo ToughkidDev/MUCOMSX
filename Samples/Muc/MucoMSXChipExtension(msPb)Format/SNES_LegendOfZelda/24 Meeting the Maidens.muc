@@ -1,0 +1,44 @@
+#mucom88 1.7
+#title Meeting the Maidens
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -16,-6,-1,0,0,-3,-11,-27,-51,-76,-95,-99,-86,-58,-20,18,53,81,102,117,126,127,115,88,48,2,-38,-64,-74,-67,-51,-32 }
+  @W1:{ -117,-76,-19,15,13,-2,-13,-8,-7,-26,-40,-13,47,88,72,52,69,89,82,67,76,81,57,22,-15,-36,-37,-49,-59,-77,-108,-127 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{t171 r24 t172 r24}
+#*2{@0E255,0,0,255,6,255}
+#*3{@1E0,101,0,255,2,255v4q6M26,1,6,5}
+#*4{M26,1,7,5}
+#*5{>c8 M26,1,7,5<g4. a4 MF0>c8 M26,1,7,5g4 MF0D-13f8 M26,1,10,5}
+#*6{*2 v11q2MF0}
+#*7{*2 v6q2MF0}
+#*8{q3MF0>c8 q8M26,1,7,5<g4. q6a4 q3MF0>c8 q6M26,1,7,5g4 q3MF0}
+#*9{*4 a4 *8 D-29f8}
+
+; whole note = 192 clocks (C192), 1 clock(s) per driver tick
+A C192 [ t202 r%13 t203 r64 ]24 [ *1 ]6 L [ *1 ]72
+B C192 vm2 r8. @39v112q2MF0D-4o6b4 >d4 a4 b4 v111b4 v108b4 v104b4 v101b8 v99b12
+B v97b12 v95b12 v93b12 v91b12 v89b48 L r16. [ @39v105q2MF0D-4<b8 ]15 [ a+8 ]3 [
+B a8 ]5 a32 r16. [ [ b8 ]3 [ a8 ]3 ]2 [ b8 ]3 [ a+8 ]3 [ a8 ]5 a32
+SCCA C192 r%255 r%153 *2 v2q2MF0D-29o6g8 E0,101,0,255,2,255v4g8 v6g8 L *3
+SCCA D0o4a4 v6q3MF0>c8 v9q2 *4 <g4 v12MF0f16 v14g16 v15 *4 a4 MF0 *5 D0c4
+SCCA MF0<a+16 a16 M26,1,6,5g4. q6a4 q3MF0>c8 q2 *4 <g4 MF0f16 g16 M26,1,7,5a4
+SCCA MF0 *5 D-40>c2.
+SCCB C192 *6 D-16o5d4 D-29f4 D-18b4 D-40>d4 v10a4 v8a4 v6a4 v4a4 v3a12 a12 [
+SCCB v2a12 ]4 L [ *7 D-40g8 ]48
+SCCC C192 r16 *6 D-29o5f4 a4 >d4 D-5f4 v10D-42b4 v8b4 v5b4 v4b%40 v3b12 b12 [
+SCCC v2b12 ]3 b16 L r32 [ *7 D-42e8 ]21 d8 d8 d16. r32 [ [ e8 ]3 [ f+8 ]3 ]2 [
+SCCC e8 ]9 d8 d8 d16.
+SCCD C192 r8 *6 D-27o5a4 D-18b4 >f4 a4 v10a4 v8a4 v5a4 v4a6 [ v3a12 ]3 v2a12
+SCCD a12 a24 L [ r16 [ *7 D-40d8 ]21 c8 c8 c16 ]2
+SCCE C192 r%255 r%171 *2 v3q2MF0D-18o5b8 v6b8 b32 L r24 *3 D-18<a4 v5q3MF0>c8
+SCCE v7q6 *4 <g4 v9q2MF0f16 g16 v10q6 *9 q6M26,1,10,5c4 q2MF0D-14<a+16 a16
+SCCE q7M26,1,6,5g3 r24 q6a4 q3MF0>c8 q6 *4 <g4 q2MF0f16 g16 q6 *9
+SCCE q7M26,1,10,5>c%136

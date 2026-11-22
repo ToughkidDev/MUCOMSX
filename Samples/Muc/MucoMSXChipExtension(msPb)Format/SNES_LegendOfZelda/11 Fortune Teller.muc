@@ -1,0 +1,26 @@
+#mucom88 1.7
+#title Fortune Teller
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -16,-6,-1,0,0,-3,-11,-27,-51,-76,-95,-99,-86,-58,-20,18,53,81,102,117,126,127,115,88,48,2,-38,-64,-74,-67,-51,-32 }
+  @W1:{ -108,-115,-116,-110,-97,-79,-58,-38,-22,-11,-4,6,21,39,59,81,103,120,127,120,102,83,66,49,31,10,-8,-19,-29,-44,-67,-90 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{@0E255,0,0,255,7,255}
+#*2{a+4 e4 q2g+8 d4}
+#*3{q3MF0D-32o3f+4 *2}
+#*4{f+8 q3a+4 e4}
+#*5{r%255 r%255 r%66}
+
+; whole note = 96 clocks (C96), 1 clock(s) per driver tick
+A C96 L [ t198 r24 t199 r8 ]72
+SCCA C96 L [ *1 v14 *3 *4 g+4 ]6
+SCCB C96 L r16 *1 v12 *3 [ v11f+8 q3a+4 e4 g+4 f+4 *2 ]2 *4 q2g+8. r16 [ q3f+4
+SCCB *2 *4 g+4 ]2 f+4 *2 *4 q2g+8.
+SCCC C96 L *5 [ @1E255,0,0,255,10,255v2q2MF0D-38o6f+8 D-18a+8 e8 g+8 d8 D3g8 ]8
+SCCD C96 L *5 [ @0E255,0,0,255,0,255v2q5MF0D-44o6g+12 g+12 D-71d+12 d+12
+SCCD D-38f+12 f+12 D-62c+12 c+12 ]9

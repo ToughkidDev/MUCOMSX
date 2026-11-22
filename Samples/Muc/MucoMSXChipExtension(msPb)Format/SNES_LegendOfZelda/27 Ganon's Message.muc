@@ -1,0 +1,43 @@
+#mucom88 1.7
+#title Ganon's Message
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -115,-74,-22,10,10,-2,-12,-10,-11,-26,-36,-11,47,89,77,59,73,88,77,61,67,71,51,23,-8,-28,-31,-46,-58,-78,-109,-127 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{@0E255,0,0,255,2,255}
+#*2{M26,1,4,5}
+#*3{M26,1,7,5}
+#*4{a+%88 v9MF0a24 v12M26,1,4,5b%88 v9MF0a+24 v11M26,1,7,5}
+#*5{>d%88 MF0c+24 *3 e2}
+#*6{f%80 e4. M26,1,5,5g3 f+%56 a%52 g+4 M26,1,4,5}
+#*7{v6MF0a24 v7M26,1,4,5b%88 v6MF0a+24 v7M26,1,7,5>d%88 MF0c+24}
+#*8{q2M26,1,1,5D0<c4 M26,1,2,5g4}
+#*9{M26,1,1,5>c%52 M26,1,2,5<b4}
+
+; whole note = 192 clocks (C192), 1 clock(s) per driver tick
+A C192 t185 r%184 L [ t185 r%255 r%129 ]2 t185 r%255 r%255 r%142
+B C192 vm2 @41v118q2MF0D0o5b24 v117a+12 f24 v118e12 v114<b24 v113a+24 v110f24
+B v116q11e%112 L [ @41v118 *8 ]8 v117f+2 f%88 g+%80 v118g4. v117a+3 v118a%56 *9
+B v117M26,1,1,5>d2
+C C192 vm2 @41v118q2MF0D0o5a+24 v117a12 e24 v118d+12 v113<a+24 v112a24 v109e24
+C v116q11d+%112 L [ r24 [ @41v113 *8 ]3 M26,1,1,5c4 v114M26,1,2,5g%40 ]2 r24
+C v112f+2 v113f%88 v112g+%80 v113g4. a+3 a%56 *9 v112M26,1,1,5>d%88
+H C192 vm2 [ @15v118q2MF0D-16o3a24 v116a12 ]2 [ v118a24 ]3 v113q11a%30&v6a%82 L
+H r%255 r%255 r%255 r%11 @41v111q2M26,1,2,5D0>d+2 M26,1,1,5d%88 r%255 r%205
+SCCA C192 *1 v13q2MF0D0o4f24 e12 v10<b24 v14a+12 v7f24 e24 v5<b24 v12q11a+%112
+SCCA L [ *1 v12q2M26,1,6,5D0>f%88 v7MF0e24 v12M26,1,6,5f+%88 v7MF0f24
+SCCA v12M26,1,6,5a%88 v8MF0g+24 v12 *2 b2 ]2 a+2 a%88 M26,1,8,5>c%80
+SCCA M26,1,4,5<b4. *3 >d3 c+%56 e%52 d+4 v11f+2
+SCCB C192 *1 v15q2MF0D-29o5f24 v12D-19e12 v15D-14<b24 v13a+12 f24 e24 v10<b24
+SCCB v12q11 *2 a+%112 L *1 v12q2 *2 D-14 *4 D-20 *5 M26,1,4,5D-16< *4 *5 d+2
+SCCB d%88 *6 b2
+SCCC C192 *1 v7q2MF0D0o3f24 v13e12 v5<b24 v10a+12 v5f24 e24 v4<b24 v13q11a+%112
+SCCC L r24 *1 v7q2 *2 D0o3a+%88 *7 *3 D-7e%88 r24 M26,1,4,5<a+%88 *7 *3 e%88 r1
+SCCC *6 b%88

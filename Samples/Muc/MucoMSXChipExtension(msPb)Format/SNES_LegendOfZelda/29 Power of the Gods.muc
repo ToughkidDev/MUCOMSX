@@ -1,0 +1,53 @@
+#mucom88 1.7
+#title Power of the Gods
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ 13,18,13,36,79,68,37,32,59,71,55,33,16,-3,-32,-62,-96,-125,-127,-103,-99,-107,-82,2,67,54,34,46,45,30,17,10 }
+  @W1:{ -117,-76,-20,14,13,-2,-13,-8,-8,-26,-39,-13,47,89,73,53,70,89,80,66,74,79,56,22,-14,-35,-35,-48,-59,-77,-108,-127 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{q2a12 b12 q5e4 D-44d4 D-39e4 >e4 q8D-30<b4. q2a16 b16 q20e1}
+#*2{e4 d2 a4 g2 D-52c4}
+#*3{@1E0,134,0,255,2,255}
+#*4{M24,1,9,5}
+#*5{M24,1,6,5}
+#*6{M24,1,7,5}
+#*7{b%56 MF0a12 b12 e4 d4 e4 >e4 M26,1,4,5<b4. MF0a16 b16 M26,1,6,5e1}
+#*8{<g%56 MF0f12 g12 c4}
+#*9{g2 MF0c4 c+8 d+8 f8 f+8 g+8 a+8 f8 g8 a8}
+#*10{b12 e4 D-20d4 e4 >e4 M24,1,5,5D-14<b4. MF0a16 b16 M24,1,7,5e%88}
+#*11{M26,1,2,5}
+
+; whole note = 96 clocks (C96), 1 clock(s) per driver tick
+A C96 t185 r%255 r%129 L [ t178 r32 t179 r%13 ]109 t178 r32 t179 r%5
+B C96 vm2 @43v112q2M26,1,2,5D0o3g%40 M26,1,1,5o5d%40 *11 b%40 >a%40 >f%224 L [
+B @43v112q2M26,1,1,5D0o3c1 *11 f2. M26,1,1,5c2. *11 f1 ]2 g+1 M26,1,1,5>c+2.
+B *11 <g+2. M26,1,1,5>c+2. c1 c1 [ *11 <a+2. a2. g+2. g2. ]2
+SCCA C96 r%255 r%129 L @0E255,0,96,159,5,255v15q5MF0D-35o5e4 q12D-30<b%56 *1
+SCCA q5>e4 q12<b%56 *1 q2D-48>c4 D-33<g%56 f12 g12 D-52c4 D-28<a+4 D-52>c4 >c4
+SCCA D-33<g4. f16 g16 D-52c2 D-33f4 e%168 *2 c2 D-33g4 d2 *2 c+8 d+8 D-33f8 f+8
+SCCA g+8 a+8 f8 g8 a8 b8 D-48>c8 d8
+SCCB C96 r6 *3 v8q2M24,1,6,5D0o3f%40 >a%40 D-6b%40 >a%120 r%128 L [ r8 *3
+SCCB v8q2M24,1,6,5D0o2g1 *4 >c2. *5 <g2. *4 >c%84 ]2 r8 *6 d+1 M24,1,5,5g+2. *6
+SCCB d+2. M24,1,5,5g+%60 r8 g1 g%84 r8 f%60 r8 *6 e%60 r8 d+%60 r8 d%60 r8 f%60
+SCCB r8 e%60 r8 d+%60 r8 d%60
+SCCC C96 r4 *3 v9q2M30,1,6,5D-13o3a%40 >f%40 M30,1,8,5>d%40 M30,1,5,5b%120
+SCCC r%120 L [ r4 *3 v9q2M30,1,9,5D-13o3c1 M30,1,7,5f2. M30,1,9,5c2.
+SCCC M30,1,7,5f2. ]2 r4 g+1 M30,1,9,5D-26>c+2. M30,1,6,5D-18<g+2. M30,1,9,5>c+2
+SCCC r4 c1 c2. [ r4 M30,1,5,5D-16<a+2 r4 a2 r4 g+2 r4 g2 ]2
+SCCD C96 r3 *3 v10q2M26,1,4,5D0o3b%40 >a%40 M26,1,6,5D-13>f%40 >d%120 r%112 L
+SCCD *3 v7q2MF0D0<e4 M26,1,4,5D-6< *7 MF0>e4 M26,1,4,5< *7 MF0>c4 M26,1,5,5 *8
+SCCD D0<a+4 >c4 >c4 M26,1,5,5<g4. MF0f16 g16 M26,1,8,5c2 MF0f4 M26,1,6,5e%168
+SCCD MF0e4 M26,1,6,5d2 MF0a4 M26,1,6,5g2 MF0c4 M26,1,8,5c2 MF0g4 M26,1,7,5d2
+SCCD MF0e4 M26,1,7,5d2 MF0a4 M26,1,5,5 *9 D-6b8 >c8 d8
+SCCE C96 r12 *3 v8q2M24,1,8,5D-18o3d%40 >f%40 >d%40 D-29f%112 r1. L r12 *3
+SCCE v4q2MF0D-19e4 M24,1,5,5D-14<b%56 MF0a12 *10 r12 MF0>e4 M24,1,5,5<b%56
+SCCE MF0a12 *10 r12 v5MF0>c4 *5 *8 <a+4 >c4 >c4 *5 <g4. MF0f16 g16 *4 c2 MF0f4
+SCCE *6 e%168 MF0e6 r12 *6 D-20d2 MF0D-15a4 *6 g2 MF0c4 *4 c2 MF0g4
+SCCE M24,1,8,5D-20d2 MF0e4 M24,1,8,5d2 MF0D-15a4 *5 *9 b8 >c8 d24

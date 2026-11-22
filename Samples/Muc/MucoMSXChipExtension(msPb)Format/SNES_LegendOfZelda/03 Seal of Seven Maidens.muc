@@ -1,0 +1,62 @@
+#mucom88 1.7
+#title Seal of Seven Maidens
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -71,-75,-63,-86,-113,-120,-123,-123,-84,-6,45,20,-34,-91,-62,15,58,87,109,108,84,44,-3,-14,39,106,127,97,51,46,41,-8 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{t194 r64 t195 r%13}
+#*2{@0E0,115,0,255,2,255}
+#*3{v14M20,1,7,5}
+#*4{<f16 v9>c16 *3}
+#*5{v13M20,1,7,5}
+#*6{v7MF0<g+16 v11>d+16}
+#*7{MF0<a16 v11>e16}
+#*8{v7MF0<g16 v10>d16}
+#*9{MF0<a+16 v12>f16 *3 a+4}
+#*10{v12MF0a16 g16 v9M20,1,7,5a2 M20,1,9,5>d4.}
+#*11{v12MF0<b16 a16 v9M20,1,10,5>c4. v12MF0<b16 a16 v8M20,1,5,5b1}
+#*12{a+16 v8M20,1,10,5>c2 c4. *11}
+#*13{a4 M20,1,9,5>d8}
+#*14{c4 v12MF0<b16 >c16 v9M20,1,6,5<a4.}
+#*15{@0E0,115,0,255,0,255}
+
+; whole note = 192 clocks (C192), 1 clock(s) per driver tick
+A C192 [ t194 r48 t195 r16 ]24 [ *1 ]24 L [ *1 ]168
+B C192 vm2 [ r8 @3v114q2M20,1,2,5D0o5d4. r8 v113d+4. r8 e4. r8 f4. ]2 L [ r8
+B @3v113q2M20,1,2,5D0g4. r8 f4. r8 M20,1,3,5a+4. r8 g+4. r8 a4. r8
+B M20,1,2,5f+4. r8 f+%168 ]2 [ v0g4. f4. M20,1,3,5a+4. g+4. a4. M20,1,2,5f+4.
+B f+2. ]2
+SCCA C192 [ *2 v6q2MF0D0o2c16 v7g16 v14M20,1,10,5>c4. ]8 L [ *2 v6q2MF0D0 *4
+SCCA f4. v8MF0<a+16 v12>f16 *5 a+4. v6MF0<d+16 v8a+16 *3 >d+4. *6 *5 g+4. v8 *7
+SCCA *5 a4. v6MF0<d16 v8a16 v14M20,1,9,5>d4. [ *8 *5 g4. ]2 ]2 v7 *9 v8 *9 [ v7
+SCCA *7 *3 a4 ]2 *8 *3 g4 v6MF0<c16 v7g16 v15M20,1,10,5>c4 v6MF0 *4 f4 v7MF0 *4
+SCCA f4 v7 *9 v8 *9 [ v7 *7 *3 a4 ]2 [ *6 *3 g+4 ]2 *8 *3 g4 v7MF0<f+16 v9>c+16
+SCCA *3 f+4
+SCCB C192 [ r8 *2 v9q2M20,1,7,5D-17o4g4. r8 g+4. r8 a4. r8 a+4. ]2 L *2
+SCCB v9q2M20,1,5,5D-17b4. *10 v12MF0c16 < *12 b4. *10 v11MF0c16 v12< *12 v9 *13
+SCCB M20,1,6,5< *13 *14 f4 a+8 v10f8 M20,1,8,5e8 M20,1,6,5a+8 v8a2. [
+SCCB v9M20,1,6,5 *13 ]2 *14 g4 M20,1,10,5>c8 v10M20,1,7,5<g8 f8 g8 v9a4.
+SCCB M20,1,5,5b4.
+SCCC C192 r%255 r%129 [ *15 v8q2MF0D0o4g32 ]16 [ v9g+32 ]16 [ v10a32 ]4 v9a32
+SCCC a32 [ v10a32 ]10 [ a+32 ]16 L *15 v7q2MF0D0g32 [ v9g32 ]3 [ v8g32 ]12 [
+SCCC f32 ]16 [ v11a+32 ]16 [ v9g+32 ]16 [ v10a32 ]16 [ v8f+32 ]48 v6g32 [ v8g32
+SCCC ]15 [ f32 ]4 [ v7f32 ]12 [ v11a+32 ]16 [ v9g+32 ]16 [ v10a32 ]16 [ v8f+32
+SCCC ]48 v6f32 [ v8f32 ]23 [ v7e32 ]24 v5d32 [ v6d32 ]23 v5c32 [ v6c32 ]23 f32
+SCCC [ v8f32 ]11 [ v7f32 ]12 v6e32 [ v7e32 ]23 [ d+32 ]24 [ v8f+32 ]12 [ g32
+SCCC ]12
+SCCD C192 r%255 r%129 [ *15 v6q2MF0D-20o4d32 ]16 [ v7d+32 ]16 [ e32 ]16 [ f32
+SCCD ]16 L *15 v6q2MF0D-20e32 [ v7e32 ]15 [ v6c32 ]16 [ v8g32 ]16 [ v7d+32 ]16
+SCCD [ e32 ]32 d32 d32 [ v6d32 ]30 e32 [ v7e32 ]15 [ v6c32 ]16 [ v8g32 ]16 [
+SCCD v7d+32 ]16 [ e32 ]32 [ d32 ]4 [ v6d32 ]28 v5d32 [ v6d32 ]23 [ c32 ]24 [
+SCCD v5D-16<a+32 ]24 [ a32 ]24 >d32 [ v6d32 ]23 v5c32 c32 [ v6c32 ]46 [ d32 ]12
+SCCD [ v7e32 ]12
+SCCE C192 r8 *2 v9q2M20,1,10,5D0o4c4. r8 c+4. r8 d4. r8 M20,1,8,5d+4. r8 c4. r8
+SCCE c+4. r8 d4. r8 d+4. L [ r8 *2 v9q2M20,1,8,5D-7e4. r8 c4. r8 g4. r8 d+4. [
+SCCE r8 e4. ]2 r8 d%168 ]2 [ v1e4. c4. g4. d+4. e4. e4. d2. ]2

@@ -1,0 +1,54 @@
+#mucom88 1.7
+#title Beginning of the Journey
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -108,-115,-116,-110,-97,-79,-58,-38,-22,-11,-4,6,21,39,59,81,103,120,127,120,102,83,66,49,31,10,-8,-19,-29,-44,-67,-90 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{t202 r%13 t203 r32}
+#*2{@0E255,0,0,255,5,255}
+#*3{q2MF0D0}
+#*4{g+4. v11}
+#*5{E255,0,0,255,3,255v10}
+#*6{E255,0,0,255,0,255v12}
+#*7{d+%5&v7d+%10&v5d+%10&v4d+%10&v3d+%15&v2d+%20&v1d+%11}
+#*8{d+%5&v11d+%5&v9d+%5&v8 *7 *5}
+#*9{g+2 D-38f+2 D0f2}
+
+; whole note = 96 clocks (C96), 1 clock(s) per driver tick
+A C96 *1 t202 r12 L [ *1 ]96
+B C96 vm2 r4 L r4. [ @2v102 *3 o6g+2 ]4 [ v103f+2 ]4 [ f2 ]4 [ d+2 ]3 d+8 r4. [
+B v102g+2 ]4 [ v103g2 ]3 v102g2 [ g+2 ]4 [ v103f2 ]3 f8
+C C96 vm2 r4 L r8 [ @2v103 *3 o7d+2 ]4 [ c+2 ]4 [ <b2 ]4 [ a+2 ]3 a+4. r8 [
+C >d+2 ]4 [ e2 ]4 [ d+2 ]4 [ <b2 ]3 b4.
+SCCA C96 r4 L *2 v13 *3 o2b4. v11D-6o4a+2. d+4. v10D-22>c+4. v12<d+8
+SCCA v13D0o2a+4. v11D-16o4g+2. v13D0o2a+4. v10D-22o5c+4. v13D0<c+8 o2 *4
+SCCA D-18o4f+%60 v14D0o2 *4 D-17o4f4. c+4 v14D0o2f+4. v11D-17o4f%60 v14D0o2f+4.
+SCCA v11o4d+4. D-22>c+4 v13D0o2b4. v10D-6o4a+%60 v13o2b4. v11o4g+4. g+4
+SCCA v13o2a+4. v10D-22o5c+%60 v13D-13o3d+4. v11D-6>a+4. D-22>c+4 v14D0o2g+4.
+SCCA v10D-14o4b%60 v14o2 *4 D-6o4a+4. g+4 v13<c+4. v10>b%60 v13<c+4. v11>g+4.
+SCCA v10D-20>g+4
+SCCB C96 r4 L r8 @0E255,0,0,255,3,255v10 *3 o3b%108 D-6>a+4. a+2 <a+%108 >g+4.
+SCCB g+2 <g+1 v11g+4. v10> *4 <b4 f+1 f+4. v10> *4 b8 r8 v10<b1 b4. D-15o5d+4.
+SCCB v11<d+4 v10D0<a+1 >d+4. D-19>e4. D-6<a+4 <g+1 v11g+4. v9D-22o5c+4. v11<d+4
+SCCB v10D0c+1 c+4. D-13>f4. f8
+SCCC C96 r4 L r4 @0E255,0,0,255,0,255v12 *3 o4d+16&v10d+16&v9d+16&v7d+8&v5d+8&
+SCCC v4d+8&v3d+8&v2d+8.&v1d+4 *5 D-16g+4. g+2 *6 c+16&v10c+16&v9c+16&v7c+8&
+SCCC v5c+8&v4c+8&v3c+8&v2c+8.&v1c+4 *5 f+4. f+2 *6 D0<b%5&v11b%5&v10b%5&v8b%10&
+SCCC v6b%10&v5b%10&v4b%10&v3b%10&v2b%20&v1b%11 *5 D-18>f+4. f%60 *6 D0<a+%5&
+SCCC v11a+%5&v10a+%5&v8a+%10&v6a+%10&v5a+%10&v4a+%10&v3a+%10&v2a+%20&v1a+%11 *5
+SCCC D-17>f4. f+4. r4 *6 *8 D-6a+4. a+%60 *6 c+%5&v11c+%5&v9c+%10&v7c+%10&
+SCCC v5c+%15&v4c+%5&v3c+%15&v2c+%20&v1c+%11 *5 D-22>c+4. v9d+%60 *6 < *8
+SCCC D-14b4. b%60 *6 g+%5&v10g+%5&v9g+%5&v8g+%5&v7g+%5&v6g+%10&v5g+%5&v4g+%10&
+SCCC v3g+%15&v2g+%20&v1g+%11 *5 b4. >d+4.
+SCCD C96 r4 L *2 v5q2MF0D-18o6a+2 g+2 D3g2 g+2 *9 D-38f+2 f+2 D0f2 D-27e2 D0f2
+SCCD f2 D-39d+2 D-8d2 D-39d+2 D-18a+2 g+2 D3g2 g+2 D-42b2 D-18a+2 a2 a+2 >c+2 [
+SCCD D-42<b2 D-18a+2 ]2 *9
+SCCE C96 r4 L r4 [ *2 v5 *3 o5b2 ]4 [ D-10a+2 ]4 [ D-20g+2 ]4 [ f+2 ]3 f+4 r4 [
+SCCE D0b2 ]4 [ D-30>c+2 ]4 [ D0<b2 ]4 [ D-20g+2 ]3 g+4

@@ -1,0 +1,43 @@
+#mucom88 1.7
+#title The Goddess Appears
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -108,-115,-116,-110,-97,-79,-58,-38,-22,-11,-4,6,21,39,59,81,103,120,127,120,102,83,66,49,31,10,-8,-19,-29,-44,-67,-90 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{@0E255,0,0,255,4,255}
+#*2{q2MF0D0}
+#*3{g+4 b4 >d+4}
+#*4{g+4 D-38f+4 D0f4}
+
+; whole note = 192 clocks (C192), 1 clock(s) per driver tick
+A C192 [ t221 r%13 t222 r64 ]19 L [ t202 r%13 t203 r64 ]96
+B C192 vm2 r24 @40v115 *2 o4g+4 b4 >d+4 f4 g+4 b%56 L r8. [ @40v109 *2 >g+4 ]4
+B [ f+4 ]4 [ f4 ]4 [ d+4 ]3 d+16 r8. [ g+4 ]4 [ g4 ]4 [ g+4 ]4 [ f4 ]3 f16
+C C192 vm2 r48 @40v115 *2 o4f4 *3 f4 g+%60 L r8 [ @40v109 *2 >b4 ]4 [ a+4 ]4 [
+C g+4 ]4 [ f+4 ]3 f+8 r8 [ b4 ]4 [ >c+4 ]4 [ <b4 ]4 [ g+4 ]3 g+8
+SCCA C192 r16 *1 v11 *2 o3b4 >d+4 D-9f4 g+4 b4 >d+%52 L *1 v14q2MF0D-9o2b8.
+SCCA o4a+4. d+8. D-22>c+8. <d+16 D0o2a+8. D-8o4g+4. o2a+8. D-22o5c+8. D0<c+16
+SCCA o2g+8. D-10o4f+%60 o2g+8. o4f8. c+8 o2f+8. o4f%60 o2f+8. o4d+8. D-22>c+8
+SCCA D0o2b8. D-6o4a+%60 o2b8. o4g+8. g+8 o2a+8. D-22o5c+%60 D-9o3d+8. >a+8.
+SCCA D-22>c+8 D0o2g+8. D-14o4b%60 o2g+8. D-6o4a+8. g+8 <c+8. >b%60 <c+8. >g+8.
+SCCA D-20>g+8
+SCCB C192 r%255 r%49 L r16 @0E255,0,0,255,3,255v14 *2 o3b%108 D-6>a+8. a+4
+SCCB <a+%108 >g+8. g+4 <g+2 g+8. >g+8. <b8 f+2 f+8. >g+8. b16 r16 <b2 b8.
+SCCB D-15o5d+8. <d+8 D0<a+2 >d+8. D-19>e8. D-6<a+8 <g+2 g+8. D-22o5c+8. <d+8
+SCCB D0c+2 c+8. D-13>f8. f16
+SCCC C192 r%255 r%49 L r8 @0E255,0,0,255,2,255v14 *2 o4d+%108 D-8g+8. g+4
+SCCC c+%108 f+8. f+4 <b2 >f+8. f%60 <a+2 >f8. f+8. r8 d+2 a+8. a+%60 c+2
+SCCC D-22>c+8. d+%60 <d+2 D-14b8. b%60 g+2 b8. >d+8.
+SCCD C192 r12 *1 v15 *2 o4d+4 D-9f4 *3 f4 L *1 v7q2MF0D-9>a+4 g+4 g4 g+4 *4
+SCCD D-38f+4 f+4 D0f4 D-27e4 D0f4 f4 D-39d+4 D0d4 D-39d+4 D-18a+4 g+4 D3g4 g+4
+SCCD D-42b4 D-18a+4 a4 a+4 >c+4 [ D-42<b4 D-18a+4 ]2 *4
+SCCE C192 *1 v11q2MF0D-12o3c+4 f4 *3 f3 L r16 [ *1 v7q2MF0D-39o6d+4 ]4 [ c+4 ]4
+SCCE [ D0<b4 ]4 [ D-10a+4 ]3 a+8. r16 [ D-39>d+4 ]4 [ e4 ]4 [ d+4 ]4 [ D0<b4 ]3
+SCCE b8.
