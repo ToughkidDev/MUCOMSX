@@ -10,4 +10,4 @@ MSX上で`.MUC`をコンパイルし、チャンネル鍵盤・レベル・ス�
 | English | [MUCScope_User_Guide_EN.md](MUCScope_User_Guide_EN.md) |
 | 日本語 | [MUCScope_User_Guide_JA.md](MUCScope_User_Guide_JA.md) |
 
-Download the MUCScope package from the [releases page](https://github.com/ToughkidDev/MUCOMSX/releases). It is separate from the four-tool toolchain ZIP. See also [MUBScope](../MUBScope/readme.md) and the [project README](../README.md).
+Download the MUCScope package from the [releases page](https://github.com/ToughkidDev/MUCOMSX/releases). It is separate from the five-tool toolchain ZIP. See also [MUBScope](../MUBScope/readme.md) and the [project README](../README.md).

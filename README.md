@@ -213,7 +213,7 @@ Two graphical music players for MSX1 and later. Follow the notes, levels and SCC
 Select a `.MUC` source and let the built-in compiler turn it into music on the MSX. Browse for another song while compiling; replay the current compiled song without compiling again. For listening to your MML collection, not editing it.
 
 ```text
-MUCSCOPE SONG.MUC
+MUCSCOPE
 ```
 
 [![MUCScope demo](https://img.youtube.com/vi/CJvW9Itukdw/hqdefault.jpg)](https://www.youtube.com/watch?v=CJvW9Itukdw)
@@ -230,7 +230,7 @@ MUCSCOPE SONG.MUC
 Play finished `.MUB` files without compiling. Supports MUB8 and supported muPb/msPb songs, reading voices and embedded PCM from the MUB itself. A graphical way to browse and enjoy a compiled music collection.
 
 ```text
-MUBSCOPE SONG.MUB
+MUBSCOPE
 ```
 
 [![MUBScope demo](https://img.youtube.com/vi/Xk4awiKuZGc/hqdefault.jpg)](https://www.youtube.com/watch?v=Xk4awiKuZGc)
@@ -243,7 +243,7 @@ MUBSCOPE SONG.MUB
 
 See channel keyboards, note names, levels, chip pages and SCC waveforms. `Tab` switches between channel and spectrum views; `C` switches sound-chip pages. The spectrum is estimated from playback data, not an audio FFT. Browse drives and folders with `F`, select with the arrows and `Return`, and adjust master or sound-group volume with `V`. ONCE, LOOP and RANDOM modes, pause, fade-out and playback-speed controls make album listening easy. Choose from 40 channel-view skins, 40 spectrum skins and six toolbar styles (`Shift`+`F5` or `Ctrl`+`L`).
 
-> **Scope player setup:** MSX1 or later, 16KB VRAM, MSX-DOS2/Nextor and a RAM mapper; 512KB or more is recommended. Install the separate Scope package with its matching COM/BIN modules and complete `SKINS` folder. These players are separate from the four-tool toolchain ZIP. User guides: [MUCScope](MUCScope/readme.md) · [MUBScope](MUBScope/readme.md). Provide every chip the song uses: PSG, MSX-MUSIC/OPLL, OPNA such as MAKOTO, or SCC/SCC+. Heavy songs may slow down on a normal Z80. Supported Panasonic fast modes and Turbo R acceleration are automatic; `/N` disables them.
+> **Scope player setup:** MSX1 or later, 16KB VRAM, MSX-DOS2/Nextor and a RAM mapper; 512KB or more is recommended. Install the separate Scope package with its matching COM/BIN modules and complete `SKINS` folder. These players are separate from the five-tool toolchain ZIP. User guides: [MUCScope](MUCScope/readme.md) · [MUBScope](MUBScope/readme.md). Provide every chip the song uses: PSG, MSX-MUSIC/OPLL, OPNA such as MAKOTO, or SCC/SCC+. Heavy songs may slow down on a normal Z80. Supported Panasonic fast modes and Turbo R acceleration are automatic; `/N` disables them.
 
 <details>
 <summary>한국어 / 日本語</summary>
@@ -252,13 +252,13 @@ See channel keyboards, note names, levels, chip pages and SCC waveforms. `Tab` s
 
 채널별 건반·음이름·레벨과 칩별 화면, SCC 파형을 보여줍니다. `Tab`으로 채널/스펙트럼 화면을, `C`로 사운드 칩 화면을 전환합니다. 스펙트럼은 연주 데이터로 추정하며 실제 오디오 FFT 분석은 아닙니다. `F`로 드라이브와 폴더를 탐색하고 방향키와 `Return`으로 곡을 선택합니다. `V`로 전체·음원 그룹별 음량을 조절합니다. ONCE·LOOP·RANDOM, 일시정지, 페이드아웃과 재생 속도 조절을 지원합니다. 채널 화면 40종, 스펙트럼 화면 40종의 스킨과 툴바 6종을 제공합니다(`Shift`+`F5` 또는 `Ctrl`+`L`).
 
-**설치 환경:** MSX1 이상, VRAM 16KB, MSX-DOS2/Nextor와 RAM 매퍼가 필요하며 512KB 이상을 권장합니다. 네 도구 툴체인 ZIP과는 별도 패키지입니다(사용 설명서: [MUCScope](MUCScope/readme.md) · [MUBScope](MUBScope/readme.md)). 같은 버전의 COM/BIN 모듈과 `SKINS` 폴더를 함께 설치하세요. 곡에서 사용하는 PSG·MSX-MUSIC/OPLL·MAKOTO 등의 OPNA·SCC/SCC+ 하드웨어가 필요합니다. 고부하 곡은 일반 Z80에서 느려질 수 있습니다. 지원 Panasonic 고속 모드와 Turbo R 가속은 자동 적용되며 `/N`으로 해제합니다.
+**설치 환경:** MSX1 이상, VRAM 16KB, MSX-DOS2/Nextor와 RAM 매퍼가 필요하며 512KB 이상을 권장합니다. 다섯 도구 툴체인 ZIP과는 별도 패키지입니다(사용 설명서: [MUCScope](MUCScope/readme.md) · [MUBScope](MUBScope/readme.md)). 같은 버전의 COM/BIN 모듈과 `SKINS` 폴더를 함께 설치하세요. 곡에서 사용하는 PSG·MSX-MUSIC/OPLL·MAKOTO 등의 OPNA·SCC/SCC+ 하드웨어가 필요합니다. 고부하 곡은 일반 Z80에서 느려질 수 있습니다. 지원 Panasonic 고속 모드와 Turbo R 가속은 자동 적용되며 `/N`으로 해제합니다.
 
 **日本語** — **MUCScope**: `.MUC` ソースを選ぶと、MSX上でコンパイルして視覚表示とともに演奏します。コンパイル中も次の曲を探せます。同じ曲の再生にはコンパイル済みデータを再利用します。MMLの編集にはMUCEDITをお使いください。**MUBScope**: 完成した `.MUB` をコンパイルなしで演奏します。MUB8と対応範囲内のmuPb/msPb楽曲を再生し、音色と内蔵PCMはMUBから読み込みます。
 
 チャンネル別の鍵盤・音名・レベル、音源別ページ、SCC波形を表示します。`Tab`でチャンネル／スペクトラム表示、`C`で音源ページを切り替えます。スペクトラムは演奏データからの推定で、音声のFFT解析ではありません。`F`でドライブやフォルダーを開き、方向キーと`Return`で選曲。`V`で全体・音源グループ別の音量を調整できます。ONCE・LOOP・RANDOM、一時停止、フェードアウト、再生速度の変更に対応します。チャンネル表示40種、スペクトラム表示40種のスキンと、6種類のツールバーを用意（`Shift`+`F5`または`Ctrl`+`L`）。
 
-**動作環境：** MSX1以降、VRAM 16KB、MSX-DOS2/NextorとRAMマッパーが必要です。512KB以上を推奨します。4ツールのツールチェーンZIPとは別パッケージです（ユーザーガイド: [MUCScope](MUCScope/readme.md) · [MUBScope](MUBScope/readme.md)）。同じ版のCOM/BINモジュールと`SKINS`フォルダーをまとめて配置してください。曲が使用するPSG・MSX-MUSIC/OPLL・MAKOTOなどのOPNA・SCC/SCC+を用意してください。高負荷の曲は通常のZ80では遅くなる場合があります。対応Panasonic機の高速モードとTurbo Rの加速は自動で有効になり、`/N`で無効にできます。
+**動作環境：** MSX1以降、VRAM 16KB、MSX-DOS2/NextorとRAMマッパーが必要です。512KB以上を推奨します。5ツールのツールチェーンZIPとは別パッケージです（ユーザーガイド: [MUCScope](MUCScope/readme.md) · [MUBScope](MUBScope/readme.md)）。同じ版のCOM/BINモジュールと`SKINS`フォルダーをまとめて配置してください。曲が使用するPSG・MSX-MUSIC/OPLL・MAKOTOなどのOPNA・SCC/SCC+を用意してください。高負荷の曲は通常のZ80では遅くなる場合があります。対応Panasonic機の高速モードとTurbo Rの加速は自動で有効になり、`/N`で無効にできます。
 
 </details>
 

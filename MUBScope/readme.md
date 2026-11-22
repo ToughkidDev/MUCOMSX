@@ -10,4 +10,4 @@ SCREEN 2 visual player for MSX1 and later: plays compiled `.MUB` files with chan
 | English | [MUBScope_User_Guide_EN.md](MUBScope_User_Guide_EN.md) |
 | 日本語 | [MUBScope_User_Guide_JA.md](MUBScope_User_Guide_JA.md) |
 
-Download the MUBScope package from the [releases page](https://github.com/ToughkidDev/MUCOMSX/releases). It is separate from the four-tool toolchain ZIP. See also [MUCScope](../MUCScope/readme.md) and the [project README](../README.md).
+Download the MUBScope package from the [releases page](https://github.com/ToughkidDev/MUCOMSX/releases). It is separate from the five-tool toolchain ZIP. See also [MUCScope](../MUCScope/readme.md) and the [project README](../README.md).
