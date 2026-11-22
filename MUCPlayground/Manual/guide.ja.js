@@ -317,7 +317,7 @@ export default [
 <table>
   <tr><th>ボタン</th><th>内容</th></tr>
   <tr><td>保存 / .muc (<kbd>Ctrl+S</kbd>)</td><td>曲をShift-JIS、CR+LFで保存します（MSXでそのまま使える形式）。Shift-JISで書けない文字（ハングル、絵文字など）があると<code>?</code>に置き換わるため、先に知らせます。</td></tr>
-  <tr><td>.mub</td><td>MUCPlaygroundのコンパイラの出力（MDPlayer4Macと同じ）。MSXのMUC2MUBの結果とバイト単位で同じではないので、実機で確認してください。</td></tr>
+  <tr><td>.mub</td><td>MUCPlaygroundのコンパイラの出力（MDPlayer4Macと同じ）。実機で使う前に確認してください。ADPCMバンクを使う曲は、保存時にバンクを<b>.mubの中に入れる</b>か（1ファイル、MUC2MUB <code>/P</code>と同じ）、<b>別ファイルにする</b>か（MUC2MUBで<code>/P</code>を付けないのと同じ）を尋ねます。別ファイルにすると、PCMを除いた.mubと<code>#pcm</code>ファイル（名前がなければ<code>MUCOMPCM.BIN</code>）を1つのZIPで受け取り、2つを同じフォルダに置けばプレーヤーがPCMを読みます。</td></tr>
   <tr><td>.vgm</td><td>すべてのチップへの書き込みを記録したVGM 1.71。ループのある曲は最初から1回 + ループをもう1回、最大10分。</td></tr>
 </table>
 <div class="warn">コメントにハングルなどShift-JISにない文字を書くと、エディタでは見えますが<code>.muc</code>で保存するときに<code>?</code>に置き換わります。長く残したいメモは英語か日本語で書くか、共有リンクで保管してください。</div>

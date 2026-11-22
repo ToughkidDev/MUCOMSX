@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "VgmPlaygroundWeb",
   "resources": {
-    "hash": "sha256-3AGJx0M5V9wMJG4RMUDSycVdrDDJa9/pjXxsGzKco8k=",
+    "hash": "sha256-m71qaoqz2ZsGnN0Tm9Mbws0HPAlu97svIGQ2Be01OsI=",
     "jsModuleNative": {
       "dotnet.native.8.0.33.f8n5st0m1j.js": "sha256-IWMJRddlN1bzsyKoyocBaCxZBcJhlK+H8RWUoPZQ6mw="
     },
@@ -9,11 +9,11 @@
       "dotnet.runtime.8.0.33.q1mn7mvd0d.js": "sha256-aa75BhVU2iAzc0Nj93nvwfQ2raXDjiW4VBNfRLHRJgM="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-+5v0WW356igVV4U+95nx09q5Nx2FCGHvv4OkZ76KUUs="
+      "dotnet.native.wasm": "sha256-fxkmXgwHQkpATjhSHQh5CL8JEUOF2Xsj9IPS1QZKsek="
     },
     "assembly": {
-      "MDPlayerCore.wasm": "sha256-/x2YrDnyxhm1NLPGaLpe9+sJUW4qUMvmSotCRiXWMEg=",
-      "MDSound.wasm": "sha256-X8lxFWyfrQw84HVUe2FLGItQgawWnv8/fC4XsmLxIY8=",
+      "MDPlayerCore.wasm": "sha256-on4iOlqwW1xkV7DyymUmmYjdpQ1sRiv7srHIi7mYeJM=",
+      "MDSound.wasm": "sha256-9kFJg9HvwijqOFfNI3FKdHBjePJGGBagGrWoFjt0kjA=",
       "System.Collections.NonGeneric.wasm": "sha256-tHVaEisixa21UUqIHXopCF/1fhyh41fPFXq41JHlLfY=",
       "System.Collections.Specialized.wasm": "sha256-7YkbBouzLvyReAFZTx+/gBXX57pfLUcMu9oRvmphFCs=",
       "System.Collections.wasm": "sha256-GzvvaBdBvAmqxwHNyrbxWq7WkCBjQ5XztHHsyebBRPQ=",
@@ -39,7 +39,7 @@
       "System.Text.Json.wasm": "sha256-9CGrSJEzKxgdLRp+sJZgpKxcBZzVSRiMkgGXqCID+/8=",
       "System.Text.RegularExpressions.wasm": "sha256-19NF/rnT7ICmEMjc4loCfbcH4g9oZznSvrusBDIxtsc=",
       "System.Threading.wasm": "sha256-4flawLLcPAR3BTe/Mq5nZJ4KyNydH1VqKYJbkc/8PzE=",
-      "VgmPlaygroundWeb.wasm": "sha256-LnSHZGc7cmX+Q19MeVO2qf2NeaiW4WGA6YAwZtLRFRQ="
+      "VgmPlaygroundWeb.wasm": "sha256-4uS0aA9pKI8e1nL9leEf4QK2wKxRO053hUywr6zGTCA="
     }
   },
   "cacheBootResources": true,

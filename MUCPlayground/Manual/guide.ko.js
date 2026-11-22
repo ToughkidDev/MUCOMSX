@@ -317,7 +317,7 @@ export default [
 <table>
   <tr><th>버튼</th><th>내용</th></tr>
   <tr><td>저장 / .muc (<kbd>Ctrl+S</kbd>)</td><td>곡을 Shift-JIS, CR+LF로 저장합니다(MSX에서 바로 쓸 수 있는 형식). Shift-JIS로 쓸 수 없는 글자(한글, 이모지 등)가 있으면 <code>?</code>로 바뀌므로 먼저 알려 줍니다.</td></tr>
-  <tr><td>.mub</td><td>MUCPlayground 컴파일러의 출력(MDPlayer4Mac과 같음). MSX의 MUC2MUB 결과와 바이트 단위로 같지는 않으므로 실기에서 확인하세요.</td></tr>
+  <tr><td>.mub</td><td>MUCPlayground 컴파일러의 출력(MDPlayer4Mac과 같음). 실기에서 쓰기 전에는 확인하세요. ADPCM 뱅크를 쓰는 곡은 저장할 때 뱅크를 <b>.mub 안에 넣을지</b>(한 파일, MUC2MUB <code>/P</code>와 같음), <b>따로 저장할지</b>(MUC2MUB에서 <code>/P</code>를 뺀 것과 같음) 묻습니다. 따로 저장하면 PCM을 뺀 .mub와 <code>#pcm</code> 파일(이름이 없으면 <code>MUCOMPCM.BIN</code>)을 ZIP 하나로 받으며, 두 파일을 같은 폴더에 두면 플레이어가 PCM을 읽습니다.</td></tr>
   <tr><td>.vgm</td><td>모든 칩 쓰기를 기록한 VGM 1.71. 루프가 있는 곡은 처음부터 한 번 + 루프 한 번 더, 최대 10분.</td></tr>
 </table>
 <div class="warn">주석에 한글을 쓰면 편집기에서는 보이지만 <code>.muc</code>로 저장할 때 <code>?</code>로 바뀝니다. 오래 보관할 메모는 영어나 일본어로 쓰거나 공유 링크로 보관하세요.</div>

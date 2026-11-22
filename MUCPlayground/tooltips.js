@@ -47,7 +47,7 @@ const TIPS = [
   ['#save', '.muc: the MML text in Shift-JIS, as MUCOM88 and MUCOMSX read it. Characters Shift-JIS cannot hold are pointed out first. Key: Ctrl+S',
     '.muc: MML 텍스트를 Shift-JIS로 저장합니다 (MUCOM88·MUCOMSX가 읽는 형식). Shift-JIS로 쓸 수 없는 글자가 있으면 먼저 알려 줍니다. 단축키: Ctrl+S',
     '.muc: MMLテキストをShift-JISで保存します（MUCOM88・MUCOMSXが読む形式）。Shift-JISで書けない文字があれば先に知らせます。キー: Ctrl+S'],
-  ['#saveMub', '.mub: the compiled song (with its voices and PCM), for MUCOM88 / mucomDotNET players such as MDPlayer.', '.mub: 컴파일한 곡 데이터(음색과 PCM 포함)를 저장합니다. MDPlayer 같은 MUCOM88 / mucomDotNET 플레이어용입니다.', '.mub: コンパイルした曲データ（音色とPCMを含む）を保存します。MDPlayerなどMUCOM88 / mucomDotNETプレイヤー用です。'],
+  ['#saveMub', '.mub: the compiled song (with its voices), for MUCOM88 / mucomDotNET players such as MDPlayer. A song with an ADPCM bank asks whether the bank goes inside the .mub or beside it (both in one ZIP).', '.mub: 컴파일한 곡 데이터(음색 포함)를 저장합니다. MDPlayer 같은 MUCOM88 / mucomDotNET 플레이어용입니다. ADPCM 뱅크를 쓰는 곡은 뱅크를 .mub 안에 넣을지, 따로 둘지(ZIP 하나로) 묻습니다.', '.mub: コンパイルした曲データ（音色を含む）を保存します。MDPlayerなどMUCOM88 / mucomDotNETプレイヤー用です。ADPCMバンクを使う曲は、バンクを.mubの中に入れるか別ファイルにするか（ZIP 1つで）を尋ねます。'],
   ['#saveVgm', '.vgm: what the song writes to the chips, register by register, for any VGM player.', '.vgm: 곡이 칩에 쓰는 레지스터 기록을 저장합니다. 어떤 VGM 플레이어로도 재생할 수 있습니다.', '.vgm: 曲がチップに書くレジスタの記録を保存します。どのVGMプレイヤーでも再生できます。'],
 
   // ---------- under the editor ----------

@@ -46,7 +46,7 @@ The user's guide (English, 한국어, 日本語), with the full MML reference: *
 - **FM voice editor:** the FM voice preview has an **✎ Edit** button too, which opens an OPNA voice editor modelled on [Furnace](https://github.com/tildearrow/furnace)'s FM instrument editor: the overview (algorithm, output wave, envelopes), the eight algorithms as pictures to pick from, OP1's feedback, and a card per operator with Furnace's controls in its order — AR, DR (D1R), SL (D1L), D2R, RR, TL, KS (Furnace's RS), MULT (ML), DT — as sliders with number boxes, its envelope drawn the way Furnace draws it, whether it is a carrier or a modulator, and a warning when a carrier's TL is not 0 (W0408). Operators can be copied and pasted, *Init* starts from Furnace's default FM voice, the five lines can also be typed, and undo / redo cover every change. **▶ Listen** plays one note (o1–o7) with an approximate render in the page (phase modulation, envelopes with key scaling; no DT or LFO); Play in the toolbar applies the voice first and plays the real chip. **Apply** / **Done** write the `FB,ALG` line and the four operator lines back, keeping their layout (`31,0,0,7` packed or `  31,  8,  3` padded), indents and comments.
 - **Silent parts:** besides the compiler's messages, the page warns about a part that compiles but cannot make a sound: an SSG / PSG part (`D E F`, `MSXD`–`MSXF`) with no `@` or `E` (or hardware envelope `S`) before its first note, and an SSG, PSG, SCC or `MSXG` part with no `v` (MUCOM88 starts them silent). The warnings (PG01, PG02) mark the first note's line like any other warning.
 - **Save** (or `Ctrl+S`) writes the song to your computer as `.muc` in Shift-JIS, for samples as well as your own songs. If the text holds characters Shift-JIS cannot (Korean, emoji …), the page lists them and asks first, because they would be saved as `?`; the buttons next to it save `.muc` (Shift-JIS with CR+LF, ready for the MSX), `.mub` or `.vgm`:
-  - `.mub` is the playground compiler's output, the same as MDPlayer4Mac produces from that MUC. It is not byte-for-byte what MUC2MUB on the MSX writes, so check it on the machine before relying on it there.
+  - `.mub` is the playground compiler's output, the same as MDPlayer4Mac produces from that MUC (MDPlayer4Mac v0.3.2 reports it byte for byte the same as MucoMSX's MUC2MUB `/P` on 1,925 of 1,955 test songs; check it on the machine before relying on it there). A song with an ADPCM bank asks where the bank goes (`mub-pcm.js`, `zip.js`): **inside the .mub**, one file as MUC2MUB `/P` writes it, or **as a separate file**, as MUC2MUB writes without `/P`: the .mub without its PCM block (the PCM fields cleared, a muPb's PCM set sizes too) and the `#pcm` file (`MUCOMPCM.BIN` for a `#pcm` without a name) beside it, the bank's own bytes, saved together in a ZIP; the player (MUBPLAY, MUBScope, MDPlayer4Mac) reads that file from the .mub's folder. The last choice is the default. Checked with MDPlayer4Mac v0.3.3: a classic MUB8, one with a bare `#pcm` and a muPb, each saved separately, play sample for sample the same as with the bank inside when the file is beside them, and without it play without PCM and say "PCM file not found". A MucoMSX packed score (msPb) does not name its PCM file in its tags, so its bank stays inside.
   - `.vgm` (VGM 1.71) logs every chip write. A looping song is written as intro + one more pass, with the VGM loop point set so the loop is exactly one pass; songs are capped at 10 minutes. Played back in MDPlayer4Mac it matches the playground's own audio (correlation 1.0000 on the test songs).
 - What you type is kept in your browser between visits. Nothing is uploaded anywhere.
 - Plays YM2608 (FM, SSG, rhythm, ADPCM), the extended `muPb` layouts, and the MUCOMSX native MSX parts: MSX-MUSIC, PSG, SCC/SCC+, including the five dedicated SCC/SCC+ parts `SCCA`–`SCCE` of msPb0102 (MDPlayer4Mac v0.2.3) with inline `@Wn:{…}` waves and `#sccvoice` wave banks, and the MucoMSX chip extension commands of MDPlayer4Mac v0.2.4 and later (`?EP`, `?FD`, `?WD` … compiled into the packed msPb0103–010A score and played by MDPlayer4Mac's native MSX session, alone or together with OPNA).
@@ -116,6 +116,8 @@ the heaviest chip); the interpreter managed 2.2× and 0.6×.
 | `pcm-editor.js` | The PCM sample editor (Furnace-style selection, tools, resampling, listening) |
 | `keyboard.js` | The keys mode piano (drawing, mouse / touch, computer keyboard mapping) |
 | `Manual/` | The user's guide: the guide in three languages, the MML reference rendered from `manual-data.js`, the messages from `diagnostics.js` |
+| `mub-pcm.js` | The ADPCM bank inside a .mub (MUB8, muPb, msPb), and the .mub without it |
+| `zip.js` | A small ZIP writer (stored files): the .mub with its PCM bank as one download |
 | `notes-worker.js` | Runs `chip-notes.js` off the main thread |
 | `chip-notes.js` | The notes of a .vgm / .mub, read from its chip writes for the tracker and keys beside the channel view |
 | `channel-keys.js` | The keys while playing: one keyboard per part, the playing keys pressed in the part colours |
@@ -139,13 +141,13 @@ dotnet workload install wasm-tools   # .NET 8 SDK
 MUCPlayground/src/build.sh
 ```
 
-`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.3.2), publishes `src/Web` and
+`build.sh` checks out MDPlayer4Mac at the pinned commit (v0.3.3), publishes `src/Web` and
 `src/VgmWeb`, and copies only the files the browser loads into `engine/` (about 11 MB, 4.2 MB
 compressed) and `engine-vgm/` (about 20 MB, 7.3 MB compressed); AOT compilation takes a
 few minutes. Run it again after
 adding samples to refresh `samples.json`.
 
-### MucoMSX native core fixes in MDPlayer4Mac v0.2.6 to v0.3.2
+### MucoMSX native core fixes in MDPlayer4Mac v0.2.6 to v0.3.3
 
 MDPlayer4Mac v0.2.6 took these fixes and additions from MUCPlayground
 ([ToughkidDev/MDPlayer4Mac#1](https://github.com/ToughkidDev/MDPlayer4Mac/pull/1), tests in
@@ -204,6 +206,8 @@ whose `#pcm` file is not there plays without its ADPCM part and says so. Rendere
 459 of the 461 sample MUCs compile and sound byte for byte as with v0.3.1; the other two are
 refused as MucoMSX refuses them, `Templates/6_Demos/Killer_Coast_Land_OPNA_Arrange.muc`
 (`MSX9`, 16,550 bytes) and `VRC6/Madara/09ABYSPY.MUC` (`MSX16`), and were taken out of the samples.
+
+MDPlayer4Mac v0.3.3 fixes v0.3.2 failing to open a song next to a `MUCOMPCM.BIN` with samples (its 8.3 lookup found that file for the driver's default banks of the other chips; MUCPlayground's own file lookup already left those names out). The engine is built from it; compiling and playing are as with v0.3.2, and all 459 sample MUCs play in the page.
 
 To compare against MDPlayer4Mac on the desktop:
 

@@ -317,7 +317,7 @@ export default [
 <table>
   <tr><th>Button</th><th>What it does</th></tr>
   <tr><td>Save / .muc (<kbd>Ctrl+S</kbd>)</td><td>Saves the song in Shift-JIS with CR+LF (a form the MSX can use as it is). Characters that Shift-JIS cannot hold (Korean, emoji and so on) turn into <code>?</code>, so you are told first.</td></tr>
-  <tr><td>.mub</td><td>The output of MUCPlayground's compiler (the same as MDPlayer4Mac). It is not byte-for-byte identical to the result of MUC2MUB on the MSX, so check it on real hardware.</td></tr>
+  <tr><td>.mub</td><td>The output of MUCPlayground's compiler (the same as MDPlayer4Mac). Check it on real hardware before relying on it there. A song with an ADPCM bank asks whether the bank goes <b>inside the .mub</b> (one file, like MUC2MUB <code>/P</code>) or <b>into a separate file</b> (like MUC2MUB without <code>/P</code>). Separate, you get one ZIP with the .mub without its PCM and the <code>#pcm</code> file (<code>MUCOMPCM.BIN</code> for a <code>#pcm</code> without a name); kept in the same folder, the player reads the PCM from it.</td></tr>
   <tr><td>.vgm</td><td>A VGM 1.71 that records every chip write. A song with a loop is recorded once through plus the loop once more, up to 10 minutes.</td></tr>
 </table>
 <div class="warn">Korean text in comments shows in the editor, but turns into <code>?</code> when you save as <code>.muc</code>. Write notes you want to keep in English or Japanese, or keep them in a share link.</div>
