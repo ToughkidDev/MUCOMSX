@@ -12,7 +12,7 @@ MSX PSG `MSXD/E/F`, SCC+ `SCCA..E`와 OPLL `MSXA/B/C/H/I/J`·리듬 `MSXG`는 OP
 
 ### 2026-11: MUCVOICE 제거 — 음색·PCM 편집은 MUCPlayground로
 
-이번 버전부터 툴체인에 MUCVOICE가 들어 있지 않습니다. FM 음색, SCC/SCC+ 파형, ADPCM PCM 뱅크는 툴체인의 공식 편집 환경인 웹 브라우저용 [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)에서 편집합니다. **FM 뱅크**·**SCC 뱅크**·**PCM 뱅크**에서 `#voice`·`#sccvoice`·`#pcm` 파일을 열고, FM 음색 편집기·SCC 파형 편집기·PCM 샘플 편집기로 소리를 들으며 고친 뒤 **저장**으로 내려받습니다. 받은 파일을 MSX에서 MUC와 같은 폴더에 DOS 8.3 이름으로 두고 이 도구로 컴파일·연주하면 됩니다. MSX 컴파일러는 `#@pcm`의 WAV 변환을 하지 않으므로 PCM은 반드시 BIN 뱅크로 저장하세요. 화면 그림과 단계별 설명은 [MUCPlayground 편집 가이드](../shared/docs/MUCPLAYGROUND.md), 버튼과 단축키는 [MUCPlayground 공식 사용 설명서](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#banks)에 있습니다. 툴체인 ZIP의 FMVOICE.DAT·SCCVOICE.DAT는 MUCPlayground에서 로드해 출발점으로 쓸 수 있습니다(INIT.TFI는 MUCPlayground에서 읽지 않습니다). 폴더에 남은 예전 MUCVOICE.COM은 갱신되지 않으므로 지워도 됩니다.
+이번 버전부터 툴체인에 MUCVOICE가 들어 있지 않습니다. FM 음색, SCC/SCC+ 파형, ADPCM PCM 뱅크는 툴체인의 공식 편집 환경인 웹 브라우저용 [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)에서 편집합니다. **FM 뱅크**·**SCC 뱅크**·**PCM 뱅크**에서 `#voice`·`#sccvoice`·`#pcm` 파일을 열고, FM 음색 편집기·SCC 파형 편집기·PCM 샘플 편집기로 소리를 들으며 고친 뒤 **저장**으로 내려받습니다. 받은 파일을 MSX에서 MUC와 같은 폴더에 DOS 8.3 이름으로 두고 이 도구로 컴파일·연주하면 됩니다. MSX 컴파일러는 `#@pcm`의 WAV 변환을 하지 않으므로 PCM은 반드시 BIN 뱅크로 저장하세요. 화면 그림과 단계별 설명은 [MUCPlayground 편집 가이드](../shared/docs/MUCPLAYGROUND.md), 버튼과 단축키는 [MUCPlayground 공식 사용 설명서](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#banks)에 있습니다. 툴체인 ZIP에는 바로 돌려 볼 수 있는 샘플이 들어 있습니다. `MUCs` 폴더에 MUC 곡과 그 음색·PCM 파일, `MUBs` 폴더에 컴파일된 MUB가 있습니다(실행 방법은 ZIP의 README.TXT). 폴더에 남은 예전 MUCVOICE.COM은 갱신되지 않으므로 지워도 됩니다.
 
 ### 2026-11-15: MSX1 지원·40컬럼 메시지·MUCOMSXE
 

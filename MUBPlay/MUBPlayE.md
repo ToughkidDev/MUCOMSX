@@ -12,7 +12,7 @@ This version supports SCC/SCC+ SSG msPb0101 in addition to MUB8, muPb and msPb01
 
 ### 2026-11: MUCVOICE removed — edit voices and PCM in MUCPlayground
 
-The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the toolchain's official editor, which runs in a web browser. Open the `#voice`, `#sccvoice` and `#pcm` files in its **FM bank**, **SCC bank** and **PCM bank**, adjust them while listening in the FM voice editor, SCC wave editor and PCM sample editor, then download them with **Save**. Put the downloaded files beside the MUC on the MSX under DOS 8.3 names, then compile and play with this tool. The MSX compiler does not convert WAVs from `#@pcm`, so always save PCM as a BIN bank. Screenshots and step-by-step instructions are in the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md); buttons and keys are in the [official MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks). The toolchain ZIP's FMVOICE.DAT and SCCVOICE.DAT can be loaded in MUCPlayground as a starting point (MUCPlayground does not read INIT.TFI). An old MUCVOICE.COM left in your folder is not updated; you may delete it.
+The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM PCM banks are edited in [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/), the toolchain's official editor, which runs in a web browser. Open the `#voice`, `#sccvoice` and `#pcm` files in its **FM bank**, **SCC bank** and **PCM bank**, adjust them while listening in the FM voice editor, SCC wave editor and PCM sample editor, then download them with **Save**. Put the downloaded files beside the MUC on the MSX under DOS 8.3 names, then compile and play with this tool. The MSX compiler does not convert WAVs from `#@pcm`, so always save PCM as a BIN bank. Screenshots and step-by-step instructions are in the [MUCPlayground editing guide](../shared/docs/MUCPLAYGROUND.en.md); buttons and keys are in the [official MUCPlayground user's guide](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#banks). The toolchain ZIP comes with samples to try the tools with: MUC songs with their voice and PCM files in `MUCs`, and compiled MUB songs in `MUBs` (README.TXT in the ZIP shows how). An old MUCVOICE.COM left in your folder is not updated; you may delete it.
 
 ### 2026-11-15: MSX1 support, 40-column messages, MUCOMSXE
 
@@ -34,6 +34,10 @@ The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM P
 - **Makoto required:** MucoMSX takes the Makoto (YM2608) cartridge as its base hardware. Without it MUBPLAY shows `ERROR: YM2608 (Makoto) not detected.` and ends, also for songs that use only PSG, SCC or OPLL.
 - An MSX1 plays with direct output, without computing ahead, so a song that is too heavy for 3.58 MHz can still stretch a little.
 - **`/L` repeat count:** `/L<n>` no longer ends early in songs whose parts loop with different lengths or from different points. Earlier versions counted only the first part that has a loop point. A pass now counts when every looping part has come round once more. Songs whose parts all loop together end at the same point as before.
+
+### 2026-11-22: faster CPU from the start
+
+- **When the CPU is switched:** the automatic acceleration on a Panasonic MSX2+ (5.37 MHz) and a turbo R (R800) now starts as soon as MUBPLAY runs, not after the song and its PCM have been read. Reading the song and uploading the PCM run on the faster CPU too, so playback starts sooner. MUCPLAY does the same. `/N` still leaves the CPU alone, and the original CPU is restored at exit.
 
 > Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
@@ -76,7 +80,7 @@ Required memory and loading time differ from song to song. The fact that DOS run
 
 When an internal and an external mapper are both present, the program works in the one with more free memory at startup. It does not combine the two, and on some configurations it uses only the mapper DOS runs in.
 
-It runs on ordinary Z80 MSX2/2+ machines, in Panasonic fast mode, on turbo R and on a One Chip MSX. Supported Panasonic machines play with the fast Z80 (5.37 MHz) and turbo R machines with the R800, selected automatically. On a One Chip MSX (OCM), with or without `/N`, the cartridge slot clock is set to 3.58 MHz and the CPU raised to 8.06 MHz. The original speed is restored at exit. `/N` turns off the automatic Panasonic/turbo R acceleration. The same song may still show slight differences in playback depending on the machine and its processing headroom.
+It runs on ordinary Z80 MSX2/2+ machines, in Panasonic fast mode, on turbo R and on a One Chip MSX. Supported Panasonic machines run with the fast Z80 (5.37 MHz) and turbo R machines with the R800, selected automatically. Since 2026-11-22 this holds for the whole run, reading the song and uploading the PCM included, not only for the playback. On a One Chip MSX (OCM), with or without `/N`, the cartridge slot clock is set to 3.58 MHz and the CPU raised to 8.06 MHz. The original speed is restored at exit. `/N` turns off the automatic Panasonic/turbo R acceleration. The same song may still show slight differences in playback depending on the machine and its processing headroom.
 
 On real hardware, also check that Makoto's sound actually reaches the speakers or mixer you have connected. If you can hear the MSX itself but not Makoto, it is best to check the audio connection and volume first.
 

@@ -12,7 +12,7 @@ MUB8・muPb・msPb0100に加えSCC/SCC+ SSGのmsPb0101に対応します。[最�
 
 ### 2026-11: MUCVOICE削除 — 音色・PCMの編集はMUCPlaygroundで
 
-今回のバージョンからツールチェーンにMUCVOICEは含まれません。FM音色、SCC/SCC+波形、ADPCMのPCMバンクは、ツールチェーンの公式編集環境であるWebブラウザー用の[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)で編集します。**FMバンク**・**SCCバンク**・**PCMバンク**で`#voice`・`#sccvoice`・`#pcm`のファイルを開き、FM音色エディタ・SCC波形エディタ・PCMサンプルエディタで音を聴きながら直して、**保存**でダウンロードします。ダウンロードしたファイルをMSXでMUCと同じフォルダにDOS 8.3名で置き、このツールでコンパイル・演奏します。MSXのコンパイラは`#@pcm`のWAV変換を行わないため、PCMは必ずBINバンクで保存してください。画面の図と手順は[MUCPlayground編集ガイド](../shared/docs/MUCPLAYGROUND.ja.md)、ボタンとショートカットは[MUCPlayground公式ユーザーガイド](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ja#banks)にあります。ツールチェーンZIPのFMVOICE.DAT・SCCVOICE.DATはMUCPlaygroundでロードして出発点にできます（INIT.TFIはMUCPlaygroundでは読めません）。フォルダに残った以前のMUCVOICE.COMは更新されないため、削除してかまいません。
+今回のバージョンからツールチェーンにMUCVOICEは含まれません。FM音色、SCC/SCC+波形、ADPCMのPCMバンクは、ツールチェーンの公式編集環境であるWebブラウザー用の[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)で編集します。**FMバンク**・**SCCバンク**・**PCMバンク**で`#voice`・`#sccvoice`・`#pcm`のファイルを開き、FM音色エディタ・SCC波形エディタ・PCMサンプルエディタで音を聴きながら直して、**保存**でダウンロードします。ダウンロードしたファイルをMSXでMUCと同じフォルダにDOS 8.3名で置き、このツールでコンパイル・演奏します。MSXのコンパイラは`#@pcm`のWAV変換を行わないため、PCMは必ずBINバンクで保存してください。画面の図と手順は[MUCPlayground編集ガイド](../shared/docs/MUCPLAYGROUND.ja.md)、ボタンとショートカットは[MUCPlayground公式ユーザーガイド](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ja#banks)にあります。ツールチェーンZIPには、すぐ試せるサンプルが入っています。`MUCs`フォルダにMUCの曲とその音色・PCMファイル、`MUBs`フォルダにコンパイル済みのMUBがあります（実行方法はZIPのREADME.TXT）。フォルダに残った以前のMUCVOICE.COMは更新されないため、削除してかまいません。
 
 ### 2026-11-15: MSX1対応・40桁メッセージ・MUCOMSXE
 
@@ -34,6 +34,10 @@ MUB8・muPb・msPb0100に加えSCC/SCC+ SSGのmsPb0101に対応します。[最�
 - **Makoto必須:** MucoMSXはMakoto（YM2608）カートリッジを基本仕様とします。MUBPLAYはMakotoがないと`ERROR: YM2608 (Makoto) not detected.`を表示して終了します。PSG・SCC・OPLLだけを使う曲でも同じです。
 - MSX1は先の計算をせず直接出力するため、3.58MHzでは計算が追いつかない重い曲は少し伸びることがあります。
 - **`/L`の繰り返し回数:** パートごとにループの長さや開始位置が違う曲で、`/L<n>`が早く終わる問題を直しました。以前の版はループ点のある最初のパートだけを数えていました。ループするパートがすべて一度ずつ戻った時点を1回と数えるようになりました。すべてのパートが同時にループする曲は、以前と同じ位置で終わります。
+
+### 2026-11-22: 起動直後からCPUを高速化
+
+- **CPUを切り替える時点:** Panasonic MSX2+（5.37MHz）とturbo R（R800）の自動高速化を、曲とPCMを読み終えた後ではなく、起動直後に始めます。曲の読み込みとPCM転送も速いCPUで動くため、演奏開始までの時間が短くなります。MUCPLAYと同じ動作です。`/N`を付けると従来どおり高速化せず、終了時には元のCPUに戻します。
 
 > 上限：MUC入力65,536バイト、MUCEDIT編集は正規化後60,000バイト、音楽DATA98,304バイト。ページはOPNA59,546・ネイティブMSX59,106バイト。最低マッパー512KiB。ヘッダー・タグ・PCMは別です。
 
@@ -76,7 +80,7 @@ VGMは、演奏しながら音源チップへ送るコマンドと、その間�
 
 内蔵マッパーと外付けマッパーがある場合は、起動時に空きメモリーの多い方を選んで作業に使います。2つを合わせて使うことはなく、構成によってはDOSが使うマッパーだけを使用します。
 
-通常Z80のMSX2/2+、Panasonic高速モード、turbo R、One Chip MSXで使用できます。対応Panasonic機は演奏時に高速Z80（5.37MHz）、turbo RはR800へ自動で切り替えます。One Chip MSX（OCM）では`/N`の有無にかかわらず、カートリッジスロットのクロックを3.58MHzに合わせてからCPUを8.06MHzに上げます。終了時には元の速度に戻します。`/N`を付けるとPanasonic・turbo Rの自動高速化を行いません。同じ曲でも、機種と処理の余裕によって再生状態にわずかな差が出ることがあります。
+通常Z80のMSX2/2+、Panasonic高速モード、turbo R、One Chip MSXで使用できます。対応Panasonic機は高速Z80（5.37MHz）、turbo RはR800へ自動で切り替えます。2026-11-22から、演奏だけでなく曲の読み込みとPCM転送を含め、実行中ずっと適用します。One Chip MSX（OCM）では`/N`の有無にかかわらず、カートリッジスロットのクロックを3.58MHzに合わせてからCPUを8.06MHzに上げます。終了時には元の速度に戻します。`/N`を付けるとPanasonic・turbo Rの自動高速化を行いません。同じ曲でも、機種と処理の余裕によって再生状態にわずかな差が出ることがあります。
 
 実機では、Makotoの音が実際に接続したスピーカーやミキサーへ入っているかも確認してください。MSX本体の音は聞こえるのにMakoto側の音だけ聞こえない場合は、まずオーディオ接続と音量を確認するのがよいでしょう。
 

@@ -12,7 +12,7 @@ MSX PSG `MSXD/E/F`、SCC+ `SCCA..E`、OPLL `MSXA/B/C/H/I/J`とリズム`MSXG`は
 
 ### 2026-11: MUCVOICE削除 — 音色・PCMの編集はMUCPlaygroundで
 
-今回のバージョンからツールチェーンにMUCVOICEは含まれません。FM音色、SCC/SCC+波形、ADPCMのPCMバンクは、ツールチェーンの公式編集環境であるWebブラウザー用の[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)で編集します。**FMバンク**・**SCCバンク**・**PCMバンク**で`#voice`・`#sccvoice`・`#pcm`のファイルを開き、FM音色エディタ・SCC波形エディタ・PCMサンプルエディタで音を聴きながら直して、**保存**でダウンロードします。ダウンロードしたファイルをMSXでMUCと同じフォルダにDOS 8.3名で置き、このツールでコンパイル・演奏します。MSXのコンパイラは`#@pcm`のWAV変換を行わないため、PCMは必ずBINバンクで保存してください。画面の図と手順は[MUCPlayground編集ガイド](../shared/docs/MUCPLAYGROUND.ja.md)、ボタンとショートカットは[MUCPlayground公式ユーザーガイド](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ja#banks)にあります。ツールチェーンZIPのFMVOICE.DAT・SCCVOICE.DATはMUCPlaygroundでロードして出発点にできます（INIT.TFIはMUCPlaygroundでは読めません）。フォルダに残った以前のMUCVOICE.COMは更新されないため、削除してかまいません。
+今回のバージョンからツールチェーンにMUCVOICEは含まれません。FM音色、SCC/SCC+波形、ADPCMのPCMバンクは、ツールチェーンの公式編集環境であるWebブラウザー用の[MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)で編集します。**FMバンク**・**SCCバンク**・**PCMバンク**で`#voice`・`#sccvoice`・`#pcm`のファイルを開き、FM音色エディタ・SCC波形エディタ・PCMサンプルエディタで音を聴きながら直して、**保存**でダウンロードします。ダウンロードしたファイルをMSXでMUCと同じフォルダにDOS 8.3名で置き、このツールでコンパイル・演奏します。MSXのコンパイラは`#@pcm`のWAV変換を行わないため、PCMは必ずBINバンクで保存してください。画面の図と手順は[MUCPlayground編集ガイド](../shared/docs/MUCPLAYGROUND.ja.md)、ボタンとショートカットは[MUCPlayground公式ユーザーガイド](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ja#banks)にあります。ツールチェーンZIPには、すぐ試せるサンプルが入っています。`MUCs`フォルダにMUCの曲とその音色・PCMファイル、`MUBs`フォルダにコンパイル済みのMUBがあります（実行方法はZIPのREADME.TXT）。フォルダに残った以前のMUCVOICE.COMは更新されないため、削除してかまいません。
 
 ### 2026-11-15: MSX1対応・40桁メッセージ・MUCOMSXE
 

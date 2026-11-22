@@ -28,10 +28,7 @@ MUCPlayground의 컴파일러·드라이버·칩 에뮬레이션은 MDPlayer4Mac
 ## 2. 준비
 
 - **브라우저:** Chrome·Edge를 권합니다(**폴더…**로 연 폴더를 기억합니다). Safari·Firefox도 쓸 수 있습니다. 인터넷 연결이 필요합니다.
-- **툴체인 ZIP의 시작용 데이터:**
-  - `FMVOICE.DAT` — `INIT` 음색 하나와 빈 슬롯으로 된 FM 음색 파일입니다(빈 슬롯은 모든 TL이 127인 무음 음색). 자기 음색 뱅크를 만드는 출발점으로 **로드**하세요.
-  - `SCCVOICE.DAT` — `@W0`~`@W6`에 사인, 삼각, 톱니, 사각, 펄스 8/32, 펄스 4/32, 평탄 파형이 들어 있는 SCWD v1 파일입니다.
-  - `INIT.TFI` — TFI 형식 FM 음색 하나입니다. MUCPlayground는 TFI를 읽지 않으므로 TFI를 지원하는 다른 편집기에서 씁니다.
+- **시작용 뱅크:** 맨 위 표의 체험용 예제에 시작용 FM·SCC 뱅크와 PCM 뱅크가 들어 있습니다. 툴체인 ZIP의 `MUCs` 샘플 폴더에 있는 음색·PCM 파일을 열어 보아도 됩니다. 이전 툴체인 ZIP에 있던 `FMVOICE.DAT`·`SCCVOICE.DAT`·`INIT.TFI`는 2026-11-22부터 들어 있지 않습니다.
 - **곡과 파일을 함께 여는 방법** (공식 설명서 [파일 열기·저장](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#files)):
   - **열기…** — `.muc`와 `.dat`·`.bin`·`.wav`를 함께 골라 열면 파일이 곡에 붙은 채로 열립니다.
   - **폴더…** — PC의 작업 폴더를 열고 곡을 고르면 `#voice`·`#sccvoice`·`#pcm`에 적힌 파일을 대소문자와 상관없이 찾아 붙입니다.
@@ -41,7 +38,7 @@ MUCPlayground의 컴파일러·드라이버·칩 에뮬레이션은 MDPlayer4Mac
 
 ## 3. MSX와 오가는 기본 순서
 
-1. MSX 작업 폴더의 MUC와 음색·PCM 파일을 PC로 복사합니다(SD 카드, 에뮬레이터 디스크 등). 새 곡이면 툴체인 ZIP의 `FMVOICE.DAT`·`SCCVOICE.DAT`부터 시작해도 됩니다.
+1. MSX 작업 폴더의 MUC와 음색·PCM 파일을 PC로 복사합니다(SD 카드, 에뮬레이터 디스크 등). 새 곡이면 맨 위 표의 체험용 예제에 든 시작용 FM·SCC 뱅크부터 시작해도 됩니다.
 2. MUCPlayground에서 **폴더…** 또는 **열기…**로 곡을 엽니다.
 3. 오른쪽 **음색 / PCM 파일** 카드의 **🎛 FM 뱅크**·**〰 SCC 뱅크**·**🥁 PCM 뱅크**로 뱅크를 열어 편집합니다(4~6장). **재생**(`Ctrl+Enter`)으로 바로 들어 봅니다. 편집기에 있는 **▶ 듣기**는 참고용 근사 소리이고, 툴바의 **재생**은 칩 에뮬레이션으로 연주합니다.
 4. 뱅크의 **저장**으로 파일을 내려받습니다. 로드한 파일은 그 이름으로, 새로 생긴 파일은 `VOICE.DAT`·`SCCVOICE.DAT`·`mucompcm.bin`으로 받아집니다. MUC는 위쪽 **저장** 줄의 **.muc**(`Ctrl+S`)로 받습니다(MUCOM88과 같은 Shift_JIS).

@@ -2,6 +2,58 @@
 
 2026-10-13 업데이트 안내(기록): [한국어](RELEASE_UPDATE_261013.md) · [English](RELEASE_UPDATE_261013.en.md) · [日本語](RELEASE_UPDATE_261013.ja.md)
 
+## 2026-11-22 업데이트 — MUBPLAY의 CPU 가속 시점, 툴체인 ZIP에 샘플 폴더
+
+MUBPLAY가 Panasonic MSX2+(5.37MHz)와 turbo R(R800)의 자동 가속을 실행 직후에 시작합니다.
+이전 판은 곡과 PCM을 다 읽은 뒤, 버퍼를 채우기 직전에야 CPU를 바꿨습니다. 이제 곡 읽기와
+PCM 전송도 빠른 CPU로 돌아 연주 시작까지의 시간이 줄어듭니다. MUCPLAY는 2026-11-20부터
+이렇게 동작합니다. `/N`을 붙이면 가속하지 않고, 끝나면 원래 CPU로 되돌리는 것은 그대로입니다.
+
+툴체인 ZIP(`MucoMSX_261122.zip`부터)에 샘플 곡 폴더 `MUCs`가 들어갑니다. MUC 53곡과
+그 곡들이 쓰는 `#voice`·`#pcm` 파일이 폴더별로 들어 있어, 풀어서 바로 MUCPLAY·MUC2MUB·
+MUBPLAY·MUCEDIT·MUCVIEW를 돌려 볼 수 있습니다. MUCScope 패키지의 샘플과 같은 구성입니다
+(코시로 유조의 MUCOM88 샘플 곡과 MucoMSX 칩 확장 명령으로 쓴 3곡). 실행 방법은 ZIP의
+`README.TXT`에 있습니다. 긴 폴더·파일 이름은 MSX에서 `BOSCON~1` 같은 8.3 이름으로 보입니다.
+컴파일된 MUB 49곡을 담은 `MUBs` 폴더도 들어갑니다. MUBScope 패키지의 샘플과 같은 구성이고,
+PCM이 MUB 안에 들어 있어 MUBPLAY로 바로 연주할 수 있습니다.
+
+이전 ZIP에 있던 기본 음색 파일 `FMVOICE.DAT`·`SCCVOICE.DAT`·`INIT.TFI`는 넣지 않습니다.
+새 음색·파형 뱅크는 MUCPlayground에서 만듭니다.
+
+MUBPLAY now takes the faster CPU of a Panasonic MSX2+ (5.37 MHz) or a turbo R (R800) as
+soon as it starts. Earlier versions switched only after the song and its PCM had been read,
+just before the buffer fill. Reading the song and uploading the PCM run on the faster CPU
+too, so playback starts sooner. MUCPLAY has worked this way since 2026-11-20. `/N` still
+leaves the CPU alone, and the original CPU is restored at exit.
+
+From `MucoMSX_261122.zip` the toolchain ZIP carries a sample song folder, `MUCs`:
+53 MUC songs, each folder with the `#voice` and `#pcm` files its songs use, so MUCPLAY,
+MUC2MUB, MUBPLAY, MUCEDIT and MUCVIEW can be tried right after unpacking. It is the same
+sample set as the MUCScope package (Yuzo Koshiro's MUCOM88 sample songs and three songs
+written with the MucoMSX chip extension commands). `README.TXT` in the ZIP shows how to run
+them. Long folder and file names show as 8.3 names such as `BOSCON~1` on the MSX.
+A second folder, `MUBs`, holds 49 compiled MUB songs, the sample set of the MUBScope
+package; their PCM is inside the MUB, so MUBPLAY plays them as they are.
+
+The starter voice files `FMVOICE.DAT`, `SCCVOICE.DAT` and `INIT.TFI` of earlier ZIPs are no
+longer included; new voice and wave banks start in MUCPlayground.
+
+MUBPLAYは、Panasonic MSX2+（5.37MHz）とturbo R（R800）の自動高速化を起動直後に始めます。
+以前の版は、曲とPCMを読み終えた後、バッファーを埋める直前にCPUを切り替えていました。曲の
+読み込みとPCM転送も速いCPUで動くため、演奏開始までの時間が短くなります。MUCPLAYは
+2026-11-20からこの動作です。`/N`で高速化しないこと、終了時に元のCPUへ戻すことは変わりません。
+
+`MucoMSX_261122.zip`から、ツールチェーンZIPにサンプル曲フォルダ`MUCs`が入ります。MUC 53曲と、
+その曲が使う`#voice`・`#pcm`のファイルがフォルダごとに入っており、展開してすぐMUCPLAY・
+MUC2MUB・MUBPLAY・MUCEDIT・MUCVIEWを試せます。MUCScopeパッケージのサンプルと同じ構成です
+（古代祐三氏のMUCOM88サンプル曲と、MucoMSXチップ拡張コマンドで書いた3曲）。実行方法はZIPの
+`README.TXT`にあります。長いフォルダ名・ファイル名は、MSXでは`BOSCON~1`のような8.3形式の
+名前で表示されます。コンパイル済みのMUB 49曲を収めた`MUBs`フォルダも入ります。MUBScope
+パッケージのサンプルと同じ構成で、PCMがMUBの中にあるため、MUBPLAYでそのまま演奏できます。
+
+以前のZIPにあった初期音色ファイル`FMVOICE.DAT`・`SCCVOICE.DAT`・`INIT.TFI`は同梱しません。
+新しい音色・波形バンクはMUCPlaygroundで作ります。
+
 ## 2026-11-21 업데이트 — MSX1의 빠르기, Makoto 필수, `/L` 반복 횟수
 
 MSX1에서 초당 60틱(50Hz 기종은 50틱)보다 빠른 곡이 MUBPLAY·MUCPLAY에서 느리게

@@ -12,7 +12,7 @@ MSX PSG `MSXD/E/F`, SCC+ `SCCA..E`와 OPLL `MSXA/B/C/H/I/J`·리듬 `MSXG`는 OP
 
 ### 2026-11: MUCVOICE 제거 — 음색·PCM 편집은 MUCPlayground로
 
-이번 버전부터 툴체인에 MUCVOICE가 들어 있지 않습니다. FM 음색, SCC/SCC+ 파형, ADPCM PCM 뱅크는 툴체인의 공식 편집 환경인 웹 브라우저용 [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)에서 편집합니다. **FM 뱅크**·**SCC 뱅크**·**PCM 뱅크**에서 `#voice`·`#sccvoice`·`#pcm` 파일을 열고, FM 음색 편집기·SCC 파형 편집기·PCM 샘플 편집기로 소리를 들으며 고친 뒤 **저장**으로 내려받습니다. 받은 파일을 MSX에서 MUC와 같은 폴더에 DOS 8.3 이름으로 두고 이 도구로 컴파일·연주하면 됩니다. MSX 컴파일러는 `#@pcm`의 WAV 변환을 하지 않으므로 PCM은 반드시 BIN 뱅크로 저장하세요. 화면 그림과 단계별 설명은 [MUCPlayground 편집 가이드](../shared/docs/MUCPLAYGROUND.md), 버튼과 단축키는 [MUCPlayground 공식 사용 설명서](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#banks)에 있습니다. 툴체인 ZIP의 FMVOICE.DAT·SCCVOICE.DAT는 MUCPlayground에서 로드해 출발점으로 쓸 수 있습니다(INIT.TFI는 MUCPlayground에서 읽지 않습니다). 폴더에 남은 예전 MUCVOICE.COM은 갱신되지 않으므로 지워도 됩니다.
+이번 버전부터 툴체인에 MUCVOICE가 들어 있지 않습니다. FM 음색, SCC/SCC+ 파형, ADPCM PCM 뱅크는 툴체인의 공식 편집 환경인 웹 브라우저용 [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)에서 편집합니다. **FM 뱅크**·**SCC 뱅크**·**PCM 뱅크**에서 `#voice`·`#sccvoice`·`#pcm` 파일을 열고, FM 음색 편집기·SCC 파형 편집기·PCM 샘플 편집기로 소리를 들으며 고친 뒤 **저장**으로 내려받습니다. 받은 파일을 MSX에서 MUC와 같은 폴더에 DOS 8.3 이름으로 두고 이 도구로 컴파일·연주하면 됩니다. MSX 컴파일러는 `#@pcm`의 WAV 변환을 하지 않으므로 PCM은 반드시 BIN 뱅크로 저장하세요. 화면 그림과 단계별 설명은 [MUCPlayground 편집 가이드](../shared/docs/MUCPLAYGROUND.md), 버튼과 단축키는 [MUCPlayground 공식 사용 설명서](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#banks)에 있습니다. 툴체인 ZIP에는 바로 돌려 볼 수 있는 샘플이 들어 있습니다. `MUCs` 폴더에 MUC 곡과 그 음색·PCM 파일, `MUBs` 폴더에 컴파일된 MUB가 있습니다(실행 방법은 ZIP의 README.TXT). 폴더에 남은 예전 MUCVOICE.COM은 갱신되지 않으므로 지워도 됩니다.
 
 ### 2026-11-15: MSX1 지원·40컬럼 메시지·MUCOMSXE
 
@@ -34,6 +34,10 @@ MSX PSG `MSXD/E/F`, SCC+ `SCCA..E`와 OPLL `MSXA/B/C/H/I/J`·리듬 `MSXG`는 OP
 - **Makoto 필수:** MucoMSX는 Makoto(YM2608) 카트리지를 기본 사양으로 합니다. MUBPLAY는 Makoto가 없으면 `ERROR: YM2608 (Makoto) not detected.`를 표시하고 끝납니다. PSG·SCC·OPLL만 쓰는 곡도 마찬가지입니다.
 - MSX1은 미리 계산 없이 직접 출력하므로, 3.58MHz로 계산이 벅찬 곡은 조금 늘어질 수 있습니다.
 - **`/L` 반복 횟수:** 파트마다 반복 길이나 반복 시작점이 다른 곡에서 `/L<n>`이 일찍 끝나던 문제를 고쳤습니다. 이전 판은 반복점이 있는 첫 파트만 세었습니다. 이제 반복하는 파트가 모두 한 번씩 되돌아갔을 때를 한 번으로 셉니다. 모든 파트가 함께 반복하는 곡은 이전과 같은 시점에 끝납니다.
+
+### 2026-11-22: CPU 가속을 실행 직후부터
+
+- **CPU 가속 시점:** Panasonic MSX2+(5.37MHz)와 turbo R(R800)의 자동 가속을 곡과 PCM을 다 읽은 뒤가 아니라 실행 직후에 시작합니다. 곡 읽기와 PCM 전송도 빠른 CPU로 돌아 연주 시작까지의 시간이 줄어듭니다. MUCPLAY와 같은 동작입니다. `/N`을 붙이면 이전처럼 가속하지 않고, 끝나면 원래 CPU로 되돌립니다.
 
 > 입력 MUC는 65,536바이트(MUC2MUB·MUCPLAY), 편집 문서는 정규화 후 60,000바이트(MUCEDIT), 음악 DATA는 98,304바이트입니다. 페이지 스트림 상한은 OPNA 59,546·네이티브 MSX 59,106바이트이며 최소 매퍼는 512KiB입니다. 헤더·태그·PCM은 음악 DATA와 별도입니다.
 
@@ -76,7 +80,7 @@ VGM은 연주하면서 음원 칩에 보내는 명령과 그 사이의 시간을
 
 내장 매퍼와 외장 매퍼가 함께 있으면 시작할 때 빈 메모리가 더 많은 매퍼를 골라 작업에 씁니다. 두 매퍼를 합쳐 쓰지는 않으며, 구성에 따라 DOS가 쓰는 매퍼만 사용할 수도 있습니다.
 
-일반 Z80 MSX2/2+, Panasonic 고속 모드, turbo R, One Chip MSX에서 사용할 수 있습니다. 지원 Panasonic 기종은 연주할 때 고속 Z80(5.37MHz), turbo R은 R800으로 자동 가속합니다. One Chip MSX(OCM)에서는 `/N`과 관계없이 카트리지 슬롯 클럭을 3.58MHz로 맞춘 뒤 CPU를 8.06MHz로 올립니다. 종료하면 모두 원래 속도로 되돌립니다. `/N`을 붙이면 Panasonic·turbo R 자동 가속을 하지 않습니다. 같은 곡이라도 기종과 처리 여유에 따라 재생 상태에 미세한 차이가 있을 수 있습니다.
+일반 Z80 MSX2/2+, Panasonic 고속 모드, turbo R, One Chip MSX에서 사용할 수 있습니다. 지원 Panasonic 기종은 고속 Z80(5.37MHz), turbo R은 R800으로 자동 가속합니다. 2026-11-22부터 연주뿐 아니라 곡 읽기와 PCM 전송을 포함해 실행하는 동안 내내 적용합니다. One Chip MSX(OCM)에서는 `/N`과 관계없이 카트리지 슬롯 클럭을 3.58MHz로 맞춘 뒤 CPU를 8.06MHz로 올립니다. 종료하면 모두 원래 속도로 되돌립니다. `/N`을 붙이면 Panasonic·turbo R 자동 가속을 하지 않습니다. 같은 곡이라도 기종과 처리 여유에 따라 재생 상태에 미세한 차이가 있을 수 있습니다.
 
 실기에서는 Makoto의 소리가 실제로 연결된 스피커나 믹서로 들어오는지도 확인해 주세요. MSX 본체 소리는 들리는데 Makoto 쪽 소리만 들리지 않는다면 오디오 연결과 볼륨을 먼저 확인하는 것이 좋습니다.
 

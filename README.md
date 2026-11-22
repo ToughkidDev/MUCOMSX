@@ -461,7 +461,7 @@ See [mucomDotNET extensions](https://github.com/ToughkidDev/MUCOMSX/wiki/MucomDo
 
 ## 💿 Downloads / 다운로드 / ダウンロード
 
-Find downloads on the repository's releases page. The current package layout is `MucoMSX_YYMMDD.zip` for the toolchain programs (with their `.MXR` modules; MUCVIEW from the packages dated 2026-11-21), starter voice data and quick help, and `MucoMSX_Docs_YYMMDD.zip` for complete Korean, English and Japanese documentation. Optional `.sha256` files let you check the downloads. Earlier releases may contain only the original four tools; check each release's contents.
+Find downloads on the repository's releases page. The current package layout is `MucoMSX_YYMMDD.zip` for the toolchain programs (with their `.MXR` modules; MUCVIEW from the packages dated 2026-11-21), sample songs (the `MUCs` and `MUBs` folders, from the packages dated 2026-11-22) and quick help, and `MucoMSX_Docs_YYMMDD.zip` for complete Korean, English and Japanese documentation. Optional `.sha256` files let you check the downloads. Earlier releases may contain only the original four tools; check each release's contents.
 
 ### ➡️ [**Download from Releases**](https://github.com/ToughkidDev/MUCOMSX/releases)
 

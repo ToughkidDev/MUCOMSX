@@ -28,10 +28,7 @@ MUCPlayground's compiler, driver and chip emulation are MDPlayer4Mac's, built fo
 ## 2. Getting ready
 
 - **Browser:** Chrome or Edge is recommended (they remember a folder opened with **Folder…**). Safari and Firefox work too. An internet connection is needed.
-- **Starter data in the toolchain ZIP:**
-  - `FMVOICE.DAT` — an FM voice file with one `INIT` voice and empty slots (an empty slot is a silent voice with every TL at 127). **Load** it as the starting point of your own voice bank.
-  - `SCCVOICE.DAT` — an SCWD v1 file with sine, triangle, saw, square, pulse 8/32, pulse 4/32 and flat waves in `@W0`–`@W6`.
-  - `INIT.TFI` — one FM voice in TFI form. MUCPlayground does not read TFI; use it with another editor that does.
+- **Starter banks:** the example in the table at the top comes with starter FM and SCC banks and a PCM bank. You can also open the voice and PCM files in the `MUCs` sample folder of the toolchain ZIP. `FMVOICE.DAT`, `SCCVOICE.DAT` and `INIT.TFI` of earlier toolchain ZIPs are no longer included (2026-11-22).
 - **Opening a song together with its files** (official guide: [Opening and saving files](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=en#files)):
   - **Open…** — pick the `.muc` together with its `.dat`, `.bin` and `.wav` files; they are attached before the song opens.
   - **Folder…** — open the working folder on your PC and pick a song; every file named by `#voice`, `#sccvoice` and `#pcm` is found by name, whatever its case, and attached.
@@ -41,7 +38,7 @@ MUCPlayground's compiler, driver and chip emulation are MDPlayer4Mac's, built fo
 
 ## 3. The round trip with the MSX
 
-1. Copy the MUC and its voice/PCM files from the MSX working folder to the PC (SD card, emulator disk and so on). For a new song you can start from `FMVOICE.DAT` and `SCCVOICE.DAT` from the toolchain ZIP.
+1. Copy the MUC and its voice/PCM files from the MSX working folder to the PC (SD card, emulator disk and so on). For a new song you can start from the starter FM and SCC banks of the example in the table at the top.
 2. Open the song in MUCPlayground with **Folder…** or **Open…**.
 3. Open the banks with **🎛 FM bank**, **〰 SCC bank** and **🥁 PCM bank** in the *Voice / PCM files* card and edit (chapters 4–6). Listen right away with **Play** (`Ctrl+Enter`). **▶ Listen** inside an editor is an approximate sound for guidance; **Play** in the toolbar plays the chip emulation.
 4. Download the files with the bank's **Save**. A file you loaded keeps its name; a new file is saved as `VOICE.DAT`, `SCCVOICE.DAT` or `mucompcm.bin`. Download the MUC with **.muc** in the **Save** row at the top (`Ctrl+S`), in Shift_JIS like MUCOM88.
