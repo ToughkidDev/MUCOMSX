@@ -1,0 +1,103 @@
+#mucom88 1.7
+#title Title
+#composer Koji Kondo
+#author ToughkidCST
+#comment Super Mario World
+#voice SUPERMAR.DAT
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -114,-113,-110,-100,-87,-70,-43,-15,8,30,51,67,80,98,114,119,117,116,107,91,76,62,45,29,13,-10,-38,-65,-91,-115,-127,-122 }
+  @W1:{ -26,-78,-82,-95,15,100,82,85,7,-100,-81,-73,-21,115,114,55,33,-79,-127,-42,-27,38,126,45,-25,-50,-124,-76,37,64,99,91 }
+  @W2:{ -92,-76,-55,-29,3,38,65,86,102,114,123,127,126,125,118,111,99,80,61,37,-1,-45,-73,-93,-108,-120,-126,-127,-126,-123,-117,-107 }
+  @W3:{ 27,38,40,52,95,127,107,87,65,36,15,-5,-22,-36,-49,-68,-78,-74,-68,-60,-52,-46,-43,-41,-31,-20,-11,-3,1,0,5,14 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{t197 r32 t198}
+#*2{*1 r%13}
+#*3{E255,0,128,128,1,255}
+#*4{a16 v6q5M18,1,14,4D0b2 M18,1,24,4>d2 D-40c2 e2 q3M18,1,19,4f+4}
+#*5{M18,1,27,4}
+#*6{M18,1,19,4}
+#*7{@3E0,115,128,128,2,255}
+#*8{q3M18,1,18,4g4 q2MF0d8 @2 *3}
+#*9{M18,1,16,4}
+#*10{M18,1,14,4b8}
+#*11{M18,1,18,4}
+#*12{q1e8 q2g8 q1e8 q2c+8 q1e8 q2g8 e8 d8 f+8 a8 q1f+8 q2}
+#*13{g4 r4 v6q5g2 q0M18,1,24,4d4. r8 v9q4M18,1,18,4g4. q2MF0g8}
+#*14{E255,0,128,128,2,255}
+#*15{@3E0,115,128,128,1,255}
+#*16{q2M18,1,32,3>d4 M18,1,24,3g4. MF0f+8 q3M18,1,24,3d+4 e4 q2a4.}
+#*17{q3M18,1,19,3<b4 *16 MF0g8}
+#*18{f+32 v3D-11<a32}
+#*19{@0 *14 v2q1D-38> *18}
+#*20{v2D-38>f+32 r32}
+#*21{v5d32 e32 v6f32 g32 a32 D-6a+32 D-16>c32 d32 v7e32 M18,1,29,3f16}
+#*22{r2 *15 v5MF0<g12 a12}
+#*23{q3M18,1,32,3d4 q2M18,1,19,3D-4<b8 r8 @1E255,0,0,255,0,255v2q1}
+#*24{r4 MF0d8}
+#*25{r%255 r%255}
+#*26{g2 b2 M18,1,4,4>c2 c+2 d2}
+#*27{r4 v105q5M18,1,8,4<b2 q0g4. r8 v112q4M18,1,4,4>c4. q2MF0c8}
+
+; whole note = 96 clocks (C96), 1 clock = 2 driver ticks
+A C96 [ *2 ]11 *1 r96 L [ *2 ]47 *1 r96 [ *2 ]48 *1 r16. [ *2 ]12 [ t197 r24
+A t198 r8 ]12 [ *2 ]24
+B C96 vm2 r%180 L [ r4 @1v110q2MF0D0o4b8 b8 ]3 [ r4 a8 a8 ]3 r4 [ a8 r8 ]2 q1b8
+B q2b8 r4 v111b8 b8 r4 v112>f8 v113f8 [ r4 v114g8 g8 ]2 r4 v113d8 v112d8 r4
+B v110c8 c8 r8 <b8 r8 g8 r8 b8 r4. @2v105q5M18,1,7,4D-3< *26 M18,1,7,4<a2 b2
+B q0g4 r4 v108q5 *26 M18,1,6,4<f+2 q0g%84 r8 @1v112q4M18,1,4,4D0>c4. q2MF0c8
+B q3M18,1,4,4c4 *27 M18,1,4,4c4 *27 q3M18,1,4,4c4 r4 [ q2d8 r4. ]2
+B v109q5M18,1,7,4a2 v115q2M18,1,5,4d8 r%84 q4<d4.
+SCCA C96 [ [ @0 *3 v4q5MF0D0o6d8 ]3 <d8 ]2 v3q2D-39>d+32 [ v2c32 d+32 ]4 [
+SCCA v3c32 d+32 ]2 c32 v4d+32 c32 q5D0d8 D-11<a8 d8 L [
+SCCA @1E255,0,24,64,0,255v3q4MF0D-21g8 [ >e8 ]3 ]3 q2e16 D0f16 q4D-27e4 D-8d8 [
+SCCA q4D-21<g8 >d8 d8 q2d8 ]3 d16 e16 q4d4 D-40c8 [ D-21<g8 [ >e8 ]3 ]3 q2d16
+SCCA e16 v4q4D0f4 D-19a4 D3g8 g8 v3g8 D-21<g8 [ D0>f8 ]3 <b8
+SCCA E255,0,0,255,0,255v2D-40>c16.&v1c%27 r4. @2 *3 v6q2D0<b8. v5q1D-11 *4 D3g4
+SCCA a4 *5 >c4 q5M18,1,14,4D-42<b2 r4 q2MF0D0<b8. v5q1D-11 *4 q2MF0D0f8 D-38f+8
+SCCA q4M18,1,27,4D8>c4. q2MF0D-38<f+8 q5M18,1,19,4D3g2 r4. v9q2MF0D-39d+8 [ e8
+SCCA ]3 f+8 *6 D3g4 *5 >c4 *7 v5q1MF0D-14o4b12 >c12 [ <b12 a12 ]2 *8
+SCCA v9D-39o6d+8 [ e8 ]3 f+8 *6 D3g4 q1M18,1,27,4>c4 *7 v5MF0D-14o4b12 >c12 [
+SCCA <b12 a12 ]2 *8 v8D-39o6d+8 [ e8 ]3 f+8 v9M18,1,19,4D3g4 *5 >c4 *7
+SCCA q6MF0D-16o5d8 c+8 d8 <a8 d8 c+8 d8 D-9<a8 v5q10M18,1,23,4>d+2 @0 *3
+SCCA v6q8MF0>d8 v5a8 >d8 v4q7a8 q8M18,1,24,4D-88>d8 r4. *7 v9D-12o4d4.
+SCCB C96 [ [ *7 v10q4MF0D-12o4d8 ]3 <d8 ]2 v6q15M18,1,16,4>a2 v10q4f+8 r4 L r8
+SCCB *7 v8q2MF0D-12o2g8 o4g8 *9 g8 r8 q1MF0o2g8 q2o4g8 *9 g8 r8 MF0o2g8 o4g8 *9
+SCCB g8 [ r8 MF0o2d8 o4f+8 *6 f+8 ]3 r8 MF0o2d8 *6 o4f+8 r8 MF0f+8 o2g8 q1o4g8
+SCCB q2M18,1,19,4g8 r8 MF0o2g8 o4g8 *6 g8 r8 v9MF0D-7o2b8 D-14o4b8 *10 r8
+SCCB v10MF0<c8 o5c8 *5 c8 r8 v11MF0o3c+8 o5c+8 *5 c+8 r8 MF0o3d8 v10>a8
+SCCB v9M18,1,16,4a8 r8 v8MF0o2f+8 o4f+8 *9 f+8 r8 o2g8 r8 M18,1,24,4d8 r8 *11
+SCCB g8 r4. MF0D-7>g8 q1b8 q2D-12>d8 q1<b8 q2g8 q1b8 >d8 q2<b8 >c8 *12 d8 q1f+8
+SCCB q2a8 f+8 <g8 q1b8 >d8 q2<b8 g8 q1M18,1,14,4b8 r4 q2MF0g8 q1b8 q2>d8 q1<b8
+SCCB q2b8 q1>d8 f8 q2d8 c8 *12 <a8 q1>d8 q2f+8 d8 <b8 q1>d8 q2<a8 >d8
+SCCB q1M18,1,18,4<g4. r8 v9q4g4. q2MF0g8 q3M18,1,18,4 *13 *11 *13
+SCCB q3M18,1,18,4g4 r4 [ q2a8 r4. ]2 v5q5f2 v12q2f+8 r%84 v9q8f+4.
+SCCC C96 [ [ @2 *14 v9q4MF0D-88o7d8 ]3 D0<d8 ]2 v6q13M18,1,32,3>d+2 v9q4D-88d8
+SCCC r4 L [ @2 *14 v3q4MF0D0<d8 D-42b8 b8 q2b16 r16 ]3 b16 D8>c16
+SCCC q4M18,1,19,3D-42<b4 MF0D13a8 [ q4D0d8 a8 a8 q2a16 r16 ]3 a16 D-42b16
+SCCC q4M18,1,22,3D13a4 MF0g8 D0d8 [ v3D-42b8 b8 v4q2b16 r16 q4D0d8 ]2 D-42b8 b8
+SCCC v5q2b16 r16 v4D13a16 D-42b16 q8M18,1,36,3D8>c4 M18,1,29,3e4 q4MF0D-88d8 d8
+SCCC q2d16 r16 v3q4D0<d8 >c8 c8 q2c16 r16 q4D-38<f+8 M18,1,24,3D3g4. r4. *15
+SCCC v7q2MF0D-16<d8. v6q1c16 v7 *17 [ *19 ]3 *20 [ D3g32 <b32 ]3 >g32 r32
+SCCC D-19a32 D-40c32 a32 v3c32 v2a32 c32 a32 r32 [ D8>c32 D-27<e32 ]3 D8>c32
+SCCC r32 [ D-42<b32 D0d32 ]9 [ v1D-42b32 D0d32 ]3 *15 v8q2D-16<d8. v7q1c16 v8
+SCCC *17 *19 D-38>f+32 D-11<a32 v2D-38> *18 D-38>f+32 r32 v2D0f32 v3D-11<a32
+SCCC v2>f32 r32 D-38 *18 *20 D8>c32 <d32 [ v2>c32 v3<d32 ]2 [ v2>c32 <d32 ]2
+SCCC >c32 r32 D-38< *18 *20 [ v2D3g32 v3<b32 ]8 [ v2>g32 <b32 ]2 v1>g32 <b32
+SCCC >g32 M18,1,19,3<b32 r4 @1E255,0,0,255,0,255v2MF0D-11o3f32 g32 v3a32 v4a+32
+SCCC >c32 *21 *22 [ g12 f+12 ]2 *23 MF0f32 g32 v3a32 v4D-12a+32 >c32 v5d32 e32
+SCCC f32 v6g32 a32 D-6a+32 D-16>c32 v7d32 e32 M18,1,29,3f16 *22 [ g12 f+12 ]2
+SCCC *23 MF0f32 g32 v4a32 D-12a+32 >c32 *21 r2 [ *15 v9q2M18,1,22,3<a8 r4 MF0a8
+SCCC ]2 v6M18,1,30,3<d+2 @2 *14 v10q8MF0D0o5d8 D-11a8 >d8 q7D13a8
+SCCC q8M18,1,32,3D-88>d8 r4. *15 M18,1,22,3D-9o3a4.
+SCCD C96 r1 @2 *14 v5q15M18,1,20,4D-9o4f2 v9q4d8 r4 L [ r4 @0 *14 v4q2MF0D-9d8
+SCCD M18,1,20,4g8 ]2 *24 *10 [ r8 a8 ]2 [ *24 *9 a8 ]2 *24 *6 f+8 [ r8 g8 ]2
+SCCD *24 *11 g8 r4 MF0f8 *10 r4 v5MF0g8 *5 >c8 [ r8 D-22c+8 ]2 r4 MF0D-7<a8
+SCCD v4M18,1,24,4>d8 r4 MF0<f+8 *5 D-16>c8 r8 <d8 r8 M18,1,14,4D0<b8 r8 *11
+SCCD D-7g8 *25 *25 r%255 r16. [ *15 v10f+8 r4. ]2 v7q5M18,1,27,4>c2
+SCCD v13q2M18,1,16,4<a8 r%84 v11q8M18,1,27,4>c4.
+SCCE C96 r%180 L r%255 r%141 *15 v5q5M18,1,18,4D-21o5g2 v6D-13f2 v7e2
+SCCE M18,1,23,4d+2 d2 v5c2 q0M18,1,14,4<b2. *25 *25 *25 r8.

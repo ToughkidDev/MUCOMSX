@@ -1,0 +1,41 @@
+#mucom88 1.7
+#title Title ~ Link to the Past
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#pcm 01TITLEL.BIN
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -108,-115,-116,-110,-97,-79,-58,-38,-22,-11,-4,6,21,39,59,81,103,120,127,120,102,83,66,49,31,10,-8,-19,-29,-44,-67,-90 }
+  @W1:{ -127,-106,1,37,34,31,28,25,16,5,-2,13,30,26,1,-17,-56,-31,41,30,8,4,16,32,35,26,11,9,11,-9,-47,-77 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{@0E255,0,0,255,6,255v6q2MF0}
+#*2{f%30 d+%30 D-22c+%30 D-6<}
+#*3{@1E255,0,0,255,0,255}
+#*4{r4 *3 v15q4}
+#*5{M24,1,5,6}
+#*6{q3M24,1,7,6>c2. q4MF0<a+8 f8 a+8 >c8}
+#*7{q6M24,1,7,6>c1 d+2 q4d+4. q2MF0d16 c16}
+#*8{M24,1,7,6}
+
+; whole note = 96 clocks (C96), 1 clock(s) per driver tick
+A C96 [ t194 r32 t195 r%13 ]23 t194 r32 t195 r96 [ t214 r24 t215 r8 ]54
+B C96 vm2 r%255 r%117 [ @1v108q2MF0D-17o2f1 r1 ]2 f1 r%255 r%129
+K C96 r%255 r%117 [ @1D-169v47q0o1c1 @2v49c1 ]2 @1v47c1 @5v49c1 @3c1 @4v34c1
+K @6v35c%14 r%82
+SCCA C96 *1 D-39o6d+%30 c+%30 D-10<a+%30 D-21g%30 D-13 *2 a+4. <g%30 o5f%30
+SCCA >g%66 *4 o3c8 f8 [ q3 *5 g2. q4MF0f8 c8 f8 g8 [ f8 c8 ]2 f8 r8 ]2 q6 *5 g1
+SCCA M24,1,4,6a+2 q4a+4. q2MF0a16 g16 q11M24,1,4,6a+1. r1
+SCCB C96 r16 @0E255,0,0,255,8,255v6q2MF0D-30o6c+16 D-10<a+16 D-21g8. D-10a+16
+SCCB D-21g16 D-13f8. g16 f16 d+8. f16 d+16 D-22c+8. d+16 c+16 D-6<a+8.
+SCCB D-22>c+16 D-6<a+16 g8. a+16 g16 f8. g16 f16 d+8 <a+%30 D-22o5c+%30 D0>f2.
+SCCB *4 D-9o4f8 a+8 [ *6 [ <a+8 f8 ]2 a+8 r8 ]2 *7 q11 *8 d1. r1
+SCCC C96 r4 *1 D-13o5 *2 a+%30 g%30 f%30 d+%30 c+8. f%30 D-21>g%90 *4 D-7o3g8
+SCCC >c8 [ q3 *8 d2. q4MF0c8 <g8 >c8 d8 [ c8 <g8 ]2 >c8 r8 ]2 q25 *8 d1 q6 *5
+SCCC f2 q4f4. q2MF0e16 d16 q11 *5 f1. r1
+SCCD C96 r%255 r%147 *3 v9q4MF0D-9o4f8 a+8 [ *6 [ <a+8 f8 ]2 a+8 r8 ]2 *7 q10
+SCCD *8 d%138 r1

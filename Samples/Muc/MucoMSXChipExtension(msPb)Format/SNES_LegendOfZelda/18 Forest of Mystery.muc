@@ -1,0 +1,52 @@
+#mucom88 1.7
+#title Forest of Mystery
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ 102,105,97,87,78,61,33,-1,-34,-61,-84,-98,-105,-127,-126,-70,-22,-31,-51,-58,-46,-31,-28,0,39,61,55,38,38,44,53,81 }
+  @W1:{ -50,-45,-35,-23,-7,11,30,48,66,84,103,118,126,127,119,102,77,45,10,-23,-51,-73,-88,-97,-98,-92,-82,-72,-65,-59,-55,-53 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{@0E0,115,0,255,3,255}
+#*2{q15M30,1,4,6b4 r8}
+#*3{M30,1,6,6}
+#*4{q7MF0g16}
+#*5{@0E0,115,0,255,0,255}
+#*6{@1E255,0,0,255,0,255}
+#*7{v8q3a+16 v6q7a+16}
+#*8{v8q3c16 v7q7c16 v5c16}
+
+; whole note = 192 clocks (C192), 1 clock(s) per driver tick
+A C192 L [ t194 r64 t195 r%13 ]72
+B C192 vm2 L [ @28v110q8M30,1,2,6D0o4e4. v117q3MF0<b8 v116q6M30,1,2,6>f4
+B v117M30,1,1,6c4 ]2 v118q11M30,1,2,6g2 M30,1,1,6c2 M30,1,2,6f2 <a+2 g+2 a+2
+B M30,1,1,6>c1
+SCCA C192 L r16 [ *1 v9q7MF0D-6o4b16 v13b16 v10q8b8 [ v9q7b16 ]3 r16 b16 v12b16
+SCCA v9 *2 ]2 q7MF0b16 v13b16 b16 v15b16 v9q13f8 v8q7f8 v6e16 e16 v8q25 *3 e4
+SCCA r8 q7MF0a16 v12a16 a16 v15a16 v9q13e8 v8q7e8 v5d16 d16 v8q25 *3 d4 r8 *4
+SCCA v10g16 g16 v13g16 v8q13c8 q7c8 v5d16 v6e16 v9q13f8 v6q7e16 v7f16 v6q30 *3
+SCCA g%204
+SCCB C192 L r16 [ *5 v7q7MF0D-16o4g+16 v8g+16 v9q8g+8 [ v7q7g+16 ]3 r16 a16
+SCCB v9a16 v8q15M30,1,5,6a4 r8 ]2 *6 v6q7MF0D-42o6b16 v9b16 b16 v11b16 v6q8D0f8
+SCCB q7f8 D-27e16 q4e32 D0d32 q15 *3 D-27e4 r8 q7MF0a16 v9a16 a16 v11a16 v6q8e8
+SCCB q7e8 D0d16 q4d32 v5D-40c32 v6q15M30,1,8,6D0d4 r8 *4 v9g16 g16 v11g16
+SCCB v6q13D-40c8 q7c8 D0d16 D-27e16 q13D0f8 q7D-27e16 D0f16 q30 *3 g%204
+SCCC C192 L r16 [ *5 v5q7MF0D0o4e16 v7e16 v9q8e8 [ v5q7e16 ]3 r16 v6f16 v7f16
+SCCC v8q15M30,1,7,6f4 r8 ]2 [ *4 ]3 v13q3g16 [ v7q7g16 ]3 r16 g16 g16 v9q3g16
+SCCC v10q7g16 [ v8g16 ]3 [ r16 [ v7f16 ]3 v13q3f16 [ v7q7f16 ]3 ]2 r16 [
+SCCC v4<g+16 ]3 v9q3g+16 [ v4q7g+16 ]3 r16 a+16 a+16 *7 [ v4a+16 ]3 r16 [
+SCCC v7>g16 ]3 v13q3g16 [ v8q7g16 ]3 r16 [ g16 ]3 v13q3g16 [ v7q7g16 ]3
+SCCD C192 L r%160 *6 v5q2MF0D-42o6b48 a48 v7b8 r%156 v5q3b32 a32 v7q2b8 r16 [
+SCCD *5 v5q7D-20o4d16 ]3 v12q3d16 [ v5q7d16 ]3 r16 [ c16 ]3 v11q3c16 [ v5q7c16
+SCCD ]3 r16 [ c16 ]3 *8 c16 r16 [ D-16<a+16 ]3 *7 v4a+16 a+16 r16 [ v6>d+16 ]3
+SCCD v12q3d+16 [ v6q7d+16 ]3 r16 [ v7f16 ]3 v13q3f16 [ v7q7f16 ]3 r16 [ v5c16
+SCCD ]3 *8 c16 r16 [ c16 ]3 *8 M30,1,7,6c16
+SCCE C192 L r%20 [ *1 v4q7MF0D-6o4b16 v5b16 v4q8b8 [ q7b16 ]3 r16 b16 v5b16 v4
+SCCE *2 ]2 q7MF0b16 v6b16 b16 v8b16 v4q13f8 q7f8 v3e16 e16 q25 *3 e4 r8
+SCCE v4q7MF0a16 v5a16 a16 v7a16 v4q13e8 q7e8 v3d16 d16 q25 *3 d4 r12 *4 v5g16
+SCCE g16 v6g16 v4q13c8 q7c8 v2d16 v3e16 v4q13f8 v3q7e16 f16 q30 *3 g%204

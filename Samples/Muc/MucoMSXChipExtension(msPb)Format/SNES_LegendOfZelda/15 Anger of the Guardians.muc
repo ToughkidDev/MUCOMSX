@@ -1,0 +1,45 @@
+#mucom88 1.7
+#title Anger of the Guardians
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+#voice LEGENDOF.DAT
+#pcm 15ANGERO.BIN
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ -127,-28,96,80,33,14,16,24,22,16,13,34,50,32,-13,-41,-93,-53,63,54,29,29,41,46,30,3,-23,-24,-28,-63,-108,-123 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{@0E255,0,0,255,0,255}
+#*2{*1 v13q4M20,1,5,4}
+#*3{a16 v11>e16 v13a16}
+#*4{d16 v13a16 v15>d16}
+#*5{v11<d+16 v15>d+16}
+#*6{v11<c+16 v14>c+16}
+#*7{f48 f48}
+#*8{@1c16 @3c32 c32}
+
+; whole note = 192 clocks (C192), 1 clock(s) per driver tick
+A C192 t208 r%255 r%33 L [ t208 r%15 t209 r%1 ]24 t208 r%255 r%129
+B C192 vm2 @9v112q4M20,1,1,4D0o6c8. M20,1,3,4<b8. q3M20,1,2,4f8 q4e8. d+8.
+B v111q2MF0<b16 v112q8M20,1,2,4a+%84 v107q2MF0>e48 v106d+48 d48 c+48 v105<b48
+B a+48 L [ @15v116q3MF0D-13d16 v117D-20<a16 ]32
+C C192 vm2 @15v126q2MF0D-20o3a48 a48 v117q7a%45&v10a%19 v120q3a8 v126q2D-17g48
+C g48 v117q7g4&v112g64&v10g%13 v121q3g8 v125q2 *7 v119f48 v111f48 v113f48
+C v115f48 v117 *7 [ v119f48 ]3 v120 *7 [ v122f48 ]3 v124f48 v123 *7 v125 *7 [
+C v127f48 ]3 L r%255 r%255 r%255 r64
+K C192 r%255 r%33 L [ [ @2D-169v32q0o1c48 ]3 *8 [ @1c16 ]3 [ @2c48 ]3 @1c16 ]7
+K [ @2c48 ]3 *8 [ @1c16 ]3 [ @2c48 ]3 @1c%11 r%1
+SCCA C192 *2 D-17o4g8. f+8. q3M20,1,8,4c8 q4M20,1,4,4D0<b8. a+8. q2MF0D-8f+16
+SCCA q8M20,1,6,4f%84 v7q2MF0>c48 v8<b48 a+48 v7a48 g+48 v6f48 L [ [ *1
+SCCA v9q2MF0D-8o1 *3 ]2 v9<a+16 v13>a+16 [ v9< *3 ]2 v9<g+16 v12>g+16 ]2 [ v11
+SCCA *4 ]2 *5 [ v11< *4 ]2 *6 [ v11< *4 ]2 *5 v11< *4 v11<d16 v13a16 v14>d16 *6
+SCCB C192 *2 D0o3g+8. D-7g8. q3M20,1,8,4c+8 q4c8. M20,1,4,4<b8. v10q2MF0g16
+SCCB v13q11M20,1,6,4f+%108 L [ [ r8 *1 v13q2M20,1,6,4D-7o4e16 ]2 r16 f16 [ r8
+SCCB e16 ]2 r16 d+16 ]2 [ [ r8 a16 ]2 r16 a+16 [ r8 a16 ]2 r16 g+16 ]2
+SCCC C192 *1 v13q4M20,1,7,4D-12o4d8. c+8. q3M20,1,5,4<g8 q4f+8. f8.
+SCCC v12q2MF0c+16 v13q8M20,1,8,4c%84 v5q2MF0e48 d+48 d48 c+48 v4D0<b48
+SCCC M20,1,4,4a+48 L [ [ r8 *1 v13q2M20,1,4,4D-7o4a16 ]2 r16 a+16 [ r8 a16 ]2
+SCCC r16 g+16 ]2 [ [ r8 M20,1,7,4D-16>d16 ]2 r16 d+16 [ r8 d16 ]2 r16 c+16 ]2

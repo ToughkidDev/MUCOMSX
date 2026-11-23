@@ -2,6 +2,12 @@
 
 2026-10-13 업데이트 안내(기록): [한국어](RELEASE_UPDATE_261013.md) · [English](RELEASE_UPDATE_261013.en.md) · [日本語](RELEASE_UPDATE_261013.ja.md)
 
+**MucoMSX v1.5-Stable은 2026-11-22에 게시되었습니다.** 아래 "MucoMSX v1.5-Stable" 절부터 "2026-11-22 업데이트" 절까지의 내용이 모두 v1.5-Stable에 들어 있습니다. 절 제목의 날짜는 그 내용이 만들어진 날입니다. [v1.5-Stable 업데이트 안내](https://github.com/ToughkidDev/MUCOMSX/releases/tag/v1.5-Stable)
+
+**MucoMSX v1.5-Stable was published on 2026-11-22.** It contains everything from the section "MucoMSX v1.5-Stable" up to "2026-11-22 업데이트" below. The dates in the section titles are the dates of the work. [v1.5-Stable update guide](https://github.com/ToughkidDev/MUCOMSX/releases/tag/v1.5-Stable)
+
+**MucoMSX v1.5-Stableは2026-11-22に公開されました。**下の「MucoMSX v1.5-Stable」節から「2026-11-22 업데이트」節までの内容がすべてv1.5-Stableに入っています。節の見出しの日付は作業日です。[v1.5-Stable更新案内](https://github.com/ToughkidDev/MUCOMSX/releases/tag/v1.5-Stable)
+
 ## 2026-11-22 업데이트 — MUBPLAY의 CPU 가속 시점, 툴체인 ZIP에 샘플 폴더
 
 MUBPLAY가 Panasonic MSX2+(5.37MHz)와 turbo R(R800)의 자동 가속을 실행 직후에 시작합니다.
@@ -215,7 +221,7 @@ MUCを開いて、その場でコンパイル・演奏・MUB書き出しを行�
 編集機能はなく、ディスクに状態ファイルを書きません。2026-11-21からリリースパッケージに含まれ、
 説明書は文書ZIPの`MUCView/`にあります(韓国語・English・日本語)。
 
-## 2026-11-18 업데이트 — v1.5-Stable(2026-11-15) 이후 변경
+## 2026-11-18 업데이트 — 2026-11-15 빌드 이후 변경
 
 - PCM 포함 옵션: 컴파일할 때 `#pcm` 파일을 MUB에 넣을지 고릅니다. MUC2MUB는 `/P`, MUCPLAY는 `/MUB 이름 /P`, MUCEDIT는 내보낼 때 `Include the PCM file in the MUB? (Y/N)`에 `Y`. **옵션이 없으면 MUB에 PCM을 넣지 않습니다**(이전 판은 늘 넣었습니다). 예전처럼 한 파일로 만들려면 `/P`를 쓰세요. `/P`로 만든 MUB는 이전 판의 출력과 같습니다.
 - PCM이 들어 있지 않은 MUB의 연주: MUBPLAY는 MUB와 같은 폴더에서 `#pcm` 파일을 찾아 읽습니다. 없으면 `PCM file not found:`와 파일 이름, `Playing without PCM.`을 표시하고 PCM 없이 연주합니다.
@@ -272,7 +278,7 @@ MUCを開いて、その場でコンパイル・演奏・MUB書き出しを行�
 - MUC2MUBとMUCPLAYは、曲ファイルをパスなしの名前だけで受け取ります。別のドライブ・フォルダーの曲は、そのフォルダーへ移動して実行してください。MUBPLAYはパスを受け取ります。
 - MMから`MUC2MUB.COM`自体を起動すると、終了時にキーを2回押します（プログラムの待ちとMMの待ち）。
 
-## MucoMSX v1.5-Stable (2026-11-15) — v1.0-Stable(2026-10-16 배포) 이후 변경
+## MucoMSX v1.5-Stable — v1.0-Stable(2026-10-16 배포) 이후 변경 (2026-11-15 빌드까지)
 
 - MUCVOICE 제거: 툴체인 ZIP은 MUCEDIT·MUCPLAY·MUC2MUB·MUBPLAY 네 도구를 담습니다. FM 음색, SCC/SCC+ 파형, ADPCM PCM 뱅크 편집은 [MUCPlayground](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/)가 맡습니다(FM·SCC·PCM 뱅크 읽기·저장, FM 음색·SCC 파형·PCM 편집기). 기본 데이터 FMVOICE.DAT·SCCVOICE.DAT·INIT.TFI는 그대로 들어 있습니다. 순서와 화면은 문서 ZIP의 MUCPlayground 편집 가이드(`shared/docs/MUCPLAYGROUND.md`)와 [공식 사용 설명서](https://toughkiddev.github.io/MUCOMSX/MUCPlayground/Manual/?lang=ko#banks)를 보세요.
 - 실행 파일 구성: MUC2MUB·MUCPLAY·MUBPLAY는 같은 빌드의 COM과 MXR을 함께 설치합니다. MXR은 현재 폴더, 프로그램 폴더, `PATH` 순서로 찾습니다.

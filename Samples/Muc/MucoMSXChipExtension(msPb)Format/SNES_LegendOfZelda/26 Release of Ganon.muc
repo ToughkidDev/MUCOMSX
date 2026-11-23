@@ -1,0 +1,27 @@
+#mucom88 1.7
+#title Release of Ganon
+#composer Koji Kondo
+#author ToughkidCST
+#comment Legend of Zelda: A Link to the Past
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+
+; SCC waves: one cycle of each BRR instrument loop
+  @W0:{ 20,95,47,20,19,30,37,39,43,55,68,63,6,-71,-101,-89,13,115,91,58,51,47,27,-6,-38,-63,-71,-70,-90,-127,-124,-97 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{b16 D-14>c16}
+#*2{D0a+16 b16 >c16 <b16 D-15>e16 f16}
+#*3{a+16 b16}
+#*4{@0E255,0,0,255,1,255v9q2MF0D0o2a+16}
+#*5{v11e16 f16}
+#*6{v13 *2 v14D-6 *3}
+
+; whole note = 96 clocks (C96), 1 clock(s) per driver tick
+A C96 t185 r%192
+SCCA C96 @0E255,0,0,255,1,255v10q2MF0D0o2a+16 [ D0 *1 ]2 [ v12e16 f16 ]2 v14 *2
+SCCA v15D-6 *3 r%90
+SCCB C96 r2. *4 [ v10D0 *1 ]2 [ *5 ]2 v14 *2 D-6 *3 r8.
+SCCC C96 r8. *4 [ v10D0 *1 ]2 [ *5 ]2 v13D0 *3 v14>c16 <b16 D-15>e16 f16 D-6 *3
+SCCC r2.
+SCCD C96 r%54 *4 [ D0 *1 ]2 [ *5 ]2 *6 r4.
+SCCE C96 r4. *4 [ D0 *1 ]2 [ *5 ]2 *6 r%54
