@@ -946,6 +946,14 @@ function setSource(text) {
   // all end in \r until the first edit (and voice definitions are not recognised).
   text = text.replace(/\r\n?/g, '\n');
   loadedText = text;
+  // The text is what Play plays now, not a .mub / .vgm opened before it (a playlist that
+  // went from a .mub to a MUC): the channel view that file opened goes back to the editor.
+  if (openFile) {
+    openFile = null;
+    playingName = '';
+    fileNotes = null;
+    if (autoChannels && viewMode === 'channels') setView('editor');
+  }
   if (waveEdit) { waveEdit = null; waveEditor.close(); fmEditor.close(); $('panes').hidden = false; }
   for (const p of panes) {
     p.code.value = text;
