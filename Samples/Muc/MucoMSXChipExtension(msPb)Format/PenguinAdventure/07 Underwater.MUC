@@ -1,0 +1,38 @@
+; muc by ToughkidCST
+#title yume-tairiku-adventure Underwater
+MSXD ?XT1 ?XU1 ?FJ0
+MSXE ?XT1 ?XU1 ?FJ1
+MSXF ?XT1 ?XU1 ?FJ2
+PSGS ?FD0={
+PSGS ?FC14 o6 ?DB1 v12 ?FC9 c :200 o5 ?DB2 ?XU33 a+ ?FC6 g ?XU66 g ?FC9 ?FC24 ?XU66 d+ ?XU22 ?FC24 ?XU33 d+ f d f ?EP7,2,4 ?XU11 g g g ?EP7,3,4 ?XU22 a
+PSGS ?XU11 b o6 ?DB1 c c c ?FC9 d ?XU11 d+ ?XU44 c ?EP7,2,4 ?XU11 d c o5 ?DB2 ?EP7,2,3 ?XU66 a+ ?FC6 b b b o6 ?DB1 ?EP7,2,4 ?XU22 c ?XU11 d ?EP7,3,4 c
+PSGS c c ?FC9 d ?FC6 ?FC13 ?XU44 c ?FC6 d ?FC13 ?XU66 d o5 ?DB2 ?FC6 b b b ?EP7,2,4 ?XU33 b ?FC6 ?FC22 d ?FC21 v12 ?EP7,3,4 d+ ?FC21 o5 ?DB2 v12 ?EP7,3,4
+PSGS ?FC22 d+ d+ d ?FC21 v12 ?FC9 c ?FJ200 }
+PSGS ?FD1={
+PSGS ?FC14 o3 ?DB8 v11 ?EP7,1,2 ?XU11 c :201 f g a+ g a+ c f g a+ g a+ ?FC10 ?FC10 f g+ o4 ?DB4 c d+ c o3 ?DB8 g+ f g+ o4 ?DB4 c d c o3 ?DB8 g+
+PSGS ?FC12 ?FC12 c g a+ d+ g a+ c g a+ d+ g a+ g ?FC19 a+ ?FC19 g o4 ?DB4 g o3 ?DB8 g ?XU22 a ?XU11 b ?EP7,2,3 c c g c c g g+ g+ o4 ?DB4 d+ o3
+PSGS ?DB8 g+ g+ o4 ?DB4 d+ o3 ?DB8 ?FC25 ?FC25 ?FC17 ?FC17 ?EP7,3,3 ?FC16 ?FC16 ?EP7,1,2 c ?FJ201 }
+PSGS ?FD2={
+PSGS ?FC14 o5 ?DB2 ?FC15 ?XU22 d+ :202 ?XU44 d ?FC8 ?FC15 ?XU11 c d d+ c ?FC18 ?XU11 g+ ?XU22 g+ ?XU11 g+ a+ o5 ?DB2 c o4 ?DB4 g+ o5 ?DB2 ?FC18 ?FC6 g+
+PSGS ?EP7,2,4 ?XU33 g+ o5 ?DB2 c c c ?FC6 c c c ?XU22 d ?XU11 d ?FC11 d+ ?XU66 d ?XU11 d d d ?XU22 d+ ?XU11 f ?FC11 g ?XU66 f ?XU11 d d d ?XU33 d o4
+PSGS ?DB4 ?XU11 a ?FC23 a ?FC21 ?FC20 ?FC21 o4 ?DB4 ?FC20 ?FC23 f f g ?FC21 ?FC15 ?XU22 d+ ?FJ202 }
+PSGS ?FD6={ ?EP7,3,4 ?XU11 ?FR }
+PSGS ?FD8={ ?EP- v0 ?XU22 r ?FR }
+PSGS ?FD9={ ?EP7,2,3 ?XU22 ?FR }
+PSGS ?FD10={ c+ f ?FC26 ?FC26 ?FR }
+PSGS ?FD11={ d+ d+ d+ ?XU22 f ?XU11 g ?XU44 d+ ?XU11 f ?FR }
+PSGS ?FD12={ g o4 ?DB4 c d g d c o3 ?DB8 ?FR }
+PSGS ?FD13={ d+ ?EP7,2,3 ?FR }
+PSGS ?FD14={ ?XT1 ?GS- ?EN0 ?FR }
+PSGS ?FD15={ v11 ?EP7,2,4 ?FR }
+PSGS ?FD16={ :27 c ?FB6,27,2 f f f f ?FR }
+PSGS ?FD17={ ?FC25 ?FR }
+PSGS ?FD18={ ?XU22 c o4 ?DB4 ?XU33 a+ ?FR }
+PSGS ?FD19={ o4 ?DB4 d f o3 ?DB8 ?FR }
+PSGS ?FD20={ v11 ?EP7,3,4 a ?FR }
+PSGS ?FD21={ ?EP- v0 r ?FR }
+PSGS ?FD22={ d ?FC8 v12 ?FC6 d+ ?FC8 o6 ?DB1 v12 ?FC6 ?FR }
+PSGS ?FD23={ ?FC8 v11 ?FC6 a ?FC8 o5 ?DB2 v11 ?FC6 ?FR }
+PSGS ?FD24={ g+ ?XU33 g ?FC6 ?FC13 ?FR }
+PSGS ?FD25={ g g o4 ?DB4 d o3 ?DB8 ?FR }
+PSGS ?FD26={ g+ o4 ?DB4 c+ o3 ?DB8 ?FR }
