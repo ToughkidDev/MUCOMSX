@@ -1,0 +1,41 @@
+#title Space Manbow - Psychopathy (Warp Demo)
+#comment muc by ToughkidCST
+#sccvoice MANBOW.DAT
+?WS0,0,1
+?WS1,3,1
+?WS2,7,1
+?WS3,34,1
+MSXD ?XU1 ?FJ4
+MSXE ?XU1 ?FJ6
+MSXF ?XU1 ?FJ13
+SCCA ?XU1 ?WP1 ?FJ13
+SCCB ?XU1 ?FJ7
+SCCC ?XU1 ?FJ10
+SCCD ?XU1 ?FJ11
+SCCE ?XU1 ?FJ12
+PSGS ?XD0={ :0 ?XM1,1 ?NP0 ?XS$07 ?XS$05 ! }
+PSGS ?XD1={ :1 ?XM2,1 ?GS$0A ?GH$00 ?GL$42 ?XP432,12 ?GS- ?XM1,1 ?NP8 ?XS$08 ?XS$07 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ?XS$02 ?XS$01 ?XS$01 ?XS$00 ! }
+PSGS ?XD2={ :2 ?XM2,1 ?GS$08 ?GH$01 ?GL$00 ?XP1,0 ?GS- ?XP1024,6 ?XP1152,5 ?XP1280,4 ?XM2,3 ?XP1280,0 ?XM2,1 ?XP1024,0 ?XP1152,0 ?XP1280,0 ?XP1536,0 ! }
+PSGS ?XD3={ :3 ?XM2,1 ?GS$0A ?GH$00 ?GL$12 ?XP1024,12 ?GS- ?XM1,1 ?NP8 ?XS$09 ?XS$08 ?XS$07 ?XS$06 ?XS$05 ?NP10 ?XM1,2 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ?XS$01 ?XS$00 ?XM1,6 ?NP11 ?XS$01 ?XS$00 ! }
+SCCS ?FD4={ ?XT4 o6 ?XU7 ?FB0 }
+SCCS ?FD5={ d c d c c+ d c d c d d c ?XT4 d+%2 ?XT4 ?FB15 d c d c ?XT4 d+ ?XT4 d c ?XT4 d+ ?XT4 d ?XT4 d+ d+ ?XT4 d ?XT4 d+ d+ ?FJ4 }
+PSGS ?FD6={ ?XT1 ?XU7 r%4 ?DB2 ?EP2,$04,$32 ?MV0,$56 ?MW19 v9 ?ET0 o4 c d+ f a+%6 c d+ f a+%2 c d+ f a%6 c d+ f a%2 ?FC14 f+ b%6 c+ e f+ b%2 c+ e f+ a+%6
+PSGS c+ e f+ a+%2 ?FC16 ?FJ6 }
+PSGS ?FD7={ ?XT1 @3 ?XU7 v14 ?ET0 ?EP2,$74,$00 ?FB0 }
+SCCS ?FD8={ o2 ?FC18 o3 c o1 a+ o2 c f o3 c o2 c o1 d+ o2 d+ o1 a+ o2 a+ g ?FB4 ?FB0 }
+SCCS ?FD9={ o2 ?FC19 o3 c+ o1 b o2 c+ f+ o3 c+ o2 c+ o1 e o2 e o1 b o2 b g+ ?FB4 ?FJ7 }
+PSGS ?FD10={ ?XT1 @2 ?XU7 ?EP2,$09,$40 v15 ?ET0 ?EL3 o2 a+ c d+ c f c a+ c d+ c f c a+ ?FC18 f c g ?FC18 f c g ?FC18 ?FC20 ?FC20 o3 d+ o2 ?FC21 ?FC21 c o3
+PSGS d o2 c o2 b c+ e c+ f+ c+ b c+ e c+ f+ c+ b ?FC19 f+ c+ g+ ?FC19 f+ c+ g+ ?FC19 ?FC22 ?FC22 o3 e o2 ?FC23 ?FC23 c+ o3 d+ o2 c+ ?FJ10 }
+SCCS ?FD11={ ?XT1 @0 ?XU7 ?EP2,$44,$32 ?MV0,$56 ?MW19 v14 ?FC15 ?FC17 g+%2 o5 d+%2 ?FJ11 }
+SCCS ?FD12={ ?XT1 @0 ?XU7 r%3 ?EP2,$24,$32 ?MV0,$56 ?MW19 v9 ?FC15 ?FC17 o5 d+ ?FJ12 }
+SCCS ?FD13={ ! }
+SCCS ?FD14={ c d+ f a+%6 ?XU1 g+%3 g%4 ?XU7 a a+ o5 c d+ c%2 o4 d a+%2 c a%2 o3 a+ o4 g%2 o3 a o4 f o3 g o4 c+ e ?FR }
+PSGS ?FD15={ ?ET0 o4 c d+ f a+%6 @1 c d+ f a+%2 @0 c d+ f a%6 @1 c d+ f a%2 @0 ?FC14 f+ b%6 @1 c+ e f+ b%2 @0 c+ ?FR }
+SCCS ?FD16={ c+ e f+ b%6 ?XU1 a%3 g+%4 ?XU7 a+ b o5 c+ e o5 f+%3 o4 a+%2 d+%3 f+%2 ?FR }
+SCCS ?FD17={ e f+ a+%6 @1 c+ e f+ a+%2 @0 ?FC16 ?FR }
+SCCS ?FD18={ c o3 c o2 c ?FR }
+SCCS ?FD19={ c+ o3 c+ o2 c+ ?FR }
+SCCS ?FD20={ o3 d+ o2 c a c a+ c ?FR }
+SCCS ?FD21={ c o3 d o2 c g c a ?FR }
+SCCS ?FD22={ o3 e o2 c+ a+ c+ b c+ ?FR }
+SCCS ?FD23={ c+ o3 d+ o2 c+ g+ c+ a+ ?FR }
