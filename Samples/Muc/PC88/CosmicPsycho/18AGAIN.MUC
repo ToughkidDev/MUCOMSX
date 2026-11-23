@@ -1,0 +1,53 @@
+#mucom88 1.7
+#title Again...
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+#*1{@17 M0,7,-15,255}
+#*2{*3 q0b q2b8*1>g8 @52 MF0 q0>cc @93o2b*1 v116 q3>g8. v124 q2}
+#*3{MF0 q0>c @93 q2o2b8}
+#*4{b @52o4c*1 q2<g8 @93 MF0 q0<b}
+#*5{q2<a8 q0ag&a q10a>a<aa>g&q0ad&e q2c8 q10<a q2a8a8}
+#*6{g q3a8.a&g+64&g64&f+64&f64&q0ee8&f64&f+64&g64&g+64&a}
+#*7{a q5ag2&g2&g2&q41g q5g @96d2&d2&d2&q41d q5d @95}
+#*8{g16 q5a @98g @99fg D4 @98>c2&c2&q29c D-1 @99 q5<g @97>c q2<g8}
+#*9{a16&q0g16a2&a2&q29a @98 q5g @97g q2}
+#*10{E255,255,7,249,3,5 v12}
+#*11{c v0r v12c v0r M18,2,-16,5 v12 q3<b8. q0a v0rr v12 q3a8. q0g}
+#*12{v0r v12}
+#*13{q8g4.*14 v12 q3f+8.f+8. q0f+*12e*15*16}
+#*14{g2&q20g4. q5g4a4b4 E255,255,7,249,3,5 M18,2,-16,5 q3a8. q0g v0r8}
+#*15{v0r E255,255,7,249,1,5 MF0 v12 q5}
+#*16{f+4g4a4b4>c2&q17c4 q2c8 q0<ba q5f4g4}
+#*17{E255,255,7,249,3,5 M18,2,-32,5}
+#*18{[e*12]2 q3d8. q0*19*22}
+#*19{c v0rr v12*20*15*21*17*20 v0r8 v12 q3a8.a8. q0a*12g*15}
+#*20{q3c8. M18,2,-16,5 q0<b}
+#*21{a4b4>c4d4 q8<b4.b2&q20b4. q5b4>c4d4}
+#*22{a4b4>c4d4e2&q17e4 q2e8 q0dc q5<a4b4>c4}
+
+A C192 l16 vm2 t221 *1 v124 q0 D-1 o3g g @93 MF0 <b b L [ @93 MF0 v124 q2 b8
+A @53 o4c8 *1 <g8 @52 *2 g8 @53 *3 q0 b b @52 o4c *1 q2 <g8 @53 MF0 >c8 ]7 @93
+A o2b8 @53 o4c8 *1 <g8 @53 *2 g8 @53 *3 @25 q0 b b @53 o4c *1 q2 <g8 v114 q0
+A g24 g24 g24 [ @93 MF0 v124 q0 <b *4 b *4 q2 b8 *1 >g8 @93 MF0 q0 <b *4 b *4
+A *1 q2 >g8 @93 MF0 <b8 ]7 q0 [ b *4 ]2 q2 b8 *1 q0 >g v114 g32 g32 [ v124 g
+A v114 g g ]4 v126 q2 g8 g8
+B C192 l16 vm2 @94 MF0 v127 D-1 o3e192& D-28 o1c+%23& o3 {e%21 a}& D-1 a192&
+B r96 L [ q0 >c *5 q0 *6 ]3 >c *5 q10 g q2 a8 q0 >a q10 [ >a v122 <a a v127 ]2
+B >a [ q0 <c *5 q10 *6 ]3 >c *5 q10 g q0 a r q5 g4 >g4 [ q10 <f q2 f8 q20 >f8
+B q10 <f f q2 f8 q20 >f8 q10 <f q2 f8 >f8 q10 <g q2 g8 q20 >g8 q10 <g g q2 g8
+B q20 >g8 q10 <g q2 g8 >g8 [ q10 <a q2 a8 q20 >a8 q10 <a a q2 a8 q20 >a8 q10
+B <a q2 a8 >a8 ]2 ]4
+C C192 l4 vm2 r L @95 M49,2,2,5 v126 D-1 o3a2& a2& a2& q41 *7 f2& f2& f2& q41
+C f q5 g a2& a2& a2& q41 *7 f2& f2& q35 f2 q5 g q2 g8 @97 M20,2,-2,5 a16& q0
+C g16 a2& a& q2 a8 a16& q0 *8 *9 e8 q0 e16 d16 e2& e2& e2& q44 e4. a16& q0 g16
+C a2& q20 a4. a16& q0 *8 *9 g8 q0 e16 g16 a2& a2& a2& q47 a2
+D C192 l16 r4 L P1 *10 M18,2,-32,5 q0 D0 o5c *11 *12 q5 e4 g4 a4 b4
+D E255,255,7,249,1,5 MF0 *13 a4 b4 *17 q0 >c *11 *15 e4 g4 a4 b4 *13 g4 d4 [
+D E255,255,13,249,5,5 M18,2,-8,5 q0 <b b *12 a v0 r r v12 b b *12 a v0 r r *10
+D q2 b8 a8 ]16
+E C192 l16 r4 L P1 *10 M18,2,-32,5 q0 D0 o5e *18 d4 *17 q0 e *18 <g4 [
+E E255,255,13,249,5,5 M18,2,-16,5 q0 e e *12 e v0 r r v12 e e *12 e v0 r r *10
+E q2 e8 e8 ]16

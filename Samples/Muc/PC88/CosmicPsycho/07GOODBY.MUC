@@ -1,0 +1,42 @@
+#mucom88 1.7
+#title Say Good Bye
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+#*1{*2*3 q3f8.d+8. q2d8 q11cr4 q5c4d4d+4*3 q11f*4*5}
+#*2{o5c8d+8f8 q11g q3c8.d8. q2d+8}
+#*3{q11f q5g4f4 q11<a+ q2>c8r16d8r16f8}
+#*4{eg q3c8.d8. q2d+8 q11f q5g4g+4 q11a+ q5g+4g4 q11fd+d+ q2c8}
+#*5{r16d8r16d+8 q5f4d+4d4<a+4>c&q23c q11>c}
+#*6{M33,2,32,4 q11}
+#*7{<g8.g8. q2g8 q11b2 q5b4b4}
+#*8{>c4 q11d2 q5d4d4 M33,2,16,4 q11}
+#*9{a+8 v0r M33,2,32,4}
+#*10{>c2 M33,2,16,4}
+#*11{M33,2,32,4 D16}
+#*12{M33,2,16,4 D8}
+
+A C192 l2 vm2 t206 r L r8 @50 M31,2,-4,3 v125 q2 D-1 *1
+B C192 l8 vm2 r2 r2 L @50 M31,2,-4,3 v125 q2 D-1 o2g+ [ >d+ >c <d+ <g+ ]2 >f b
+B f <g+ >f b f <g >d a+ d <g >d a+ g c g >d+ d c <a+ g d+ [ <f >c g+ c ]2 <a+
+B >f >c d <a+ f <a+ >a+ [ d+ a+ >d <a+ ]2 c g a+ >d q5 c4 <c4 q2 [ <g+ >d+ >c
+B <d+ ]2 <g+ >f b f <g+ >d f b <g >d a+ d <g >d a+ g c g >c <g c d+ g >c o2f
+B >c g+ c <f >c g+ c <g >d f a+ f d q5 <g4 q2 g+ >d+ g+ <g+ a+ >f a+ <a+ >c g
+B >d e q5 c4 <c4
+C C192 l2 vm2 D-2 r r%20 L r8 @50 M31,2,-4,3 v107 q2 *1
+D C192 l16 r2 L r2 P1 E80,192,2,206,2,0 v11 *6 D0 o5c2 M33,2,16,4 q3 *7 q11 f2
+D q2 g8 [ v0 r v11 a+8 ]2 M33,2,32,4 q3 >d8. c8. M33,2,16,4 q2 <a+8 q11 g2 v0
+D r4 v11 q5 g+4 a+4 M33,2,32,4 *8 <g2 q2 g8 v0 r v11 *9 v11 >d8 q11 d2
+D M33,2,16,4 <a+2 M33,2,32,4 *10 q3 *7 *6 >d2 q5 c4 M33,2,16,4 <a+4 q11 g+2 g2
+D M33,2,32,4 *10 q2 <g+8 v0 r v11 *9 v11 >c8 q5 d4 c4 M33,2,16,4 <a+4 f4 v10
+D q0 d+ v9 d+ v10 g+ v9 g+ v10 M33,2,32,4 >c v9 c v10 M33,2,16,4 <g+ v9 g+ v10
+D f v9 f v10 a+ v9 a+ v10 M33,2,32,4 >d v9 d v10 f v9 f v10 q11 e2
+E C192 l16 r2 r%20 L r2 P1 E44,233,3,196,3,0 v9 *6 D16 o5c2 M33,2,16,4 q3 D8
+E *7 q11 f2 q2 g8 [ v0 r v9 a+8 ]2 M33,2,32,4 q3 D16 >d8. c8. M33,2,16,4 q2 D8
+E <a+8 q11 g2 v0 r4 v9 q5 g+4 a+4 *11 *8 D8 <g2 q2 g8 v0 r v9 *9 v9 D16 >d8
+E q11 d2 *12 <a+2 *11 *10 q3 D8 *7 *6 D16 >d2 q5 c4 *12 <a+4 q11 g+2 g2 *11
+E *10 q2 D8 <g+8 v0 r v9 *9 v9 D16 >c8 q5 d4 c4 *12 <a+4 f4 v8 q0 d+ v7 d+ v8
+E g+ v7 g+ v8 *11 >c v7 c v8 *12 <g+ v7 g+ v8 f v7 f v8 a+ v7 a+ v8 *11 >d v7
+E d v8 f v7 f v8 q11 e2

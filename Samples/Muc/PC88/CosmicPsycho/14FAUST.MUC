@@ -1,0 +1,27 @@
+#mucom88 1.7
+#title Screaming Faust
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+#*1{q0a q2a8a+8[q0a q2a8]2}
+#*2{>a<a v109e v113>a v103<a v113>g v109<e}
+#*3{q8>ar8. @80 q10>cc8.&q5c4 q10<g q3g8. @79}
+#*4{eee v6eeee v5eeee}
+#*5{q3o5e8. q0e q2e8f8[q0e q2e8]2f8}
+
+A C192 l16 vm2 t225 L [ @77 MF0 v117 q3 D-1 o3a8. *1 a+8 ]18 v114 q0 o5g d <g
+A >g+ d+ <g+ >a e <a o6c <g c a e >c <g
+B C192 l16 vm2 L [ @78 MF0 v113 q0 D-1 o3a *2 v113 a *2 ]18 v113 >d <a d >d+
+B <a+ d+ >e <b e >g d <g e192& D-25 o1c+%11& o3 {e%10 >e}& D-1 e192& r192
+B e192& D-25 o1c+%11& o4 {e%10 <e}& D-1 e192& r192
+C C192 l16 vm2 L D1 r%5 @77 MF0 v107 q3 o3a8. *1 a+8 q3 a8. *1 q1 a+%19 @79
+C v121 <a2& q23 a2 >c2& c2 q0 <g r8. a2& a2& a2& q17 a4 >c2& q23 c2 q11 <a+2
+C g2 q0 g r8. a2& q17 a4 d3& v117 d+3& v115 q7 e3 v121 *3 q0 <a r8 a r8 q2 a+8
+C q0 a r8 a r8 q2 a+8 *3 d2& v117 c+2& c+2& v115 c2& q23 c2 v121 q11 <a+2 a2&
+C a2& a2& q23 a2 @81 M28,2,-2,5 v118 q3 d8. d+8. e8. g8. q2 e8 g8
+D C192 l16 r%14 L P1 E255,255,6,233,6,2 v7 MF0 q0 D0 o7e *4 v4 e e e e [ v7 e
+D *4 v4 e e e e ]9 [ v7 *5 ]9
+E C192 l16 L P1 E255,255,5,236,5,2 v8 MF0 q0 D0 o7e e e e v7 e *4 [ v8 e e e e
+E v7 e *4 ]9 [ v8 *5 ]9

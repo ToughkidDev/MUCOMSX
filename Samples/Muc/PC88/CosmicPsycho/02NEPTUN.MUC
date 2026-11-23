@@ -1,0 +1,78 @@
+#mucom88 1.7
+#title Neptune
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+#*1{v122 q2}
+#*2{q0eg12&v124*3}
+#*3{ar12 v122>cr12 q4c v125 q9c12r v122d12&q0ed12&c q2<d8 q6dr}
+#*4{q0>dr12c&q1d12 q2<e8 q0>e q1<g12 q0a q1>c12 q0<a q1g12 q0}
+#*5{@17 M0,2,-5,255}
+#*6{@17 M0,2,-5,255 q1o3g12 @19 MF0 q0o5c}
+#*7{@25 MF0}
+#*8{q1<b12*9*6*10*6*11*9*6*10*6*5 v113}
+#*9{@19 q0o5c q1c12 q0c}
+#*10{q1c12 @25 q0o2brrb q1b12 @19 q0o5c}
+#*11{q1c12 q0c @25 q1o2b12}
+#*12{*13*9*6*10*6}
+#*13{q1o3g12 v118 q0g @25 MF0 q1<b12}
+#*14{*15g4g+64&q7a%69e2&e2&q38e%120r12d+64&q2*15 q2>g8}
+#*15{e%29 q8g16r16a16r16 q11>c2d+64&q4d%45 q5c4<b4}
+#*16{r12 P1 E255,255,9,255,6,2 v12 MF0 q3 D0}
+#*17{e6 v0r*18g q4g%40 q2d8 q0d*19 q3e6e6 v0r}
+#*18{v12 q2e8 q0e q4e%40 q2e8 q0e v0r12 v12 q3f6f6 v0r v12 q2g8 q0}
+#*19{v0r12 v12}
+#*20{E255,255,14,227,6,2 M15,2,-32,4}
+#*21{q1a12 M15,2,-64,4 q0>c q1e12 q0c M15,2,-32,4 q1<a12 q0}
+#*22{v0r4 v12 q1}
+#*23{E155,224,5,246,2,6 M14,2,32,4}
+#*24{g6 v0r*25b q4b%40 q2g8 q0g*19 q3a6g6 v0r}
+#*25{v12 q2a8 q0a q4a%40 q2g8 q0g v0r12 v12 q3a6a6 v0r v12 q2b8 q0}
+
+A C192 l24 vm2 t214 r4 r8 @12 MF0 *1 D-1 o4e8 L q4 <a%40 *2 *4 g+ q4 a%40 *2
+A q0 >d r12 c& q1 d12 q0 <a q2 g8 f8 e8 >e8 [ q4 <a%40 *2 *4 g+ ]7 q4 a%40 *2
+A *4 f+ q2 f8 q13 f12 q6 f q1 f12 q0 a r12 q2 >c8 v126 q4 c *1 <a8 >c8 q1 d12
+A q6 d q2 e8 q13 e12 q6 e d12& q0 e r12 q4 e r12 q0 <e g12& v124 a v122 q1
+A >c12 q0 <a q1 g12 q0 e q4 a%40 q0 e g12& v124 a r12 v126 q9 a12 r v122 q0 a
+A >g12& v124 a v122 d12& v124 e *1 c8 <a8 v126 q9 >a12 v122 q4 <a q2 g8 v126
+A q9 >g12 v122 q4 <g r12 q0 f q1 >f12 v124 q4 <f *1 e8 v126 q9 >e12 v124 q4 <e
+A *1 f+8 q13 f+12 q6 f+ q1 f+12 q0 a r12 q1 >c12 r v126 q4 c *1 <a8 >c8 d12&
+A v124 q0 e *1 f8 v123 q9 >f12 v124 q4 <f v125 q9 f12 v126 q4 f v122 q1 f12
+A v126 q4 >f r12 f v124 q14 <f8 v123 f12& v124 q0 g f12& v126 g *1 <e8 v126 q9
+A e12 v122 q4 e >d12& v124 q0 e v122 q1 <e12 v126 q4 e r12 e q9 e12 q4 e v124
+A >d12& v126 q0 e v124 q11 e12 v126 q5 e v122 q1 <e12 v123 >e& v125 d12 v122
+A q0 <b v124 >d12& v126 e r12 q4 e r12 e v122 q1 <g12 q0 a q1 >c12 q0 <a q1
+A g12 q0 e
+B C192 l24 vm2 *5 v118 q1 D-1 o3g12 @19 MF0 q0 o5c *6 *5 v112 o3g v113 g v114
+B g v115 g48 v116 g48 v118 g g L *7 v118 *8 *12 *11 *9 *6 q1 c12 *5 v108 q0
+B o3g48 g48 [ v118 g v108 g g ]2 *7 v118 q2 <b8 *5 v123 q1 >g12 q0 g [ *7 v118
+B *8 q1 o3g12 v118 q0 g ]8 *7 *8 *12 *5 v114 o3g g v118 g *7 q1 <b12 @19 q0
+B o5c *6 @25 q1 o2b12 @19 q0 o5c *5 q1 o3g12 *7 q0 <b *5 >g g *7 <b b @19 o5c
+B c *5 o3g g g v113 q1 g12 v118 q0 g *7 *8 *12 *5 v114 *13 *9 @25 q1 o2b12 @19
+B q0 o5c c c c *5 o3g g *7 <b b @19 o5c c *5 v119 q1 <c12 v120 q0 c v121 q1
+B <g12 v122 q0 g
+C C192 l24 vm2 r4 r4 L @26 M12,2,-2,6 v120 D-1 o6a2& q23 a2 @27 M47,2,4,4 q0
+C <g+64 a%13 q17 a8 q23 >c6 q2 e8 q17 d8 c8 <b8 g8 q0 g+64 q13 a%117 q6 <e g a
+C >c <a g e g g+ v114 q1 o6g+96 v120 q5 a32 q6 e d c <a g q20 >e8 d8 q6 c <b g
+C q2 e8 q5 d e g @28 M17,2,2,5 v127 q1 <g12 q0 a r12 @29 M44,2,2,4 v124
+C o6d+64& q2 *14 d8& e2& e2& e2& q47 e2 r12 <d+64& q2 *14 d8& e2& e2& q38
+C e%120 q2 e8 f8 g8 q1 e12 q0 c r12 c r12 <a q14 >c%120 r4 q5 <b4 >c4 d4 q1
+C <b12 q0 g r12 g r12 e q1 g12 a& q11 a2 r4 q5 >e4 f4 g4 q1 e12 q0 c r12 c r12
+C c q1 <a12 >c& q11 c2 r4 q5 d4 c4 d4 <b2& b2& b2& q47 b2
+D C192 l24 r4 r4 L *16 o4e6 *17 *18 g q5 g4 q1 <b12 q0 >c [ *19 q3 e6 *17 v12
+D q2 e8 q0 e q4 e%40 q2 e8 q0 e q1 >f12 q2 f8 q3 a6 q2 >c8 <b8 a8 g8 d8 ]4 v0
+D r8 r8 r8 r8 r12 *20 v12 q0 f *21 f M15,2,-64,4 q1 >d12 [ q0 d *22 d12 ]2 q0
+D d v0 r8 r2 r2 r4 *23 v12 q5 <c4 d4 e4 v0 r4 r8 r8 r12 *20 v12 q0 f+ *21 f+
+D M15,2,-64,4 q1 >f12 [ q0 f *22 f12 ]2 q0 f v0 r8 v12 q1 d12 q0 d v0 r12 r
+D v12 q1 d12 q0 [ e *19 ]2 d [ q1 e12 q0 e ]3 q1 d12 q0 [ e *19 ]2 d q1 e12 q0
+D e e e [ e q1 e12 q0 ]2 d q2 c8
+E C192 l24 r4 r4 L *16 o4a6 *24 *25 b q5 b4 q1 d12 q0 e [ *19 q3 a6 *24 v12 q2
+E a8 q0 a q4 a%40 q2 g8 q0 g q1 >a12 q2 a8 q3 >c6 q2 e8 d8 c8 <b8 g8 ]4 *23 q1
+E c12 M14,2,16,4 q0 <a *19 a *19 f q14 a%120 *20 q1 >b12 [ q0 b *22 b12 ]2 q0
+E b v0 r8 E155,224,5,246,2,6 M14,2,16,4 v12 q1 <g12 q0 [ e *19 ]2 c q1 d12 q12
+E e%104 v0 r4 v12 q5 g4 a4 b4 M14,2,32,4 q1 >c12 M14,2,16,4 q0 <a [ *19 a ]2
+E q1 f+12 q12 a%104 *20 q1 >a12 [ q0 a *22 a12 ]2 q0 a v0 r8 v12 q1 a12 q0 a
+E v0 r12 r v12 q1 a12 q0 [ b *19 ]2 a [ q1 b12 q0 b ]3 q1 a12 q0 [ b *19 ]2 a
+E q1 b12 q0 b b b [ b q1 b12 q0 ]2 a q2 g8

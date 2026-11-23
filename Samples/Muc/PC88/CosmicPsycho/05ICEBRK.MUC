@@ -1,0 +1,43 @@
+#mucom88 1.7
+#title Ice Breaker
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+#*1{q3>c8. v124 q0>c}
+#*2{q3<a+8. v124 q0>a+r4}
+#*3{*4*5>f*6}
+#*4{@42 M1,1,-16,255}
+#*5{v123 D-1}
+#*6{@37 M0,2,80,1 v121 D67}
+#*7{<g8g8g}
+#*8{>d24d24d24<a24a24a24 @37 M0,2,80,1 D67}
+#*9{*10o6c8*11r*4}
+#*10{@43 MF0 D-1}
+#*11{*4 v123o3f*6*7}
+#*12{a32 v123a*6<gg*4 v122 D-1>ae v123e}
+#*13{a+r>cr<ga+>cd+%14&D15d+%10 D-1 q2d8 q0c}
+#*14{a+r>cr8r2<f32f32f+32f+32g}
+#*15{o3g2&q0g2a+2&a+2 M58,2,16,4}
+#*16{>c2&c2d+2f2g2&g2a+2&a+2 M58,2,32,4}
+#*17{>c2&c2d+2f2[g2&g2f32f+32g2&g%84]2 M58,2,64,4}
+
+A C192 l16 vm2 t219 L [ @41 M0,2,-4,2 v121 q3 D-1 o4c8. q0 c r <g a+ >c q2 d8
+A v123 q0 >d v121 <c+ v123 >c+ v121 <c v123 >c v121 o3a+& a+ f g a+ q2 >c8 v123
+A q0 >c v121 q2 o3b8 v123 q0 >b v121 <a+ v123 >g+& a+ v121 <f v123 g+& a+ ]4
+A v121 *1 r2 v121 c24& {c%26 <c}& c%13& r192 *2 r4 r r v121 g+32 a+32 <a+ *1 r8
+A v123 d+24& v121 f24& d+24 v123 <a+24& v121 >c24& <a+24 v123 f24& v121 f+24&
+A f24 d+24& f24& d+24 q2 c8 *2 r v121 >g& f d+& c <g+ f c+ q3 c8. q0 c v124
+A c24& v121 {c%27 >c}& c& r192 <g <g r g r g q2 a+8
+B C192 l16 vm2 L [ @37 M0,2,80,1 v121 q0 D67 o2g8. g *3 <g8 g r8 g g *3 <g8 g r
+B g8 g *4 *5 >f8 *6 <g g r g g r *4 *5 >f8 *6 <g8 ]4 *3 *7 *4 *5 >f f v121 *8
+B <g g *9 D-1 >a32 v122 *12 *6 <g8 *3 *7 *4 D-1 >f24 f24 f24 *8 <g24 g24 g24 *9
+B v122 D-1 >a32 *12 f8 *6 <g8. g *10 o6c4 *11 *4 *5 >b8
+C C192 l16 vm2 L [ @44 M1,2,-2,3 v119 q0 D-1 o3g *13 <a+ g f& f d+ f g q5 c%55
+C r%5 q0 d+ r f r g a+ >c <g *13 <a+ >c d+ f g q8 a+%79 r%5 q0 g r f r d+ c <a+
+C ]2 g *14 a+ r >c r2 r4 <g *14 *13 d+ f g a+ b q8 >c%79 r%5 q0 o3a+ r >d+ r f
+C d+ d
+D C192 l1 r6 L P1 E255,255,2,217,0,2 v9 M58,2,8,4 D-4 *15 D-8 *16 D-16 *17 D-32
+D >c2& c2
+E C192 l1 L P1 E255,255,2,222,0,2 v11 M58,2,8,4 D0 *15 *16 *17 >c2& c2

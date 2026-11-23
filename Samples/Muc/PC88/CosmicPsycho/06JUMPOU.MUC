@@ -1,0 +1,23 @@
+#mucom88 1.7
+#title Jump Out
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+#*1{o5f+[c+e<a>c+<f+>f+]4<b>d<ab[g>f+<b>d<ab]3g}
+#*2{o6a16 q2aa q0a16 q2g+g+f+ q0a16 q2aa q0a16 q2g+g+}
+#*3{f+[q0b16 q2bb q0b16 q2aag]4[q0a16 q2aa q0a16 q2ggf]2}
+
+A C192 l16 vm2 t222 L @45 M37,2,-2,4 v120 q0 D-1 *1 [ >e <b >d <a b e ]4 [ >f
+A c e <a >c <g ]4
+B C192 l16 vm2 L D3 r12 @45 M37,2,-2,4 v110 q0 *1 [ >e <b >d <a b e ]4 [ >f c
+B e <a >c <g ]3 >f c e <a >c24 [ @46 MF0 v120 o3f+2& f+2& f+2& g2& g2& g2& e2&
+B e2& e2& f2& f2& q35 f2 f+2& f+2& f+2& g2& g2& g2& e2& e2& e2& f2& f4& f2&
+B q17 f4 ]2
+C C192 l16 vm2 L @47 MF0 v121 D-1 o5c+2& c+4& c+2& q17 c+4 d2& d4& d2& d4 <b2&
+C b4& b2& b4 >c2& c4& c4.& q5 c4 [ @48 M50,2,-2,5 q0 o3e f f+2& q26 f+%120 q8
+C a4. g2& g2& q35 g2 e2& q17 e4 D0 @49 q8 c4. D-1 @48 e4. f2& f2& q32 f4. ]4
+C r8
+D C192 l8 r%11 L P1 E244,255,87,194,4,6 v8 MF0 q0 D-32 *2 *3
+E C192 l8 L P1 E246,255,70,206,3,4 v10 MF0 q0 D0 *2 *3

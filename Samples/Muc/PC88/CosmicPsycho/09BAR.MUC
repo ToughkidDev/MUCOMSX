@@ -1,0 +1,57 @@
+#mucom88 1.7
+#title Bar
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+#*1{a+12rra+12r @59 v123>g12 q3a+ q1>d12 @58 v124 q23o2a+4 @60a+4r}
+#*2{c12&q5c4 @58<g+4 @61>d4 @58<f4}
+#*3{d%28 q41e4f4d4g+48&a16&q11a2g+48&q2a%28 q1}
+#*4{q1g12 q3>g6 q1g12f6&g12r6}
+#*5{q3<g6 q1g12 q3a+6 q1>d12}
+#*6{P2 w1 E243,255,20,233,3,14}
+#*7{q27g6 q13g}
+#*8{P3 w9 E255,255,17,243,7,3 M0,4,-44,255 v12}
+#*9{c E243,255,21,232,1,6}
+#*10{E243,255,21,232,3,6 M73,2,-32,5}
+#*11{q5a+*12a+3 E243,255,21,232,3,6}
+#*12{E243,255,21,232,1,6 q7}
+#*13{[q1g q3a+6]7 q1g[q3a6 q1f]4 E243,255,21,232,1,6 M73,2,-32,5 q5}
+#*14{M73,2,-64,5 D32>c M73,2,-32,5 D16<a}
+
+A C192 l6 vm2 L D4 [ r @58 MF0 v124 q1 o2a+12 r4 *1 q1 >c12 r4 c12 r r c12 r
+A @59 v123 a12 q3 >c q1 e12 @60 v124 q5 <c4 <b4 r @58 q1 a+12 r4 *1 q1 >c12 r4
+A c12 r r *2 ]2 @60 v127 a+4& q3 a+ @58 q1 d+12 r @60 a+12 r @58 d+12 a+4& q3
+A a+ @60 q1 a+12 r @58 a+12 r @60 a+12 @58 q5 f4 f4 @60 >c4& q3 c q1 c12 @58
+A q3 c q1 c12 r @60 d12& q11 d2 @58 q5 <a+4 r q1 a+12 r a+4& a+12 @60 >c12 r r
+A c12 r c12& q5 c4 r q1 c12 r4 c4& q3 c *2
+B C192 l12 vm2 t225 L [ @62 MF0 v127 D-1 o5c+48& q2 *3 g q3 f6 q1 d d+48& q2
+B e%28 q1 d q3 c6 c& c6 <g+48& q0 a16 q3 >c6 c+48& d16& q5 d4 c4 <a4 a48& q0
+B a+16 q1 >c c+ c+48& q2 *3 >c r6 <g& q11 g2 g+48& q2 g%28 q1 g q3 f6 e& q11
+B e2 d+48& q4 d%44 q5 c4 ]2 q1 d <a+ g f g a+ >f d <a+ g a+ >d a f d <a+ >d f
+B >c <a f >c d e c2& q17 c4 <a48& q0 a+16 q1 >c <a+ a2& q17 a4 g+48& q0 a16 q1
+B a+ >c q3 <a6 f6 q1 f d f2& q5 f4 d+48& q4 e%44 q5 d4 c4 e2& q21 e%80 d+48&
+B e16& q5 e4 d+4 d4 c4
+C C192 l4 vm2 r192 L [ @63 MF0 v126 q9 D-1 o3g%80 *4 q7 g3 *5 q11 <f2 q3 >f6
+C q1 f12 e6& f12 r6 f12& q3 f6 q1 e12 q5 <a g+ q9 g%80 *4 g12& q5 g *5 q9
+C <f%80 q1 f12 q3 >c6 q1 c12 q3 c+6 q1 d12 r6 q5 d q1 c12 q5 <a f+ ]2 g g g q3
+C g6 q1 a+12 q5 >d d <a+ q3 g6 q1 a+12 q5 a a a a >d c <a f+ g g g q3 g6 q1
+C g12 q5 >c <a+ a g f f f q3 a6 q1 f12 q5 f+ g a f+
+D C192 l12 L [ *6 v10 MF0 q5 D0 o3g4 *7 q5 g4 *7 ]15 *8 q3 g6 q0 g24 g24 q1 g
+D g g v11 q0 [ g96 ]6 g48 g48 g48 g24 g24 g24 v12 q1 g g g [ *6 v10 MF0 q5 g4
+D *7 q3 g6 *8 q1 g *6 MF0 v10 *7 ]6 q3 g6 *8 q5 g4 v0 r v12 q3 g6 q5 g4 v11 q0
+D g24 g24 v12 q1 g v11 g g v12 [ g ]9
+E C192 l4 L [ P1 E243,255,21,232,3,6 v10 M73,2,-32,5 q5 D0 o5d [ d ]7 c c c *9
+E e f g f+ E243,255,21,232,3,6 [ d ]8 c c c *9 a g a f+ ]2 E243,255,21,232,3,6
+E q1 f12 f12 f12 q3 f6 q5 d f q1 d12 a12 a12 a12 q3 a6 q5 f a q1 f12 [
+E M73,2,-64,5 >c12 M73,2,-32,5 <a12 e12 ]4 M73,2,-64,5 q3 >d6 q5 d
+E E243,255,21,232,1,6 q13 d%112 *10 q9 <a+%80 *11 q9 a+%80 *11 q5 a a a a
+E E243,255,21,232,1,6 a g a f+
+F C192 l12 L [ P1 E243,255,21,232,3,6 v10 M73,2,-16,5 q3 D0 o4a+6 *13 >c4 c4
+F e4 d+4 E243,255,21,232,3,6 M73,2,-16,5 q3 <a+6 *13 >f+4 d+4 f+4 d4 ]2
+F E243,255,21,232,3,6 q1 d d d q3 d6 M73,2,-16,5 q5 <a+4 M73,2,-32,5 >d4
+F M73,2,-16,5 q1 <a+ M73,2,-32,5 >f f f q3 f6 q5 d4 f4 q1 d v0 r%7 v8 [ *14 e
+F ]3 *14 q0 e32. v10 q3 D0 a6 q5 a4 E243,255,21,232,1,6 q13 a%112
+F E243,255,21,232,3,6 M73,2,-64,5 q9 >d%80 q5 d4 *12 d3 E243,255,21,232,3,6 q9
+F c%80 q5 c4 *12 c3 *10 q3 <f6 [ q1 c q3 f6 ]3 q1 *9 q5 f+4 d+4 f+4 d4
