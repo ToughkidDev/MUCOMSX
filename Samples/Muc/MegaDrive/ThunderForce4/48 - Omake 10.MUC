@@ -1,0 +1,69 @@
+#mucom88 1.7
+#title Omake 10
+#composer Technosoft
+#author ToughkidCST
+#comment Thunder Force IV (E)
+#driver mucomDotNET
+#voice TFORCE4.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{@268 v121 M4,1,-76,255 q2 o5c M4,1,-76,255 c}
+#*2{@268 v121 p3 H0,0,0 D0 M4,1,-76,255 q2 o5c}
+#*3{@269 v121 M1,1,-57,255}
+#*4{M4,1,-76,255 o5c}
+#*5{H0,0,0 D0 MF0 q2}
+#*6{P1 E255,255,0,255,1,255 v11}
+#*7{M1,1,-57,255 q5 o4g}
+#*8{o5e8. d%30 d8. c%54 q8 c8 c8 q2 c d8.}
+#*9{@272 v107 p3 H3,0,0 D8 MF0 q2 o5e}
+#*10{@272 v117 p3 H3,0,0 D0 MF0 q2 o5e}
+#*11{M1,1,-21,255 o6e%5& MF0 e%31 H4,0,0}
+#*12{*3 q35 o4g4. *1 *3 q11 <g8 *1}
+#*13{o5d8. H3,7,0 e1 H3,0,0 e8.}
+
+A C96 l16 vm2 t170 [ @266 v116 p2 *5 o6c%60 q8 <b8 q2 >c d8. <b4. g g%54 b%60
+A q8 a8 q2 b >c8. <a4. >c c%54 ]6 [ r4 c8. <b%30 b8. a%54 q8 a8 a8 q2 a b8. ]4
+
+B C96 l16 vm2 [ @267 v116 p3 *5 o3a4 >a8 g a4. <a8 a g4 >g8 f+ g%54 <g4 >g8 f+
+B g4. <g8 g a4 >a8 g a%54 ]6 [ <a1 r4 >a e g d f c e <b >d <a >c <g ]4
+
+C C96 l16 vm2 [ @266 v116 p1 *5 o5a%60 q8 g8 q2 a b8. g4. d d%54 g%60 q8 f+8 q2
+C g a8. e4. a a%54 ]6 [ r4 a8. g%30 g8. f%54 q8 f8 f8 q2 f g8. ]4
+
+D C96 l16 @0 [ *6 D3 MF0 q2 o4g1 f+1 f+1 g1 ]6 D2 [ <a1& a1 ]4
+
+E C96 l16 @0 [ *6 D3 MF0 q2 o4e1 D-1 d1 d1 D3 e1 ]6 D5 [ c1& c1 ]4
+
+F C96 l16 @0 [ *6 D5 MF0 q2 o4c1 D0 <b1 b1 D5 >c1 ]6 D-1 [ <e1& e1 ]4
+
+H C96 l16 vm2 [ [ *2 ]4 @51 v121 M34,1,-76,255 c4. @268 v121 [ *4 ]2 @51 v121
+H M10,1,-76,255 c8 @268 v121 [ *4 ]2 ]8 [ [ *2 ]4 *12 ]7 [ *4 ]2 *3 q11 <g8 *7
+H M1,1,-57,255 q29 g%30 *7 [ @269 v115 p3 H0,0,0 D0 *7 ]3 v121 M1,1,-57,255 q11
+H g8 [ [ *2 ]4 *12 ]7 [ *4 ]4 *3 q23 <g4 *1 *3 q11 <g8 *7 @51 v121
+H M16,1,-76,255 q2 >c8. [ @270 v121 p3 H0,0,0 D0 M58,1,-76,255 q2 c%60 [ *2 ]6
+H ]7 @270 v121 M58,1,-76,255 c%60 [ @268 v121 *4 @51 v121 *4 ]3
+
+I C96 l16 vm2 @266 v112 p3 *5 [ o5g%60 q8 f+8 q2 g g8. f+4. <b b%54 >f+%60 q8
+I e8 q2 f+ g8. g4. e e%54 ]2 @271 v33 H4,0,0 q23 c4 v117 q8 >c8 q2 <b >c8.
+I e4.& H4,6,0 *11 <b q26 g%78 q2 d e g8 b2 q8 a8 q2 >c <a8 >c8. q26 e2. [ @271
+I v117 p3 H4,0,0 D0 MF0 q2 c <b e ]3 g a8 b%42 >d%54 <b8. g8. d4 q1 f+32 q2
+I g%33 >c%42& H4,6,0 M1,1,-33,255 c%7& MF0 c%47 @272 v33 H3,0,0 q59 o4c%60 v117
+I q2 >c <a b g a f+ g%42 q26 d%78 q2 c d g f+ g a g a b *13 c8. <a4 [ *10 c <a
+I ]2 >e8. d8. <g4 [ *10 d <g ]2 v33 q23 c4 v117 a+48& M1,1,32,255 a+32& MF0 q2
+I a+%43 g b >d q26 g%30 H3,7,0 q2 a2. @273 v33 H4,0,0 [ q23 >e4 v117 q2 e8.
+I d%30 d8. c%54 q8 c8 c8 q2 c d8. v33 ]2 q23 a4 v117 q2 a8. g%30 g8. f%54 q8 f8
+I f8 q2 f g8. v33 q23 >c4 v117 q2 c8. <b%30 b8. a%54 q8 a8 a8 q2 a b8.
+
+J C96 l16 vm2 @266 v112 p3 *5 [ o5e%60 q8 d8 q2 e f+8. d4. <b b%54 >d%60 q8 c8
+J q2 d e8. c4. c c%54 ]2 r4. @271 v107 H4,0,0 D7 q8 >c8 D13 q2 <b D7 >c8.
+J H4,6,0 D8 e4.& *11 D13 <b H4,6,0 D10 q26 g%78 H4,0,0 D8 q2 d e D10 g8 D13 b2
+J D12 q8 a8 D7 q2 >c D12 <a8 D7 >c8. H4,6,0 D8 q26 e2. [ @271 v107 p3 H4,0,0 D7
+J MF0 q2 c D13 <b D8 e ]3 D10 g D12 a8 D13 b%42 H4,6,0 D8 >d%54 H4,0,0 D13 <b8.
+J D10 g8. D8 d4 D10 q1 f+32 q2 g%33 H4,6,0 D7 >c%42& M1,1,-32,255 c%7& MF0 c%47
+J r%60 @272 v107 H3,0,0 <c D12 <a D13 b D10 g D12 a D10 f+ g%42 H3,7,0 D8 q26
+J d%78 H3,0,0 D7 q2 c D8 d D10 g f+ g D12 a D10 g D12 a D13 b D8 *13 D7 c8. D12
+J <a4 [ *9 D7 c D12 <a ]2 D8 >e8. d8. D10 <g4 [ *9 d D10 <g ]2 r4 D12
+J a+48& M1,1,33,255 a+32& MF0 a+%43 D10 g D13 b D8 >d D10 q26 g%30 H3,7,0 D12
+J q2 a%60 r4 @266 v112 H0,0,0 D0 [ *8 r4 ]3 *8
