@@ -1,0 +1,70 @@
+#mucom88 1.7
+#title Killer Love (Return Theme)
+#author ToughkidCST
+#comment Gradius 2
+; MSXD-F: MSX PSG | D-F: OPNA SSG | G: OPNA rhythm
+MSXD ?XU1 ?DW0 ?FJ14
+MSXE ?XU1 ?FJ15
+MSXF ?XU1 ?FJ16
+PSGS ?FD16={?XT1 ?XU5 v10o2 ?EP0,1,51 eeeev11eeebo3 v13:17e?FB8,17 :18?FC2 ?FB2,18 :19?FC0 ?FB2,19,2 ?EP0,1,35 :20?FC0 ?FB4,20,2 ?EP0,1,51
+PSGS :21c%4?FB16,21 :22d%4?FB16,22 :23o2g%2?FB32,23 v14g%6 g%6g%6g%6g%6r%2:27v13o2 :24a%2?FB8,24 :25b%2?FB8,25 :26o3c%2?FB8,26 o2b%2b%2 b%2b%2
+PSGS o3e%2e%2e%2o2e%2?FB4,27,2 ?FC2 ?FC0 ?EP0,1,35 o2 a%6b%6o3c%6c%6o2b%4o3c%4 o2f+%6f+%6b%6b%6b%4b%4 e%6e%6e%12!}
+PSGS ?FD2={o2a%14a%2a%14a%2 g+%14g+%2g+%8g+%2a%2b%2 g+%2?FR }
+PSGS ?FD0={o2a%2a%2b%2a%2o3 c%2o2a%2o3d%2c%2?FB2,0 :28o2g+%2g+%2a%2g+%2b%2 g+%2o3d%2c%2?FB2,28 ?FR }
+PSGS ?FD14={?XT1 ?XU5 v8o3?EP0,129,163 dfg+bfg+bo4do3bo4dfg+f g+bo5d:29v9o4?EP0,129,51 ?FC1 ?FB4,29 :30v8?FC3 o3a%4o4c%4e%4d%8o3b%8o4 f%16
+PSGS ?FC3 c%4e%4a%4g+%16f%16 ?FB2,30,2 ?FC4 ?FC5 ?FC6 g%16?FC7 ?FC8 a%16o3?FC9 o4df%9o3g+bo4df?FC9 o5 df%9o4g+bo5df?MV- o3f%6 g+%6b%6o4d%6f%2
+PSGS g+%6:31v9?FC10 d%2?FB2,31 ?FC11 d%2:32v10o4?FC1 ?FB2,32 ?DB1 ?FC13 c%2 d%2e%2c%2c+%6c+%6e%6e%6 c+%4e%4o4f+%2a+%2o5c+%2 o4g%2b%2o5d%2f+%12
+PSGS !}
+PSGS ?FD1={a%2b%2o5c%2o4a%2 b%2o5c%2o4a%2o5c%2e%2o4 a%2o5d%2o4a%2o5c%2o4a%2 b%2o5c%2o4g+%2b%2o5d%2 o4g+%2b%2o5d%2o4g+%2b%2 o5f%2o4g+%2o5e%2o4
+PSGS g+%2o5d%2o4g+%2b%2o5d%2 ?FR }
+PSGS ?FD4={o3?EP0,129,51 ?MV0,83 ?MW13 ?FR }
+PSGS ?FD5={d+ga+o4cd+ga+o5c ?FR }
+PSGS ?FD6={d+%8g%8g%2f+%2f%2 d+%2d+%8c%6d+f?FR }
+PSGS ?FD7={o3fao4cdfao5cd?FR }
+PSGS ?FD8={f%8a%8a%2g+%2g%2 f%2f%8d%6fg?FR }
+PSGS ?FD10={o5a%16g%6d%10e%8 c%2d%2e%2g%2a%2f+%2d%2 f+%2d%2e%2f+%2?FR }
+PSGS ?FD11={a%16b%6g%6d%4e%8 c%2d%2e%2g%2a%2f+%2d%2 f+%2d%2e%2f+%2d%2a%16b%6 g%6b%4o6c%6o5g%6e%4r%2 a%2f+%2d%2c%2e%2f+%2?FR }
+PSGS ?FD15={?XT1 ?XU5 v8o2?EP0,129,163 dfg+bfg+bo3do2bo3dfg+f g+bo4d?DB1 :33v4o4?EP- ?FC1 ?FB4,33 :34?DB1 v6 o4?EP0,8,3 ?FC12 o4a%4 o5c%4e%4
+PSGS d%8o4b%8o5f%16o4?FC12 c%4e%4a%4g+%14gf+f%16?DR ?FB2,34,2 ?DB1 ?FC4 d+ ?FC5 ?EP0,8,51 d+%2?FC6 g%14?EP0,129,51 ?FC7 ?EP0,8,51 f%2?FC8
+PSGS a%13o3f%6f%6f%4g%6g%6g%4 b%6b%6b%4o4d%6d%6d%4?MV- f%6g+%6b%6o5d%6f%2g+%6 ?DR ?DB1 v7:35a?FC10 d ?FB2,35 a?FC11 d?DB1 :36 v6o4?EP- ?FC1
+PSGS ?FB2,36 ?DR v10o4?EP0,129,81 e%6g%6g%6g%6g%4g%4a%6a%6 a%6a%6a%4a%4f+%6g%6f+%12 !}
+PSGS ?FD3={o3e%2o4c%2o3b%2a%2 o4d%2c%2o3b%2o4c%6?FR }
+PSGS ?FD12={e%2o5c%2o4b%2a%2 o5d%2c%2o4b%2o5c%6?FR }
+PSGS ?FD9={dfg+b%9dfg+bg+b?FR }
+PSGS ?FD13={o5?EP0,129,81 c%6 d%6e%6e%6?FR }
+# *0{E255,255,0,255,0,255}
+# *1{E255,255,16,175,0,255}
+# *2{E255,255,24,110,0,255}
+# *3{E255,255,16,80,0,255}
+# *4{c@8c@1cc[@8cc@1c@2c@1c@8c@1cc]3[c8c8c]2c@8c@1cc[@8cc@1c@2c@1c@8c@1cc]3[c8c8c]2}
+# *5{E255,255,32,0,0,255}
+# *6{E255,255,8,0,0,255}
+# *7{E255,255,4,0,0,255}
+# *8{E255,255,6,145,1,255}
+# *9{E150,56,12,190,0,255}
+# *10{e*0v4o4D22b6r6[*2v5o5D21e*0v4o4D22b6r6]7*3v6b%8r6*2v5o5[D21e*0v4o4D22b6r6*2v5o5]7[D57d+*0v4D56c6r6*2v5]16D21}
+# *11{e%80*0v3o4D22b%60v4o5D21e%10*6v6e%10*1D57d+%120*0v4d+%30*6v6d+%10}
+# *12{r3br3o5D57[d+r3]16D21[er3]12o4D22br3br3o5D21er3er3D57[d+r3]16}
+# *13{D17a1*0v7a4*7v9a*9D44g+1*0v7g+4*7v9g+}
+# *14{D25e1*0v6e4*7v9e*1D35f1*0v6f4*7v9f}
+# *15{*2v6D57d+*0v3D26f+12}
+# *16{[er3]14o4D22b*12}
+# *17{D25[e]16D35[f]16}
+# *18{D35g%30*0v3D40}
+D t198C120l12P1q0*1v13o3 D40d24d24[D35f24D44g+24D18b24]2 o4D32d24o3D18b24o4D32d24 [D27f24D36g+24]2D14b24 *9v9o3*13*9*13*2
+D [D17aaaaaaaaaaaaaaaaD44g+g+g+g+g+g+g+g+g+g+g+g+g+g+g+g+]6 *3v10[D30a+a+a+D17aaaD44g+g+]4 [o4D24ccco3D18bbbD30a+a+]4 *2D40[d%70*1d24d24*2]3 d3
+D *3dddd*2v9D44[g+4]4*3 g+*2g+4*1v11o4[D24c%80D32d%80D21e%80D32d3D50f+3]4 *9D0a1*0v9a4*7v11a*9D28 g+1*0v9g+4*7v11g+*3D0 [a]16D28[g+]16*1D35g4
+D D14b4o5D0c4c4o4D14b6o5 D0c6D18[c+4]4c+6c+6o4D30 a+4D14b4D30a+2r%1
+E t198C120l12P1q0*5v13o3 D28d24d24[D19f24D28g+24D6b24]2 o4D0d24o3D6b24o4D0d24f24 D12g+24D0f24D12g+24D-10 b24*1v9o3*14*1*14*3*17 *17*2
+E [D25eeeeeeeeeeeeeeeeD35ffffffffffffffff]4 *3v11o4D25[d+]32D27[f]32 *1o3D43[g%70*2g24g24*1]3 g3*3gggg*1v9D18[b4]4*3 b*1b4v11o4
+E [D21e%80D35g%80g%80D50f+3D13a3]4 v10e1*0v6e4*8v10e*1D19 f1*0v6f4*8v10f*2D13[e%9r%1]16 D19[f%9r%1]16*1v11o5D0 c4D24d4D0e4e4D24d6D0e6 [e4]4e6e6
+E D18c+4D24d4D18c+2r%1
+F t198C12l2P1q0r%80*1v6o5 D21*11*1D21*11*2v5D21*10 *10*16D21*16v8[D30a+%10a+%10a+%10D13a%10a%10a%10D36g+%10g+%10]4
+F [o6D0c%10c%10c%10o5D22b%10b%10b%10D30a+%10a+%10]4 D40[d%70*5d%5d%5*2]3d%10 *0v4D51g%30*3v8[g%10]4 *15[r%23*2v6D57d+*0v3D26f+12]4 r4*15r%23*2v7
+F D24c%80[D40d%35*0v3D35g%45*2v7g%75*0v3D21e%5*2v7D40d%25*0v3D42f+%10D40d%5*2v7D13a%40D21e%80]2 *18d%35D35g%15*2v7g%75 *0v3D21e%5*2v7D40d%25*0 v3
+F D42f+%10D40d%5*2v7D13a%40 D21e%80*18d%50*2v7D21e%65 *0v3D35g%15*2v7D42f+%20 *0v3D40d%15D42f+%5*2v7 D13a%40*0v6D0e6*1v7a%120 *0v4a%28*6v7a%10*1
+F D36g+%120*0v4g+%30*6v7 g+%10*2v6D0[a%7r4]16D36 [g+%7r4]16v7D35g%30D6b%30 o6D0[c%30]2o5D6b%20o6D0 c%20D18[c+%30]4[c+%20]2 o5D30a+%30D6b%30D30
+F a+%60r12
+G t198C40l4v50,27,23,17,16,21,18 @16c8@8[c8]3@2[c8]4@1[c8]8 [c2@8c2c2c@2c@8c2c2c2c@1c]4 [cccc@8cc@1c@2c@1]24[c@8c@1c@8c@1c@8c@1c@2c@1]8
+G [c8@8c8c8c8@1c8@8c8c8@2c8@1]8 [c8c8cc]5@2c@1*4*4[c2@8c2c2c@2c@8c2c2c2c@1c]2 [cccc@8cc@1c@2c@1]4[c8c8cc]4 c@8c@2c2@1[c@8c@1c@2c@1]4 [c@8cc@1]2
+G c1.r40

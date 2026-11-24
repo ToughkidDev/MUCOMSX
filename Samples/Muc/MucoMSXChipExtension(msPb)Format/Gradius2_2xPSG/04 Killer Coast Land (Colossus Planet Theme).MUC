@@ -1,0 +1,58 @@
+#mucom88 1.7
+#title Killer Coast Land (Colossus Planet Theme)
+#author ToughkidCST
+#comment Gradius 2
+; MSXD-F: MSX PSG | D-F: OPNA SSG | G: OPNA rhythm
+MSXD ?XU1 ?DW0 ?FJ17
+MSXE ?XU1 ?FJ9
+MSXF ?XU1 ?FJ5
+PSGS ?FD5={?XT1 ?DB1 ?XU4 ?EP0,1,38 :10?FC1 a%2?FC1 g%2?FC1 a%2?FB4,10 :18?FC2 f%2 ?FC2 c%2?FC2 f%2?FB2,18 :19?FC3 g%2?FC3 d%2?FC3 g%2
+PSGS ?FB2,19 ?FB2,10,2 ?EP0,1,85 o3?FC4 ?EP0,1,136 o2:11 a%2a%2?FC12 ?FB2,11 :20 f%2f%2?FC13 ?FB2,20 :21 g%2g%2?FC14 ?FB2,21 :22 e%2e%2?FC15
+PSGS ?FB2,22 ?FB2,11,2 ?FJ5 }
+PSGS ?FD1={v12o2a%2v9o3?FR }
+PSGS ?FD3={v12o2g%2v9o3?FR }
+PSGS ?FD4={a%4a%2a%2a%2a%2?FB8,4 f+%4f+%2f+%2f+%2f+%2f+%4 f+%2f+%2f+%2f+%2f%4f%2 f%2f%2f%2f%4f%2f%2f%2f%2 :23e%4e%2e%2e%2e%2?FB4,23 ?FB2,4,2
+PSGS ?FR }
+PSGS ?FD12={a%2o3a%2o2a%2a%2 ?FR }
+PSGS ?FD13={f%2o3f%2o2f%2f%2 ?FR }
+PSGS ?FD14={g%2o3g%2o2g%2g%2 ?FR }
+PSGS ?FD15={e%2o3e%2o2e%2e%2 ?FR }
+PSGS ?FD17={?XT1 }
+PSGS ?FD8={?XU6 v10o5?EP0,30,80 d%16c+%16?EP0,1,119 o4 v12c%8f%4a%4b%2rgg%12?FB2,8 ?XU8 ?EP0,2,101 ?FC0 f+%9 ?FC0 b%9?FC6 e%6a%3g+%12 ?FC0
+PSGS f+%9?FC0 b%9?FC6 e%7ab o5e%12v13o4?EP0,2,102 ?FC7 b%6g%6a%3g+%3f+%3 g+%3?FC7 b%12o5e%6f+%3 g+%3?FJ8 }
+PSGS ?FD0={o3a%3o4e%6dc+o3a b%3o4?FR }
+PSGS ?FD6={d%3a%9f%6c%3f%3e ro3bo4?FR }
+PSGS ?FD9={?FC16 :24?EP0,30,65 a%16a%16?EP0,2,70 v11c%8 f%4a%4b%2rgg%12?FB2,24 :25?XU8 v12o3?EP0,1,101 a%3o4e%6dc+o3ab%3o4f+%4 ?DR def+ed
+PSGS ?DB1 o3e%3a%6baeg%3o4g%9 o3a%3o4d%4o3ao4dado3ao4 c%6o3a%3o4c%3o3breb%6o4 d%3e%3d%3o3b%3e%3?FB2,25 ?DR v10?EP0,1,85 o3a%4 o4cea%6o3a%4o4cf
+PSGS a%6o3g%4bo4dg%6?DB1 a%3 g+%3f+%3g+%3?DR o4a%4o5 cea%6o4a%4o5cfa%6o4g%4 bo5dg%6:26o5eo4be?FB2,26 o5f+do4ao5g+eo4b?FJ9 }
+PSGS ?FD16={?XT1 ?DB1 ?XU6 v9o4?EP0,30,65 ?FR }
+PSGS ?FD2={v12o2f%2v9o3?FR }
+PSGS ?FD7={a%10abo5c%6o4a%3 o5c%3o4?FR }
+# *0{E255,255,0,255,0,255}
+# *1{E255,255,16,175,0,255}
+# *2{E255,255,24,110,0,255}
+# *4{E255,255,16,0,0,255}
+# *5{E255,255,32,0,0,255}
+# *6{E255,255,8,0,0,255}
+# *7{[v10o1D36fv9o2D35fv10o1D36fv9o2D28cv10o1D36fv9o2D35f]2[v10o1D46gv9o2D43gv10o1D46gv9o2D40dv10o1D46gv9o2D43g]2}
+# *8{D32dD35gD50f+rD35ggD32dD35gD0[araaD13eD0a]2D27[grggD24dD27g]2D0[aD24dD0a]4[aD19fD0a]4[D6bD13eD28g+]8}
+# *9{D40dD35gD42f+rD35ggD40dD35gD0[araaea]2D35[grggD24dD35g]2D0[aD24dD0a]4[aD27fD0a]4[D6bD0eD36g+]8}
+# *10{D15[a1ao3D9ao2D15aa]2D35[f1fo3D31fo2D35ff]2D43[g1go3D39go2D43gg]2D25[e1eo3D21eo2D25ee]2}
+# *11{[e4r28*1eeee*4]2D19[f4r28*1ffff*4]2D27g4r28*1gggg*4g4r28*1ggggo3D21e%46}
+# *12{eeee8*0v3o3D17a%5*2v7av8o6D21eeeD11[f8*0v3o3D35f%5*2v7fv8o6D11fff]2D19}
+# *13{v6o7[D-21fD-24co6D0aD11fD0ao7D-24c]2[D-13gD0do6D6bD19gD6bo7D0d]2}
+# *14{o4D13[e%96]2o6[D11fD0co5aD27fD0ao6c]2[D19gD0do5D6bD35gD6bo6D0d]2}
+# *15{[v10o1D18av9o2D15av10o1D18av9o2D43gv10o1D18av9o2D15a]4*7}
+# *16{D15[a1aaaa]8D52[f+1f+f+f+f+]2D35[f1ffff]2D25[e1eeee]4}
+# *17{e%58*5o3D17a%5r88*1v8o2a*2v7o3D43g%7r88*1v8o2D17a*2}
+# *18{*11r28*6o4D24d%22r28D13e%22r28}
+# *19{[araaD13eD0a]2D35grgg*8}
+# *20{e%16ev8o6D21ev7o3D25ee}
+# *21{[araaea]2D35grgg*9}
+# *22{g8*0v3o3D43g%5*2}
+D t198C16l2P1q0L*2*15*15 *16*16*10*10
+E t198C56l7P1q0L*1v11*14 *14E255,255,16,80,0,255 v12o4*19D0*19*4D13*18*4 *18
+F t198C88l11P1q0L[*1v6o5D0e%58*5o3D17a%5r88*1v8o2a*2v7o3D43g%7r88*1v8o2D17a*2v7o3a%7r88]2 *13*1o5*17v7o3a%7r88*1 v6o5D0*17v7o3a%7r88*13 v7o5*21
+F D0*21v8o6D21e8*0v3o3D17 a%5*2v8o6D21e*12*22v8o6 D19gggg*22v7gv8o6D19gg go5D21e%24v7o4e*0v3o5e8 *5v6o3D25e%5*2v7*20D17 a%16av8o6D21*12
+F [g8*0v3o3D43g%5*2v7gv8o6D19ggg]2 o5D21e%16v7o3D25eo4D21 eo3D25ee*20
+G t198C48l6v50,27,23,17,16,21,18 L@1[c@16c@1]12[c3c@2c@8cc@1]4 [c@16c@1]12c3c[@2c@8cc@1c3c]3 ccc[@8c3c@2c2]32@1c3[c@2c@1ccc3]15 @16c12c12ccc
