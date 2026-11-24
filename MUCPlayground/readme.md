@@ -70,6 +70,12 @@ Songs with the MucoMSX chip extensions (packed msPb0103–010A) play through `Na
 whose chip writes `MucEngine` routes to the same chips, so the channel view, the faders and
 `.vgm` export work for them as for any other song.
 `src/Engine/ChannelMixer.cs` applies the channel view's faders to the chip registers.
+`src/Engine/ChipLevels.cs` sets the OPNA's SSG 2 dB lower than MDSound leaves it (fmgen's
+`SetVolumePSG(-4)`, ×0.79): on the real YM2608 the SSG sounds about 20% quieter against the
+FM than in the emulator. Both engines apply it (MUC / .mub, and VGM files with a YM2608), so
+an OPNA song's SSG parts here sound about 20% quieter than in MDPlayer4Mac, whose default
+leaves them at 0; FM, rhythm, ADPCM and the MSX PSG (AY-3-8910) are unchanged. Measured
+natively: an SSG note ×0.794, an FM note ×1.000.
 `src/Engine/ChannelScope.cs` reads each channel's output from inside the chip emulators for
 the oscilloscope view.
 `src/Engine/MsxTrace.cs` recovers the source positions of MUCOMSX songs for the playback

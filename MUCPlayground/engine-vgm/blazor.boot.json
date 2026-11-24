@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "VgmPlaygroundWeb",
   "resources": {
-    "hash": "sha256-m71qaoqz2ZsGnN0Tm9Mbws0HPAlu97svIGQ2Be01OsI=",
+    "hash": "sha256-PhmqF3VHL5ZOPFuDtH5Sy1m5mjRQbNV7qIHd19nfCPM=",
     "jsModuleNative": {
       "dotnet.native.8.0.33.f8n5st0m1j.js": "sha256-IWMJRddlN1bzsyKoyocBaCxZBcJhlK+H8RWUoPZQ6mw="
     },
@@ -9,7 +9,7 @@
       "dotnet.runtime.8.0.33.q1mn7mvd0d.js": "sha256-aa75BhVU2iAzc0Nj93nvwfQ2raXDjiW4VBNfRLHRJgM="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-fxkmXgwHQkpATjhSHQh5CL8JEUOF2Xsj9IPS1QZKsek="
+      "dotnet.native.wasm": "sha256-fQmjf0ZFb0ormGm3HPs4250EAPn+NR+P0R2Qq9vPaTc="
     },
     "assembly": {
       "MDPlayerCore.wasm": "sha256-on4iOlqwW1xkV7DyymUmmYjdpQ1sRiv7srHIi7mYeJM=",
@@ -39,7 +39,7 @@
       "System.Text.Json.wasm": "sha256-9CGrSJEzKxgdLRp+sJZgpKxcBZzVSRiMkgGXqCID+/8=",
       "System.Text.RegularExpressions.wasm": "sha256-19NF/rnT7ICmEMjc4loCfbcH4g9oZznSvrusBDIxtsc=",
       "System.Threading.wasm": "sha256-4flawLLcPAR3BTe/Mq5nZJ4KyNydH1VqKYJbkc/8PzE=",
-      "VgmPlaygroundWeb.wasm": "sha256-4uS0aA9pKI8e1nL9leEf4QK2wKxRO053hUywr6zGTCA="
+      "VgmPlaygroundWeb.wasm": "sha256-3XVHpVNgAN6ZadCXAVJv5g3DBsatMuNRgq/e+jqHuUE="
     }
   },
   "cacheBootResources": true,

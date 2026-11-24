@@ -45,6 +45,7 @@ public static partial class Interop
         scope = null;
         try { session = VgmEngine.Load(data, 2048, SongPath); }
         catch (Exception e) { session = null; error = e.Message; }
+        if (session?.Mds != null) ChipLevels.Apply(session.Mds);   // the OPNA's SSG as quiet as on the chip
         if (session?.Mds != null)
         {
             try { scope = new ChannelScope(); scope.AddMdsound(session.Mds); }

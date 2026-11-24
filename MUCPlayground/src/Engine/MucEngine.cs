@@ -420,6 +420,7 @@ public sealed class MucPlayer
 
         mds = new MDSound.MDSound(MucEngine.SampleRate, 2048, null);
         mds.Init(MucEngine.SampleRate, 2048, chips.ToArray());
+        ChipLevels.Apply(mds);   // the OPNA's SSG as quiet as on the chip
         scope = new ChannelScope();
         try
         {
