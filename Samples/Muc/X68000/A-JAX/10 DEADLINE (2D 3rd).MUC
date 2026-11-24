@@ -1,0 +1,94 @@
+#mucom88 1.7
+#title A-JAX DEADLINE (2D 3rd)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment A-JAX (X68000)
+#voice AJAX.DAT
+#pcm AJAX02.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=MIDI1 B=MIDI2 C=MIDI3 H=MIDI4 I=MIDI5 J=MIDI6
+; K = MSM6258 ADPCM -> ADPCM-B (AJAX02.BIN)
+; G = MSM6258 bass kick -> YM2608 rhythm channel (bass drum)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{q4 o5a10 b10 q7 g10. a10. a+10.}
+#*2{q7 o4a10. b10. >c10. e10. *1 >c10. q4}
+#*3{o6d q4 e10 q2 a q4 f+10 q2}
+#*4{o6e10 d10 q2 e4 d e}
+#*5{o5a4 b >c q11 g10. q7 f+10 *4 f+}
+#*6{*5 o6a g f+ q4 e10 q2 f+ q4 d10 *5}
+#*7{q4 o6a10 q2 a q14 b10}
+#*8{q7 o4a10. b10. D1 >c10. e10. D2 *1 D1 >c10.}
+#*9{o5d q4 e10 D2 q2 a q4 f+10 D1 q2}
+#*10{o5a4 b D1 >c D2 q11 g10. q7 f+10 D1 *4 D2}
+#*11{D1 q4 o6e10 D2 q2 f+ D1 q4 d10 D2 *10 f+ *7 D1}
+#*12{*10 o6f+ a g f+ *11 q2 >c D2}
+#*13{o6e e e e e e e e}
+#*14{o6d d d d d d d d}
+#*15{q10 o6f+ q0 g48 r%19 q10 f+ q0 g48 r%19}
+#*16{r%29 q10 o6d+ g+ >c+ <f+ b q0 >e%7 r%29}
+#*17{o6c c c c c c c c}
+#*18{o5a+ a+ a+ a+ a+ a+ a+ a+}
+#*19{q10 o6d+ q0 e48 r%19 q10 d+ q0 e48 r%19}
+#*20{o5b b b b b b b b}
+#*21{o5a a a a a a a a}
+#*22{o5b b b a a a b b}
+#*23{q10 o5b q0 >c48 r%19 q10 <b q0 >c48 r%19}
+#*24{v109 o4a v105}
+#*25{o4a v105 a a v109 a v105 a a}
+#*26{o1c%11 r240}
+#*27{o1c240 @3 *26 @4 c @5 c%11}
+#*28{*26 @8 o1c%23 r240 @7 *26 @9}
+#*29{o1c240 @14 *26 @15 c%11 @16 c240}
+#*30{o1c @18 D4886 c%11 @2 D31695}
+#*31{o1c240 @3 *26 @7 *26 @19 c%23 r240 @7 *26 @20 c @21}
+#*32{o1c%11 @32 c%13 @4 *26 @7 *26 @4 *26 @27}
+#*33{@18 D4886 o1c12 r60 @27 D31695}
+#*34{o1c%23 @32 c%25 @27 c%11 @32}
+#*35{@27 *34 o1c%37 @27 c%23 @32}
+#*36{*26 @28 *26 *33 *34 o1c%13 *33 c @31 c%11}
+#*37{@29 *26 @30 o1c%11 @10 c40. r15 *35 c%25 @27 *36}
+#*38{o1c%11 @2 c24 r16 *35 c%13 @18 D12909 c @27 D31695}
+
+A C240 l20 vm2 L MF0 @14 v107 p3 *2 <a+10 g10 *2 d10 g10 v111 q2 e a f+ [ *3 ]2
+A d e a e [ c q4 d10 q2 g q4 e10 q2 ]2 c e a f+ [ *3 ]2 d a f d <a b >d f a g+
+A e d c <b a g+ e q4 *6 *7 q2 >c q4 <a10 *6 *7 q2 >c q0 <a12 r%96 r60
+
+B C240 l20 vm2 L MF0 @15 v107 p3 D2 *8 D2 q4 <a+10 g10 *8 q4 d10 D2 g10 v109 D1
+B q2 <e D2 a f+ D1 [ *9 ]2 d e D2 a D1 e [ c q4 d10 D2 q2 g D1 q4 e10 q2 ]2 c e
+B D2 a f+ D1 [ *9 ]2 d D2 a f D1 d D2 <a b D1 >d D2 f a g+ D1 e d c D2 <b a g+
+B D1 e D2 q4 *12 q4 <a10 *12 q0 <a12 r%96 r60
+
+C C240 l20 vm2 L MF0 @16 v103 p3 q10 [ *13 *13 *14 *14 ]2 [ e ]48 [ f ]15 q0
+C f120 r%22 [ *15 *15 a%7 r%41 ]7 [ q10 f+ q0 g48 r%19 ]4 a%7 *16
+
+F C240 l20 L t212 r%7 t211 r60
+
+G C240 l20 v53,21,0,0,0,0,0 L [ r%96 ]8 @1 [ o1c240 r%95 ]8 [ c240 r%47 c240
+G r%11 c240 r48 c240 r%17 c240 r%23 c240 r%35 c240 r%11 c240 r48 c240 r%29 ]8
+G c240 r%95
+
+H C240 l20 vm2 L MF0 @16 v103 p3 q10 [ *17 *17 *18 *18 ]2 [ >c ]48 [ d ]15 q0
+H d120 r%22 [ *19 *19 f+%7 r%41 ]7 [ q10 d+ q0 e48 r%19 ]4 f+%7 r%29 q10 <a+
+H >d+ g+ c+ f+ q0 b%7 r%29
+
+I C240 l20 vm2 L MF0 @17 v105 p3 q10 [ *20 *20 *21 *21 ]2 [ *22 b a a a b b a a
+I ]3 *22 b g+ g+ g+ a a b q0 b120 r%22 [ *23 *23 d%7 r%41 ]7 [ q10 <b q0 >c48
+I r%19 ]4 d%7 *16
+
+J C240 l20 vm2 L MF0 @5 v107 p3 [ q7 o3a10. b10. >c10. e10. q4 c10 <a10 q7 g10.
+J a10. a+10. >c10. q4 <a+10 g10 ]2 q2 [ f+ >f+ ]8 [ <f >f ]8 [ <f+ >f+ ]8 [ <b
+J >b ]4 [ <e >e ]4 [ *24 a a ]4 [ *24 q7 a10. v109 q2 *25 v109 *25 ]3 *24 q7
+J >d10. [ v109 q2 *25 v109 *25 *24 q7 a10. ]3 v109 q2 [ a v105 a a v109 ]4 a
+J v105 q7 >d10. q2 <d+ g+ >c+ <f+ b q7 e10.
+
+K C240 l20 L @1 D31695 p3 v240 o1c%11 @2 *27 @6 c240 @7 *26 *28 c @4 c%23 r240
+K @1 c%11 @10 c240 @11 *26 @12 c%11 @13 *29 @17 *26 @4 *30 *31 c%22 @22 c240
+K r240 @18 D6311 c @23 D31695 *26 @18 D2272 c @24 D31695 *26 @1 c%11 @10 *27
+K @13 c240 @25 *26 @7 *28 *26 @4 c%23 r240 @1 c%11 @2 c240 @11 *26 @12 c%11 @6
+K *29 @7 *26 @4 c @26 c%11 @10 *31 c%23 r240 @18 D12909 c @23 D31695 *26 @18
+K D23618 *26 @24 D31695 [ *32 *26 @4 *26 @7 *26 @28 ]7 *32 [ *26 ]4 *33 *34
+K c%13 *33 *30 c24 r16 *37 @10 c40. r15 @29 *26 @30 *38 *36 @10 c40. r15 *37 @2
+K c24 r16 @29 *26 @30 *38 *26 @28 *26 @18 D-2132 *26 D3541 *26 D11114 *26 D1074
+K *26 D7820 *26 D16825 *26 @24 D31695 c%23 r240

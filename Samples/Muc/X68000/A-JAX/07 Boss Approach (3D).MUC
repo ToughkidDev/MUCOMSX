@@ -1,0 +1,33 @@
+#mucom88 1.7
+#title A-JAX Boss Approach (3D)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment A-JAX (X68000)
+#voice AJAX.DAT
+#CarrierCorrection Yes
+; Needs MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+; YM2151 FM -> OPNA FM: A=MIDI1 B=MIDI2 C=MIDI3 H=MIDI4 I=MIDI5 J=MIDI8
+; YM2151 FM -> SCC wave+envelope: SCCA=MIDI6 SCCB=MIDI7
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ 5,-80,-18,-92,42,123,94,120,56,-120,-10,127,36,-75,66,-2,-4,5,-66,75,-38,-126,17,116,-67,-119,-90,-124,-45,91,17,83 }
+  @W1:{ 3,-29,-41,-3,51,-78,32,-127,33,-68,7,-59,119,21,-1,-104,4,102,-7,-15,-122,60,-11,73,-34,124,-32,80,-53,3,44,27 }
+
+A C112 l8 vm2 @44 v115 p3 q2 o3a+56. v117 p2 q0 a+%33
+
+B C112 l8 vm2 @44 v114 p1 D4 o3a+%33
+
+C C112 l8 vm2 @45 v114 p1 D4 o4a+7.
+
+F C112 l8 [ t114 r112 t113 r112 ]18
+
+H C112 l8 vm2 @45 v114 p2 o4a+7.
+
+I C112 l8 vm2 @45 v110 p1 q2 o5a+56. q0 a+
+
+J C112 l8 vm2 @44 v110 p3 q1 o3a+56. M3,1,4,7 q0 a+%30
+
+SCCA C112 l8 r56. @0 E255,255,0,255,1,5 v7 o3a+
+
+SCCB C112 l8 r56. @1 E255,255,0,255,1,10 v10 D-2 o4a+14.
