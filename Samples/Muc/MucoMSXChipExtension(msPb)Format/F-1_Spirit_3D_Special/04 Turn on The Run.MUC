@@ -1,0 +1,111 @@
+#mucom88 1.7
+#title Turn on The Run
+#composer Tsutomu Ogura
+#author ToughkidCST
+#comment F-1 Spirit 3D Special (MSX-Music)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension OPLL parts, msPb0109).
+
+?IT1={224,4,190,3,5,1}
+?KT0={344,364,386,409,433,459,486,516,546,578,612,648}
+MSXB ?XU1 ?QE1 ?KT0 l%1 ?FJ1
+MSXC ?XU1 ?QE1 ?KT0 l%1 ?FJ4
+MSXH ?XU1 ?QE1 ?KT0 l%1 ?FJ7
+MSXI ?XU1 ?QE1 ?KT0 l%1 ?FJ9
+MSXJ ?XU1 ?QE1 ?KT0 l%1 ?FJ11
+MSXG ?XU1 ?QE2 l%1 ?FJ14
+OPLS ?FD0={ ! }
+OPLS ?FD1={ ?XT1 @3 ?XU7 v13 ?QP160,1 r o5 a%2 o6 c o5 e r a r a r o6 c r o5 e a%2 g+%2 g%2 b d r g r g
+OPLS r%8 e a o6 c o5 e r a r a r o6 c r o5 e a%2 g+%2 g%2 b d r g r g r%8 a%2 o6 c o5 e
+OPLS r a r a r o6 c r o5 e a%2 g+%2 g%2 b d r g r g r b r d g%2 g+%2 @3 v13 ?QP176 o4 e a
+OPLS o5 c o4 e r a r a r o5 c r o4 e a r g+ r r o5 d r d d d r d ?XU1 d%10 d%9 d%10 ?XU7
+OPLS d%4 }
+OPLS ?FD2={ @3 v13 ?QP160 o4 a%2 o5 c o4 e r a r a r o5 c r o4 e a%2 g+%2 g%2 b d r g r g r b r
+OPLS d g%2 g+%2 ?FB3,2,1 a%2 o5 c o4 e r a r a r o5 c r o4 e a%2 g+%2 @7 v14 ?QP160 o5 e d r c r d
+OPLS r c%2 @3 v11 ?QP128 r ?XU3 g ?XU4 f ?XU3 e ?XU4 d ?XU3 c o4 ?XU4 b ?XU3 a ?XU4 g ?XU3 f ?XU4 e ?XU3 d ?XU4 c
+OPLS ?XU7 }
+OPLS ?FD3={ ?QP144 v13 o4 a%2 o5 c o4 e r a r a r o5 c o4 r e a%2 g+%2 g%2 b d r g r g r b r
+OPLS d g%2 b%2 f%2 a c r f r f r a r c f%2 a%2 g%2 b d r g r g r b r d g%2 g+%2 ?FB2,3,1
+OPLS ?XU7 v13 ?QP160 o5 c c r c r c r c c%2 o4 e%2 a%2 o5 c%2 o4 b b r b r b r b b%2 d%2 g%2 b%2 a
+OPLS a r a r a r a a%2 c%2 f%2 a%2 g g r g r g r g g%2 g%2 a%2 b%2 o5 c c r c r c r
+OPLS c c%2 o4 e%2 a%2 o5 c%2 o4 b b r b r b r b b%2 d%2 g%2 b%2 o5 c%3 c%3 c%2 d%3 d%3 d%2 d+%3 d+%3 d+%2 f%3
+OPLS f%3 f%2 ?QP224 g%16 v12 ?QP160 c%2 d+ o4 g+ r o5 c r c r d+ r o4 g+ o5 c%2 d+%2 o4 a+%2 o5 d o4 f
+OPLS r a+ r a+ r o5 d r o4 f a+%2 o5 d%2 o4 a+%2 o5 d+ o4 g r a+ r a+ r o5 d+ r o4 g a+%2 o5
+OPLS d+%2 c%2 d+ o4 g r o5 c r c r d+ r o4 g o5 d+ d c o4 b o5 c%2 d+ o4 g+ r o5 c r c r
+OPLS d+ r o4 g+ o5 c%2 d+%2 o4 a+%2 o5 d o4 f r a+ r a+ r o5 d r o4 f a+%2 o5 d%2 o4 a+%2 o5 d+ o4 g
+OPLS r a+ r a+ r o5 d+ r o4 f a+%2 o5 d+%2 v13 ?XU2 g%9 g%9 ?XU5 g%4 ?XU7 ?QP224 f%8 ?QP160 ?FJ2 }
+OPLS ?FD4={ ?XT1 ?XU7 @3 ?QP160,1 v7 ?DB1 r r%2 o5 a%2 o6 c o5 e r a r a r o6 c r o5 e a%2 g+%2 g%2 b d r g
+OPLS r g r%8 e a o6 c o5 e r a r a r o6 c r o5 e a%2 g+%2 g%2 b d r g r g r%8 a%2 o6 c
+OPLS o5 e r a r a r o6 c r o5 e a%2 g+%2 g%2 b d r g r g r b r d g%2 @7 v13 ?QP160 o3 e a
+OPLS o4 c o3 e r a r a r o4 c r o3 e a r g+ r r o4 d r d d d r d ?XU1 d%10 d%9 d%10 ?XU7
+OPLS d%4 }
+OPLS ?FD5={ @7 v13 ?QP160 o5 r%2 c r r%2 c r ?QP165 c%3 o4 b%2 o5 r ?QP160 c%2 r o4 b r b a r b r ?QP165
+OPLS g%3 a%2 r ?QP160 b%2 r%2 o5 c r r%2 c r ?QP165 c%3 o4 b%2 o5 r ?QP160 c%2 e%3 d%2 r c%2 ?QP165 o4
+OPLS b%3 a%2 g a ?QP160 b r%2 o5 c r r%2 c r ?QP165 c%3 o4 b%2 o5 r ?QP160 c%2 r o4 b r b a r
+OPLS b r ?QP165 g%3 a%2 r ?QP160 b%2 r%2 o5 c r r%2 c r ?QP165 c%3 o4 b%2 o5 r ?QP160 c%2 @7 v7 ?DB1 r%2
+OPLS e d r c r d r c%2 @3 v7 ?QP128 r ?XU3 g ?XU4 f ?XU3 e ?XU4 d ?XU3 c o4 ?XU4 b ?XU3 a ?XU4 g ?XU3 }
+OPLS ?FD6={ @12 ?QP64 v14 ?XU7 o4 a%2 a%2 a%2 a a r a a r a%2 a%2 ?FB8,6,1 ?XU7 v13 @3 ?DB0 ?QP160 o4 a a r a r a
+OPLS r a a%2 o3 c%2 f%2 o4 a%2 g g r g r g r g g%2 o3 b%2 o4 e%2 g%2 f f r f r f r f f%2 o3
+OPLS a%2 o4 d%2 f%2 e e r e r e r e e%2 e%2 f%2 ?QP224 g%2 a a r a r a r a a%2 o3 c%2 f%2 o4 a%2
+OPLS g g r g r g r g g%2 o3 b%2 o4 e%2 g%2 g+%3 g+%3 g+%2 a+%3 a+%3 a+%2 b%3 b%3 b%2 o5 c+%3 c+%3 c+%2
+OPLS d+%16 ?DB2 v11 ?QP160 c%2 d+ o4 g+ r o5 c r c r d+ r o4 g+ o5 c%2 d+%2 o4 a+%2 o5 d o4 f r a+
+OPLS r a+ r o5 d r o4 f a+%2 o5 d%2 o4 a+%2 o5 d+ o4 g r a+ r a+ r o5 d+ r o4 g a+%2 o5 d+%2 c%2
+OPLS d+ o4 g r o5 c r c r d+ r o4 g o5 d+ d c o4 b o5 c%2 d+ o4 g+ r o5 c r c r d+ r
+OPLS o4 g+ o5 c%2 d+%2 o4 a+%2 o5 d o4 f r a+ r a+ r o5 d r o4 f a+%2 o5 d%2 o4 a+%2 o5 d+ o4 g r a+
+OPLS r a+ r o5 d+ r o4 f a+%2 o5 d+%2 v13 ?XU2 d%9 d%9 ?XU5 d%4 ?XU7 ?QP224 d%8 ?DB0 ?FJ5 }
+OPLS ?FD7={ ?XT1 ?XU7 @3 v13 ?QP160,1 r o4 a%2 o5 c o4 e r a r a r o5 c r o4 e a%2 g+%2 g%2 b d r g r g
+OPLS r%8 e a o5 c o4 e r a r a r o5 c r o4 e a%2 g+%2 g%2 b d r g r g r%8 a%2 o5 c o4 e
+OPLS r a r a r o5 c r o4 e a%2 g+%2 g%2 b d r g r g r b r d g%2 g+%2 @9 v14 ?QP176 o5 e a
+OPLS o6 c o5 e r a r a r o6 c r o5 e a r g+ r r o6 d r d d d r d ?XU1 d%10 d%9 d%10 ?XU7
+OPLS d%4 }
+OPLS ?FD8={ @7 v13 ?QP160 o5 r%2 e r r%2 e r ?QP165 e%3 d%2 r ?QP160 e%2 r d r d c r d r o4 ?QP165 b%3
+OPLS o5 c%2 r ?QP160 d%2 r%2 e r r%2 e r ?QP165 e%3 d%2 r ?QP160 e%2 g%3 f%2 r e%2 ?QP165 d%3 c%2
+OPLS o4 b o5 c d ?QP160 r%2 e r r%2 e r ?QP165 e%3 d%2 r ?QP160 e%2 r d r d c r d r o4 ?QP165
+OPLS b%3 o5 c%2 r ?QP160 d%2 r%2 e r r%2 e r ?QP165 e%3 d%2 r ?QP160 e%2 @7 v14 ?QP176 g f r e r f
+OPLS r e%2 @3 v11 ?QP128 r ?XU3 g ?XU4 f ?XU3 e ?XU4 d ?XU3 c o4 ?XU4 b ?XU3 a ?XU4 g ?XU3 f ?XU4 e ?XU3 d ?XU4 c
+OPLS ?XU7 @7 v13 ?QP224 a%10 b%4 o5 c%2 e%2 d o4 g%11 g%2 a%10 b%4 o5 c%2 o4 b%2 o5 c o4 b%11 g%2 a%10 b%4 o5 c%2 e%2 d o4
+OPLS g%11 g%2 a%10 b%4 o5 c%2 d%12 c%2 d%2 e%10 d%4 c%2 o4 b%3 o5 c%3 o4 g%6 o5 c%2 d%2 e%10 d%4 c%2 g%3 e%3 o4 b%6 o5 c%2 d%2
+OPLS e%10 d%4 c%2 o4 b%3 o5 c%3 o4 g%6 o5 c%2 d%2 d+%3 d%3 c%2 f%3 d+%3 f%2 f+%3 f%3 d+%2 g+%3 f+%3 g+%2 a+%12 c%2 d%2 v13
+OPLS d+%12 d+%2 d%2 d+%2 d d+ r f r d%5 o4 a+%2 o5 c%2 d%3 o4 g%3 a+%2 o5 f%3 d+%3 o4 a+%2 o5 c%12 c%2 d%2 d+%12 d+%2
+OPLS d%2 d+%2 d d+ r f r d%5 o4 a+%2 o5 c%2 d%3 o4 g%3 a+%2 o5 d%3 d+%3 f%2 ?XU2 g%9 g%9 ?XU5 g%4 ?XU7 f%2 ?XU3 g ?XU4 f
+OPLS ?XU3 e ?XU4 d ?XU3 c o4 ?XU4 b ?XU3 a ?XU4 g ?XU3 f ?XU4 e ?XU3 d ?XU4 c ?XU7 ?FJ8 }
+OPLS ?FD9={ ?XT1 ?XU7 @3 v7 ?QP128,1 r ?DB2 r%2 o4 a%2 o5 c o4 e r a r a r o5 c r o4 e a%2 g+%2 g%2 b d r g
+OPLS r g r%8 e a o5 c o4 e r a r a r o5 c r o4 e a%2 g+%2 g%2 b d r g r g r%8 a%2 o5 c
+OPLS o4 e r a r a r o5 c r o4 e a%2 g+%2 g%2 b d r g r g r b r d g%2 g+%2 @7 v7 ?QP176 ?DB0
+OPLS e a o5 c o4 e r a r a r o5 c r o4 e a r g+ r r o5 d r d d d r d ?XU1 d%10 d%9
+OPLS d%10 ?XU7 d%2 }
+OPLS ?FD10={ @12 ?QP48 v14 ?XU7 o4 a%2 a%2 a%2 a a r a a r a%2 a%2 ?FB7,10,1 @7 v7 ?QP176 ?DB2 r%2 o5 g f r e r f
+OPLS r e%2 @3 v7 ?QP128 r ?XU3 g ?XU4 f ?XU3 e ?XU4 d ?XU3 c o4 ?XU4 b ?XU3 a ?XU4 g ?XU3 f ?XU4 e ?XU3 d ?XU4 c
+OPLS ?XU7 @9 v9 ?QP224 a%10 b%4 o5 c%2 e%2 d o4 g%11 g%2 a%10 b%4 o5 c%2 o4 b%2 o5 c o4 b%11 g%2 a%10 b%4 o5 c%2 e%2 d o4
+OPLS g%11 g%2 a%10 b%4 o5 c%2 d%12 c%2 d%2 e%10 d%4 c%2 o4 b%3 o5 c%3 o4 g%6 o5 c%2 d%2 e%10 d%4 c%2 g%3 e%3 o4 b%6 o5 c%2 d%2
+OPLS e%10 d%4 c%2 o4 b%3 o5 c%3 o4 g%6 o5 c%2 d%2 d+%3 d%3 c%2 f%3 d+%3 f%2 f+%3 f%3 d+%2 g+%3 f+%3 g+%2 a+%12 c%2 d%2 v9
+OPLS d+%12 d+%2 d%2 d+%2 d d+ r f r d%5 o4 a+%2 o5 c%2 d%3 o4 g%3 a+%2 o5 f%3 d+%3 o4 a+%2 o5 c%12 c%2 d%2 d+%12 d+%2
+OPLS d%2 d+%2 d d+ r f r d%5 o4 a+%2 o5 c%2 d%3 o4 g%3 a+%2 o5 d%3 d+%3 f%2 ?XU2 g%9 g%9 ?XU5 g%4 ?XU7 f%2 ?XU3 g ?XU4 f
+OPLS ?XU3 e ?XU4 d ?XU3 c o4 ?XU4 b ?XU3 a ?XU4 g ?XU3 ?XU7 ?FJ10 }
+OPLS ?FD11={ ?XT1 @12 ?XU7 v13 ?QP48,1 v15 r r%16 r%16 r%16 r%16 o4 a%2 a%2 a%2 a a r a a r a%2 a%2 a%2 a%2 a%2 a a
+OPLS r a a r a%2 a%2 @14 ?DB0 v13 ?QP112 o1 e a o2 c o1 e r a r a r o2 c r o1 e a%2 g+%2 r g
+OPLS r g g g r g ?XU1 g%10 g%9 g%10 ?XU7 g%4 }
+OPLS ?FD12={ ?QP0 o1 a%3 o2 e%3 a%5 e a%2 e%2 o1 g%3 o2 d%3 g%5 d g%2 d%2 ?FB3,12,1 o1 a%3 o2 e%3 a%5 e a%2 e%2 g f r e
+OPLS r f r e r%6 o1 a%2 }
+OPLS ?FD13={ o1 a%3 o2 e%3 a%5 e a%2 e%2 o1 g%3 o2 d%3 g%5 d g%2 d%2 o1 f%3 o2 c%3 f%5 c f%2 c%2 o1 g%3 o2 d%3 g%5 d g%2 d%2
+OPLS ?FB2,13,1 ?XU7 ?QP0 o1 f f r f r f r f f%2 f%2 o2 c%2 o1 f%2 e e r e r e r e e%2 e%2 b%2 e%2
+OPLS o2 d d r d r d r d d%2 d%2 o1 a%2 o2 d%2 c c r c r c r c c%2 c%2 o1 g%2 o2 c%2 o1 f f
+OPLS r f r f r f f%2 f%2 o2 c%2 o1 f%2 e e r e r e r e e%2 e%2 b%2 e%2 f%3 f%3 f%2 g%3 g%3 g%2 g+%3
+OPLS g+%3 g+%2 a+%3 a+%3 a+%2 o2 c%16 ?QP224 o1 f%4 o2 c%4 o1 f%3 f o2 c%2 o1 f%2 a+%4 f%4 f%3 f f%2 a+%2 o2 d+%4 o1 a+%4 o2
+OPLS d+%3 d+ a+%2 d+%2 c%4 o1 g%4 o2 c%3 c o1 g%2 o2 c%2 o1 f%4 o2 c%4 o1 f%3 f o2 c%2 o1 f%2 a+%4 f%4 f%3 f f%2
+OPLS a+%2 o2 d+%3 d+%3 d+%2 d+%3 d+%3 d+%2 o1 ?XU2 g%9 g%9 ?XU5 g%4 ?XU7 g%8 ?FJ12 }
+MSXG ?FD14={ ?XT64 ?XU7 v14 ?IT1,1 ?ID-,1 }
+MSXG ?FD15={ ?IB c+%2 c+%2 ?IB c+%4 ?IB c+%3 ?IB c+ ?IB c%2 c+%2 ?FB6,15,1 ?IT1,1 g+ g+ g+ g+%2 g+%2 g+%2 g+%2 g+ g+%2 g+%3 g+%2
+MSXG g+ g+ g+%2 g+ v15 ?XU1 g+%10 g+%9 g+%10 ?XU7 ?IB g+%2 a+%2 }
+MSXG ?FD16={ v14 ?IB c+ c+ d ?IB c+ a c+ ?IB d c+ c+ c+ d ?IB c+ a c+ d c+ ?FB7,16,1 g+ g+%2 g+%2 g+%2
+MSXG g+%3 ?IB c ?IB c g+%4 ?XU7 }
+MSXG ?FD17={ ?IB c+ c+ d ?IB c+ a c+ ?IB d c+ c+ c+ d ?IB c+ a c+ d c+ ?FB7,17,1 ?IB c+ c+ d ?IB c+
+MSXG a c+ ?IB d c+ ?IB c g+ g+ g+ g+ g+ g+ g+ }
+MSXG ?FD18={ ?IB c+ ?IB c+ d ?IB c+ a ?IB c+ d ?IB c+ ?IB c+ c+ d c+ a c+ ?IB d c+ ?FB3,18,1 ?IB c+ ?IB c+
+MSXG d ?IB c+ a ?IB c+ d ?IB c+ ?IB c%2 a%2 a%2 a%2 }
+MSXG ?FD19={ ?IB c+ ?IB c+ d ?IB c+ a ?IB c+ d ?IB c+ ?IB c+ c+ d c+ a c+ ?IB d c+ ?FB2,19,1 ?IB d c+
+MSXG c+ ?IB d a c+ a+ a ?IB d c+ c+ ?IB d g+ g+ g+ g+ ?IB d c+ c+ ?IB d a c+ a+ a ?IB c
+MSXG g+ g+ g+ g+ g+ g+ g+ ?XU1 g+%9 g+%9 g+%10 g+%9 g+%9 g+%10 g+%9 g+%9 g+%10 ?XU3 g+ g+ g+ g+ ?XU4 g+ g+
+MSXG g+ g+ ?XU7 }
+MSXG ?FD20={ ?IB c+ c+ d c+ a c+ d c+ ?IB c+ c+ d ?IB c+ a c+ d c+ ?FB7,20,1 ?XU2 g+%9 g+%9 ?XU5 g+%4 v15
+MSXG ?XU7 ?IB a+%2 v10 ?XU3 g+ g+ v11 ?XU4 g+ g+ v12 ?XU3 g+ g+ v13 ?XU4 g+ g+ v14 ?XU3 g+ g+ v15 ?XU4 g+ g+ ?XU7
+MSXG ?FJ16 }

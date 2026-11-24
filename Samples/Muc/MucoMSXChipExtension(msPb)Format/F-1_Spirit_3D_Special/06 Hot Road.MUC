@@ -1,0 +1,56 @@
+#mucom88 1.7
+#title Hot Road
+#composer Tsutomu Ogura
+#author ToughkidCST
+#comment F-1 Spirit 3D Special (MSX-Music)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension OPLL parts, msPb0109).
+
+?IT1={224,4,190,3,5,1}
+?KT0={344,364,386,409,433,459,486,516,546,578,612,648}
+MSXB ?XU1 ?QE1 ?KT0 l%1 ?FJ1
+MSXC ?XU1 ?QE1 ?KT0 l%1 ?FJ3
+MSXH ?XU1 ?QE1 ?KT0 l%1 ?FJ5
+MSXI ?XU1 ?QE1 ?KT0 l%1 ?FJ7
+MSXJ ?XU1 ?QE1 ?KT0 l%1 ?FJ9
+MSXG ?XU1 ?QE2 l%1 ?FJ11
+OPLS ?FD0={ ! }
+OPLS ?FD1={ ?XT1 @7 v12 ?XU7 r%2 ?QP224,1 o4 d%2 ?XU3 o4 d e f g ?XU4 a b o5 c d ?XU7 ?QP192 }
+OPLS ?FD2={ v13 o5 e%8 o4 a%3 o5 c%3 g%2 f%3 e%3 o4 b%6 g%2 b%2 a%4 o5 e%4 d c r o4 b r o5 c o4 b g e%8 r%2 g%2 r
+OPLS g+%3 a%8 b%3 o5 c%3 d%2 o4 g%8 b%2 a d+ r e r f%4 a%3 o5 c%2 e%3 c%3 o4 a%2 o5 d%8 o4 g%2 a b%2 o5 c d f
+OPLS e%8 o4 e f a o5 c e e r d%9 r o4 e g b o5 d d c+ c%4 o4 a%3 f%2 d%3 e%3 f%2 e d+ e f e
+OPLS f g f+ g g+ g g+ a o5 c r e%9 o4 a%3 o5 c%3 e%2 d%8 o4 g%3 b%3 o5 d%2 c o4 b o5 c o4 g+ a e
+OPLS g+ f%2 d e f g a o5 c e g%8 a%8 ?FJ2 }
+OPLS ?FD3={ ?XT1 @7 v10 ?QP224,1 ?XU7 r%4 ?DB3 o4 d%2 ?XU3 o4 d e f g ?XU4 a b o5 c d ?QP192 ?XU7 }
+OPLS ?FD4={ v11 o5 e%8 o4 a%3 o5 c%3 g%2 f%3 e%3 o4 b%6 g%2 b%2 a%4 o5 e%4 d c r o4 b r o5 c o4 b g e%8 r%2 g%2 r
+OPLS g+%3 a%8 b%3 o5 c%3 d%2 o4 g%8 b%2 a d+ r e r f%4 a%3 o5 c%2 e%3 c%3 o4 a%2 o5 d%8 o4 g%2 a b%2 o5 c d f
+OPLS e%8 o4 e f a o5 c e e r d%9 r o4 e g b o5 d d c+ c%4 o4 a%3 f%2 d%3 e%3 f%2 e d+ e f e
+OPLS f g f+ g g+ g g+ a o5 c r e%9 o4 a%3 o5 c%3 e%2 d%8 o4 g%3 b%3 o5 d%2 c o4 b o5 c o4 g+ a e
+OPLS g+ f%2 d e f g a o5 c e g%8 a%8 ?FJ4 }
+OPLS ?FD5={ ?XT1 @9 v13 ?XU7 r%2 ?QP224,1 o4 d%2 ?XU3 o4 d e f g ?XU4 a b o5 c d ?XU7 }
+OPLS ?FD6={ ?QP160 o4 r%2 a a a a r%2 a r%2 a%5 r%2 g g g g r%2 g r%2 g r g f+%2 o4 r%2 f f f f r%2
+OPLS f%3 a%3 o5 c%2 o4 r%2 b b b b r%4 b%2 r a+%3 o4 r%2 a a a a r%2 a r%2 a%5 r%2 g g g g r%2 g r%2
+OPLS g r g f+%2 o4 r%2 f f f f r%2 f%3 a%3 o5 c%2 r%2 c c c c r%2 o4 b r%2 b r b%3 ?QP208 o5 c%8 o4 a%4
+OPLS a a r g%9 g%3 g%3 g%2 f%8 a%8 g%3 f+%4 f%4 f r a%3 a%12 a a r g%9 g%3 g%3 g%2 f%3 a%5 o5 c%3 e%5 ?QP160 r%2
+OPLS d r%2 d r%3 e r e%5 ?FJ6 }
+OPLS ?FD7={ ?XT1 @9 v13 ?XU7 r%2 ?QP224,1 o4 d%2 ?XU3 o4 d e f g ?XU4 a b o5 c d ?XU7 }
+OPLS ?FD8={ ?QP160 o4 r%2 f f f f r%2 f r%2 f%5 r%2 e e e e r%2 e r%2 e r e d+%2 r%2 d d d d r%2
+OPLS d%3 f%3 a%2 r%2 g g g g r%4 e%2 r e%3 o4 r%2 f f f f r%2 f r%2 f%5 r%2 e e e e r%2 e r%2 e
+OPLS r e d+%2 o4 r%2 d d d d r%2 d%3 f%3 a%2 r%2 a a a a r%2 g r%2 g r g%3 ?QP208 a%8 f%4 f f r e%9
+OPLS e%3 e%3 e%2 d%8 f%8 e%3 d+%4 d%4 d r f%3 f%12 f f r e%9 e%3 e%3 e%2 d%3 f%5 a%3 o5 c%5 ?QP160 r%2 o4 b r%2 b r%3
+OPLS o5 c+ r c+%5 ?FJ8 }
+OPLS ?FD9={ ?XT1 @14 v14 ?XU7 r%2 ?QP224,1 o2 d%2 ?XU3 o2 d d c o1 b ?XU4 a+ a g+ g ?XU7 v14 ?QP224 }
+OPLS ?FD10={ o1 f%3 o2 c%3 f%2 o1 r f r f o2 c%2 f%2 o1 e%3 b%3 o2 e%2 o1 r e r e r o2 e d+%2 o1 d%3 a%3 o2 d%2
+OPLS o1 r g r g o2 d%2 g%2 o1 c%3 g%3 o2 c%2 r%2 c%2 r ?QP224 ?XU4 c%3 ?XU3 o1 b a+ a ?XU7 ?QP192 o1 f%3 o2 c%3 f%2 o1
+OPLS r f r f o2 c%2 f%2 o1 e%3 b%3 o2 e%2 o1 r e r e r o2 e d+%2 o1 d%3 a%3 o2 d%2 o1 r d r d a%2 o2
+OPLS d%2 o1 g%3 o2 d%3 g%2 ?QP224 ?XU4 r%4 g f+ f e ?XU3 d+ d c+ c o1 b a+ a g+ ?XU7 ?QP192 o1 f%3 o2 c%3 f%2
+OPLS o1 r f r f o2 c%2 f%2 o1 e%3 b%3 o2 e%2 o1 r e r e r o2 e d+%2 o1 d%3 a%3 o2 d%2 o1 r d r d a%2
+OPLS o2 d%2 e%3 d+%4 d%4 g r g f+%2 o1 f%3 o2 c%3 f%2 o1 r f r f o2 c%2 f%2 o1 e%3 b%3 o2 e%2 o1 r e r e r
+OPLS o2 e d+%2 o1 d%3 a%3 o2 d%2 o1 r d r d a%2 o2 d%2 o1 r%2 g r%2 g%3 r g r g ?QP224 ?XU4 f+ f e d+
+OPLS ?XU3 d+ d c+ c ?XU7 ?QP192 ?FJ10 }
+MSXG ?FD11={ ?XT64 ?XU7 v14 ?IT1,1 ?IB c c+ g+%2 ?XU3 v7 g+ v8 g+ v9 g+ v10 g+ ?XU4 v11 g+ v12 g+ v13 g+ v14 g+ ?XU7 v14
+MSXG }
+MSXG ?FD12={ ?IB c c+ d%2 g+ c+ d%2 ?IB c c+ g+ ?IB c c+ ?IB c d%2 ?IB c c+ d%2 g+ c+ d%2 ?IB c c+ d%2 ?IB
+MSXG c g+ d%2 ?IB c c+ d%2 g+ c+ d%2 ?IB c c+ g+ ?IB c c+ ?IB c d%2 ?IB c c+ c+ d%2 c+ c+ c+ ?IB c
+MSXG c+ g+%2 ?IB c g+%2 c+ ?FB3,12,1 ?IB c c+ d%2 g+ c+ d%2 ?IB c c+ g+ ?IB c c+ ?IB c d%2 ?IB c c+ d%2
+MSXG g+ c+ d%2 ?IB c c+ d%2 ?IB c g+ d%2 ?IB c c+ d%2 g+ c+ d%2 ?IB c c+ g+ ?IB c c+ ?IB c d%2 ?IB c
+MSXG c+ g+ c+ g+ d%2 ?IB c ?IB c g+ c+ d%3 ?XU4 g+ g+ ?XU3 g+ g+ ?XU7 ?FJ12 }
