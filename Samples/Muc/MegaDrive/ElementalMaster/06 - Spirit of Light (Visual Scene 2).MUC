@@ -1,0 +1,48 @@
+#mucom88 1.7
+#title Spirit of Light (Visual Scene 2)
+#composer Technosoft
+#author ToughkidCST
+#comment Elemental Master (U)
+#driver mucomDotNET
+#voice ELEMMAST.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{P1 E255,255,0,255,0,255 v10}
+#*2{@177 v98 p3 H0,0,0 D0 MF0 q2}
+#*3{o5b5. H2,0,0 a10 b10}
+#*4{D5 o6d D7 f+ D8 a b D5 >d D7 f+ D8}
+#*5{o4f+ D8 a b D5 >d D7 f+ D8 a b}
+#*6{o5e10 H2,6,0}
+#*7{MF0 q2}
+#*8{o6c10 H2,6,0}
+#*9{M1,1,-16,255 o5b20.& MF0 b%87}
+
+A C120 l20 vm2 t170 r10 L @176 v107 p3 H2,0,0 D0 *7 o5d10 *6 *3 *8 <b2 H2,0,0
+A g10 *6 d5. *3 *8 <b5. H2,0,0 >c10 <b10 a10 g10 H2,6,0 a5. e2 H2,0,0 a10 q14
+A a5 H2,6,0 q2 e5. H2,0,0 d10 *6 f+%84 H2,0,0 b10& H2,6,0 *9 r10
+
+B C120 l20 vm2 L [ *2 o5c5 ]8 [ *2 <b5 ]8 [ *2 a5 ]8 [ b5 ]8
+
+C C120 l20 vm2 L [ *2 o5g5 ]16 [ *2 e5 ]8 [ f+5 ]8
+
+D C120 l20 @0 L [ *1 D12 *7 o5e5 ]8 [ *1 D8 *7 d5 ]8 [ *1 D14 *7 c5 ]8 D8 [ d5
+D ]8
+
+E C120 l20 @0 L [ *1 D5 *7 o5b5 ]8 [ *1 D2 *7 a5 ]8 [ *1 D8 *7 d5 ]8 D2 [ a5 ]8
+
+H C120 l20 vm2 L @178 v102 p3 H0,0,0 D0 *7 [ o4d e g b >d e g b >d e g b >d e g
+H b ]2 [ o4d g a b >d g a b >d g a b >d g a b ]2 [ o4d e a >c d e a >c d e a >c
+H d e a >c ]2 [ o4d f+ a b >d f+ a b >d f+ a b >d f+ a b ]2
+
+I C120 l20 vm2 r10 L r10 @176 v101 p2 H2,0,0 D5 *7 o5d10 D6 *6 D8 *3 D5 *8 D8
+I <b2 H2,0,0 D6 g10 *6 D5 d5. D8 *3 D5 *8 D8 <b5. H2,0,0 D5 >c10 D8 <b10 a10 D6
+I g10 H2,6,0 D8 a5. D6 e2 H2,0,0 D8 a10 H2,6,0 q14 a5 D6 q2 e5. H2,0,0 D5 d10
+I D6 *6 D7 f+%84 D8 b10& *9
+
+J C120 l20 vm2 r10 L @178 v96 p1 H0,0,0 D5 *7 [ o4d D6 e g D8 b D5 >d D6 e g D8
+J b D5 >d D6 e g D8 b D5 >d D6 e g D8 b D5 ]2 [ o4d D6 g D8 a b D5 >d D6 g D8 a
+J b D5 >d D6 g D8 a b D5 >d D6 g D8 a b D5 ]2 [ o4d D6 e D8 a D5 >c d D6 e D8 a
+J D5 >c d D6 e D8 a D5 >c d D6 e D8 a D5 >c ]2 o4d D7 *5 *4 a b D5 o4d D7 *5 *4
+J a b

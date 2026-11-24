@@ -1,0 +1,33 @@
+#mucom88 1.7
+#title Like a Nightmare (Game Over)
+#composer Technosoft
+#author ToughkidCST
+#comment Elemental Master (U)
+#driver mucomDotNET
+#voice ELEMMAST.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{H0,0,0 D0 MF0}
+#*2{D32 o6c}
+
+A C96 l8 vm2 t200 @179 v112 p3 *1 q2 o5f >c <a+ >c <g+ t196 >c t190 <g t185 >c
+A t179 <f4 t172 e4 t104 f2
+
+B C96 l8 vm2 @180 v116 p3 *1 o3f1& q2 f1
+
+C C96 l8 vm2 [ @181 v103 p3 *1 q2 o4f ]8 f4 e4 f2
+
+D C96 l8 @0 P1 E255,255,0,255,3,255 v12 D3 MF0 q2 o5f *2 D0 <a+ *2 D12 <g+ *2
+D D12 <g *2 D3 <f4 D12 e4 D3 f2
+
+E C96 l8 @0 r16 P1 E255,255,0,255,2,255 v10 D21 MF0 q2 o5f *2 D18 <a+ *2 D30
+E <g+ *2 D30 <g *2 D21 <f4 D30 e4 D21 f2
+
+H C96 l8 vm2 [ @181 v105 p2 *1 q2 o4g+ ]8 a+4 g4 g+2
+
+I C96 l8 vm2 [ @181 v105 p1 *1 q2 o5c ]8 c4 c4 c2
+
+J C96 l8 vm2 r16 @179 v106 p3 H0,0,0 D6 MF0 q2 o5f D5 >c D8 <a+ D5 >c D8 <g+ D5
+J >c D6 <g D5 >c D6 <f4 e4 f2

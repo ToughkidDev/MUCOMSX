@@ -1,0 +1,51 @@
+#mucom88 1.7
+#title Ghost Story of Hell (Continue)
+#composer Technosoft
+#author ToughkidCST
+#comment Elemental Master (U)
+#driver mucomDotNET
+#voice ELEMMAST.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{P1 E255,255,0,255,2,255}
+#*2{M0,1,-7,255 o5g& M0,1,7,255}
+#*3{@182 v99 p2 H0,0,0 D6 MF0 q2 o6f D7 f+ D6 g D8}
+#*4{@182 v105 p3 H0,0,0 D0 MF0 q2 o6f f+ g g+}
+#*5{D44 o7d D20 <a D32 >c+ D12 <g+ D32 >c D12}
+#*6{o6f D20 a D30 e D12 g+ D32 d+ D12 g}
+#*7{*6 D8 o6d D20 f+ D32 c+ D3 f D32 c D30}
+#*8{D23 o6b D20 f+ D0 a+ D3 *7 e D5 <b D32}
+#*9{M0,1,7,255 o5f+& M0,1,-7,255 f+& M0,1,7,255}
+#*10{D3 MF0 q2 o6f D20 f+ D12 g g+}
+#*11{D3 MF0 q2 o5f f+ D12 g g+}
+#*12{*5 o6g *8 >d+ D0 <a+ D3}
+
+A C96 l8 vm2 t197 [ *4 ]8 [ *4 ]8 >d <a >c+ <g+ >c <g b f+ a+ f a e g+ d+ g d
+A f+ c+ f c e <b >d+ <a+ f1
+
+B C96 l8 vm2 @183 v113 p2 H0,0,0 D0 MF0 q2 [ o3f1 f+1 g1 f+1 ]2 [ f1 ]4
+
+C C96 l8 vm2 r [ *3 g+ ]8 [ *3 g+ ]8 D5 >d D8 <a D5 >c+ D8 <g+ D5 >c D6 <g D8 b
+C D7 f+ D8 a+ D6 f D8 a D6 e D8 g+ D6 d+ g D5 d D7 f+ D5 c+ D6 f D5 c D6 e D8
+C <b D6 >d+ D8 <a+ D6 f%84
+
+D C96 l8 @0 [ *1 v11 *11 ]8 [ *1 v11 *10 ]8 *12 f1
+
+E C96 l8 @0 r [ *1 v10 *11 ]8 [ *1 v10 *10 ]8 *12 f%84
+
+H C96 l8 vm2 @183 v113 p1 H0,0,0 D12 MF0 q2 [ o3f1 D13 f+1 g1 f+1 D12 ]2 [ f1
+H ]4
+
+I C96 l8 vm2 r%255 r%129 [ @184 v107 p3 H0,0,0 D0 MF0 q2 o5f f+ g g+ ]8 D107
+I M0,1,-7,255 f+& M0,1,-6,255 f+& f+%11& MF0 f+96& M0,1,-6,255 f+%11& MF0
+I f+96& M0,1,-5,255 f+%11& MF0 f+96& M0,2,-15,255 f+& M0,1,-8,255
+I f+& M1,1,-7,255 f+%5& MF0 f+%7& M0,1,-8,255 f+%11& MF0 f+96& *9
+I f+& M0,1,-7,255 f+& M0,1,7,255 f+& M1,1,-7,255 q0 f+%22 r48 @185 v119 D0 MF0
+I q2 o3f1 t173 f1
+
+J C96 l8 vm2 r%255 r%141 [ @184 v101 p1 H0,0,0 D6 MF0 q2 o5f D7 f+ D6 g D8 g+
+J ]8 D63 M0,1,-7,255 g& M0,1,-6,255 g& g& M0,1,-5,255 g& g& M0,2,-14,255
+J g& M0,1,-8,255 g& M1,1,-8,255 g%5& MF0 g%7& *2 g& *2 g& *2 g& M1,1,-7,255 q0
+J g%22 r48 @185 v113 D6 MF0 q2 o3f1 f%84
