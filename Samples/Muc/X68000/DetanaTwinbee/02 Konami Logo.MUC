@@ -1,0 +1,37 @@
+#mucom88 1.7
+#title Detana!! TwinBee BGM 16
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment Detana!! TwinBee (X68000)
+#voice DETANATB.DAT
+#CarrierCorrection Yes
+; Needs MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch3 H=ch4 I=ch5 J=ch6
+; YM2151 FM -> SCC wave+envelope: SCCA=ch7 SCCB=ch8
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ 0,39,74,102,120,127,124,113,95,74,52,32,15,4,-1,-2,0,2,1,-4,-15,-32,-52,-74,-95,-113,-124,-127,-120,-102,-74,-39 }
+  @W1:{ 0,45,72,102,127,126,120,113,87,58,42,19,-3,-5,-5,-11,0,11,6,5,3,-19,-42,-58,-87,-113,-120,-126,-127,-102,-72,-45 }
+
+A C140l28vm2r140 @11v122p3D-3q7o5b%13 D-2>g10>e%13<g10D-3q0 <b%72
+
+B C140l28vm2r @11v122p3D-1q7o6c10D-3 b%13D-1>c10D-2q0<e%72
+
+C C140l28vm2r14 @11v122p3D-2q7o6e%13 D-1>c10D-3<b%13D-1q0 c%72
+
+F C140l28 [t200r140t199r%3 ]36t200r140
+
+H C140l28vm2r%19 @11v115p3D1q2o5b35D0q3 >cq2e35D1q3gq2b35D0
+H q3>cq2e35q3cD1q2<b35q3 gD0q2e35q3cD1q0<b%72
+
+I C140l28vm2r5 @16v114p3D6q1o5b35D4q2 >cq1e35D5q2gD6q1b35D4
+I q2>cq1e35q2cD6q1<b35D5 q2gD4q1e35q2cD6q0<b%49
+
+J C140l28vm2r%13 @14v111p3q6o5b%13q7 >g10q6>e%13q7<g10q0 <b%38
+
+SCCA C140l28r%17 @0E0,9,3,64,1,34v10q7 o5c10q6b%13D-24q7>c10 D0q0
+SCCA <e%38
+
+SCCB C140l28r%26 @1E255,255,14,45,0,17 v8q8o5e10D-24>c%13D0 <b10q0
+SCCB c%29

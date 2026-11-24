@@ -1,0 +1,40 @@
+#mucom88 1.7
+#title Enemy Approaching
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+; G: timed YM2608 SSG 1 updates (Z80); the original FM parts retain their voices.
+#*1{o6c+ @37 M0,2,80,1 D67o3c+ @38 MF0 D-1}
+#*2{rg+>g+<g+g+g+g+g+>f+&g+<g+}
+#*3{rc+>c+<c+c+c+c+c+b&>c+<c+}
+#*4{M75,2,32,7 D-16>cc+%49&v10 D-16c+2&q21c+%35}
+#*5{*6r%5 y0,238*7r96*9r192 y8,11r192 y0,235r96}
+#*6{y8,8r192 y8,11}
+#*7{*6r%5 y0,225*6r%75[*8*9*10]2*8 y0,221*11*12*10 y0,223}
+#*8{y0,223r96 y0,221r96 y0,219r96}
+#*9{y0,221r96 y0,223r96 y0,225r96 y0,227r96 y0,229r96 y0,231r96 y0,233}
+#*10{r96 y0,231r96 y0,229r96 y0,227r96 y0,225r96}
+#*11{r96 y0,223r96 y0,225 y8,12 y0,227r96 y0,229r96 y0,231r96 y0,233r96}
+#*12{y0,235r96 y0,233}
+
+A C192 l12 vm2 t228 r4 L [ r @35 M5,2,-2,12 v112 q5 D-1 o2b r b r b q35 >c+2
+A ]7 r4 @36 M25,1,-17,255 v115 e%29& v116 e48& v117 e%5& v118 e%5& q0 v119 e%5
+A r6 v118 f+%29& v119 f+48& v120 f+%5& v121 f+%5& v122 f+%5& v123 f+48& v124
+A f+%5& v125 f+%5& v126 f+96
+B C192 l12 vm2 r4 L @37 M0,2,80,1 v122 q3 D67 o3c+ @38 MF0 D-1 *1 *1 o6c+ @39
+B M1,1,-12,255 o3g+ @38 MF0 [ *1 ]5 o6c+ @39 M1,1,-12,255 o3g+ g+ g+ @37
+B M0,2,80,1 D67 c+ q1 c+24 c+24 q3 c+
+C C192 l12 vm2 r4 L @40 M3,2,-2,4 v122 q3 D-1 o3g+ *2 g+ *2 [ b r b >b <b b b
+C b b >a+& b <b ]2 >c+ *3 c+ *3 e r e >e <e e e e e >d+& e <e <a r a >a <a a b
+C >f+ g+ b& <b >c
+E C192 l32 r%20 r4 L P1 E163,250,3,255,0,1 v9 M75,2,16,7 q0 D-8 o4b [ *4
+E M75,2,16,7 v9 q0 D-8 <b ]2 *4 v9 q0 c+ d d+%49& q9 v10 D-16 d+%35 v9 q5 e4
+E f+4 M75,2,16,7 [ q0 D-8 <b *4 M75,2,16,7 v9 ]2 q0 D-8 <b *4 v9 q0 f+ g
+E g+%49& q9 v10 D-16 g+%35 v9 q3 f+8. d+8. M75,2,16,7 q2 D-8 <b8
+G C192 r4 L y0,252 y1,0 [ *5 y0,252 ]2 *5 y0,225 *6 r%5 y0,212 *6 r%5 y0,200
+G *6 r%75 y0,198 r96 y0,196 r96 y0,194 r96 y0,196 r96 y0,189 *6 r%47 y0,168 *6
+G r%47 [ y0,252 *5 ]3 y0,168 *6 r%5 y0,159 *6 r%5 y0,150 *6 r%75 y0,148 r96
+G y0,146 r96 y0,144 r96 y0,146 r96 y0,168 *6 r%35 y0,200 *6 r%35 y0,252 *6
+G r%23

@@ -1,0 +1,101 @@
+#mucom88 1.7
+#title A-JAX LOOK FOR A FORTRESS (3D 2nd)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment A-JAX (X68000)
+#voice AJAX.DAT
+#pcm AJAX06.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=MIDI1 B=MIDI2 C=MIDI3 H=MIDI4 I=MIDI5 J=MIDI6
+; K = MSM6258 ADPCM -> ADPCM-B (AJAX06.BIN)
+; G = MSM6258 bass kick -> YM2608 rhythm channel (bass drum)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o6e d+ e f f+ f f+ g}
+#*2{p2 q2 *1 o6g+ g g+ a a+ a a+}
+#*3{o5b >c d c <b q36 a%66 q10 >c20. q7}
+#*4{q2 o5g a *3 <b20. a20. q15 b8}
+#*5{p2 *4 q2 o6d c+ d c d <b >d}
+#*6{*5 o5a >d <g >d <a >d <b >d}
+#*7{o5b >c c+ d}
+#*8{o6c+ e d+ d <a+ *7 <g q7 f20. *4}
+#*9{*6 o6c g f+ f *8}
+#*10{q18 o5a+5 a5 q24 g%54 q4 a+20 a20 q2 g}
+#*11{*10 q8 o6c20}
+#*12{q18 o6d5 c5 q24 <a+%54 q4 >d20 c20 q2 <a+}
+#*13{*12 q8 o6e20 *12 q0 >e30 r%96 r%96 r24}
+#*14{p1 q2 o6c *7 c+ d d+ *1}
+#*15{q10 o5a20. q7 g20. f20. q15 g8}
+#*16{o4a b >c d c <b q36 a%66 *15 q2}
+#*17{p1 q2 o4g *16 d c+ d c d <b}
+#*18{*17 o5d <a >d <g >d <a >d <b}
+#*19{*18 o5d c g f+ f c+ e d+}
+#*20{o5d <a+ b >c c+ d <g q7 f20. q2}
+#*21{*19 *20 o5e f g a b a g}
+#*22{q18 o5g5 f5 q24 e%54 q4 g20 f20 q2 e q8}
+#*23{o1c240 r48 c240}
+#*24{o1c240 r%11 c240}
+#*25{*24 r48 *24 r%11 *24 r%11 o1c240}
+#*26{*23 r48 o1c240 r%47 c240 r%47 c240 r%17 *24 r48 *23 r%17}
+#*27{o3f20 q2 f}
+#*28{q8 *27}
+#*29{o4e f <f q8 f20 f20 q2 f}
+#*30{o3g20 q2 g}
+#*31{*29 o3a+ >c q4 *30 q8 *30 >f g <g q8}
+#*32{o4f g f <g g >e <g g}
+#*33{o5c <c q4 c20 q2 c c c}
+#*34{o4c c q8 c20 q2 c c}
+#*35{q2 o4c c a+ *33 f g *34 a+ *33}
+#*36{*29 D4 o3a+ D2 >c}
+#*37{D3 o4f D4 g}
+#*38{*36 D4 q4 *30 q8 *30 *37 o3g q8 g20 *30 D2 >c}
+#*39{*37 D3 o4f D4 <g g D3 >e D4 <g g D2}
+#*40{q2 o4c c D4 a+ D2 *33 *37 D2 *34 D4 a+ D2}
+#*41{o1c80 c80 c}
+#*42{o1c @32 c%42}
+#*43{o1c24 r%14 @5 D31695 *42 @6 c}
+#*44{*42 @10 o1c%17 r%7 @1 D23618 c40. r16 @5 D31695 *42 @11}
+#*45{r240 @8 o1c @9 c60 r12 @5 *44 c @12 c%11 r240 @13}
+#*46{o1c%11 *45 c @14 c80 r%21 @5 *42 @15}
+#*47{o1c @19 c}
+#*48{*47 @32 o1c20. @5 c%17 r240 @20 c}
+#*49{@5 o1c%17 r240 @13 c @22 c20 r20 @5 c%11 @32 c%13}
+#*50{@1 o1c30 r60 D28846 c30 r60 @15 D31695 c @1 D9419}
+#*51{@18 *47 @6 *47 @15 o1c @25 c @26}
+
+A C240 l40 vm2 @28 v107 *2 b L MF0 @28 v107 *9 q2 [ >c d g c d f ]2 c d g c >d
+A <d >c <d b d a d g d a d b d >c [ *11 ]2 *13
+
+B C240 l40 vm2 @28 v107 *14 L MF0 @28 v107 *21 q36 f%66 *15 q2 [ c d g c d f ]2
+B c d g c >d <d >c <d b d a d g d a d b d >c [ *22 g20 ]2 *11 *10 q0 >c30
+B r%96 r%96 r24
+
+C C240 l40 vm2 @26 v106 *2 b L MF0 @26 v106 *9 q18 >d5 c5 <b5 q19 a%42 [ *11 ]2
+C *13
+
+F C240 l40 t198 r%96 L t198 r%17 t197 r240
+
+G C240 l40 v53,21,0,0,0,0,0 r%54 @1 *23 r48 *24 r%17 L @1 [ *25 r%29 *25 r%23
+G c240 r48 ]3 *24 r48 [ c240 r%11 ]4 c240 r%29 *24 r48 [ c240 r%11 ]4 c240 r%35
+G [ *26 c240 r%23 ]3 *26 c240 r%96 r%96 r%17
+
+H C240 l40 vm2 @26 v106 *14 L MF0 @26 v106 *21 q36 f%66 *15 q18 b5 a5 g5 q19
+H f%42 [ *22 g20 ]2 *11 *10 q0 >c30 r%96 r%96 r24
+
+I C240 l40 vm2 @5 v110 p3 q36 o3g%96 L MF0 @5 v110 p3 q4 *27 *28 *29 a+ >c [
+I *28 ]2 *31 g20 *30 >c d [ q8 *30 ]2 *32 q4 >d20 *27 *28 *29 a+ >c [ *28 ]2
+I *31 g20 *30 >c d [ q8 *30 ]2 *32 >d q10 c20. [ *35 a+ c a+ q10 >c20. ]3 *35
+I a+ c a+ q0 >c60 r%96 r%96 r120
+
+J C240 l40 vm2 @29 v106 p3 D4 q36 o3g%96 L MF0 @29 v106 p3 D3 q4 *27 *28 *36 D3
+J [ *28 ]2 *38 d D4 [ q8 *30 ]2 *39 q4 >d20 D3 *27 *28 *36 D3 [ *28 ]2 *38 d D4
+J [ q8 *30 ]2 *39 >d q10 c20. [ *40 *33 D4 a+ D2 c D4 a+ D2 q10 >c20. ]3 *40 >c
+J <c q4 c20 q2 c c [ c D4 a+ D2 ]2 q0 >c60 r%96 r%96 r120
+
+K C240 l40 @1 D23618 p3 v240 o1c80 @2 D31695 c80 c c @3 *41 c @4 *41 c @32 c20.
+K @5 c @32 c @5 c c80 c80 L @1 D18960 p3 v240 *43 @7 *46 c%17 r%7 @1 D18960 *43
+K @16 *46 c80 @17 c80 @5 *41 @18 [ *48 @21 c20 r20 *49 *50 c%11 r240 @23 D31695
+K ]3 *48 @19 c20 r20 *49 *50 c20 @24 D31695 c *51 c%11 r240 @18 *47 @6 c @21
+K c48 @27 c240 @15 c @25 c @28 c%11 r240 *51 c48 @27 c240 @25 c @28 c80 @29 c80
+K @19 *41 c @5 *41 @24 c @5 c

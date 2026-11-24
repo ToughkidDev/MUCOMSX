@@ -1,0 +1,27 @@
+#mucom88 1.7
+#title Glory
+#composer Tsutomu Ogura
+#author ToughkidCST
+#comment F-1 Spirit 3D Special (PSG)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension PSG parts, msPb0109).
+
+MSXD ?NP-,3 ?XU1 ?FJ4
+MSXE ?XU1 ?FJ5
+MSXF ?XU1 ?FJ6
+PSGS ?XD0={ :0 ?XM1,1 ?NP0 ?XS$07 ?XS$05 ! }
+PSGS ?XD1={ :1 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+PSGS ?XD2={ :2 ?XM2,1 ?GS$0A,1 ?GH$00 ?GL$42 ?XP432,12 ?GS- ?XM1,1 ?NP8 ?XS$08 ?XS$07 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ?XS$02 ?XS$01 ?XS$01 ?XS$00 ! }
+PSGS ?XD3={ :3 ?XM2,1 ?GS$09,1 ?GH$01 ?GL$A0 ?XP1104,9 ?XP1536,9 ?XP1792,9 ?XP2048,9 ! }
+PSGS ?FD4={ ?XT1 ?XU6 v12,4 ?EA0,$14 ?EL2 ?EP2,$22,$80 o5 d o4 g a d g c f d v12,0 ?EP2,$01,$80 ?XU4 d c d f d f g a o5 c o4 a o5 c d ?XU6 v12 ?MW32 ?MV0,$54
+PSGS ?EL2 ?EP2,$04,$50 o4 g%12 g o5 c d ?MV- ?EP- v9 g v10 g g%4 ?MV0,$52 g%6 v8 g%2 v6 g%3 ?MW32 ?MV0,$54 ?EP2,$04,$50 v12 o4 a+%12 a+ o5 d+ f ?MV- ?EP- v9
+PSGS a+ v10 a+ a+%4 ?MV0,$52 a+%6 v8 a+%2 v6 a+%4 ?MW32 ?MV0,$54 ?EL7 ?EP2,$01,$70 v12 o4 g f d c+ c o3 a+ g%2 f g%2 c d f g f g a+ o4 c ?EP2,$01,$70
+PSGS f v5 f v12 f ?EP2,$02,$50 g%7 ?EP- v5 g%2 ! }
+PSGS ?FD5={ ?XT1 ?XU6 v13,0 ?EL7 ?EP2,$09,$37 o3 d o2 g a d g c f d ?EL10 ?XU4 d c d f d f ?EL11 g a o3 c o2 a o3 c d ?EL0 ?XU6 v13 ?EL7 ?EP2,$09,$37 o2 g
+PSGS g o3 g o2 g o3 f o2 g o3 g o2 g f g o3 g o2 g o3 f g o2 g g%2 g o3 g o2 g o3 f o2 g o3 g o2 g f g o3 g o2 g o3 f g o2 g a+ a+ a+ o3
+PSGS a+ o2 a+ o3 g+ o2 a+ o3 a+ o2 a+ g+ a+ o3 a+ o2 a+ o3 f+ g+ a+ o2 a+%2 a+ o3 a+ o2 a+ o3 g+ o2 a+ o3 a+ o2 a+ g+ a+ o3 a+ o2 a+ o3 g+
+PSGS a+ o2 a+ a+ v13 ?EL7 ?EP2,$09,$37 ?XT4 o6 d ?XT1 ?EP2,$11,$70 o3 g f d c+ c o2 a+ g%2 f g%2 c d f g f g a+ o3 c c f o2 f g%9 ! }
+PSGS ?FD6={ ?XT1 ?XU6 v9,0 ?EP- o5 d%2 o4 g a d g c f ?XU4 v10 d%2 c d f d f g a o5 c o4 a o5 c ?DB1 ?XU6 ?MW32 ?MV0,$54 ?EL5 v12 ?EP2,$01,$70 o4 f ?XT4 d
+PSGS ?XT1 e%2 d f%2 d v13 o4 g g f g v12 d%2 e%2 f f e ?XT4 d+ ?XT1 f ?XT4 d ?XT1 g f%2 e%2 d ?XT4 d+ c+ d d ?XT1 o4 g+ ?XT4 c ?XT1 g%2 f g%2 f
+PSGS v13 a+ a+ g+ a+ v12 f%2 g%2 g+ g+ g ?XT4 d+ ?XT1 g+ ?XT4 d ?XT1 a+ g+%2 g%2 f ?XT4 d+ c+ d d ?XT1 ?XU6 ?MW32 ?MV0,$54 ?EL7 ?EP2,$01,$70 v12 o4 r d d o3
+PSGS a g+ g f d%2 c d%2 g a o4 c d o3 c d f g ?EL2 ?EP2,$01,$70 o4 c%2 c ?EP2,$02,$50 d%7 ?EP- v5 d%2 ! }
+PSGS ?FD7={ ! }

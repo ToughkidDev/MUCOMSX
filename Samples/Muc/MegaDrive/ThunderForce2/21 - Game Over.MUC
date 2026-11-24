@@ -1,0 +1,57 @@
+#mucom88 1.7
+#title Game Over
+#composer Technosoft
+#author ToughkidCST
+#comment Thunder Force II (U)
+#driver mucomDotNET
+#voice TFORCE2.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{M3,1,-36,255 o5f4}
+#*2{v99 p3 H0,0,0 D0 MF0}
+#*3{E255,255,0,255,6,255 v11}
+#*4{M1,1,-31,255 q5 o4d16 M1,1,-31,255 d16 @2 v113}
+#*5{D30 o6e16.}
+#*6{D32 o6c16.}
+#*7{P1 E255,255,0,255,8,255 v10}
+
+A C96 l8 vm2 t208 @1 v108 p3 H0,0,0 D0 M1,1,-31,255 q11 o4d @2 v112
+A M1,1,-31,255 >d @1 v113 *4 M1,1,-31,255 q11 >d @1 v113 M1,1,-31,255 <d *4
+A M3,1,-31,255 q21 >d4 [ @2 v113 p3 H0,0,0 D0 M3,1,-36,255 q21 f4 ]2 *1 v105 *1
+A v97 *1 v89 *1 v81 *1 v73 *1 v65 *1 v57 *1 v49 *1 v43 [ *1 ]5
+
+B C96 l8 vm2 [ @3 *2 q2 o4d d16 d16 ]8 d v95 d16 v93 d16 v91 d v87 d16 v85 d16
+B v83 d v79 d16 v77 d16 v75 d v71 d16 v69 d16 v67 d v63 d16 v61 d16 v59 d v55
+B d16 v53 d16 v51 d v47 d16 v45 d16 v43 d v39 d16 v37 d16
+
+C C96 l8 vm2 [ @12 *2 q2 o6c16 d16 >e16 <f16 ]8 c16 v97 d16 v95 >e16 v93 <f16
+C v91 c16 v89 d16 v87 >e16 v85 <f16 v83 c16 v81 d16 v79 >e16 v77 <f16 v75 c16
+C v73 d16 v71 >e16 v69 <f16 v67 c16 v65 d16 v63 >e16 v61 <f16 v59 c16 v57 d16
+C v55 >e16 v53 <f16 v51 c16 v49 d16 v47 >e16 v45 <f16 v43 c16 v41 d16 v39 >e16
+C v37 <f16
+
+D C96 l8 @0 *7 D8 MF0 q2 o5d16 E255,255,0,255,5,255 d *3 [ d16 d ]3 d d [ P1 *3
+D D30 MF0 q2 >e ]8 E255,255,0,255,48,255 e32& v10 *5 E255,255,0,255,42,255 e
+D e32& v9 *5 E255,255,0,255,48,255 e32& v8 *5 e e32& v7 *5 e32& v6 *5 e
+D E255,255,0,255,60,255 e32& v5 *5 E255,255,0,255,216,255 e32& v0 *5
+D E255,255,0,255,0,255 [ e ]6
+
+E C96 l8 @0 *7 D0 MF0 q2 o4a+16 E255,255,0,255,5,255 a+ *3 [ a+16 a+ ]3 a+ a+ [
+E P1 *3 D32 MF0 q2 o6c ]8 E255,255,0,255,48,255 c32& v10 *6
+E E255,255,0,255,42,255 c c32& v9 *6 E255,255,0,255,48,255 c32& v8 *6 c c32& v7
+E *6 c32& v6 *6 c E255,255,0,255,60,255 c32& v5 *6 E255,255,0,255,216,255
+E c32& v0 *6 E255,255,0,255,0,255 [ c ]6
+
+H C96 l8 vm2 @8 *2 o7d%11& v103 q2 d%85 v104 e1& e& v100 e& v96 e& v92 e& v88
+H e& v84 e& v80 e& v76 e& v72 e& v68 e& v64 e& v60 e& v56 e& v52 e& v48 e& v44
+H e& v40 e& v36 e%84
+
+I C96 l8 vm2 @8 *2 o6a+%11& v103 q2 a+%85 v104 >c1& c& v100 c& v96 c& v92
+I c& v88 c& v84 c& v80 c& v76 c& v72 c& v68 c& v64 c& v60 c& v56 c& v52 c& v48
+I c& v44 c& v40 c& v36 c%84
+
+J C96 l8 vm2 @8 *2 o6g%11& v103 q2 g%85 v104 a1& a& v100 a& v96 a& v92 a& v88
+J a& v84 a& v80 a& v76 a& v72 a& v68 a& v64 a& v60 a& v56 a& v52 a& v48 a& v44
+J a& v40 a& v36 a%84

@@ -1,0 +1,43 @@
+#mucom88 1.7
+#title Red Diamond (Ancient Planet Theme)
+#author ToughkidCST
+#comment Gradius 2
+; MSXD-F: MSX PSG | D-F: OPNA SSG
+MSXD ?XU1 ?DW0 ?FJ5
+MSXE ?XU1 ?FJ2
+MSXF ?XU1 ?FJ4
+PSGS ?FD2={?XT1?XU4v11o3?EP0,3,51 :10?FC0?FB5,10o2a+%2o3 f%2a+%2f%2a+%2f%2o2a%2 o3f%2a%2f%2a%2f%2o2g+%2 o3d+%2g+%2d+%2a+%2f%2:11 ?FC0?FB4,11?FC1
+PSGS b%4:12o3f%2o4c%2f%2?FB4,12 :13o3g+%2o4d+%2g+%2?FB4,13 :14o3f%2o4c%2f%2?FB2,14 :15o3g+%2o4d+%2g+%2?FB2,15 :16o3g%2o4d%2f%2?FB2,16 o3g%2o4c%2
+PSGS d%2f%2g%2b%2?FJ2}
+PSGS ?FD4={?XT1?DB1?XU2v9o4 ?EP0,3,51r?XU4:17?FC3?FB5,17 o3a+%2o4f%2a+%2f%2a+%2 f%2o3a%2o4f%2a%2f%2a%2 f%2o3g+%2o4d+%2g+%2d+%2 a+%2f%2:18?FC3
+PSGS ?FB4,18o3?FC1b%3?XU2r?XU4 v10:19o2f%2o3c%2f%2?FB4,19 :20o2g+%2o3d+%2g+%2?FB4,20 :21o2f%2o3c%2f%2?FB2,21 :22o2g+%2o3d+%2g+%2?FB2,22 :23o2g%2
+PSGS o3d%2f%2?FB2,23o2g%2o3 c%2d%2f%2g%2b%2?FJ4}
+PSGS ?FD5={?XT1?FC6f%4c%6d%2 d+%2f%2?EP0,1,80g%2c%2 g%2c%2f%2c%2o4g%2c%2g%2 c%2f%2c%2o5g%2c%2g+%2c%2 a+%2c%2o6c%2o5c%2a+%2c%2 g+%2c%2g%2g+%2g%8
+PSGS f%2g%2f%8c%8d%2c%2c%4o4 b%4r%4v11:24?FC7?FB2,24 v8?FC8c%2v11?FC9d%2g%12 ?FJ5}
+PSGS ?FD1={d+%2a+%2o4d+%2o3 a+%2o4d+%2o3a+%2f%2o4c%2 f%2c%2f%2c%2o3g+%2o4d+%2 g+%2d+%2g+%2d+%2o3g%2b%2 o4d%2g%2?FR}
+PSGS ?FD8={o6c%2o5c%2o6c%2o5 c%2o4c%2o3c%2o4c%2o3c%2 o5c%2o4c%2o5c%2o4?FR}
+PSGS ?FD9={?EP0,1,80f%2o5c%2 o4a+%2g+%2g%2f%2o5c%2d%2 d+%2f%2g%2o6c%2c%8o5b%2 ?FR}
+PSGS ?FD6={?XU4v11o5?EP0,1,80 g%2c%2g%2c%2f%2c%2o4g%2 c%2g%2c%2f%2c%2o5g%2c%2 g+%2c%2a+%2c%2o6c%2o5c%2 a+%2c%2g+%2c%2g%2g+%2g%8 f%2g%2f%8c%8?FR}
+PSGS ?FD0={c%2g%2o4c%2o3g%2 o4c%2o3g%2?FR}
+PSGS ?FD3={c%2g%2o5c%2o4g%2 o5c%2o4g%2?FR}
+PSGS ?FD7={f%2o5c%2o4a+%2g+%2 g%2f%2o5?FR}
+# *0{[D19gD0c]2fco4[D27gD16c]2D19fD16co5D19gD0cg+ca+co6D-24co5}
+# *1{E255,255,16,175,0,255}
+# *2{E255,255,24,110,0,255}
+# *4{o3D43g[o4D24co3D43g]2o5D0co4D35go5D9d+o4D35go5D27fo4D35g}
+# *5{E255,255,32,0,0,255}
+# *6{o3D39g[o4D16co3D39g]2o5D0co4D27go5D0d+o4D27go5D0fo4D27g}
+# *7{*0D0ca+cg+cD19gD0g+D19g3D0fD19gD0f3c3}
+# *8{D19fo5D0co4D14a+D28g+D27gD19fo5D0}
+# *9{D24cD40g+D39gD31fD21d+D36d}
+# *10{D16c*6o5D19go4D27go5D0f}
+# *11{D24c*4o5go4go5D27f}
+# *12{D30a+o5D0cD24d}
+D t198C96l12P1q0L*2v11[o5D0co4D35g]3 *11[o4D35go5D9d+]2D27f *1D9d+3*2D24dD9d+*1D24 d3o4D13a3a6D36g+4*2*12 D0co4D35g[o5D0co4D35g]2 *11o4D35go5D9
+D d+o4D35g*1D30a+2D13a2D36 g+2D35g6g6r6*2o3D28cD44 g+D43gD35fD29d+D40do5D0 cD36g+D35gD27fD9d+D24d *5v9o2D30c%9r%7D42d%9 r%7D29d+%9r%7D37f%9r%7
+D D29d+%9r%7D42d%9r%7*2D30 cD46g+D45gD37fD29d+D42 do4D36g+*12D9d+D35g*5g%9 r%23*2D27fD6b*5o6D0d%9 r%39
+E t198C96l12P1q0L*1v12o5 *7f6c4dd+f*7dcc6o4D6b6 r6*2v11o3*9o5D0cg+D19g D0fd+dv10o3D24c6D36d6D21 d+6D31f6D21d+6D36d6v9 *9D40g+D26a+o4D16cD24d D17
+E d+D27gg3D19fD6bE255,255,16,80,0,255 o5D24d2
+F t198C96l12P1q0L*2v11[o5D0co4D27g]3 *10[o4D27go5D0d+]2f*1d+3 *2dd+*1d3o4a3a6D28g+4*2 D14a+o5D0cdco4D27g[o5D0co4D27g]2 *10o4D27go5D0d+o4D27g*1
+F D14a+2D0a2D28g+2D27g6g6 r6v9*8fo6D-24co5D0a+g+ D19gD0fr48*2v10[o6D-24co5D0c]2 [o4D16co3D24c]2o5D0co4 D16co5D0co4D16c16v11*8 cdd+fD19go6D-24c
+F *1c3*2o5D-10bo6D-24d*1 D19g2

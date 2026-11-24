@@ -1,0 +1,48 @@
+#mucom88 1.7
+#title A-JAX PATTERN CLEAR
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment A-JAX (X68000)
+#voice AJAX.DAT
+#pcm AJAX17.BIN
+#CarrierCorrection Yes
+; Needs MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+; YM2151 FM -> OPNA FM: A=MIDI1 B=MIDI1c C=MIDI2 H=MIDI2b I=MIDI3 J=MIDI4
+; YM2151 FM -> SCC wave+envelope: SCCA=MIDI1b
+; K = MSM6258 ADPCM -> ADPCM-B (AJAX17.BIN)
+; G = MSM6258 bass kick -> YM2608 rhythm channel (bass drum)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ -1,49,89,114,126,127,122,112,101,88,75,62,49,37,24,12,0,-12,-24,-36,-49,-62,-75,-88,-101,-112,-122,-127,-126,-114,-89,-50 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{p3 q16 o4c5 c5 q10 c10. q7 c10.}
+
+A C120 l20 vm2 r10 @49 v111 p2 [ o5a+40 q16 a+%21 q0 ]2 a+40 q10 a+8 q0 a+40 q4
+A a+20. q0 >c40 q2 c40 q3 <f+ q4 <f10 q15 >d+10. q0 <c%56
+
+B C120 l20 vm2 r10 @49 v111 p2 q16 o5d5 q0 <a+40 r%21 q10 >d10. q9 <a+10 q2 >d+
+B q0 >f+40 q2 f+40 q0 f40 q4 f20. q0 d+40 q7 d+8 q0 c40 c%53
+
+C C120 l20 vm2 r8 @49 v111 p1 q16 o5d5 <a+5 q10 >d10. q4 <a+10 q2 >d+ q3 f+ q4
+C <f10 q7 >d+10. q0 c%56
+
+F C120 l20 [ t196 r120 t195 r60 ]63 t196 r60
+
+G C120 l20 v53,21,0,0,0,0,0 r%96 r @1 o1c120 r24 c120 r%11 c120 r24 c120 r%64
+
+H C120 l20 vm2 r8 @49 v111 p1 q16 o4a+5 >d5 q10 <a+10. q4 >d10 q3 c q2 <f+ q4
+H >f10 q7 <d+10. q0 c%56
+
+I C120 l20 vm2 r10 @10 v116 *1 D1 q2 <g >g <g D0 a+ >a+ D1 <b D0 q0 >c%56
+
+J C120 l20 vm2 r10 @6 v113 *1 D-1 q2 <g >g <g D-2 a+ >a+ <b D0 q0 >c%56
+
+K C120 l20 @1 D31695 p3 v240 o1c%11 @2 c120 @3 c%11 r120 @1 c%11 @4 c120 @5
+K c%11 r120 @1 c%11 @2 c120 @3 c24 @6 c120 @1 c @7 c40 @8 c40 @9 c @10 c24 @11
+K c120 @12 c @13 c40 @14 c40 @15 c%11 @16 c120 @17 c40 @18 c40 @19 c @20 c24
+K @21 c120 @22 c%23 r5.
+
+SCCA C120 l20 r10 @0 E0,21,0,255,0,83 v7 D-6 o3a+40 r%21 D-8 q16 >d5 D-6 q15
+SCCA <a+10. D-8 q4 >d10 q2 c D-6 <f+ D-5 q9 >f10 D-7 q7 <d+10. D-8 q0 >c40

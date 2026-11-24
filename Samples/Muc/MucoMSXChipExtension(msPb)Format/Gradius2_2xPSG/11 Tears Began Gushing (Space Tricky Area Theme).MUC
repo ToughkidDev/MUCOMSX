@@ -1,0 +1,56 @@
+#mucom88 1.7
+#title Tears Began Gushing (Space Tricky Area Theme)
+#author ToughkidCST
+#comment Gradius 2
+; MSXD-F: MSX PSG | D-F: OPNA SSG | G: OPNA rhythm
+MSXD ?XU1 ?DW0 ?FJ9
+MSXE ?XU1 ?FJ10
+MSXF ?XU1 ?FJ3
+PSGS ?FD3={?XT1 ?XU6 v10?EP0,1,32 o6:11?FC0 o6co5c?FB7,11 o6?FC0 a+o4a+:12o6?FC0 o6co5c?FB7,12 o6?FC0 o6 do5d?FC1 :13o6go5ggo6g o5ggo6go5g
+PSGS ?FB2,13 ?FC1 v10o4gabo5 cdefgabo6cd?XU3 ?FC2 e ?FJ3 }
+PSGS ?FD1={o6d+o5d+d+o6d+o5 d+d+o6d+o5d+?FB4,1 :14 o6do5ddo6do5ddo6do5d?FB2,14 ?FR }
+PSGS ?FD9={?XT1 ?MV0,162 ?FC4 ?FC5 ?MV0,162 c%8d%8f%8 a+%3f%3a+%2g%3c?MV- r%8 o5crfe%16r?FC6 ?FC7 f%2 ?FC8 v9?EP0,1,32 ?XU1 r?XU3 o6?DB1 ?FC2
+PSGS ?XU2 e?DR ?FJ9 }
+PSGS ?FD4={?XU6 v9?EP0,1,64 o4c%8d%8f%8a+%3f%3a+%2 g%3c?MV- ?FR }
+PSGS ?FD5={r%8o5fedcd%3f%3a+%4 a%2g%2f%2o4?FR }
+PSGS ?FD6={?XU3 v9?EP0,1,32 o4a+o5d+?XU6 g%2d+%3o4 a+%4o5g%2d+%2o4a+%2:15 ?XU3 o5cf?XU6 a%2f%3c%4 a%2f%2c%2?FB2,15 bro6c d%3o4bro5cd%7?FR }
+PSGS ?FD7={?XU3 v10o4a+o5d+ ?XU6 g%2d+%3o4a+%4o5a+%2 g%2d+%2?XU3 o5cf?XU6 a%2 f%3c%4o6c%2o5a%2f%2?XU3 o5cf?XU6 a%2f%3c%4o6?FR }
+PSGS ?FD8={c%2o5a%2o6c%2co5 b%3g%3d%3?FR }
+PSGS ?FD10={?XT1 ?DB3 ?FC4 ?DB1 ?FC5 c%8d%8f%8a+%3 f%3a+%2g%3o5cr%8crfe%16 r?FC6 ?FC7 ?DR f%2?DB1 ?FC8 c%2o4b%2?FJ10 }
+PSGS ?FD0={co5cco6co5cc?FR }
+PSGS ?FD2={edco5bagf?FR }
+# *0{E255,255,0,255,0,255}
+# *1{E255,255,16,175,0,255}
+# *2{E255,255,24,110,0,255}
+# *3{E255,255,16,80,0,255}
+# *4{o4D25d+o3D29}
+# *5{E255,255,32,0,0,255}
+# *6{o4D24co3D28}
+# *7{D29[d+1*1o3d+*3o2d+1*1d+o3d+o2d+*3]4D42[d1*1o3D40d*3o2D42d1*1do3D40do2D42d*3]2D45}
+# *9{c%11*0v3}
+# *10{o3D29d+*4d+}
+# *11{a+24*2v7o3D28c*6c*9o5D0c24*2v7*6c%11r%43v6}
+# *12{o4D43go3D47}
+# *13{d+%11*0v6o6}
+# *14{*1v7o7D-21f*2v8}
+# *15{v7o3D28c}
+# *16{d+4*4d+4d+*4d+d+4*4d+o6}
+# *17{o3D40do4do3d}
+# *18{o2D30c1o3D28co2D30c1c}
+# *19{o5D0d+2o4D14a+2D27g2}
+# *20{D29d+*1v7o6D30a+*2v8}
+# *21{d+*1v7o7D-24c*2v8}
+# *22{*6cc%11r48*6cv11}
+D t198C12l2P1q0L*2v9*18 [o3D28co2D30cc1o3D28co2D30c1c]7 D34a+o1a+*18o3[D28co2D30cc1o3D28co2D30c1co3]7 D40do2D42d*3*7
+D [g1*1o3D43g*3o2D45g1*1go3D43go2D45g*3]2 *7g1*1o3D43g*3o2D45g1*1 go3D43go2D45g[D37fD45gg]2 gg
+E t198C48l8P1q0L*1v11o4D-16 [c1]3D0d4.o3D14a+4.o4D0 d4D-16c4.*2o3D27grv7D28 c*22o5D0dco4D14a+D0a*1 D14a+4.o5D0d4.f2d4c4o4 D14a+4D16[c1]3D24d4.o3
+E D26a+4.o4D24d4D16c4.*2 D27gr*15*22o4D27g*15o4 [D24co3D28cc%11*0v3o6D0c48*2v7o4D24co3D28c%11*0v3o6D0c48*2v7o3D28co4]2 D40do3dv8D29*16D30a+*10
+E *16D0a*10D40d4o4do3d4d o4do3dd4o4do3do6D0a*17 D47g4*12g4g*12ggo6D6b*12 g4g*12g*20*4*13D19g48*2 v8*10*13D9d+48*1v7o7d+ *2v8o3*20*10*21*4*13D0
+E a48*2v8*10*13D11f48*14 o3D29*21*10D40d*1v10o5 D0f4c4.o4D19f2o5D-19a4 D0f4c4f4fD19g4.D0d4.o4 D6b4.D27g4D24d4
+F t198C24l4P1q0L*2v7o3D28 *9o5D0[c24*2v7o4D24co3D28c%11*0v3o5D0c24*2v7o3D28c*0v3o5D0c*2v7o3D28cc%11*0v3o5D0]3 d24*2v7*6*9o4D14*11o6D0 d*5c8o3D28
+F c8*2v7*6c*9o5D14a+24*2 v7*6*9o6D0d24*2*15*6c*9 o6D11f24*5v6D0d8o4D24c8 *2*15v6o6D0c*15D34a+o2 a+o3D28*9o5
+F [D0c24*2v7o4D24co3D28c%11*0v3o5D0c24*2v7o3D28c*0v3o5D0c*2v7o3D28cc%11*0v3o5]3 D24d24*2v7o4co3D28*9o4 D30*11o5D35grv11D0c*1c%96 rv10d+2.o4D14
+F a+2.D27g1*19o5[D0f2.c2.o4a1o5c2o4a2D19f2o5]2 grD-19aD-10b2.o4D27grD0 aD6b%42*2D17d+8D27g8*1 D14a+2D27g2.D17d+1*19*2 D19f8D0a8*1o5c2o4a2.D19 f1
+F o5D0f2c2o4a2*2a8r8*14o4 D40do3d%11*0v6o7D-24c24 *2v8*17d%11*0v6o6D11f24 *1v7o7D100g+*2v8o3D40d *14*17D47g%11*0v6o7D-21 f24*1v7f
+F E255,255,6,145,1,255D-13 g2*2v8o3D47g*12g[D35fD47gg]2 gg
+G t198C12l2v50,27,23,17,16,21,18 L@1[c1@16c@1c1c@16c@1c]16 [c1@2c@1c1c@2c@1c]15c@18 cc@1c@18ccc@1c

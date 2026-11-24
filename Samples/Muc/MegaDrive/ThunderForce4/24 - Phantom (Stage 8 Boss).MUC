@@ -1,0 +1,48 @@
+#mucom88 1.7
+#title Phantom (Stage 8 Boss)
+#composer Technosoft
+#author ToughkidCST
+#comment Thunder Force IV (E)
+#driver mucomDotNET
+#voice TFORCE4.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{D15 o3a D17 b D13 g D12 f D11 >e d}
+#*2{v109 M1,1,-34,255}
+#*3{o3a b g f >e d c g}
+#*4{@134 *2 q11 o4e8 M1,1,-34,255 q23 e4 M1,1,-34,255 q35}
+#*5{D15 o4a D17 b}
+#*6{*1 D10 o4c D13 g}
+#*7{M1,1,-34,255 o4e4. @135 *2 q23 >e4 *4 e4. @135}
+#*8{D10 o3c D13 g *6 *5 D13 g D12 f D11}
+#*9{o3d *8 >e d D10 c D13 g *6 p1 D10}
+#*10{o2a D17 b D13 g D12 f D11 >e *9}
+#*11{o3a D17 b D15 g+}
+#*12{o3e d c g *3 a b g f}
+#*13{o2b g f *12 >e d c g *3}
+#*14{D10 o3c D17 b D11 d+ D12 f}
+#*15{p3 H0,0,0 D0}
+#*16{MF0 o2g1& q2 g1 f+1& f+1 @138}
+
+A C96 l16 vm2 t202 L [ @134 v109 *15 M1,1,-34,255 q35 o4e4. *7 *2 q23 >e4 ]5
+A @134 *2 q35 <e4. *7 *2 q11 >e8 M1,1,-34,255 e8
+
+B C96 l16 vm2 L @136 v114 *15 MF0 q2 o1e4. e4. e4 e8 e4 e4. e4 d+4. d+4. d+4
+B d+8 d+4 d+4. d+4
+
+C C96 l16 vm2 L @137 v104 *15 *16 v104 a *13 o2c b d+ f >a b g+ f+ c b d+ f >a
+C b g+ f+ a b g+ f >e d+ c g+ o3a b g+ f >e d+ c g+ o2a *13 c b d+ f a b g+ f+
+C v99 <c b d+ f a b g+ f+ @139 v104 <f+96& M1,2,-11,255 f+%47& M0,2,-15,255 q0
+C f+%47 MF0 r96
+
+H C96 l16 vm2 L @137 v104 *15 MF0 o2b1& q2 b1 a1& a1
+
+I C96 l16 vm2 r4 L @137 v101 p2 H0,0,0 D13 *16 v101 D15 *10 o2c D17 b D11 d+
+I D12 f D15 *11 D13 f+ *14 *5 D15 g+ D13 f+ *5 D15 g+ D12 f D11 >e d+ D10 c D15
+I g+ *11 D12 f D11 >e d+ D10 c D15 g+ p2 *10 c D17 b D11 d+ D12 f *5 D15 g+ D13
+I f+ v96 *14 D15 *11 D13 f+ @139 v101 <f+96& M1,1,-6,255 f+4& M0,1,-5,255
+I f+%23& M0,3,-23,255 q0 f+%47 MF0 r96
+
+J C96 l16 vm2 r4 L @137 v101 p1 H0,0,0 D22 MF0 o2b1& q2 b1 D19 a1& a1

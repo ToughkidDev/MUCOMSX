@@ -1,0 +1,41 @@
+#mucom88 1.7
+#title Mission 2 (Stage Part 1 Clear)
+#composer Technosoft
+#author ToughkidCST
+#comment Thunder Force II (U)
+#driver mucomDotNET
+#voice TFORCE2.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{H2,1,0 o4d @25}
+#*2{H0,0,0 o3a @1}
+#*3{r1 @6 v108 p3 H0,0,0 D0 MF0 q2}
+#*4{o3d f}
+#*5{o3e g}
+
+A C96 l8 vm2 t208 @25 v112 p3 H0,0,0 D0 MF0 q2 [ o4c16 c ]4 [ c16 ]4 [ @1 v112
+A *1 v112 H0,0,0 <a ]2 @1 v111 *1 v111 *2 v111 *1 v110 *2 v110 *1 v110 *2 v109
+A *1 v109 *2 v109 *1 v108 *2 v108 *1 v108 *2 v107 *1 v107 *2 v107 [ *1 v106 *2
+A v106 ]2 *1 v105 *2 v105 *1 v105 *2 v104 *1 v104 *2 v104 *1 v103 *2 v103 *1
+A v103 *2 v102 *1 v102 *2 v102 *1 v101 *2 v101 *1 v101 [ *2 v100 *1 v100 ]2 *2
+A v99 *1 v99 *2 v99 *1 v98 *2 v98 *1 v98 *2 v97 *1 v97 *2 v97 *1 v96 *2 v96 *1
+A v96 *2 v95 *1 v95 *2 v95 *1 v94 *2 v94 *1 v94 H0,0,0 <a a v93 a a a
+
+B C96 l8 vm2 *3 o5a4 <a >a2& v106 a g4 v105 <g >g2& v104 g v103 a1 v101 >c2
+B v100 <b v99 g4 a v98 a4 <a v97 >a2& v96 a g4 v95 <g >g2& v94 g v93 f1& v91 f1
+
+C C96 l8 vm2 *3 o5f4 <f >f2& v106 f e4 v105 <e >e2& v104 e v103 f1 v101 a1 v98
+C f4 <f v97 >f2& v96 M1,1,-43,255 f%5& M0,1,-52,255 f48& M0,1,-62,255 q0 f32
+C r48 MF0 q2 e4 v95 <e >e2& v94 e v93 d1& v91 d1
+
+H C96 l8 vm2 *3 o5d4 <d >d2& v106 d c4 v105 <c >c2& v104 c v103 d1 v101 f1 v98
+H d4 <d v97 >d2& v96 M1,1,-38,255 d32& M0,1,-67,255 d48& M0,1,-56,255 q0 d%5
+H r48 MF0 q2 c4 v95 <c >c2& v94 c v93 <a+1& v91 a+1
+
+I C96 l8 vm2 @15 v112 p1 H0,0,0 D0 MF0 q2 o5c16 c c16 c p2 c16 c c16 c p3 [ c16
+I ]4 @3 v103 *4 *5 v102 f a e v101 g *4 v100 *5 f v99 a+ a g v98 *4 e v97 g f a
+I e v96 g *4 v95 *5 d16 v94 >d16 <f16 >f16 <e16 >e16 <g16 >g16 v93 *4 e v92 g f
+I a v91 *5 *4 v90 *5 f v89 a+ a g v88 *4 e v87 g f a v86 *5 d v85 f *5 a+ v84
+I a+16 a+16 >c c16 v83 c16

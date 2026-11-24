@@ -1,0 +1,31 @@
+#mucom88 1.7
+#title Night Walker
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+#*1{*2*3*4 v101*4 v105*3g&g+&e24}
+#*2{r12 @65 M10,2,-4,3 v101o4g&g+&e&q0f v105}
+#*3{*4 v109*4 v113*4 v109*4 v105*4 v101*4 v97}
+#*4{g&g+&e&f}
+#*5{@66 MF0 v127o2f4&c4&c+2&q11c+2 q5e4c4[*6c4]2*6 q3c8.r}
+#*6{f4&c4&c+2&q11c+2 q5e4}
+#*7{g16&g+16&e16&f16}
+#*8{*9*10f+8 q0f+64*11o1f+}
+#*9{v8f+f+f+ v10}
+#*10{f+ v8f+f+f+ w6 E234,255,28,241,23,0 v10 M0,9,-16,255o3f+f+f+f+ q2}
+#*11{v8[f+64]7 v10f+f+ q2f+8 v0r4 w9 E255,255,103,212,50,31 MF0 v10 q0}
+#*12{M10,2,-64,3>c M10,2,-32,3<a+g+f}
+
+A C192 l16 vm2 t196 D1 *1 D-1 *5 L *1 *5
+B C192 l16 vm2 L @65 M10,2,-4,3 v115 D-1 o4g& g+& e& q0 f v119 *4 v123 *4 v127
+B *4 v123 *4 v119 *4 v115 *4 v111 *4
+C C192 l8 vm2 r6 @65 M10,2,-4,3 v104 D-1 o4g16& g+16& e16& q0 f16 v108 *7 v112
+C *7 v116 *7 v112 *7 v108 *7 v104 *7 v100 g16& g+48 L @67 M1,1,-9,255 v127
+C o2a& q2 g+ g& f+ [ a& g+ g& f+ ]18 a& g+ g& f+
+D C192 l16 [ r2 ]8 L P3 w9 E255,255,103,212,50,31 v10 MF0 q0 D0 o1f+ [ *8 [ *9
+D f+ ]2 ]3 *8 *9 f+ v8 f+ f+ f+
+E C192 l16 [ r2 ]16 [ P1 E255,255,39,161,11,22 v6 M10,2,-64,3 q0 D0 o6c
+E M10,2,-32,3 <a+ g+ f v7 *12 v8 [ *12 ]3 v7 *12 v6 *12 v5 *12 ]2 L [ r2 ]8 [
+E v4 [ *12 ]3 v5 *12 v4 [ *12 ]12 ]2

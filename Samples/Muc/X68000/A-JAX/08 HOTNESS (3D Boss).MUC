@@ -1,0 +1,48 @@
+#mucom88 1.7
+#title A-JAX HOTNESS (3D Boss)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment A-JAX (X68000)
+#voice AJAX.DAT
+#pcm AJAX08.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=MIDI1 B=MIDI2 C=MIDI3 H=MIDI4 I=MIDI5 J=MIDI6
+; K = MSM6258 ADPCM -> ADPCM-B (AJAX08.BIN)
+; G = MSM6258 bass kick -> YM2608 rhythm channel (bass drum)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{H0,0,0 q22 o6e5. MF0 q2 e30}
+#*2{M10,2,2,8 q22 o6f5. MF0 q2 f30 e30 f30 M10,8,9,2}
+#*3{o6g30 M10,4,5,4 q7 a+10 a10 M10,1,1,17 g10 M10,2,2,8}
+#*4{o6d <a+ f}
+#*5{o6c D4 <g}
+#*6{o6d D4 <a+ D3 f}
+#*7{o4c20 >c20 <c20 q2 >c q6 <c20 q2 c q4 >c20}
+#*8{o4c20 >c20 <d+20 >d+20 <d20 >d20 <c+20 >c+20}
+
+A C240 l40 vm2 r5 L M10,8,7,2 @31 v110 p3 *1 d30 e30 *2 q22 g5. MF0 q2 g30 f30
+A *3 f10
+
+B C240 l40 vm2 r4 L M10,8,7,2 @31 v105 p3 D3 *1 D2 d30 D3 e30 *2 D4 q22 g5. MF0
+B q2 g30 D3 f30 D4 *3 D3 f10
+
+C C240 l40 vm2 r5 L MF0 @32 v106 p3 q2 [ o6c <g e ]5 >c [ *4 ]5 >d [ e c <g ]5
+C >e [ f *4 ]2 a+ >d f a+ f *4 [ >c <g e ]5 >c [ *4 ]5 >d [ e c <g ]5 >e q7
+C <f10 e10 d10 a+10
+
+F C240 l40 t198 r5 L t198 r%34 t197 r240
+
+G C240 l40 v53,21,0,0,0,0,0 r5 L @1 [ o1c240 r%23 c240 r48 c240 r%17 ]4
+
+H C240 l40 vm2 r5 L r80 MF0 @32 v101 p3 D2 q2 [ *5 D3 e D2 ]5 >c [ *6 D2 ]5 >d
+H [ D3 e D2 *5 ]5 D3 >e [ f D2 *6 ]2 D4 a+ D2 >d D3 f D4 a+ D3 f D2 *6 [ D2 *5
+H D3 e ]5 D2 >c [ *6 D2 ]5 >d [ D3 e D2 *5 ]5 D3 q1 >e80 D0 q7 d10 c10 <a+10
+H g10
+
+I C240 l40 vm2 r5 L MF0 @11 v104 p3 q4 [ *7 <c20 >c20 ]3 *8
+
+J C240 l40 vm2 r5 L MF0 @21 v107 p3 q4 [ *7 <c20 >c20 ]3 *8
+
+K C240 l40 @1 D31695 p3 v240 [ o1c ]8 L @2 c20 @1 D31695 p3 v240 [ c%11 @2 c%13
+K @1 ]7 c%11 r240

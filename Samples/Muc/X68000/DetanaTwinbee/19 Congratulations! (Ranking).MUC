@@ -1,0 +1,89 @@
+#mucom88 1.7
+#title Detana!! TwinBee BGM 14
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment Detana!! TwinBee (X68000)
+#voice DETANATB.DAT
+#pcm DETANATB.BIN
+#CarrierCorrection Yes
+; Needs MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+; YM2151 FM -> OPNA FM: A=ch1 B=ch2 C=ch4 H=ch5 I=ch7 J=ch8
+; YM2151 FM -> SCC wave+envelope: SCCA=ch3 SCCB=ch6
+; K = MSM6258 ADPCM -> ADPCM-B (DETANATB.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 2 driver ticks
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ -2,126,117,108,102,93,94,127,105,105,114,122,100,113,116,56,2,-54,-116,-113,-101,-122,-115,-106,-106,-127,-94,-93,-101,-108,-117,-127 }
+  @W1:{ 0,56,69,124,111,111,85,49,-11,-27,-106,-93,-127,-112,-77,-51,0,51,77,112,127,93,106,27,11,-49,-85,-111,-111,-124,-69,-56 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o4f10.q2g10q1g+q3g10.}
+#*2{MF0H3,0,0q2}
+#*3{M17,1,4,6q3o6g&H3,1,0 g40&H3,2,0g40MF0H3,0,0 q2}
+#*4{q3o6c&H3,1,0c40&H3,2,0 c40*2d+*3f}
+#*5{q3o5a+&H3,1,0a+40& H3,2,0a+40}
+#*6{H3,1,0o5c40&H3,2,0c40 D-1H3,0,0q2d+ M19,3,13,2}
+#*7{o5c&*6q3g&H3,1,0g40& H3,2,0g40*2f}
+#*8{o5d+240&D-20d+240&D-17 d240&D-13c+240&D-10 c240&D-16}
+#*9{o5f+240&D-33f+240&D-77 f+240&D20*8}
+#*10{D18o4b240&D-44b240&D23 a240&D26g+240&D-27}
+#*11{o4g+10.D-2a+10.D-1}
+#*12{o1c%11r240}
+#*13{@9o1c%11r240c%11r240}
+#*14{D-13o5g20.&D0g240&D4 g120&D0g240&D-13g120}
+#*15{D0o5c240&D9c120&D0 c240&D-8c120D-7d+*14 D-21}
+#*16{o5c%17&D-8c240&*15f}
+#*17{D-24o6c}
+#*18{@1E255,255,4,0,0,4v15}
+#*19{D-5o5fD0dD-2a+}
+
+A C240l20vm2r%37 LMF0 @47v127p3q3*1c10.*1 >c10.*1q1cdd+q3f10.
+A a+10.q1d+<a+gq3d+10.
+
+B C240l20vm2r%25 @55v122p3q2o5b LM17,1,4,6 @55v122p3H0,0,0*4q3
+B d&H3,1,0d40H3,0,0q1 d+40d40d+40M17,1,4,6*5 *2bM17,1,4,6*4
+B M17,1,4,6q3a+&H3,1,0 a+40&H3,2,0a+40MF0 H3,0,0q1a40g+40*3<a+
+B M17,1,4,6*4q3a+>cd M17,1,4,6d+&H3,1,0 d+40&H3,2,0d+40*2<a+q3 >c
+B <a+g+40.q1g80g+80q3 g40.fdM17,1,4,6q15d+& H3,1,0d+40&H3,2,0
+B d+80&H3,6,0d+%39MF0 H3,0,0q3<a+
+
+C C240l20vm2r%25 @55v114p2q2o4b LMF0 @55v118p3H0,0,0q3*7q3
+C d&H3,1,0d40H3,0,0q1 d+40d40d+40M19,3,13,2 D-2q3<a+&H3,1,0
+C a+40&H3,2,0a+40*2bD0q3 *7M19,3,13,2D-2*5MF0 H3,0,0q1a40D-1g+40
+C @35v114D14q2*9<b240& D-11a+80*10g+240&D-22 g240&D-18f+240&D11
+C e240&D13d+240&D15d80 @55v118D-2a+D0q3*7D-2 q3a+D0>cD-1d
+C M19,3,13,2d+&H3,1,0 d+40&H3,2,0d+40*2<gq3 g+gfd+d<g+ @35v116D14
+C *9<b60*10g+240&D6 f+240&D8f240&D11e240& D13d+60D14f+240&D-33
+C f+240&D-77f+240&D20 d+240&D-20d+240&D-17 d240&D-13c+240&D-10
+C c240&D-16<b60D18q9 b240&D-44b240&D-5a240& D0g+240&D3g240&D6
+C f+240&D8f240&D11e240& D13d+240&D15d240&D16 c+240&D18c240&D-16
+C H3,1,0c240&D-26<b240& D-21a+240&D-16a240& D-11g+240&D-7g240&D-4
+C H3,2,0f+240&D0f240&D2 e240&D5H3,6,0d+240&D7 d240&D-9c+240&D-6
+C c240&D-7<b240&D-3a+24
+
+F C240l20t199r240t198 r10. Lt198r30t197r240
+
+H C240l20vm2r%37 Lr40.M19,3,13,2 @50v117p3D-1q3*11g10. D0>c10.D-1
+H *11g10.g10.D0>c10.D-1 d10.f10.D0c10.D-1*11 q18>g%63
+
+I C240l20vm2r%25 @16v118p1q1o6d LM17,1,4,6 @5v127p1q3d+10.q2g10
+I MF0q1fM17,1,4,6q3d10. [d+10.d+10.q2g10MF0q1f M16,3,22,2D-1q3
+I a+10.M17,1,4,6D0 ]2d+10.MF0q1g+gfd+df M17,1,4,6q27d+5.
+
+J C240l20vm2r%25 @45v118p2q1o5b LM19,3,13,2 @50v126p2q3g+10.a+10.
+J g10.>c10.<g+10.a+10. g10.g10.>c10.d10.f10. c10.<g+10.a+10.q27>g5.
+
+K C240l20r240 @3D31695p3v240*12 @9c%23 Lr240 @3D31695p3v240 [*12
+K *13 @3 ]2c [*13 @3*12 ]8 @9 [*12 ]3 @4*12 @5*12 @3*12*13 @3c*13 @3
+K *12*13 @1c%35
+
+SCCA C240l20r%37 LrMF0 @0E0,24,0,255,1,13v9 D-24q1*16D-8d20.D-7 d+40
+SCCA D-8d40D-7d+40D-10 <a+%17&D-2a+240&D0 a+240&D7a+120&D0a+240& D-2
+SCCA a+120D-10bD-24*16D-2 a+20.&D0a+60&D-2a+120 D-19a40D-12g+40*14
+SCCA D-10<a+D-24*16D-2a+*17 dD-23d+20.&D0d+60&D-23 d+120D-2<a+*17
+SCCA D-2<a+D-12g+D-13gD-21f D-8dM17,2,27,3D-7q13 d+4
+
+SCCB C240l20r%25*18D-2q1o4b LMF0*18D-8q1 [>cD-7d+D-12g+*19*19
+SCCB D-13gD-7d+*17D-8 ]2<cD-7d+D-12g+ [*19 ]2D-13gD0d*17D-12
+SCCB <g+D-7d+*17D-2<a+D-5f D0>dD-7<d+D-13gD-2a+ D-23>d+v10d+
+SCCB v5d+

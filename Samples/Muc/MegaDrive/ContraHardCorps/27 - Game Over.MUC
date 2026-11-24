@@ -1,0 +1,42 @@
+#mucom88 1.7
+#title Game Over
+#composer H.Kobayashi, M.Yamane, A.Yamaoka, H.Taniguchi, A.Hata
+#author ToughkidCST
+#comment Contra: The Hard Corps (Japan)
+#driver mucomDotNET
+#voice CONTRAHC.DAT
+#pcm CONTRACD.BIN
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, K = DAC drums (3-voice mix -> ADPCM-B)
+; sound $CD, driver tick = 1 clock (C48), MD timer -> t
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{M1,1,310,255 o4g24 r}
+#*2{o3c& MF0}
+#*3{r o2c24 r @24 v123 c24 r c24 r}
+#*4{v118 p2 o1a24 r p1 a24 r}
+
+A C48 l48 vm2 @5 v118 p2 D-261 M1,1,261,255 t142 o1a24& MF0 a16 r p1
+A M1,1,261,255 a24& MF0 a16 r @18 v120 p3 D0 M1,1,310,255 o4g24& MF0 g16 [ r
+A M1,1,310,255 <g24 ]5 r D-277 M1,1,277,255 >a+24& MF0 a+8 r D-292 M1,1,292,255
+A b24 r v96 M1,1,292,255 b24 r v120 D0 *1 v96 *1 v85 *1 v74 *1 @21 v108 p1 MF0
+A [ c r ]3 p2 c24 r c24 r @18 v120 p3 H4,7,0 c%35 r @24 v120 p2 H4,0,0 o1b%11 r
+
+B C48 l48 vm2 @5 v115 p2 o2a%5 r p1 a%5 r @40 v115 p2 D6 o4c%5 r v110 <c24 r p3
+B [ c24 r ]3 c& p1 c r v115 D10 a+8& p3 a+24 r D11 b24 r v96 b24 r v115 D6
+B >c& p2 c r v96 c24 r v85 c24 r v74 c24 r%13 v120 p1 <c16& p3 c%7& p2
+B c24& M0,1,-64,255 *2 c& M0,1,-66,255 *2 c& M0,1,-61,255 *2 c& M0,1,-60,255 *2
+B c& M0,1,-56,255 *2 c& M0,1,-51,255 c& p3 MF0 c& M0,1,-51,255 *2
+B c& M0,1,-46,255 *2 c& M0,1,-45,255 *2 c& M0,1,-42,255 *2 c& M0,1,-39,255 *2
+B c& M0,1,-37,255 c r @24 v120 D11 MF0 o1a%11 r
+
+C C48 l48 vm2 @25 v118 p2 o2a%5 r p1 a%5 r @3 v110 p3 o4c24 r <a+24 r g24 r
+C f+24 r f24 r d+24 r c24 r v120 <a+6 r b24 r v107 b24 r v120 >c24 r v107 c24 r
+C v96 c24 r v85 c24 r @25 *4 @24 *4 @3 v121 p3 o3c%35 r @24 v120 p1 <d%11 r
+
+H C48 l48 vm2 @25 v123 p3 [ o2c%5 r ]3 @24 v123 [ p2 c24 r p1 c24 r ]2 p2 c24 r
+H @25 v123 p3 c%5 *3 @25 v123 c%5 r c%5 r c24 *3 c%35 r v125 c%11 r
+
+K C48 l48 p3 @4 v62 D3124 o1b8 @18 b8 @16 D957 b8 @21 D1143 b16 @9 b16 @5 b16
+K b16 b16 @6 D957 b8 @20 b16 @19 D1143 b16 @7 b16 @12 D957 b24 @14 b24 @13 b24
+K @10 b24 b24 b24 b16 @17 b16 @15 D1143 b16 @8 b16 @11 D2236 b2. @3 b4

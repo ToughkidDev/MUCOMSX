@@ -1,0 +1,26 @@
+#mucom88 1.7
+#title Killing Machine
+#author ToughkidCST
+#comment Cosmic Psycho (PC-8801)
+#driver mucomDotNET
+#voice CPSYCHO.DAT
+#CarrierCorrection Yes
+#*1{M12,2,-64,3 q0 D0o6f*2f*2}
+#*2{M12,2,-32,3<a+ M12,2,-64,3>cd+dd+ M12,2,-32,3<a+ M12,2,-64,3>c}
+
+A C192 l8 vm2 L t206 [ @68 MF0 v121 q2 D-1 o3f f f+ f+ f f g+ g+ ]7 f f f+ f+
+A f f q5 g+4 [ q5 g+4 e4 d+4 c+4 q0 f16 q2 f >f q0 f16 <f16 q2 f >f q0 f16 q2
+A <f >f ]2
+B C192 l96 vm2 L [ @69 M22,2,6,3 v120 D-1 o2f16& a+16& >c2& q17 c4 MF0 <a+16&
+B q0 >c16 <g16 g+8.& g+8& g& f+& f& e& d+& d& c+& c& <b& a+& a& g+ g+4& g+& a&
+B a+& b& >c& c+& d& d+& e& f& f+& g& q2 g+8 M22,2,6,3 f16& a+16& >c2& q17 c4
+B d+16& q0 d16 <a+16& >c16& c2& q17 c4 r8 ]2 [ M22,2,6,3 q6 <b16 q20 b%84 q6
+B b16 q3 b8. q6 b16 MF0 q2 b8 D9 q0 b16 D-1 M18,1,-6,255 q3 >c8. c8. c8. c8.
+B MF0 q2 c8 c8 ]2
+C C192 l16 vm2 L [ @70 M1,1,-36,255 v118 q2 D-1 o2f8 v113 f8 v108 f8 v103 f8
+C v118 f8 v113 f8 v108 f8 v103 f8 ]8 [ @70 M1,1,-36,255 v118 q2 f8 v113 f8 @71
+C M35,2,-2,10 v127 q0 o4g+ v122 g+ v120 g+ v117 g+ v127 a+ v122 a+ v120 a+
+C v117 a+ v127 b v122 b v120 b v117 b @72 M1,1,-18,255 v118 <f [ v108 f f v113
+C f v103 f f v118 f ]2 v108 f f f ]2
+D C192 l16 L [ P1 E255,255,11,248,4,8 v10 *1 ]8 v0 [ r2 ]8
+E C192 l16 r12 L [ P1 E255,255,12,247,5,9 v9 *1 ]8 v0 [ r2 ]8

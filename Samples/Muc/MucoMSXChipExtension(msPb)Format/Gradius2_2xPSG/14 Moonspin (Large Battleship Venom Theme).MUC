@@ -1,0 +1,57 @@
+#mucom88 1.7
+#title Moonspin (Large Battleship Venom Theme)
+#author ToughkidCST
+#comment Gradius 2
+; MSXD-F: MSX PSG | D-F: OPNA SSG | G: OPNA rhythm
+MSXD ?XU1 ?DW0 ?FJ9
+MSXE ?XU1 ?FJ10
+MSXF ?XU1 ?FJ11
+PSGS ?FD11={?XT1?DB1?XU5v12 ?EP0,1,80o3:12a%2?FB28,12 :13o2fo3f?FB2,13:14o1a+ o2a+?FB2,14}
+PSGS ?FD5={v12?EP0,1,80:15o2 a%2o3a%2?FB32,15v13?EP0,1,51 :17o2f%2o3c%2f%2o2f%4:16 f%2?FB11,16?FB2,17,2g%2 o3d%2g%2o2g%4:18g%2?FB10,18 d%2g%2o3
+PSGS d%2g%2o2g%4:19g%2?FB9,19 o3d%2o2g%2g+%2o3c%2d+%2 o2g+%4:20g+%2?FB11,20f%2 a%2o3c%2o2f%4:21f%2?FB11,21 :22g%2?FB13,22b%2o3d%2 :23g%4g%2g%2
+PSGS g%2g%2g%2d%2?FB2,23g%2 ?FJ5}
+PSGS ?FD9={?XT1?DB1?XU5v9?EP0,1,160 :24o4a%2a%2v10?FB14,24 o2f%2f%2o1a+%2a+%2}
+PSGS ?FD6={v11?XU5?EP0,1,80 :25o1a%2o2a%2?FB32,25v10 o4?EP0,129,50:26?FC1?FC2 c%4?FB3,26?FC1b%2o5c%2 f%4e%4d%4c%6v9?FC0c%6?FC0 c%2d%2d+%2?XU10
+PSGS d%12o4ao5cfg%5d%2co4b%9 ?FJ6}
+PSGS ?FD10={?XT1?XU5v9?EP0,1,64 ?FC3d%2}
+PSGS ?FD8={?FC7:27r%2a%14a%16 a%16a%16?FB2,27v7?EP0,129,50 :28?FC4?FC2c%3?FB3,28?FC4 b%2o5cd%4c%4o4b%4a%6v7 o5d?FC0c%6?FC0c%2d%2d+ ?XU10v8o4b%12
+PSGS fao5cd%5d%2co4g%9?FJ8}
+PSGS ?FD4={o4b}
+PSGS ?FD1={o4b%2o5c%2d%2o4a%4 ?FR}
+PSGS ?FD0={d%2d+%2c%2d+%2d%4 d+%2c%4f%4d+%4?FR}
+PSGS ?FD3={o4a%2o5c%2e%2?FB3,3 :29o4g%2o5c%2e%2?FB2,29 :30o4f+%2a%2o5d%2?FB3,30 :31o4f%2a%2o5d%2?FB2,31 o4f%2o5?FR}
+PSGS ?FD7={?XU5o5v11?EP0,27,96 ?FR}
+PSGS ?FD2={o5c%4o4b%4g%4a%4 b%2o5?FR}
+# *0{E255,255,0,255,0,255}
+# *1{E255,255,16,175,0,255}
+# *2{E255,255,24,110,0,255}
+# *3{E255,255,16,80,0,255}
+# *4{a%3*2v7}
+# *5{E255,255,32,0,0,255}
+# *6{E255,255,8,0,0,255}
+# *7{E255,255,4,0,0,255}
+# *8{E255,255,6,145,1,255}
+# *9{E150,56,12,190,0,255}
+# *10{E105,24,4,225,0,255}
+# *11{r%7*1v7o5D14a+%68*0v3o6D0}
+# *12{o4D6b1D14a+1D0a1r8*9}
+# *13{*1v7o5D6b%68*0v3o6D9}
+# *14{*4o5D42f+%7*0v5o6D0}
+# *15{*4D-11e%7*0}
+# *16{D0d+%80d%80c%80}
+# *17{r5*3o5D40c5r20}
+# *18{D0*4o5D35g%7*0}
+D t198C80l16P1q0*0v6o5D-19 a1v7a2v8a2v9a2v10a2*2 v12[a]8*1aD0g+D19gD26f+ D0fD-11eD0d+d*7c8L*9v11 o5D0c2.*1v12*12o5c%70*1 *12v8o3D31
+D [f1.*7v6f%21r%9*5v8ff*9]2 D39g1.*7v6g%21r%9*5v8g g*9g%111r%9*5[g10r40]4 *7v9D40g+%36r20*3g+8g+8 r8*1g+%46r%14*6g+5r20*3 g+8*7D31f%36r20*3f8f8
+D r8*1f%46r%14*6f5r20*3f8 *9D39g%66r20*6gg*9g%66 r20*6D36dd*7d%36r20*3d8 d8r8*6d5r20*3[d8]7*7v12 o5D0c8
+E t198C20l20P1q0*0v3o6D0 a%14*2v10o5c%9rD-11e%9 ro4[D0a%9ro5c%9rD-11e%9ro4]2 [D27g%9ro5D0c%9rD-11e%9ro4]2 [D42f+%9rD0a%9ro5d%9ro4]3 D19f%9r
+E [D0a%9ro5d%9ro4D19f%9r]2 *1o5D0d4r5.v12D-11e4L*9 v11o5D-11e%65*1v12*16r4 v7o6c%68*0v3D-11e10*13 d+4*11d4r%7*1v7o5a4o6c%68 r%17*10v8o5
+E [c%120*7v7c%22r%8*2v8c4c4*10]2 d%120*7v7d%22r%8*2v8d4 d4*10d%112r%8*2[d%9r]4 *7v9o3D21d+%36r5*3d+2 d+2r2*1d+%46r%14*6d+%16 r5*3d+2*7D24c%36r5
+E *3c2c2r2*1c%46r%14*6c%16 r5*3c2*9D36d%66r5*6d4d4 *9d%66r5*6D39g4g4*7g%36 r5*3g2g2r2*6g%16r5*3[g2]7 *8v7o6D0c2
+F t198C40l8P1q0r10*2v10o4 D0a%9r40v7o6c%7*0[v3a%3*2v7D-11e%7*0v3D0a%13*2v7c%7*0]2 v4*15v4*18v4o6D0*4c%7*0 v4*15v5*18v5o6D0*4c%7*0 v5*15v5D0*14
+F a%13*2v7d%7*0v5*14a%9v6 a1*2v8[a]8*1ag+D19gD10 f+D11fD-11eD9d+D0d*8v7 c4L*9v6o6D0c%58*0v3D-11 e20*13d+*11dr%7*1v7o5a o6c%68r%22*9v12o5D-11e%70
+F *1*16r*9v5o6D-13[g%120*0v4g%18r5.*5v5gg*9]2 D0a%120*0v4a%18r5.*5v5 aa*9a%108r5.*5[ar]4*1v6 o5D57d+4*0v4o4D14a+%22 r5*3v6a+5r20o5D57d+5r5. *1o4
+F D14a+%42r%18a+5.r5*3o5 D57d+5r20*1o4D19g%32*17 c5r5.*1o4D19g%42r%18g5. *17*1o4D29a%62r5aaa1*0 v4o5D56d%22r5*1v6o4D29 aaa%32r5*3a5r20a5r5.*1 o5
+F D56d5.r5*3d5[r20d5]6r%7 *1v12D-11e
+G t198C20l2v50,27,23,17,16,21,18 @8[c]28@1c4@16[c4]3@1[c4@16c4@1]2 cLr@2c1@1c[c@16c@1cc1@2c1@1c]7 @16ccc@1c[@8c@1c]2cc[@8c@1c]3
+G [c4c4c@2c@1c@8c@1c@8c@1ccc@8c@1c@8c@1c@8c@1c]3 cc[ccccccccccccccc4c4c4c4]4 c4c4c

@@ -1,0 +1,112 @@
+#title Space Manbow - Memoire (Ending)
+#comment muc by ToughkidCST
+#sccvoice MANBOW.DAT
+?WS0,0,1
+?WS1,2,1
+?WS2,3,1
+?WS3,9,1
+?WS4,10,1
+?WS5,16,1
+?WS6,39,1
+MSXD ?XU1 ?FJ6
+MSXE ?XU1 ?FJ12
+MSXF ?XU1 ?FJ21
+SCCA ?XU1 ?WP1 ?FJ29
+SCCB ?XU1 ?FJ36
+SCCC ?XU1 ?FJ45
+SCCD ?XU1 ?FJ50
+SCCE ?XU1 ?FJ54
+PSGS ?XD0={ :0 ?XM1,1 ?NP0 ?XS$07 ?XS$05 ! }
+PSGS ?XD1={ :1 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+PSGS ?XD2={ :2 ?XM2,1 ?GS$0A ?GH$00 ?GL$42 ?XP432,12 ?GS- ?XM1,1 ?NP8 ?XS$08 ?XS$07 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ?XS$02 ?XS$01 ?XS$01 ?XS$00 ! }
+PSGS ?XD3={ :3 ?XM2,1 ?GS$08 ?GH$01 ?GL$00 ?XP1,0 ?GS- ?XP1024,6 ?XP1152,5 ?XP1280,4 ?XM2,3 ?XP1280,0 ?XM2,1 ?XP1024,0 ?XP1152,0 ?XP1280,0 ?XP1536,0 ! }
+PSGS ?XD4={ :4 ?XM1,1 ?NP5 ?XS$05 ?NP2 ?XS$07 ?NP0 ?XS$08 ?XM1,4 ?XS$07 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ! }
+PSGS ?XD5={ :5 ?XM2,1 ?GS$0A ?GH$00 ?GL$12 ?XP1024,12 ?GS- ?XM1,1 ?NP8 ?XS$09 ?XS$08 ?XS$07 ?XS$06 ?XS$05 ?NP10 ?XM1,2 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ?XS$01 ?XS$00 ?XM1,6 ?NP11 ?XS$01 ?XS$00 ! }
+PSGS ?FD6={ ?XT1 ?MV0,$62 ?XU9 v2 ?ET0 e%16 e%16 e%16 e%16 }
+PSGS ?FD7={ ?XT1 ?XU9 r%3 ?EP2,$93,$10 ?DB3 v5 ?ET0 ?EA0,$03 ?FB0 }
+SCCS ?FD8={ ?FC58 ?FC58 ?FB7 ?FC58 ?FC63 ?DR ?XT4 o6 d+%2 d+%2 c c c+%2 d+%2 ?XT4 f%4 ?XT4 c c d+%2 d+%2 c%2 c+%2 d+%2 ?XT4 f%4 f%2 ?XT4 o6 ?XU9 ?FB0 }
+SCCS ?FD9={ d+%2 c%2 d%2 d+%2 c%2 d+%2 ?FC66 c%2 ?FB15 d+%2 c%2 ?FC66 d+%2 c%2 d+%2 ?XT4 f f f%2 ?XT4 o6 ?XU9 ?FB0 }
+SCCS ?FD10={ d+%2 c+%2 ?FC76 d+%2 c c+%2 ?FC66 d+%2 d+%2 d+%2 d%2 d+%2 ?FB2 d+%2 c%2 ?FC76 d+ c d+ d+%2 ?FC66 d+%2 ?XT4 f%2 f%2 f f f%2 ?FB0 }
+SCCS ?FD11={ ?XT4 ?XU9 f%2 e%2 f%2 e%2 f ?XT4 d+ c+ d+ ?XT4 f ?XT4 d+ c+ d+ ?FB16 ?FJ7 }
+PSGS ?FD12={ ?XT1 ?MV0,$62 ?XU9 v2 ?ET0 f+%16 f+%16 f+%16 f+%16 }
+SCCS ?FD13={ ?XU9 ?EP2,$93,$21 ?FC74 ?FB0 }
+SCCS ?FD14={ ?FC58 ?FC58 ?FB9 ?FC58 ?FC63 e ?DR ?XU9 ?FC74 ?EP2,$93,$21 ?FB0 }
+SCCS ?FD15={ ?FC58 ?FB15 ?FC64 e f+ d ?FB0 }
+PSGS ?FD16={ ?FC58 ?FB15 ?FC64 e ?DR ?XU9 ?DB1 r%2 v8 ?ET0 ?EA0,$04 ?EP2,$93,$21 ?FB0 }
+SCCS ?FD17={ ?FC58 ?FB6 ?FB0 }
+SCCS ?FD18={ ?FC77 ?FB2 ?FB0 }
+PSGS ?FD19={ ?FC58 ?FB3 ?FC63 e ?XU9 v8 ?ET0 ?DB1 r%2 ?EP2,$93,$21 ?EA0,$06 o5 ?FB0 }
+SCCS ?FD20={ ?FC69 d o5 a a ?FB31 ?FC69 d ?FJ13 }
+PSGS ?FD21={ ?XT1 ?MV0,$62 ?XU9 v2 ?ET0 d%16 d%16 d%16 d%16 }
+PSGS ?FD22={ ?XU9 v7 ?ET0 ?EA0,$03 ?EP2,$82,$31 ?MW10 ?MV0,$61 o6 c+%6 d%6 f+%6 a%6 ?EP- ?XU4 v3 ?ET0 a%9 v7 ?ET0 ?EP2,$82,$31 ?XU9 c+%4 a%6 b%6 f+%12 o5 b%3
+PSGS o6 d%3 ?FC70 o5 a%4 b%10 o6 c+%2 d%2 a%10 o5 b%3 o6 d%3 ?FC70 f+%4 ?XU9 ?DB3 r%3 v5 ?ET0 ?EA0,$03 ?EP2,$93,$10 ?FB0 }
+SCCS ?FD23={ ?FC58 ?FB15 ?FC64 e f+ d ?FB0 }
+PSGS ?FD24={ ?FC58 ?FB15 ?FC64 ?DR ?XU9 ?DB3 r%3 v6 ?ET0 ?EA0,$03 ?EP2,$93,$10 ?FB0 }
+SCCS ?FD25={ ?FC58 ?FB6 ?FB0 }
+SCCS ?FD26={ ?FC77 ?FB2 ?FB0 }
+PSGS ?FD27={ ?FC58 ?FB3 ?FC63 ?XU9 v6 ?ET0 ?DB2 r%3 ?EP2,$93,$10 ?EA0,$04 o5 ?FB0 }
+SCCS ?FD28={ ?FC69 d o5 a a ?FB31 ?FC69 ?FJ22 }
+PSGS ?FD29={ ?XT1 @6 ?XU9 ?EP1,$84,$A5 v12 ?ET0 ?EL4 ?EA0,$09 ?FB0 }
+SCCS ?FD30={ ?FC79 ?FB8 }
+PSGS ?FD31={ @3 ?XU9 v15 ?ET0 ?EP2,$32,$70 ?FB0 }
+PSGS ?FD32={ ?FC67 ?FB2 o1 g%4 g%4 ?XU2 f+%2 g%7 ?XU9 o2 d%2 o1 g%2 o2 g%2 o1 g%4 g%4 g%2 o2 g%2 o1 f+%2 o2 f+%2 o1 e%4 e%4 ?XU2 d+%2 e%7 ?XU9 a%2
+PSGS b%2 e%2 f+%4 f+%4 ?XU2 f%2 f+%7 ?XU9 o2 c+%2 o1 f+%2 o2 f+%2 ?FC67 o1 b%4 b%4 b%2 o2 b%2 o1 f+%2 o2 f+%2 o1 e%4 e%4 e%2 a%2 b%2 e%2 f+%4
+PSGS f+%4 ?XU2 e%2 f%2 f+%5 o2 c%2 c+%7 o1 e%2 f%2 f+%5 o2 f%2 f+%7 @5 ?XU9 v15 ?ET0 ?EP2,$32,$50 ?FB0 }
+PSGS ?FD33={ o1 ?FC68 ?FC68 f+%4 o2 f+ o1 f+ e f+ r%3 f+%2 o2 f+ o1 e%2 f+%4 o2 f+ o1 f+ e f+%2 a%2 b%2 o2 f+ f%2 e%4 o3 e o2 e d e r%3 e%2 o3 e
+PSGS o1 b%2 a%4 o2 a o1 a g a%2 b%2 o2 c+%2 e d+%2 d%4 o3 d o2 d c+ d r%3 d%2 o3 d o1 a%2 e%3 b%2 o2 e o1 b%2 f+%3 o2 c+%2 f+ c+%2 ?FB2 @5
+PSGS ?XU9 v15 ?ET0 ?EP2,$52,$60 ?EL1 o2 e%4 o3 e o1 b%2 o2 d%3 e%2 o1 e o1 b%2 o2 f+%2 o1 a b%2 o2 c+%2 f+%2 c+%2 f+%2 o3 c+%2 o2 f+%2 g%4 o3 g
+PSGS o2 d%2 f+%3 g%3 o3 g o2 g%2 g+ o1 g+ o2 d%2 g+%2 o1 g+%2 o2 d%2 g+%2 o3 d%2 o2 g+%2 ?FB0 }
+PSGS ?FD34={ o1 a%2 o2 a%2 ?FB6 o1 a%2 a%2 b%2 o2 c+%2 @5 ?XU9 v15 ?ET0 ?EP2,$52,$60 ?EL2 ?FB0 }
+SCCS ?FD35={ o3 d o2 d%2 d o3 d o2 d%2 d d%2 o2 f+%2 a%2 o3 d%2 o3 a o2 a%2 a o3 a o2 a%2 a a%2 e%2 o1 a%2 o2 a%2 o3 g o2 g%2 g o3 g o2 g%2 g
+SCCS g%2 o3 g%2 o2 f+%2 o3 d%2 e o2 e%2 e o3 e o2 e%2 e a o1 a%2 a o2 a o1 a%2 a ?FB4 ?FJ31 }
+PSGS ?FD36={ ?XT1 @6 ?DB5 ?XU9 r%2 ?EP1,$85,$65 v6 ?ET0 ?EL2 ?EA0,$05 ?FB0 }
+SCCS ?FD37={ ?FC79 ?FB7 o3 a b a o4 d a e ?DR ?EL0 }
+PSGS ?FD38={ ?XT1 @6 ?XU9 ?EP1,$84,$A5 v12 ?ET0 ?EA0,$09 ?EL4 ?FB0 }
+SCCS ?FD39={ ?FC79 ?FB35 ?FC78 ?FB0 }
+SCCS ?FD40={ ?FC79 ?FB15 ?FC78 ?FB0 }
+SCCS ?FD41={ ?FC79 ?FB6 ?FB0 }
+SCCS ?FD42={ o3 g+ b g+ o4 d g+ e f+ d ?FB2 ?FB0 }
+SCCS ?FD43={ ?FC79 ?FB4 ?FB0 }
+SCCS ?FD44={ o4 d d a a o5 d d o4 a a ?FB32 ?FJ38 }
+PSGS ?FD45={ ?XT1 @6 ?DB3 ?XU9 r ?EP1,$06,$65 v5 ?ET0 ?EL2 ?FB0 }
+PSGS ?FD46={ ?FC79 ?FB6 ?FC59 @1 ?DR ?EP- v11 ?ET0 ?XU4 o3 e d+ d c+ c o2 b a+ a g+ g f+ f e d+ d c+ c o1 b ?DR }
+PSGS ?FD47={ ?XT1 @2 ?DB1 ?XU9 r%3 ?EP2,$82,$10 v6 ?ET0 ?EA0,$04 ?MW10 ?MV0,$71 o5 c+%6 d%6 f+%6 a%5 ?FC60 ?FC70 f+%2 ?XT1 @3 ?DB1 ?XU9 ?FB0 }
+PSGS ?FD48={ v8 ?ET0 ?EA0,$07 ?EP2,$83,$20 ?MW16 ?MV0,$67 r%3 o3 b%10 ?FC75 v2 ?ET0 ?EP- e%2 v8 ?ET0 ?EP2,$83,$20 ?FC61 a+ ?FB2 ?DR ?XT1 @0 ?XU18 r ?XU9 v8
+PSGS ?ET0 ?EP2,$17,$20 ?DB2 ?DS2,2 ?MW26 ?MV0,$43 ?FC71 ?EL2 ?EP1,$07,$54 f+ g a%9 ?EL0 @0 ?DS2,2 ?EP2,$17,$20 ?FC72 a%15 ?DR ?XT1 ?FB0 }
+PSGS ?FD49={ @0 ?XU9 ?DB2 r%2 v9 ?ET0 ?EP2,$17,$10 ?FC62 d%16 @4 v10 ?FC65 ?FB4 ?DR ?DS- ?FJ47 }
+SCCS ?FD50={ ?XT1 @1 ?MV0,$72 ?XU9 v2 ?FC80 }
+PSGS ?FD51={ ?XT1 @2 ?XU9 v14 ?ET0 ?EA0,$09 ?EP2,$82,$50 ?MW10 ?MV0,$62 o5 c+%6 d%6 f+%6 a%6 ?FC60 ?FC70 f+%4 ?XT1 @3 ?XU9 ?FB0 }
+PSGS ?FD52={ v14 ?FC73 ?MV0,$67 o3 b%10 ?EA0,$08 ?FC75 v3 ?ET0 ?EP- e%2 v14 ?ET0 ?EP2,$82,$70 ?FC61 a+%2 o4 f+%2 ?FB2 ?XT1 @0 ?XU9 v15 ?ET0 ?EP2,$32,$61 ?DS2,2
+PSGS ?MW26 ?MV0,$44 ?FC71 ?EP1,$05,$65 f+ g a%9 @0 ?DS2,2 ?EP2,$32,$61 ?FC72 a%16 ?XT1 ?FB0 }
+PSGS ?FD53={ @0 ?XU9 v15 ?ET0 ?EP2,$32,$51 ?DS2,2 ?FC62 d%15 ?EP- v2 ?ET0 d @4 v15 ?FC65 g%2 ?FB4 ?DS- ?FJ51 }
+SCCS ?FD54={ ?XT1 @1 ?MV0,$62 ?DB1 ?XU9 v1 ?FC80 }
+PSGS ?FD55={ ?XT1 @2 ?XU9 v12 ?ET0 ?EA0,$08 ?EP2,$82,$50 ?MW10 ?MV0,$63 o4 a%6 b%6 o5 d%6 f+%6 a%4 a%4 f+%6 f+%6 d%12 d%3 f+%3 f+%2 f+%6 d%6 o4 a%4 b%6 a%6
+PSGS e%4 f+%10 a%2 b%2 o5 f+%10 d%3 f+%3 o6 d%2 c+%6 o5 a%6 f+%4 a%6 e%6 a%4 ?XT1 @3 ?XU9 ?FB0 }
+PSGS ?FD56={ v13 ?FC73 ?MV0,$6A o3 f+%10 ?EA0,$06 f+%2 a%2 b%12 b%2 b%4 o4 c+%8 c+%2 d%2 e%2 o3 a%16 ?EP- v3 ?ET0 a%2 v13 ?ET0 ?EP2,$82,$70 g%10 d%2
+PSGS e%2 g%12 g%2 g%2 f+%12 e%2 d%2 e%6 g%4 o3 f+%2 c+%2 f+%2 o4 c+%2 ?FB2 ?XT1 @0 ?XU9 v15 ?ET0 ?EP2,$32,$61 ?MW26 ?MV0,$45 ?DS2,2 o4 a%4 a%4 f+%4 a%3
+PSGS e%6 ?DS- @6 ?EP1,$05,$65 c+ d e%9 @0 v15 ?ET0 ?EP2,$32,$61 ?DS2,2 a%4 e%3 f+%9 o5 f+%4 e%4 o4 b%4 o5 e%4 d%16 ?MV0,$48 c+%16 ?DS- ?XT1 ?FB0 }
+PSGS ?FD57={ @0 ?XU9 v15 ?ET0 ?EP2,$32,$51 ?DS2,2 ?MV0,$46 ?MW20 o4 f+%8 @4 d e f+%6 @0 e%4 d%4 c%4 c%4 o3 b%16 @4 v12 ?ET0 ?DS2,160 o5 d%16 ?FB4 ?DS-
+PSGS ?FJ55 }
+SCCS ?FD58={ o4 a b a o5 d a e f+ d ?FR }
+SCCS ?FD59={ o3 a b a o4 d a e f+ ?FR }
+SCCS ?FD60={ ?XU4 o6 c c+ d%7 ?XU9 c+%4 o5 a%6 b%6 f+%12 o4 b%3 o5 d%3 b%2 a%6 f+%6 d%4 e%6 c+%6 o4 a%4 b%10 o5 c+%2 d%2 a%10 o4 b%3 o5 d%3 ?FR }
+SCCS ?FD61={ d%10 o3 a%2 b%2 o4 d%12 e%2 f+%2 c+%12 o3 b%2 a%2 b%6 o4 d%4 c+%2 o3 f+%2 ?FR }
+SCCS ?FD62={ ?MW26 ?MV0,$56 o4 a%8 @4 f+ g a%6 @0 g%4 f+%4 e%4 f+%4 ?FR }
+SCCS ?FD63={ o4 a b a o5 d a ?FR }
+SCCS ?FD64={ o4 a+ b a+ o5 d a+ ?FR }
+PSGS ?FD65={ ?ET0 ?EP2,$44,$40 o3 b%3 o4 c+%3 d%3 e%3 f+%2 ?FR }
+SCCS ?FD66={ ?XT4 f%2 ?XT4 ?FR }
+SCCS ?FD67={ o1 b%4 b%4 ?XU2 a+%2 b%7 ?XU9 e%2 f+%2 o2 d%2 ?FR }
+SCCS ?FD68={ b%4 o2 b o1 b a b r%3 b%2 o2 b o1 a%2 ?FR }
+SCCS ?FD69={ d d a a o6 d ?FR }
+SCCS ?FD70={ b%2 a%6 f+%6 d%4 e%6 c+%6 ?FR }
+SCCS ?FD71={ o5 d%4 c+%4 o4 b%4 o5 c+%3 o4 a%6 ?DS- @6 ?FR }
+SCCS ?FD72={ o5 d%4 o4 a%3 b%9 o5 b%4 a%4 g+%4 b%4 ?XU18 ?FR }
+PSGS ?FD73={ ?ET0 ?EA0,$09 ?EP2,$82,$70 ?MW16 ?FR }
+PSGS ?FD74={ ?DB1 r%2 v7 ?ET0 ?EA0,$04 ?FR }
+SCCS ?FD75={ o4 c+%2 d%2 f+%12 e%2 f+%4 a%8 a%2 a%2 b%2 e%16 ?FR }
+SCCS ?FD76={ ?FC66 c d+ c%2 d+%2 d d+ c ?FR }
+SCCS ?FD77={ o4 g+ b g+ o5 d g+ e f+ d ?FR }
+SCCS ?FD78={ o3 a+ b a+ o4 d a+ e f+ d ?FR }
+SCCS ?FD79={ ?FC59 d ?FR }
+PSGS ?FD80={ ?ET0 o5 b%16 b%16 b%16 b%16 ?FR }
