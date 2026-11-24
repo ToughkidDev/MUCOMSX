@@ -1,0 +1,43 @@
+#mucom88 1.7
+#title Stage Clear
+#composer Technosoft
+#author ToughkidCST
+#comment Thunder Force III (JU)
+#driver mucomDotNET
+#voice TFORCE3.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{H0,0,0 D0 MF0}
+#*2{M1,1,-92,255 o4b40}
+#*3{M1,1,-62,255 o4b40}
+#*4{P1 E255,255,0,255,0,255}
+
+A C120 l20 vm2 t200 @103 v110 p2 *1 q2 o6d10. e10. f5& M1,1,-21,255
+A f%11& M0,1,-30,255 q0 f%11 r60
+
+B C120 l20 vm2 @104 v121 p3 *1 q2 o4d d10 c c10 d5& M1,1,-22,255
+B d& M0,1,-32,255 d24& M0,1,-26,255 q0 d%11 r60
+
+C C120 l20 vm2 @105 v98 p2 H0,0,0 D8 M1,1,-92,255 q17 o4b10. p1 D6 M1,1,-73,255
+C g10. v112 p2 D8 M1,1,-92,255 q2 b40 v111 *2 v109 *2 v108 *2 v112 M1,1,-92,255
+C q5 b v109 M1,1,-92,255 b v106 D6 M1,1,-73,255 g v103 M1,1,-73,255 g v106
+C M1,1,-61,255 e v103 M1,1,-61,255 e p3 D5 M1,1,-92,255 q23 c5
+
+D C120 l20 @0 *4 v11 D8 MF0 q2 o5d D14 c [ D8 d D12 e ]2 D3 q8 f10. v10 f10. v8
+D q2 f10
+
+E C120 l20 @0 r *4 v10 D26 MF0 q2 o5d D32 c [ D26 d D30 e ]2 D21 q8 f10. v8
+E f10. v6 q2 f10
+
+H C120 l20 vm2 @105 v111 p2 *1 q1 o4b60 v121 M1,1,-62,255 q15 b%16 v111 p1 MF0
+H q1 g60 v121 M1,1,-49,255 q15 g%16 v76 M1,1,-62,255 q2 b40 v79 *3 v82 *3 v85
+H *3 v94 M1,1,-62,255 q5 b v100 M1,1,-62,255 b v106 M1,1,-49,255 g v112
+H M1,1,-49,255 g v118 [ M1,1,-41,255 e ]2 v121 p3 M1,1,-65,255 q23 c5
+
+I C120 l20 vm2 @103 v110 p1 *1 q2 o6a10. >c10. d5& M1,1,-22,255 d& M0,1,-32,255
+I d24& M0,1,-26,255 q0 d%11 r60
+
+J C120 l20 vm2 @103 v110 p3 *1 q2 o6f10. g10. a5& M1,1,-26,255
+J a%11& M0,1,-21,255 a24& M0,1,-19,255 a40& M0,1,-34,255 q0 a40 r60
