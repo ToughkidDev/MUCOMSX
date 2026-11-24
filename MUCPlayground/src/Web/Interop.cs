@@ -153,6 +153,11 @@ public static partial class Interop
         if (player != null) player.Speed = speed;
     }
 
+    // Chip levels from chip-levels.js ("YM2608 SSG=-4;…"), applied to every song opened
+    // after this; returns the entries taken.
+    [JSExport]
+    public static string SetChipLevels(string spec) => ChipLevels.Set(spec);
+
     // A channel fader on MDPlayer4Mac's mixer scale: -192 (off) to +20, 0.5 dB steps
     // (ChannelMixer lists the channels).
     [JSExport]

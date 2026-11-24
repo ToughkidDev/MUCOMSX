@@ -70,12 +70,16 @@ Songs with the MucoMSX chip extensions (packed msPb0103–010A) play through `Na
 whose chip writes `MucEngine` routes to the same chips, so the channel view, the faders and
 `.vgm` export work for them as for any other song.
 `src/Engine/ChannelMixer.cs` applies the channel view's faders to the chip registers.
-`src/Engine/ChipLevels.cs` sets the OPNA's SSG 2 dB lower than MDSound leaves it (fmgen's
-`SetVolumePSG(-4)`, ×0.79): on the real YM2608 the SSG sounds about 20% quieter against the
-FM than in the emulator. Both engines apply it (MUC / .mub, and VGM files with a YM2608), so
-an OPNA song's SSG parts here sound about 20% quieter than in MDPlayer4Mac, whose default
-leaves them at 0; FM, rhythm, ADPCM and the MSX PSG (AY-3-8910) are unchanged. Measured
-natively: an SSG note ×0.794, an FM note ×1.000.
+`chip-levels.js` holds the chip levels: how loud a whole chip, or one part of it (OPNA FM /
+SSG / rhythm / ADPCM, OPNB, OPN, OPN2 …), plays, in MDPlayer4Mac's Balance units (0.5 dB
+steps). Edit it to change them: no engine rebuild is needed. The workers hand the list to
+both engines when they start, and `src/Engine/ChipLevels.cs` applies it after MDSound.Init to
+every song (MUC / .mub, and VGM files), with the MDSound setters MDPlayer4Mac's Balance
+settings use; `NativeCheck` reads the same file (`CHIP_LEVELS="YM2608 SSG=-4;…"` overrides
+it). It sets the OPNA's SSG to -4 (2 dB, ×0.79): on the real YM2608 the SSG sounds about 20%
+quieter against the FM than in the emulator, so an OPNA song's SSG parts here sound about
+20% quieter than in MDPlayer4Mac, whose default leaves them at 0. Measured natively and in the
+browser: an SSG note ×0.794, an FM note ×1.000.
 `src/Engine/ChannelScope.cs` reads each channel's output from inside the chip emulators for
 the oscilloscope view.
 `src/Engine/MsxTrace.cs` recovers the source positions of MUCOMSX songs for the playback
@@ -123,6 +127,7 @@ the heaviest chip); the interpreter managed 2.2× and 0.6×.
 | `keyboard.js` | The keys mode piano (drawing, mouse / touch, computer keyboard mapping) |
 | `Manual/` | The user's guide: the guide in three languages, the MML reference rendered from `manual-data.js`, the messages from `diagnostics.js` |
 | `mub-pcm.js` | The ADPCM bank inside a .mub (MUB8, muPb, msPb), and the .mub without it |
+| `chip-levels.js` | Chip levels (a whole chip or one part, 0.5 dB steps) the engines apply to every song; edit without rebuilding |
 | `zip.js` | A small ZIP writer (stored files): the .mub with its PCM bank as one download |
 | `notes-worker.js` | Runs `chip-notes.js` off the main thread |
 | `chip-notes.js` | The notes of a .vgm / .mub, read from its chip writes for the tracker and keys beside the channel view |

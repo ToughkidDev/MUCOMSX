@@ -26,6 +26,15 @@ if (Environment.GetEnvironmentVariable("VGM_OUT") is string vgmPath)
     if (vgm != null) File.WriteAllBytes(vgmPath, vgm);
 }
 
+// The chip levels the page uses (MUCPlayground/chip-levels.js), or CHIP_LEVELS="YM2608 SSG=-4;…"
+// ("" for none), so a render here sounds as in the browser.
+{
+    string levelsFile = Path.Combine(AppContext.BaseDirectory, "chip-levels.js");
+    string spec = Environment.GetEnvironmentVariable("CHIP_LEVELS") ?? (File.Exists(levelsFile)
+        ? string.Join(";", System.Text.RegularExpressions.Regex.Matches(File.ReadAllText(levelsFile), @"^\s*'([^']+)'\s*:\s*(-?\d+)", System.Text.RegularExpressions.RegexOptions.Multiline).Select(m => m.Groups[1].Value + "=" + m.Groups[2].Value))
+        : "");
+    Console.WriteLine("chip levels: " + (ChipLevels.Set(spec) is var taken && taken != "" ? taken : "none"));
+}
 MucPlayer player = new();
 if (Environment.GetEnvironmentVariable("SPEED") is string speedText) player.Speed = double.Parse(speedText);
 // CHVOL=YM2608:0:0:-192,AY8910:0:1:-24 (chip:id:channel:volume, MDPlayer's mixer units of 0.5 dB, -192 off)

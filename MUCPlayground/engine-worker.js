@@ -4,6 +4,8 @@
 //   engine-worker.js             MUC editor engine: compile, MUB playback, exports
 //   engine-worker.js?engine=vgm  VGM/VGZ playback (separate, loaded on first use)
 //   a second engine-worker.js   only exportFile: a .mub's VGM for the note views (on first use)
+import { CHIP_LEVELS } from './chip-levels.js';
+
 const ENGINE_DIR = new URL(import.meta.url).searchParams.get('engine') === 'vgm' ? './engine-vgm/' : './engine/';
 
 const SAMPLE_RATE = 44100;
@@ -26,6 +28,8 @@ async function boot(language) {
   const { getAssemblyExports, getConfig } = await dotnet.create();
   E = (await getAssemblyExports(getConfig().mainAssemblyName)).MucPlayground.Interop;
   E.Init(language);
+  // chip-levels.js: applied by the engine to every song it opens
+  if (E.SetChipLevels) E.SetChipLevels(Object.entries(CHIP_LEVELS).map(([k, v]) => `${k}=${v}`).join(';'));
   postMessage({ type: 'ready' });
 }
 

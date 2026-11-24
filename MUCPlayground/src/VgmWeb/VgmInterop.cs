@@ -35,6 +35,11 @@ public static partial class Interop
         }
     }
 
+    // Chip levels from chip-levels.js ("YM2608 SSG=-4;…"), applied to every song opened
+    // after this; returns the entries taken.
+    [JSExport]
+    public static string SetChipLevels(string spec) => ChipLevels.Set(spec);
+
     // A .vgm or gzip-compressed .vgz file.
     [JSExport]
     public static string StartFile(byte[] data)
@@ -45,7 +50,7 @@ public static partial class Interop
         scope = null;
         try { session = VgmEngine.Load(data, 2048, SongPath); }
         catch (Exception e) { session = null; error = e.Message; }
-        if (session?.Mds != null) ChipLevels.Apply(session.Mds);   // the OPNA's SSG as quiet as on the chip
+        if (session?.Mds != null) ChipLevels.Apply(session.Mds);   // chip-levels.js
         if (session?.Mds != null)
         {
             try { scope = new ChannelScope(); scope.AddMdsound(session.Mds); }
