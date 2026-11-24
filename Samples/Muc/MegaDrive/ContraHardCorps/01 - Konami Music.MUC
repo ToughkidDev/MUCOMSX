@@ -1,0 +1,26 @@
+#mucom88 1.7
+#title Konami Music
+#composer H.Kobayashi, M.Yamane, A.Yamaoka, H.Taniguchi, A.Hata
+#author ToughkidCST
+#comment Contra: The Hard Corps (Japan)
+#driver mucomDotNET
+#voice CONTRAHC.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6
+; sound $B7, driver tick = 1 clock (C48), MD timer -> t
+
+A C48 l16 vm2 t170 r4. @1 v87 p2 D8 o5b r48 D4 >c r48 v88 D6 e r48 D7 g r48 v89
+A D8 b r48 D4 >c r48 v90 D6 e r48 v89 D4 c r48 D8 <b r48 v88 D7 g r48 D6 e r48
+A v87 D4 c r48 v89 D8 <b%59 r%17
+
+B C48 l16 vm2 r%11 @1 v87 p1 D11 o5b r48 D6 >c r48 v88 D8 e r48 D9 g r48 v89
+B D11 b r48 D6 >c r48 v90 D8 e r48 v89 D6 c r48 D11 <b r48 v88 D9 g r48 D8 e
+B r48 v87 D6 c r48 v89 D11 <b%65 r4.
+
+C C48 l16 vm2 @2 v109 p3 o5b%13 r v111 >b%13 r b%13 r <b%74 r%20
+
+H C48 l16 vm2 r12 @2 v109 p3 o6c%13 r v112 >c%13 r v109 <g%83 r%23
+
+I C48 l16 vm2 r6 @2 v109 p3 o6e%13 r v112 >e%13 r v109 <e%80 r%22
+
+J C48 l16 vm2 r%11 @2 v111 p3 o6g%13 r v112 >c%13 r v109 <c%78 r%21

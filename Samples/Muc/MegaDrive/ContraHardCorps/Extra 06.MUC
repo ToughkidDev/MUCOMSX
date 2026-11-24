@@ -1,0 +1,29 @@
+#mucom88 1.7
+#title Unlisted jingle $D9
+#composer H.Kobayashi, M.Yamane, A.Yamaoka, H.Taniguchi, A.Hata
+#author ToughkidCST
+#comment Contra: The Hard Corps (Japan)
+#driver mucomDotNET
+#voice CONTRAHC.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6
+; sound $D9, driver tick = 1 clock (C48), MD timer -> t
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{D-86 M2,1,43,255 o1e12 r}
+#*2{M0,1,53,255 o1d+24& M0,1,93,255 d+24& M0,1,62,255 d+16& MF0}
+#*3{M2,1,70,255 o1d+12& M0,1,82,255 d+24& M0,1,68,255 d+12 r}
+#*4{o2d v101 d+%10 r d12 r v87 d v101 d+%26 r}
+#*5{M2,1,70,255 o1d+12& *2 d+%15 r v118 *1}
+#*6{D0 MF0 o1d}
+#*7{o2d12 r}
+
+A C48 l48 vm2 @74 v115 p3 D-86 M2,1,43,255 t182 o1e12 r v99 *6 v115 *3 *1 v99
+A *6 v115 *5 L t182 @74 v105 p3 *6 v119 *3 v118 *1 v105 *6 v119 *5
+
+B C48 l48 vm2 @75 v87 p2 o2d8 r v101 *7 L @75 v87 p2 *4 *7
+
+C C48 l48 vm2 @5 v87 p1 *7 v101 *7 L @5 v87 p1 *4 *7
+
+H C48 l48 vm2 @24 v113 p2 *7 L @24 v100 p2 d v114 d+8.& p3 d+ r v113 *7 v100 d
+H v114 d+6& p1 d+%13& p3 d+%5 r v113 *7
