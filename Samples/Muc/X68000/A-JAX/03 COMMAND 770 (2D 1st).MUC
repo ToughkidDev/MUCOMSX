@@ -1,0 +1,127 @@
+#mucom88 1.7
+#title A-JAX COMMAND 770 (2D 1st)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment A-JAX (X68000)
+#voice AJAX.DAT
+#pcm AJAX.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=MIDI1 B=MIDI2 C=MIDI3 H=MIDI4 I=MIDI5 J=MIDI6
+; K = MSM6258 ADPCM -> ADPCM-B (AJAX.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{D-1 H5,0,0 o4a+ D0 g D-1 a+ D0 q7 >d+10 g10 q4}
+#*2{H5,1,0 o5c16& H5,4,0 c%7& H5,5,0}
+#*3{H5,1,0 o4b16& H5,4,0 b%7& H5,5,0}
+#*4{q15 o5g8& H5,1,0 g20. H5,0,0 q4 f q7 e10 q4}
+#*5{H5,1,0 o5d16& H5,4,0 d%7& H5,5,0}
+#*6{q7 o4a10 D0}
+#*7{o5d c d e f e f}
+#*8{q11 o6f10. q7 e10 d10 c10}
+#*9{o6c <g >c q7 d10 g10 *8}
+#*10{q15 o6c8& H5,1,0 c20. H5,0,0 q4 c d}
+#*11{H5,5,0 o6d30 H5,0,0 d d+ q7 f10 q4}
+#*12{*10 q7 o6d+10 q11 d10. f10. D-1}
+#*13{o6f q16 f10 q4 e q16 e10 q4 d q16 d10}
+#*14{q7 o4g10 D-1 q11}
+#*15{o4a10. D0 g10. D-1}
+#*16{H5,0,0 o4a+ D1 g D0 a+ q7 >d+10 D1 g10 D0 q4}
+#*17{H5,0,0 o4g8& H5,1,0 g16& H5,4,0 g%7& H5,5,0}
+#*18{q15 o5d8& H5,1,0 d20. H5,0,0 q4 d q7 c10 q4}
+#*19{o6c D1 <g D0 >c q7 d10 D1 g10 D0 *8 *10}
+#*20{q6 o6d+20. D-1 q11 <a+10. D0 >d10.}
+#*21{D-1 q4 o5a D0 e D-1 a q7 a10 D0 >e10 q11}
+#*22{o5a+ g a+ q6 >d+10 g10 q3 d+}
+#*23{q12 o6g5 q3 f q6 e10 q3 d%108}
+#*24{q3 o6c}
+#*25{o6d c d e f e f g}
+#*26{o6c <g >c q6 d10 g10 q9 f10.}
+#*27{q6 o6e10 d10 c10 q12 c5 q3 c d}
+#*28{o6f q15 f10 q3 e q15 e10 q3 d q15 d10}
+#*29{o5g%84 g%108 D2 *22 D0 q9 c10. q3}
+#*30{q12 o6d5 q3 d q6 c10 q3 <b%108}
+#*31{D2 o5g D1 >c q6 d10 D2 g10 q9 f10. D1 *27 D2}
+#*32{q3 o5a e a q6 a10 >e10 q9 d10. q6 c10}
+#*33{o4g f e d g f e d}
+#*34{o4d+ d+ d+ d+}
+#*35{*33 *33 *34 o4d+ d+ g}
+#*36{o4f f f}
+#*37{o4f10 q4 f q7 f10 q4 f}
+#*38{*33 *33 o4f q16 f10 q7 f10 *37 q7 f10 q4 *36}
+#*39{D4886 o1c%23 r240}
+#*40{*39 @2 D31695 o1c @1 D2272}
+#*41{D31695 o1c%13 @1 D2272}
+#*42{*41 o1c%26 r40. D4886 c%22 r120}
+#*43{@2 o1c10 @3 c10 @2 c c @3}
+#*44{*43 o1c10 *43 c}
+#*45{*43 o1c10 @2 c10 @3 c @2 c @3}
+#*46{@2 o1c @5 c%7 c40 @3 c%23 @2 c c @3}
+#*47{*46 o1c10 *46 c @4 c}
+#*48{*46 o1c10 @2 c @5 c%7 c40 @3 c%11 @2 c @3}
+
+A C240 l20 vm2 L MF0 @1 v110 p2 H0,0,0 q7 o4b10 q11 [ >c10. <b10. ]3 q7 >c10
+A <b10 >c10 q4 d e%29& H5,1,0 e16& H5,4,0 e%7& H5,5,0 e40. H5,0,0 q7 <b10 q11 [
+A >c10. <b10. ]3 q7 >c10 <b10 D-1 q2 a40 D0 [ b40 >c40 d40 ]2 e40 c40 [ d40 e40
+A f40 ]2 g40 q4 c8& H5,1,0 c%14& H5,4,0 c30& H5,5,0 c%32 H5,0,0 <b8& H5,1,0
+A b%14& H5,4,0 b%7& H5,5,0 b%57 *1 d+ q11 f10. q4 c8& *2 c30 H5,0,0 c8& *2 c%32
+A H5,0,0 <b8& *3 b%56 *1 d+ q11 f10. D-1 q4 a8& H5,1,0 a%14& H5,4,0 a%7& H5,5,0
+A a40. D0 H5,0,0 *4 d%29& *5 d%57 H5,0,0 c q16 c10 c10 d10 q11 e10. q7 e10 d10
+A c10 *4 d8& *5 d%56 D-1 H5,0,0 *6 q4 b q11 >c10. q7 <b10 q4 >c q11 d10. q7 c10
+A q4 d e *7 [ g D-1 a D0 ]2 b >c <b >c d *9 *10 d+ d8& H5,1,0 d%14& H5,4,0
+A d30& *11 *9 *12 q7 a+10 D0 [ q4 *9 ]3 *12 q19 a+10. D0 q4 *13 q4 e q16
+A e8& H5,1,0 e%14& H5,4,0 e%7& H5,5,0 e%21 H5,0,0 q4 *13 q4 e e8& H5,1,0
+A e16& H5,4,0 e%7& H5,5,0 e30
+
+B C240 l20 vm2 L MF0 @2 v109 p1 H0,0,0 *14 [ *15 ]3 *6 g10 D-1 a10 D0 q4 b
+B >c%29& *2 c40. H5,0,0 *14 [ *15 ]3 *6 g10 q2 f40 [ g40 D-1 a40 D0 b40 ]2 >c40
+B D-1 <a40 D0 [ b40 >c40 d40 ]2 e40 q4 <g8& H5,1,0 g%14& H5,4,0 g30& H5,5,0
+B g%32 H5,0,0 g8& H5,1,0 g%14& H5,4,0 g%7& H5,5,0 g%57 *16 d+ q11 c10. D-1 q4
+B <a8& H5,1,0 a16& H5,4,0 a%7& H5,5,0 a30 D0 *17 g%32 *17 g%56 *16 d+ q11 c10.
+B q4 f8& H5,1,0 f%14& H5,4,0 f%7& H5,5,0 f40. H5,0,0 *18 <b%29& *3 b%57 D-1
+B H5,0,0 a q16 a10 a10 D0 b10 q11 >c10. q7 c10 <b10 D-1 a10 D0 *18 <b8& *3 b%56
+B H5,0,0 q7 f10 q4 g D-1 q11 a10. D0 q7 g10 D-1 q4 a D0 q11 b10. D-1 *6 q4 b >c
+B <b D-1 a D0 b >c *7 [ g D-1 a D0 ]2 q10 b20. q4 *19 d+ d8& H5,1,0 d16& H5,4,0
+B d%7& *11 *19 *20 q7 f10 *21 d10. q7 c10 <b10 D-1 a10 D0 q4 g+ d+ g+ q7 g+10
+B >d+10 q11 d10. q7 c10 D-1 <a+10 D0 g+10 *21 d10. q7 c10 <b10 D-1 q13 a8 D0
+B *10 *20 q19 f10. [ q4 c q16 c10 ]2 q4 <b q16 b10 q4 >c q16 c8& H5,1,0
+B c%14& H5,4,0 c%7& H5,5,0 c%21 H5,0,0 [ q4 c q16 c10 ]2 q4 <b q16 b10 q4 >c
+B c8& H5,1,0 c16& H5,4,0 c%7& H5,5,0 c30
+
+C C240 l20 vm2 L MF0 @3 v104 p2 q6 o5b10 q9 [ >c10. <b10. ]3 q6 >c10 <b10 >c10
+C q3 d e4 q6 <b10 q9 [ >c10. <b10. ]3 q6 >c10 <b10 q1 a40 [ b40 >c40 d40 ]2 e40
+C c40 [ d40 e40 f40 ]2 g40 q3 c%84 <b%108 *22 q9 f10. q3 c4 c%84 <b%108 *22 q9
+C f10. q3 a4 *23 c q15 c10 c10 d10 q9 e10. q6 e10 d10 c10 *23 q6 <a10 q3 b q9
+C >c10. q6 <b10 *24 q9 d10. q6 c10 q3 d e *25 a g a b >c <b >c d *26 *27 d+ d4
+C d d+ q6 f10 q3 *26 *27 q6 d+10 q9 d10. f10. q6 a+10 [ q3 *26 q6 e10 d10 c10
+C ]3 q12 c5 *24 d q6 d+10 q9 d10. f10. q18 a+10. q3 *28 q3 e q15 e5. q3 *28 q3
+C e e4
+
+F C240 l20 L t217 r%25 t216 r
+
+H C240 l20 vm2 L MF0 @3 v103 p1 q6 o5g10 q9 [ a10. g10. ]3 q6 a10 g10 a10 q3 b
+H >c4 q6 <g10 q9 [ a10. g10. ]3 q6 a10 g10 q1 f40 [ g40 a40 b40 ]2 >c40 <a40 [
+H b40 >c40 d40 ]2 e40 q3 *29 <a4 *29 f4 *30 a q15 a10 a10 b10 q9 >c10. q6 c10
+H <b10 a10 *30 q6 f10 q3 g q9 a10. q6 g10 q3 a q9 b10. q6 a10 q3 b >c <b a b >c
+H *25 a g a q9 b20. D1 *24 *31 d+ D1 d4 d D2 d+ q6 f10 D1 *24 *31 q4 d+20. D0
+H q9 <a+10. >d10. q6 f10 *32 <a+10 a10 q3 g+ d+ g+ q6 g+10 >d+10 q9 d10. q6 c10
+H <a+10 g+10 *32 <a+10 q12 a8 D1 >c5 *24 d D2 q4 d+20. D0 q9 <a+10. >d10. q18
+H f10. [ *24 q15 c10 ]2 q3 <a+ q15 a+10 *24 q15 c5. [ *24 q15 c10 ]2 q3 <a+ q15
+H a+10 *24 c4
+
+I C240 l20 vm2 L MF0 @4 v119 p3 q3 [ o5f+10 ]32 @5 v102 q4 [ *35 a+ *36 *36 a
+I >c ]2 [ *38 ]2 [ g ]16 b [ >c ]7 <b [ >c ]5 <a+ a+ [ g+ ]9 [ a+ ]7 b [ >c ]7
+I <b [ >c ]5 <a+ a+ [ g+ ]8 [ a+ ]8 [ a ]16 [ g+ ]16 [ a ]16 [ g+ ]9 [ a+ ]7 [
+I >c <b a g ]8
+
+J C240 l20 vm2 L MF0 @6 v112 p3 *14 [ *15 ]3 *6 g10 *37 f f *14 [ *15 ]3 *6 g10
+J q4 [ f ]8 v107 [ *35 D-1 a+ D0 *36 *36 D-1 a D0 >c ]2 [ *38 ]2 [ g ]16 b [ >c
+J ]7 <b [ >c ]5 D-1 <a+ a+ D0 [ g+ ]9 D-1 [ a+ ]7 D0 b [ >c ]7 <b [ >c ]5 D-1
+J <a+ a+ D0 [ g+ ]8 D-1 [ a+ ]8 [ a ]16 D0 [ g+ ]16 D-1 [ a ]16 D0 [ g+ ]9 D-1
+J [ a+ ]7 D0 [ >c <b D-1 a D0 g ]8
+
+K C240 l20 L r240 @1 D2272 p3 v240 o1c%23 *40 c%26 r24 *39 @3 *41 c%25 r24 *39
+K @2 *41 c%25 r24 *39 D2272 c10 D-57 c%29 r%7 @3 D31695 c @2 c c @3 c10 @1
+K D2272 c10 *40 c%25 r%11 *39 @3 *42 @2 *42 D2272 c10 D-57 c%29 r%7 @2 D31695 c
+K @3 c @2 c @3 c c *44 @4 [ c *44 ]2 @4 c *45 [ c ]4 [ *44 @4 c *44 c ]2 *45 [
+K c ]4 *47 *48 c10 c c *47 *48 [ c ]4 [ *47 ]3 *48 [ c ]4 *44 @4 c *44 c

@@ -1,0 +1,74 @@
+#mucom88 1.7
+#title A-JAX DIVE BOMBER (3D 1st)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment A-JAX (X68000)
+#voice AJAX.DAT
+#pcm AJAX.BIN
+#CarrierCorrection Yes
+; Needs MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+; YM2151 FM -> OPNA FM: A=MIDI1 B=MIDI2 C=MIDI3 H=MIDI4 I=MIDI5 J=MIDI6
+; SCCA = MSM6258 loop held on after the K note (SCC unison)
+; K = MSM6258 ADPCM -> ADPCM-B (AJAX.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ 51,50,0,16,4,31,44,-65,-98,-85,-79,22,45,16,23,11,49,23,-15,40,30,46,25,-53,-46,-127,-75,-41,32,50,10,66 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o5e f g c4. d+ f g}
+#*2{o6e f g c4. d+ f g}
+#*3{q4 o5b12 q2 >c q6 d8 q4 d12 q2 e q6 f8}
+#*4{*3 q4 o6f12 q2 g q6 a8}
+#*5{o4g12 q11 >f4 a4 q4 g12 q2 a}
+#*6{o6b12 >c q2 d8 q1 d12 e q2 f8 q1 f12}
+#*7{o5g12 >f4 a4 q1 g12 a q2}
+#*8{o3c >c <c >c <c >c}
+#*9{o3d+ >d+ <d+ >d+ <d+ >d+}
+#*10{o3f >f <f >f <f >f}
+#*11{o3g >g <g >g <g >g}
+#*12{o4c >c <c >c <c >c}
+#*13{o4d+ >d+ <d+ >d+ <d+ >d+}
+#*14{o4f >f <f >f <f >f}
+#*15{o4g >g <g >g <g >g}
+#*16{D18960 o1c12 @15 D31695 c%33}
+#*17{@0 E255,255,0,255,0,255 v9 D79}
+
+A C144 l24 vm2 @26 v111 p2 q22 o5c2 f2 d2 q11 a+4 f4 q4 e12 q2 f g%126 q4 >e12
+A q2 f g%126 q22 <d+2 a+2 f+2 q11 g+4 d+4 q22 d+2 q11 f4 d+4 q22 d+2 q11 g+4
+A >d+4 L MF0 @26 v111 p2 q2 *1 a+%30 q4 a12 g12 q11 a4 >c4 q4 <b12 q2 >c d4. *2
+A c%30 q4 <a+12 g12 q11 a4 >c4 *4 q4 a12 q2 b q6 >c8
+
+B C144 l24 vm2 @26 v108 p1 q22 o4g2 >c2 <a+2 q11 >f4 c4 q4 c12 q2 c c%126 q4
+B >c12 q2 c c%126 q22 o4a+2 >d+2 c+2 q11 d+4 <a+4 q22 a2 q11 >c4 <a4 q22 g+2
+B q11 >d+4 g+4 L MF0 @26 v108 p1 q2 <e f g c4. d+ f g a+%30 q4 a12 *5 b4. *1
+B c%30 q4 <a+12 *5 q6 b8 *4
+
+C C144 l24 vm2 @18 v103 p2 q9 o6c2 f2 d2 q4 a+4 f4 q1 e12 f q2 g%126 q4 >e12 q2
+C f g%126 q9 <d+2 a+2 f+2 q4 g+4 d+4 q9 d+2 q4 f4 d+4 q9 d+2 q4 g+4 >d+4 L MF0
+C @18 v103 p2 q2 *2 q1 a+%30 a12 g12 q4 a4 >c4 q1 <b12 >c q2 d4. e f g c4. d+ f
+C g q1 c%30 <a+12 g12 q4 a4 >c4 q1 *6 g q2 a8 q1 a12 b q2 >c8
+
+F C144 l24 [ t191 r%7 t190 r18 ]76 t191 r12 L t191 r t190 r%7
+
+H C144 l24 vm2 @18 v100 p1 q9 o5g2 >c2 <a+2 q4 >f4 c4 q1 c12 c q2 c%126 q4 >c12
+H q2 c c%126 q9 o5a+2 >d+2 c+2 q4 d+4 <a+4 q9 a2 q4 >c4 <a4 q9 g+2 q4 >d+4 g+4
+H L MF0 @18 v100 p1 q2 *1 a+%30 q4 a12 *7 b4. *2 c%30 q4 <a+12 *7 b8 q1 *6 g q2
+H a8
+
+I C144 l24 vm2 @27 v111 p3 [ q4 o3c12 q2 c ]2 [ q4 c12 c12 c12 c12 q2 c q4 c12
+I q2 c ]7 q4 c12 c12 c12 [ d+12 q2 d+ q4 d+12 q2 d+ q4 d+12 d+12 d+12 ]4 [ f12
+I q2 f q4 f12 q2 f q4 f12 f12 f12 ]4 L MF0 @27 v107 p3 q2 [ *8 *8 *9 *9 *10 *10
+I *11 *11 ]2 [ <g >g ]6
+
+J C144 l24 vm2 @5 v99 p3 [ q4 o4c12 q2 c ]2 [ q4 c12 c12 c12 c12 q2 c q4 c12 q2
+J c ]7 q4 c12 c12 c12 [ d+12 q2 d+ q4 d+12 q2 d+ q4 d+12 d+12 d+12 ]4 [ f12 q2
+J f q4 f12 q2 f q4 f12 f12 f12 ]4 L MF0 @5 v113 p3 q2 [ *12 *12 *13 *13 *14 *14
+J *15 *15 ]2 [ <g >g ]6
+
+K C144 l24 r144 @14 D31695 p3 v240 o1c%11 [ D18960 c12 D31695 c12 ]11 *16
+K r%96 r%15 c%33 r%96 r%96 r%63 @14 [ c12 D18960 c12 D31695 ]5 c12 *16
+K r%96 r%96 r%63 L [ r%96 ]6 r2
+
+SCCA C144 l24 [ r%96 ]3 r%33 *17 q33 o2c%96& q33 c3 q0 c%96& c%96& c%63
+SCCA r%96 r%81 c%96& c%96& c%63 L *17 q0 c%96& c%96& c%96& c%96& c%96& c%96& c2

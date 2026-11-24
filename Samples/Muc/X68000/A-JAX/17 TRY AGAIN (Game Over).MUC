@@ -1,0 +1,78 @@
+#mucom88 1.7
+#title A-JAX TRY AGAIN (Game Over)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment A-JAX (X68000)
+#voice AJAX.DAT
+#pcm AJAX.BIN
+#CarrierCorrection Yes
+; Needs MucoMSX v1.5-Stable+ (MucoMSXExtension SCC parts, msPb0102).
+; YM2151 FM -> OPNA FM: A=MIDI1 B=MIDI2 C=MIDI3 H=MIDI4 I=MIDI5 J=MIDI6
+; YM2151 FM -> SCC wave+envelope: SCCA=MIDI7 SCCB=MIDI8
+; K = MSM6258 ADPCM -> ADPCM-B (AJAX.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; SCC waves: steady-state shape of the YM2151 voices
+  @W0:{ -45,123,123,100,49,17,-3,0,2,7,-1,-6,-21,-19,-14,34,45,-30,13,19,20,6,0,-8,-2,0,3,-16,-48,-100,-122,-127 }
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{D0 o5a+20& H4,1,0 a+40.& H4,4,0 a+48& H4,5,0}
+#*2{D82 o6c240& D-11 d+240& D-6 d+240& D-2 d+240& D0 d+%13& H4,1,0}
+#*3{H4,1,0 o4a+40.& H4,4,0 a+48& H4,5,0}
+#*4{o5d+240& D-4 d+240& D0 d+80& D2 d+%11& H4,1,0 d+40.& H4,4,0}
+#*5{o4c >c <c}
+#*6{q6 o3a15 q3 >a q6 <a+15 q3 >a+ q6 <b15}
+#*7{o1c @2 c}
+
+A C240 l30 vm2 r5 @37 v107 p2 q3 o5g D14 a240& D10 b240& D-9 >c240& D-5
+A c240& D-1 c60 D-14 <a+240& D-8 g+240& D15 g240& D5 g240& D3 g60 D20 q0
+A g+240& D88 g+240& D-10 a+240& D-3 a+240& D-1 a+120& *1 a+%13 r%27 D9 H4,0,0
+A q3 >c240& *2 d+40.& H4,4,0 d+48& H4,5,0 d+ D12 H4,0,0 f240& D8 g240& D-15
+A g+240& D-8 g+240& D-2 g+240& D0 g+%13& H4,1,0 g+40.& H4,4,0 g+48 D15 H4,0,0
+A q6 a+240& D5 >c240& D-17 c+240& D-5 c+240& D-2 c+240& D0 c+%11 D-16 q0
+A c+240& D-31 c+240& D-35 c+240& D-36 c+240& D-37 c+%14& H4,1,0 c+40.& H4,4,0
+A c+48& H4,5,0 c+%69
+
+B C240 l30 vm2 r5 @37 v107 p2 q3 o4g D14 a240& D10 b240& D-9 >c240& D-5
+B c240& D-1 c60 D-14 <a+240& D-8 g+240& D15 g240& D5 g240& D3 g60 D31 q0
+B b240& D13 >d+240& D21 e240& D-7 f240& D-2 f240& D-1 f240& D0 f20& H4,1,0
+B f40.& H4,4,0 f48& H4,5,0 f%13 r%27 D13 H4,0,0 q3 g240& D8 a240& D-17
+B a+240& D-9 a+240& D-3 a+240& D-1 a+240& *1 a+ D9 H4,0,0 >c240& *2
+B d+40.& H4,4,0 d+48 D12 H4,0,0 q6 f240& D8 g240& D-26 g+240& D-8 g+240& D-2
+B g+240& D0 g+%11 D-24 q0 g+240& D-45 g+240& D-52 g+240& D-53 g+240& D-55
+B g+%14& H4,1,0 g+40.& H4,4,0 g+48& H4,5,0 g+%69
+
+C C240 l30 vm2 r%54 @37 v107 p1 D2 q3 o4g D16 a240& D12 b240& D-15 >c240& D-4
+C c240& D0 c60 D-12 <a+240& D-7 g+240& D-28 g+240& D10 g240& D5 g60 D22 q0
+C g+240& D90 g+240& D-8 a+240& D-4 a+240& D0 a+120& D2 a+20& *3 a+%13 r%27 D10
+C H4,0,0 q3 >c240& D83 c240& D-18 *4 d+48& H4,5,0 d+ D13 H4,0,0 f240& D75
+C f240& D-24 g+240& D-6 g+240& D0 g+240& D1 g+120& D2 g+%11& H4,1,0
+C g+40.& H4,4,0 g+48 D17 H4,0,0 q6 a+240& D6 >c240& D-9 c+240& D-2 c+240& D0
+C c+120& D1 c+24 D-15 q0 c+240& D-29 c+240& D-32 c+240& D-35 c+240& D-36
+C c+%14& H4,1,0 c+40.& H4,4,0 c+48& H4,5,0 c+%69
+
+F C240 l30 [ t207 r t206 r240 ]37 t207 r40
+
+H C240 l30 vm2 r%54 @37 v107 p1 D2 q3 o3g D16 a240& D12 b240& D-15 >c240& D-4
+H c240& D0 c60 D-12 <a+240& D-7 g+240& D-28 g+240& D10 g240& D5 g60 D33 q0
+H b240& D14 >d+240& D23 e240& D-12 f240& D-3 f240& D0 f120& D2 f%11& H4,1,0
+H f40.& H4,4,0 f48& H4,5,0 f%13 r%27 D15 H4,0,0 q3 g240& D10 a240& D-28
+H a+240& D-7 a+240& D-1 a+240& D0 a+120& D2 a+%11& *3 a+ D10 H4,0,0 >c240& D56
+H c240& D-18 *4 d+48 D13 H4,0,0 q6 f240& D10 g240& D-13 g+240& D-2 g+240& D0
+H g+240& D1 g+240& D2 g+24 D-22 q0 g+240& D-44 g+240& D-48 g+240& D-51
+H g+240& D-53 g+%14& H4,1,0 g+40.& H4,4,0 g+48& H4,5,0 g+%69
+
+I C240 l30 vm2 r5 @10 v109 p3 D2 q3 *5 D3 *6 q3 >b D2 *5 D3 *6 D2 q0 >c%101
+
+J C240 l30 vm2 r5 @21 v108 p3 q3 *5 *6 q3 >b *5 *6 q0 >c%101
+
+K C240 l30 r240 @1 D9419 p3 v240 [ o1c ]6 c16 r @3 D31695 c15 @10 c40. @2 c @4
+K *7 @3 c @6 c @7 *7 @5 *7 @3 c16 @10 c40. @3 c c *7 @6 c @7 c10 r%82
+
+SCCA C240 l30 r%96 r%96 r6 @0 E0,15,0,255,0,7 v14 D-8 o3c D-43 d+240& D-65
+SCCA g240& D-23 a240& D11 a+240& D-54 b240& D12 b240& D52 b240& D-72
+SCCA >c240& D-56 c240& D-40 c240& D-24 c120& D-8 c%78
+
+SCCB C240 l30 r%96 r%96 r5 @0 E0,15,0,255,0,7 v14 D9 o3c D-27 d+240& D-49
+SCCB g240& D-15 a240& D19 a+240& D-2 b240& D23 b240& D-104 >c240& D-56
+SCCB c240& D-32 c240& D-24 c240& D-8 c240& D0 c240& D1 c%75

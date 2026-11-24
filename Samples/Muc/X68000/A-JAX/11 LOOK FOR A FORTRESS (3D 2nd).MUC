@@ -1,0 +1,91 @@
+#mucom88 1.7
+#title A-JAX LOOK FOR A FORTRESS (3D 2nd)
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment A-JAX (X68000)
+#voice AJAX.DAT
+#pcm AJAX.BIN
+#CarrierCorrection Yes
+; YM2151 FM -> OPNA FM: A=MIDI1 B=MIDI2 C=MIDI3 H=MIDI4 I=MIDI5 J=MIDI6
+; K = MSM6258 ADPCM -> ADPCM-B (AJAX.BIN)
+; F = tempo only: Timer-B values alternate so 1 clock = 1 driver tick
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o6e d+ e f f+ f f+ g}
+#*2{p2 q2 *1 o6g+ g g+ a a+ a a+}
+#*3{o5b >c d c <b q36 a%66 q10 >c20. q7}
+#*4{q2 o5g a *3 <b20. a20. q15 b8}
+#*5{p2 *4 q2 o6d c+ d c d <b >d}
+#*6{*5 o5a >d <g >d <a >d <b >d}
+#*7{o5b >c c+ d}
+#*8{o6c+ e d+ d <a+ *7 <g q7 f20. *4}
+#*9{*6 o6c g f+ f *8}
+#*10{q18 o5a+5 a5 q24 g%54 q4 a+20 a20 q2 g}
+#*11{*10 q8 o6c20}
+#*12{q18 o6d5 c5 q24 <a+%54 q4 >d20 c20 q2 <a+}
+#*13{*12 q8 o6e20 *12 q0 >e30 r%96 r%96 r24}
+#*14{p1 q2 o6c *7 c+ d d+ *1}
+#*15{q10 o5a20. q7 g20. f20. q15 g8}
+#*16{o4a b >c d c <b q36 a%66 *15 q2}
+#*17{p1 q2 o4g *16 d c+ d c d <b}
+#*18{*17 o5d <a >d <g >d <a >d <b}
+#*19{*18 o5d c g f+ f c+ e d+}
+#*20{o5d <a+ b >c c+ d <g q7 f20. q2}
+#*21{*19 *20 o5e f g a b a g}
+#*22{q18 o5g5 f5 q24 e%54 q4 g20 f20 q2 e q8}
+#*23{o3f20 q2 f}
+#*24{q8 *23}
+#*25{o4e f <f q8 f20 f20 q2 f}
+#*26{o3g20 q2 g}
+#*27{*25 o3a+ >c q4 *26 q8 *26 >f g <g q8}
+#*28{o4f g f <g g >e <g g}
+#*29{o5c <c q4 c20 q2 c c c}
+#*30{o4c c q8 c20 q2 c c}
+#*31{q2 o4c c a+ *29 f g *30 a+ *29}
+#*32{*25 D4 o3a+ D2 >c}
+#*33{D3 o4f D4 g}
+#*34{*32 D4 q4 *26 q8 *26 *33 o3g q8 g20 *26 D2 >c}
+#*35{*33 D3 o4f D4 <g g D3 >e D4 <g g D2}
+#*36{q2 o4c c D4 a+ D2 *29 *33 D2 *30 D4 a+ D2}
+#*37{o1c80 c80 c}
+#*38{@2 D31695 o1c%7 c @13 c @2 c%11 c20 c20}
+#*39{*38 o1c%7 @1 D28846 c D31695 c30 r80 D18960 c24}
+#*40{o1c24 r240 *39 r30 *38 c%7 @1 D18960}
+#*41{@2 D31695 o1c%7}
+#*42{@1 D23618 o1c40.}
+#*43{*41 *42 r120 *38 o1c%7 @1 c c30 r80 D23618 c40.}
+#*44{@13 o1c%17 @1 D28846 c30 r15 *41 @13 c%17 *42 r16 *41}
+#*45{@2 o1c%7 c c *44 @13 c%11 @2 c20 @1 c30}
+#*46{D28846 o1c30 r60 D23618 c%7 D31695 c30}
+
+A C240 l40 vm2 @28 v107 *2 b L MF0 @28 v107 *9 q2 [ >c d g c d f ]2 c d g c >d
+A <d >c <d b d a d g d a d b d >c [ *11 ]2 *13
+
+B C240 l40 vm2 @28 v107 *14 L MF0 @28 v107 *21 q36 f%66 *15 q2 [ c d g c d f ]2
+B c d g c >d <d >c <d b d a d g d a d b d >c [ *22 g20 ]2 *11 *10 q0 >c30
+B r%96 r%96 r24
+
+C C240 l40 vm2 @26 v106 *2 b L MF0 @26 v106 *9 q18 >d5 c5 <b5 q19 a%42 [ *11 ]2
+C *13
+
+F C240 l40 t198 r%96 L t198 r%17 t197 r240
+
+H C240 l40 vm2 @26 v106 *14 L MF0 @26 v106 *21 q36 f%66 *15 q18 b5 a5 g5 q19
+H f%42 [ *22 g20 ]2 *11 *10 q0 >c30 r%96 r%96 r24
+
+I C240 l40 vm2 @5 v110 p3 q36 o3g%96 L MF0 @5 v110 p3 q4 *23 *24 *25 a+ >c [
+I *24 ]2 *27 g20 *26 >c d [ q8 *26 ]2 *28 q4 >d20 *23 *24 *25 a+ >c [ *24 ]2
+I *27 g20 *26 >c d [ q8 *26 ]2 *28 >d q10 c20. [ *31 a+ c a+ q10 >c20. ]3 *31
+I a+ c a+ q0 >c60 r%96 r%96 r120
+
+J C240 l40 vm2 @29 v106 p3 D4 q36 o3g%96 L MF0 @29 v106 p3 D3 q4 *23 *24 *32 D3
+J [ *24 ]2 *34 d D4 [ q8 *26 ]2 *35 q4 >d20 D3 *23 *24 *32 D3 [ *24 ]2 *34 d D4
+J [ q8 *26 ]2 *35 >d q10 c20. [ *36 *29 D4 a+ D2 c D4 a+ D2 q10 >c20. ]3 *36 >c
+J <c q4 c20 q2 c c [ c D4 a+ D2 ]2 q0 >c60 r%96 r%96 r120
+
+K C240 l40 r240 @1 D23618 p3 v240 o1c40. r120 @11 D31695 c%7 @10 *37 c @6 *37 c
+K @2 c c c @13 c @2 c @13 c c80 c120 L r240 @1 D18960 p3 v240 *40 c%11 r *43
+K r40. *38 c%7 *42 r30 *41 @1 D18960 *40 c24 r%7 *43 r40. *38 c%7 *42 r120 @13
+K D31695 c%7 @1 c30 r80 [ *45 r60 *46 r80 c30 r60 ]3 *45 r60 *46 r80 @7 c%7 @1
+K c30 r80 [ *46 r40. c30 r60 ]2 *46 r80 c30 r240 @5 c60 *37 c @13 *37 @7 c @13
+K c48
