@@ -1,0 +1,91 @@
+#mucom88 1.7
+#title F-1 Spirit 3D Special - BGM
+#author ToughkidCST
+#comment F-1 Spirit 3D Special (MSX-MUSIC + PSG)
+
+?IT1={224,4,190,3,5,1}
+MSXB ?XU1 l%1 ?FJ10
+MSXC ?XU1 l%1 ?FJ13
+MSXH ?XU1 l%1 ?FJ16
+MSXI ?XU1 l%1 ?FJ18
+MSXJ ?XU1 l%1 ?FJ21
+MSXG ?XU1 l%1 ?FJ24
+MSXD ?NP-,1 ?XU1 ?XT1 ?XU7 r%16 ?XU1 ?FJ6
+MSXE ?XU1 ?XT1 ?XU7 r%16 ?XU1 ?FJ5
+MSXF ?XU1 ?XT1 ?XU7 r%16 ?XU1 ?FJ4
+PSGS ?XD0={ :0 ?XM1,1 ?NP0 ?XS$07 ?XS$05 ! }
+PSGS ?XD1={ :1 ?XM3,1 ?NP0 ?XP2560,8 ?XM1,4 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ! }
+PSGS ?XD2={ :2 ?XM2,1 ?GS$0A,1 ?GH$00 ?GL$42 ?XP432,12 ?GS- ?XM1,1 ?NP8 ?XS$08 ?XS$07 ?XS$06 ?XS$05 ?XS$04 ?XS$03 ?XS$02 ?XS$02 ?XS$01 ?XS$01 ?XS$00 !
+PSGS }
+PSGS ?XD3={ :3 ?XM2,1 ?GS$09,1 ?GH$01 ?GL$A0 ?XP1104,9 ?XP1536,9 ?XP1792,9 ?XP2048,9 ! }
+PSGS ?FD4={ ?XT1 ?XU7 v13,0 ?EP2,$45,$11 o2 e e r e ?XT4 d ?XT1 e b o3 d o2 a r%2 b ?XT4 d%2 ?XT1 g a e e r e ?XT4 d ?XT1 e a b o3
+PSGS d r%2 e ?XT4 d%2 ?XT1 o2 g a ?XT1 ?XU7 v13,0 ?EP2,$45,$11 o2 e e r e ?XT4 d ?XT1 e b o3 d o2 a r%2 b ?XT4 d%2 ?XT1 g a e e
+PSGS r e ?XT4 d ?XT1 e a b o3 d r%2 e ?XT4 d d ?XT1 o2 g a ?XT1 ?XU7 v13,0 ?EP2,$45,$11 o2 e e r e ?XT4 d ?XT1 e b o3 d o2 a r%2
+PSGS b ?XT4 d%2 ?XT1 g a e e r e ?XT4 d ?XT1 e a b o3 d r%2 e ?XT4 d%2 ?XT1 o2 g a ?XT1 ?XU7 v13,0 ?EP2,$45,$11 o2 e e r e ?XT4 d
+PSGS ?XT1 e b o3 d o2 a r%2 b ?XT4 d%2 ?XT1 g a e e r e ?XT4 d ?XT1 e a b o3 d r%2 e ?XT4 d d ?XT1 o2 g a ?XT1 ?XU7 ?MW14 ?MV0,$43
+PSGS v12,0 ?EP2,$14,$22 o2 e v9,0 e v12,0 o3 e v8,0 e v12,0 v13,0 ?EP2,$25,$21 d%4 c%3 o2 a+%3 ?EP2,$25,$47 g+%10 ?XT4 d+ d+ d
+PSGS ?XT1 ?EP2,$24,$21 g+ g+ g+%2 ?XU7 ?EP2,$23,$21 o3 d+ c o2 g+ g d+ c o1 g+ g o2 c g g+ g+ g+ ?XU15 g+ ?XU13 v8,0 g+ v13,0
+PSGS ?XU7 ?EP2,$35,$11 o2 e e r e r e b o3 d o2 a r%2 b r%2 g a e e r e r e a b o3 d r%2 e r%2 o2 g a ?FJ4 }
+PSGS ?FD5={ ?XT1 ?XU7 v12,0 ?MW11 ?MV0,$31 ?EP2,$24,$11 ?XT4 d+ d+ ?XT1 o4 g+ ?XT4 d+ d ?XT1 o4 a ?XT4 d+ d+ ?XT1 o4 b ?XT4 d+%2 ?XT1 a
+PSGS ?XT4 d%2 ?XT1 o4 g+ ?XT4 d+ ?XT1 ?EP2,$14,$10 v10,0 f+ ?XT4 d+ ?XT1 v12,0 f+ ?XT4 d+ ?XT1 o3 a%2 ?XT4 d+ ?XT1 ?EP2,$24,$11 b
+PSGS v7,0 b ?XT4 d+%2 d+ d%2 d+%2 ?XT1 ?XU7 v12,0 ?EP2,$24,$11 ?XT4 d+ d+ ?XT1 o4 g+ ?XT4 d+ d ?XT1 o4 a ?XT4 d+ d+ ?XT1 o4 b ?XT4
+PSGS d+%2 ?XT1 a ?XT4 d%2 ?XT1 o4 g+ ?XT4 d+ ?XT1 ?EP2,$14,$10 ?MV0,$51 v11,0 f+ ?XT4 d+ ?XT1 ?EP2,$04,$10 v12,0 b ?XT4 d+ ?XT1 o5
+PSGS ?EP2,$17,$10 ?MV- e%2 o3 ?XT4 d+ ?XT1 ?EP2,$24,$11 ?MV0,$32 o5 d v7,0 d ?XT4 o6 d+%2 d+ d d d d+ ?XT1 ?XU7 v12,0 ?EP2,$24,$11 ?XT4
+PSGS d+ d+ ?XT1 o4 g+ ?XT4 d+ d ?XT1 o4 a ?XT4 d+ d+ ?XT1 o4 b ?XT4 d+%2 ?XT1 a ?XT4 d%2 ?XT1 o4 g+ ?XT4 d+ ?XT1 ?EP2,$14,$10 v10,0
+PSGS f+ ?XT4 d+ ?XT1 v12,0 f+ ?XT4 d+ ?XT1 o3 a%2 ?XT4 d+ ?XT1 ?EP2,$24,$11 b v7,0 b ?XT4 d+%2 d+ d%2 d+%2 ?XT1 ?XU7 v12,0
+PSGS ?EP2,$24,$11 ?XT4 d+ d+ ?XT1 o4 g+ ?XT4 d+ d ?XT1 o4 a ?XT4 d+ d+ ?XT1 o4 b ?XT4 d+%2 ?XT1 a ?XT4 d%2 ?XT1 o4 g+ ?XT4 d+ ?XT1
+PSGS ?EP2,$14,$10 ?MV0,$51 v11,0 f+ ?XT4 d+ ?XT1 ?EP2,$04,$10 v12,0 b ?XT4 d+ ?XT1 o5 ?EP2,$17,$10 ?MV- e%2 o3 ?XT4 d+ ?XT1 ?EP2,$24,$11 ?MV0,$32
+PSGS o5 d v7,0 d ?XT4 o6 d+%2 d+ d d d d+ ?XT1 ?XU7 v11,0 ?EP2,$15,$31 ?XT4 d+ d+ d ?XT1 o4 e ?XT4 d ?XT1 e o3 b o4 e ?XT4 d ?XT1
+PSGS v11,0 d d ?XT4 d ?XT1 ?EP2,$15,$31 c+ c+ ?XT4 d%6 ?XT1 ?EP2,$24,$71 ?MW11 ?MV0,$41 o5 d+%4 ?EP2,$14,$70 c%4 ?EP2,$04,$70 o4 g+%4 o4
+PSGS ?XT4 d+ ?XT1 ?EP2,$13,$12 ?MV0,$43 d+ ?XT4 d+ ?XT1 o3 g+ ?XT4 d+ ?XT1 d+ ?XT4 d+ ?XT1 o2 g+ ?XT4 d d d+ d+ d d%3 ?XT1 v11,0 ?XU1
+PSGS ?EP- o5 b%3 v10,0 b%7 a+%2 a g+ g f+ f e d+ d c+ ?XU7 r%5 r%7 o3 ?XT4 c c+%3 c c+%3 c c+ d d d d d d d ?FJ5 }
+PSGS ?FD6={ ?XT1 ?XU7 ?MW11 ?MV0,$41 v13,0 ?EP2,$24,$12 r%2 o4 b v9,0 r b v13,0 o5 c+ v9,0 r c+ v13,0 o5 d v8,0 r d v13,0 c+ v8,0
+PSGS r c+ v13,0 o4 b r v9,0 ?EP- a v10,0 a+ a ?EP2,$05,$40 v12,0 g d%3 ?EP2,$24,$12 e v7,0 e%2 v12,0 ?EP2,$45,$11 o3 e g a a+ b
+PSGS o4 d ?XT1 ?XU7 v13,0 ?EP2,$24,$12 r%2 o4 b v9,0 r b v13,0 o5 c+ v9,0 r c+ v13,0 o5 d v8,0 r d v13,0 c+ v8,0 r c+
+PSGS v13,0 o4 b r ?EP2,$05,$10 v10,0 a v11,0 b v12,0 o5 d e v10,0 ?EP- a a+ a ?EP2,$14,$12 v12,0 g v7,0 g v12,0 ?EP2,$45,$11 o3
+PSGS b a+ b a g d e ?XT1 ?XU7 v13,0 ?EP2,$24,$12 r%2 o4 b v9,0 r b v13,0 o5 c+ v9,0 r c+ v13,0 o5 d v8,0 r d v13,0 c+ v8,0
+PSGS r c+ v13,0 o4 b r v9,0 ?EP- a v10,0 a+ a ?EP2,$05,$40 v12,0 g d%3 ?EP2,$24,$12 e v7,0 e%2 v12,0 ?EP2,$45,$11 o3 e g a a+ b
+PSGS o4 d ?XT1 ?XU7 v13,0 ?EP2,$24,$12 r%2 o4 b v9,0 r b v13,0 o5 c+ v9,0 r c+ v13,0 o5 d v8,0 r d v13,0 c+ v8,0 r c+
+PSGS v13,0 o4 b r ?EP2,$05,$10 v10,0 a v11,0 b v12,0 o5 d e v10,0 ?EP- a a+ a ?EP2,$14,$12 v12,0 g v7,0 g v12,0 ?EP2,$45,$11 o3
+PSGS b a+ b a g d e ?XT1 ?XU7 ?MW10 ?MV0,$31 v11,0 ?EP2,$17,$11 r%2 o4 b g v12,0 o5 c+ o4 a e a o5 d o4 b g ?EP2,$07,$11 o5 e c+ o4
+PSGS a ?EP2,$15,$60 ?MW15 ?MV0,$51 o5 g%6 g%4 ?EP2,$16,$20 g%4 ?EP2,$16,$10 g%4 ?EP2,$14,$12 ?MV0,$31 g g+ g d+ c o4 g+ g d+ c g o5 c d+
+PSGS o6 c c v7,0 c%2 v11,0 ?XU1 ?MV- ?EP- e%2 v10,0 e%8 d+%2 d c+ c o5 b a+ a g+ g f+ ?XT1 ?XU7 ?XU7 v9,0 ?EP2,$31,$60 o3 e r
+PSGS e b o4 d o3 a r%2 b r%2 g a e e r e r e a b o4 d r%2 e r%2 o3 g a ?FJ6 }
+PSGS ?FD7={ ! }
+OPLS ?FD8={ ! }
+OPLS ?FD9={ ! }
+OPLS ?FD10={ ?XT1 }
+OPLS ?FD11={ @10 ?QP96 ?XU7 r%16 }
+OPLS ?FD12={ v14 o4 r%2 b%2 r%1 o5 c+%2 r%1 d%2 r%1 c+%2 r%1 o4 b%2 ?QP254 g%1 a%1 g%1 e%1 d%3 ?QP96 e%1 r%10 b%2 r%1 o5 c+%2 r%1 d%2
+OPLS r%1 c+%2 r%1 o4 b%2 ?QP7 a%1 b%1 o5 d%1 e%1 ?QP254 a%1 b%1 a%1 ?QP96 g%1 r%8 ?FB2,12,1 v13 ?QP208 o4 r%2 b%1 g%1 o5 c%1 o4 a%1 f%1
+OPLS a%1 o5 d%1 o4 b%1 g%1 o5 e%1 c%1 o4 g%1 ?XU14 ?QP240 o5 g%10 ?XU7 ?QP96 o4 g%1 f%1 d%1 c%1 o3 g+%1 g%1 f%1 c%1 g%1 o4 c%1 g%1 o5
+OPLS c%1 c%1 r%2 ?XU7 r%15 ?FJ11 }
+OPLS ?FD13={ ?XT1 @3 ?XU7 }
+OPLS ?FD14={ v14 r%16 }
+OPLS ?FD15={ ?QP56 o1 e%1 e%1 v12 ?QP32 e%1 ?QP56 v14 e%2 e%1 o2 c+%1 d%1 o1 a%2 v12 ?QP32 a%1 ?QP56 v14 b%2 v12 ?QP32 b%1 v14 g%1 ?QP15 a%1
+OPLS ?QP56 o1 e%1 e%2 e%2 e%1 a%1 b%1 o2 d%2 v12 ?QP32 d%1 ?QP56 v14 e%2 v12 ?QP32 e%1 ?QP56 v14 o1 g%1 a%1 ?FB4,15,1 v14 ?QP192 o2 r%2
+OPLS e%2 d%4 c%3 o1 a+%3 ?XU14 g+%16 ?XU7 r%3 ?XU7 r%15 ?FJ14 }
+OPLS ?FD16={ ?XT1 }
+OPLS ?FD17={ ?XU7 r%16 r%2 @10 ?QP224 v10 ?DB2 o4 r%2 b%1 r%2 o5 c+%1 r%2 d%1 r%2 c+%1 r%2 o4 b%1 r%1 g%1 a%1 g%1 e%1 d%3 e%1 r%10 b%1
+OPLS r%2 o5 c+%1 r%2 d%1 r%2 c+%1 r%2 o4 b%1 r%1 a%1 b%1 o5 d%1 e%1 a%1 b%1 a%1 g%1 r%8 o4 r%2 b%1 r%2 o5 c+%1 r%2 d%1 r%2 c+%1
+OPLS r%2 o4 b%1 r%1 g%1 a%1 g%1 e%1 d%3 e%1 r%10 b%1 r%2 o5 c+%1 r%2 d%1 r%2 c+%1 r%2 o4 b%1 r%1 a%1 b%1 o5 d%1 e%1 a%1 b%1 a%1
+OPLS g%1 r%6 @10 v12 ?QP192 ?DB1 o4 r%2 b%2 o5 c%4 d%3 e%3 ?XU14 ?QP240 g%10 ?XU7 ?QP160 o5 d+%1 d%1 c%1 o4 g%1 d+%1 d%1 c%1 o3 g+%1 o4
+OPLS d%1 g+%1 o5 d%1 ?QP32 g+%1 g+%1 r%2 ?XU7 r%15 ?FJ17 }
+OPLS ?FD18={ ?XT1 }
+OPLS ?FD19={ ?XU7 r%16 @11 v13 ?QP80 ?DB0 }
+OPLS ?FD20={ ?QP80 o4 c+%1 d%1 r%1 d%1 r%2 d%1 r%4 d%1 r%2 d%1 r%1 c+%1 d%1 r%1 d%1 r%2 d%1 r%3 o3 b%1 a%1 g%1 a%1 r%2 o4 c+%1 d%1
+OPLS r%1 d%1 r%2 d%1 r%4 d%1 r%2 d%1 r%1 c+%1 d%1 r%1 d%1 r%2 d%1 r%3 a%1 r%1 ?QP128 g%4 ?FB2,20,1 @10 v13 ?QP192 ?DB1 o3 r%2 g%2 a%4
+OPLS b%3 o4 c%3 ?XU14 ?QP254 c%10 ?XU7 ?QP128 v6 c+%2 g%1 f%1 d%1 c%1 o4 g+%1 g%1 f%1 c%1 g%1 o5 c%1 g%1 o6 c%1 c%1 ?XU7 r%15 ?FJ19 }
+OPLS ?FD21={ ?XT1 }
+OPLS ?FD22={ ?XU7 r%16 @11 v13 ?QP80 ?DB0 }
+OPLS ?FD23={ ?QP80 o3 a%1 b%1 r%1 b%1 r%2 b%1 r%4 b%1 r%2 b%1 r%1 b%1 b%1 r%1 b%1 r%2 b%1 r%3 g%1 f+%1 e%1 f+%1 r%2 a%1 b%1 r%1 b%1
+OPLS r%2 b%1 r%4 b%1 r%2 b%1 r%1 b%1 b%1 r%1 b%1 r%2 b%1 r%3 o4 e%1 r%1 ?QP128 d%4 ?FB2,23,1 @10 v12 ?QP192 ?DB1 o3 r%2 e%2 f%4 g%3
+OPLS g%3 ?XU14 ?QP240 g+%16 ?XU7 r%3 ?QP128 ?XU7 r%15 ?FJ22 }
+MSXG ?FD24={ ?XT64 ?XU7 v14 ?IT1 }
+MSXG ?FD25={ ?IB c%1 ?IB c%1 g+%1 ?IB c%1 g+%1 ?IB c%1 ?IB c%1 ?IB c%1 v14 c+%1 g+%1 g+%1 g+%1 g+%1 g+%1 g+%1 g+%1 }
+MSXG ?FD26={ ?IB c%1 ?IB c%1 c+%1 c+%1 g+%1 c+%1 ?IB c%1 ?IB c%1 c+%1 ?IB c%1 c+%1 ?IB c%1 g+%1 c+%1 c+%1 c+%1 ?FB3,26,1 ?IB c%1 ?IB c%1 c+%1
+MSXG ?IB c%1 g+%1 c+%1 ?IB c%1 c+%1 ?IB c%1 ?IB c%1 c+%1 c+%1 g+%1 c+%1 c+%1 d%1 }
+MSXG ?FD27={ ?IB c%1 ?IB c%1 c+%1 c+%1 g+%1 c+%1 ?IB c%1 ?IB c%1 c+%1 ?IB c%1 c+%1 ?IB c%1 g+%1 c+%1 c+%1 c+%1 ?FB3,27,1 ?IB c%1 ?IB c%1 c+%1
+MSXG ?IB c%1 g+%1 c+%1 ?IB c%1 c%2 ?IB c%1 ?IB c%1 c+%1 c+%1 g+%1 g+%1 g+%1 d%1 ?IB c%1 ?IB c%1 g+%1 ?IB c%1 g+%1 c+%1 ?IB c%1 g+%1 g+%1
+MSXG ?IB c%1 g+%1 c+%1 ?IB c%1 g+%9 ?IB c%1 ?IB c%1 g+%2 g+%1 ?IB c%2 ?IB c%2 g+%1 c+%1 d%2 c+%1 d%2 c+%1 d%1 g+%1 g+%1 ?IB c%1 ?IB c%1
+MSXG g+%1 g+%3 ?XU7 r%15 ?FJ25 }
