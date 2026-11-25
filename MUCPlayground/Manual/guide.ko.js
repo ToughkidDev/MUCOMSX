@@ -325,6 +325,7 @@ export default [
 <h3>.mgs(MGSDRV) 열기</h3>
 <p><code>.mgs</code>는 MSX의 PSG, SCC, MSX-MUSIC용 MGSDRV 음악 데이터입니다. 하나만 열거나 놓아도 되고 플레이리스트에 넣어도 됩니다. MUC로 변환되어 <code>이름.MUC</code>로 편집기에 들어가고 재생되며, 그 뒤로는 보통의 MUC처럼 편집하고 저장합니다. 압축된 파일과 MGSDRV 3.04 이전 파일도 읽습니다.</p>
 <p>결과는 원곡의 복사본이 아니라 <b>OPNA용 편곡</b>입니다. PSG 트랙은 SSG(<code>D E F</code>)로, MSX-MUSIC 음색은 OPNA FM 음색(<code>A B C H I J</code>)으로, 리듬은 OPNA 리듬(<code>G</code>)으로 가고, SCC는 그대로(<code>SCCA</code>–<code>SCCE</code>) 둡니다. FM 트랙이 7–9개인 곡은 최대 3개를 MSX-MUSIC 파트(<code>MSXA</code>–<code>MSXC</code>)에 남깁니다. 음표, 길이, 반복, 템포는 그대로 옮기고, 음색·엔벨로프·비브라토·슬라이드는 원곡에 맞춘 근사입니다. <code>?</code> 명령을 쓰지 않으므로 곡 크기 한도는 보통의 65,536바이트입니다.</p>
+<p><b>클럭.</b> MGS는 온음표를 192스텝으로 세고, MUC는 보통 스텝마다 한 클럭을 씁니다(<code>C192</code>). 파트가 많고 템포가 빠른 곡은 그대로면 3.58MHz Z80의 MUCPLAY·MUBPLAY가 제때 연주하지 못하므로, 그런 곡은 클럭을 성기게 잡습니다(<code>C96</code>, <code>C64</code>, <code>C48</code>: 2, 3, 4스텝에 한 클럭, 초당 30클럭 아래로는 내리지 않음). 이때 MUC 머리의 주석 줄에 표시됩니다. 클럭에 딱 맞지 않는 길이는 그 자리에서 반올림하므로 파트끼리 어긋나지 않고, 엔벨로프와 비브라토의 빠르기는 그대로입니다. MGSDRV 자체는 초당 60번 움직입니다.</p>
 <p>옮기지 못한 것은 상태 줄과 MUC 맨 위의 주석 줄에 적힙니다. 레지스터 직접 쓰기(<code>y</code>, 대부분 드럼 음높이), PSG 하드웨어 엔벨로프, MSX-MUSIC 파트의 엔벨로프입니다. 손상된 파일이나 MUC로 바꾸면 너무 길어지는 파일은 열지 않고 상태 줄에 이유를 보여 줍니다.</p>
 
 <h3>.mub · .vgm · .vgz 재생</h3>

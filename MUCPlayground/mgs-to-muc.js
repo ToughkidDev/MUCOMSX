@@ -12,7 +12,8 @@
 // portamento. What is left out is counted in the report: register writes (y) other than to the
 // user voice, the PSG hardware envelope, and commands for programs around the driver (@m, @f).
 //
-// Timing: a quarter note is 48 steps in MGS; the MUC uses C192, one clock per step. MGSDRV
+// Timing: a quarter note is 48 steps in MGS; the MUC uses C192, one clock per step (fewer
+// clocks for a song a Z80 could not keep up with: see CLOCK_DIVS). MGSDRV
 // plays a whole note (192 steps) in floor(14400 / tempo) frames of 1/60 s (measured on the
 // driver; it is the "shortest note" formula of MGSC's manual), so tempo 170 really plays at
 // 171.4. MUCOM88 plays one clock per timer-B period of (256 - t) * 1152 / 3993600 s, and t
@@ -50,20 +51,36 @@ const OPN_PER_OPLL = 3.585, OPLL_FNUM = 240;
 const OPNA_FM = ['A', 'B', 'C', 'H', 'I', 'J'], OPLL_FM = ['MSXA', 'MSXB', 'MSXC'];
 const PSG = ['D', 'E', 'F'], SCC = ['SCCA', 'SCCB', 'SCCC', 'SCCD', 'SCCE'];
 
-// Frames MGSDRV takes for a whole note, and the timer-B count nearest to its step.
-const framesPerWhole = (tempo) => Math.max(1, Math.floor(14400 / Math.max(1, tempo)));
-const timerFor = (tempo) => Math.min(255, Math.max(1, Math.round(framesPerWhole(tempo) / (192 * 60 * TIMER_UNIT))));
+// The clock. MUCOM88 works through every part once a clock, and a part with a vibrato or an
+// envelope writes registers on every one. One clock per MGS step is up to 209 clocks a second,
+// where a MUCOM88 song has about 60, and an MGS song has up to 17 parts. Measured with MUCPLAY
+// on a 3.58 MHz Z80 (the mucoMSX emulator with Makoto, note times against this engine's):
+// songs this engine plays with up to about 1400 register writes a second kept time, songs from
+// 1540 fell behind once the player's look-ahead ran out (by 7 to 60%). A song estimated above
+// Z80_WRITES therefore gets one clock for 2, 3, 4, 6 or 8 steps, the first that fits, stays
+// at SLOWEST_CLOCK or above and leaves most note lengths whole clocks. MGSDRV itself only
+// moves 60 times a second, so no clock above that is heard as such; below it envelopes and
+// vibrato get coarser.
+const CLOCK_DIVS = [1, 2, 3, 4, 6, 8];
+const Z80_WRITES = 1200;
+const SLOWEST_CLOCK = 30;                    // clocks a second: no coarser clock than this
+const MOST_ROUNDED = 0.25;                  // nor one that rounds more than this share of the notes
 
-// A length in clocks as MML: 4, 8., %7 ...
-function lengthText(n) {
-  if (192 % n === 0) return String(192 / n);
-  if (n % 3 === 0 && 192 % (n / 3 * 2) === 0) return `${192 / (n / 3 * 2)}.`;
+// Frames MGSDRV takes for a whole note, and the timer-B count nearest to a clock of div steps.
+const framesPerWhole = (tempo) => Math.max(1, Math.floor(14400 / Math.max(1, tempo)));
+const timerExact = (tempo, div) => (framesPerWhole(tempo) * div) / (192 * 60 * TIMER_UNIT);
+const timerFor = (tempo, div) => Math.min(255, Math.max(1, Math.round(timerExact(tempo, div))));
+
+// A length in clocks as MML, with clock clocks to the whole note: 4, 8., %7 ...
+function lengthText(n, clock) {
+  if (clock % n === 0) return String(clock / n);
+  if (n % 3 === 0 && clock % (n / 3 * 2) === 0) return `${clock / (n / 3 * 2)}.`;
   return `%${n}`;
 }
 // A length of any size in pieces of at most 255 clocks (whole notes first).
-function pieces(n) {
-  const out = [];
-  while (n > 255) { out.push(192); n -= 192; }
+function pieces(n, clock) {
+  const out = [], big = clock * Math.floor(255 / clock);
+  while (n > 255) { out.push(big); n -= big; }
   if (n > 0) out.push(n);
   return out;
 }
@@ -113,13 +130,14 @@ function buildTree(cmds, report) {
 //
 // kind: 'psg' | 'scc' | 'fm' | 'opll' | 'rhythm'
 // state: oct, len, gate, detune (dc coarse, df fine), LFO (lon, ld delay, lp depth, ls speed,
-// lt step in 1/8), pf pitch fall, pp / po a portamento's start (all);
+// lt step in 1/8), pf pitch fall, pp / po a portamento's start, ph / debt the place within a
+// clock (see clocks() in act) (all);
 // env, k, off (psg, scc); patch, user, sus, vol, fenv (the envelope on the voice), penv (the
 // envelopes given to voices so far), ymod (user voice registers written with y) (fm, opll);
 // lv (rhythm)
 const clamp15 = (v) => Math.min(15, Math.max(0, v));
 const startState = (kind, song) => ({
-  oct: 4, len: 48, gate: 8, dc: 0, df: 0, lon: 0, ld: 0, lp: 0, ls: 0, lt: 0, pf: 0, pp: -1, po: 0,
+  oct: 4, len: 48, gate: 8, dc: 0, df: 0, lon: 0, ld: 0, lp: 0, ls: 0, lt: 0, pf: 0, pp: -1, po: 0, ph: 0, debt: 0,
   env: -1, k: 0, off: 0, patch: 0, user: -1, sus: 0, vol: 0, fenv: song.voiceEnvelopes.get(0) ?? -1, penv: '', ymod: '',
   lv: kind === 'rhythm' ? [0, 0, 0, 0, 0] : null,
 });
@@ -127,12 +145,27 @@ const cloneState = (st) => ({ ...st, lv: st.lv && [...st.lv] });
 const stateKey = (st) => Object.values(st).join(';');
 
 // What command x does from state st (changed in place): null, { note, len, key } for a note or
-// rest, { drums, len } for a rhythm hit, or { tokens: [...] } to write. song.skip counts what
-// is left out (only when counting).
+// rest, { drums, len } for a rhythm hit (len in clocks), or { tokens: [...] } to write.
+// song.skip counts what is left out (only when counting).
 function act(x, st, kind, song, counting) {
   const skip = (name) => { if (counting) song.report.skip(name); return null; };
   const fmVolume = kind === 'opll' ? OPLL_VOLUME : FM_VOLUME;
   const melodic = kind === 'psg' || kind === 'scc', fmLike = kind === 'fm' || kind === 'opll';
+  // n steps from here in clocks of song.div steps. The place in the track is rounded, not the
+  // length, so a part never drifts from the others: st.ph is the steps into the current clock.
+  // A note or drum hit sounds for at least one clock; st.debt is what the next lengths give back.
+  const clocks = (n, sounding) => {
+    const d = song.div, half = d >> 1, least = sounding && n > 0 ? 1 : 0;
+    const c = Math.floor((st.ph + n + half) / d) - Math.floor((st.ph + half) / d) - st.debt;
+    st.ph = (st.ph + n) % d;
+    st.debt = Math.max(0, least - c);
+    return Math.max(least, c);
+  };
+  // a length left to the default (l) stays so in the text when it is whole clocks
+  const timed = (a, len, given, sounding) => {
+    if (counting && sounding) { song.lengths.all++; if (len % song.div) song.lengths.rounded++; }
+    return Object.assign(a, { len: clocks(len, sounding), auto: given === null && len % song.div === 0 });
+  };
   // An MSX-MUSIC part plays a built-in voice as it is: no longer release, no envelope, no y.
   const voice = () => ({ tokens: [kind === 'opll' ? song.voice(st.patch, 0, counting, kind, -1, '') : song.voice(st.patch, st.sus, counting, kind, st.fenv, st.ymod)] });
   // Pitch in MUCOM88's units, which D and M share: 1/2268 of the period on SSG and SCC (up is
@@ -189,11 +222,11 @@ function act(x, st, kind, song, counting) {
     case 'l': st.len = x[1]; return null;
     case 'q': if (kind === 'rhythm') return null; st.gate = x[1]; return null;
     case 'note': {
-      if (kind === 'rhythm' || x[1] >= 12) return { note: 'r', len: x[2] ?? st.len, auto: x[2] === null };
+      if (kind === 'rhythm' || x[1] >= 12) return timed({ note: 'r' }, x[2] ?? st.len, x[2], false);
       // from: where a portamento (_) starts; legato: MGSDRV's q0 on FM keeps the key down
-      const a = { note: x[1], len: x[2] ?? st.len, auto: x[2] === null, gate: st.gate, from: st.pp < 0 ? null : [st.pp, st.po], legato: fmLike && st.gate === 0 };
+      const a = { note: x[1], gate: st.gate, from: st.pp < 0 ? null : [st.pp, st.po], legato: fmLike && st.gate === 0 };
       st.pp = -1;
-      return a;
+      return timed(a, x[2] ?? st.len, x[2], true);
     }
     case '_': st.pp = Math.min(11, x[1]); st.po = st.oct; return null;
     case '\\': st.dc = x[1]; return detune();
@@ -204,13 +237,13 @@ function act(x, st, kind, song, counting) {
     case 'hi': return null;
     case 'p': if (!melodic) return null; st.pf = x[1]; st.lp = 0; return fall();
     case 'rh': {
-      if (kind !== 'rhythm' || !x[1]) return { note: 'r', len: x[2] ?? st.len, auto: x[2] === null };
+      if (kind !== 'rhythm' || !x[1]) return timed({ note: 'r' }, x[2] ?? st.len, x[2], false);
       // MGS: 16 B, 8 S, 4 tom, 2 cymbal, 1 hi-hat; G part: 1 BD, 2 SD, 4 TOP, 8 HH, 16 TOM
       const f = x[1];
-      return { drums: (f & 16 ? 1 : 0) | (f & 8 ? 2 : 0) | (f & 2 ? 4 : 0) | (f & 1 ? 8 : 0) | (f & 4 ? 16 : 0), len: x[2] ?? st.len, auto: x[2] === null };
+      return timed({ drums: (f & 16 ? 1 : 0) | (f & 8 ? 2 : 0) | (f & 2 ? 4 : 0) | (f & 1 ? 8 : 0) | (f & 4 ? 16 : 0) }, x[2] ?? st.len, x[2], true);
     }
     case '&': return { tokens: ['&'] };
-    case 't': { const n = timerFor(x[1]); if (counting) song.report.tempo(x[1], n); return { tokens: [`t${256 - n}`] }; }
+    case 't': { const n = timerFor(x[1], song.div); if (counting) song.report.tempo(x[1], n); return { tokens: [`t${256 - n}`] }; }
     case 'v':
       if (kind === 'rhythm') { st.lv.fill(x[1]); return rhythmVolume(); }
       if (kind === 'fm' || kind === 'opll') { st.vol = x[1]; return { tokens: [`v${fmVolume[st.vol]}`] }; }
@@ -281,7 +314,7 @@ function convertTrack(cmds, kind, m, song) {
   let out = [];
   let sim = startState(kind, song);            // MGSDRV's state
   // What the text written so far leaves; nothing is taken for granted at the start (the
-  // default length of a part is not a quarter of C192 until l says so).
+  // default length of a part is not a quarter until l says so).
   // mask (the drums of the rhythm part) and q are set while the song plays, so the text
   // cannot count on them across a repeat: they are written again after every [ / ] and L.
   let txt = { oct: null, len: null, mask: null, q: null };
@@ -307,6 +340,7 @@ function convertTrack(cmds, kind, m, song) {
   };
   // one pass of a repeat (the last one stops at its exit), remembered per entry state
   const pass = (node, partial, st) => {
+    if (node.count === 0) st.ph = 0;            // the endless repeat counts its clocks from its start
     const key = `${idOf(node)}:${partial ? 1 : 0}:${stateKey(st)}`;
     let r = memo.get(key);
     if (!r) {
@@ -348,13 +382,18 @@ function convertTrack(cmds, kind, m, song) {
     if (cut !== txt.q) { out.push(`q${cut}`); txt.q = cut; }
   };
   let legatoAt = -1;                           // where the & of a q0 note was written
+  // notes and clocks written, with repeats counted as often as they play (for the song's load)
+  let tally = { notes: 0, clocks: 0 };
+  const played = (n, sounding) => { tally.clocks += n; if (sounding && n > 0) tally.notes++; };
+  const clock = song.clock;
   const sound = (name, n, auto, carry, gate = 8) => {
-    if (auto && n <= 255 && n !== txt.len) { out.push(`l${lengthText(n)}`); txt.len = n; }
+    if (auto && n > 0 && n <= 255 && n !== txt.len) { out.push(`l${lengthText(n, clock)}`); txt.len = n; }
     if (carry !== null) setOctave(carry);
-    const ps = pieces(n);
+    played(n, name !== 'r');
+    const ps = pieces(n, clock);
     if (carry !== null) gateFor(n, ps[ps.length - 1], gate);
     ps.forEach((p, i) => {
-      out.push(name + (p === txt.len ? '' : lengthText(p)));
+      out.push(name + (p === txt.len ? '' : lengthText(p, clock)));
       if (i < ps.length - 1 && name !== 'r') out.push('&');
     });
   };
@@ -395,7 +434,8 @@ function convertTrack(cmds, kind, m, song) {
           // a portamento: {start end}length; between the braces only > and < may move the octave
           setOctave(Math.floor(from / 12), a.from[1]);
           gateFor(a.len, a.len, a.gate);
-          out.push(`{${NOTE[((from % 12) + 12) % 12]}${(endOct > startOct ? '>' : '<').repeat(Math.abs(endOct - startOct))}${name}}${lengthText(a.len)}`);
+          played(a.len, true);
+          out.push(`{${NOTE[((from % 12) + 12) % 12]}${(endOct > startOct ? '>' : '<').repeat(Math.abs(endOct - startOct))}${name}}${lengthText(a.len, clock)}`);
           txt.oct = endOct;
         } else sound(name, a.len, a.auto, carry, a.gate);
         if (a.legato) { out.push('&'); legatoAt = out.length - 1; }
@@ -406,12 +446,15 @@ function convertTrack(cmds, kind, m, song) {
     const end = node.exit ?? node.body.length;
     const after = cloneState(sim);
     runLoop(node, after);
+    const outer = tally, head = tally = { notes: 0, clocks: 0 }, tail = { notes: 0, clocks: 0 };
     out.push('[');
     forget();
     emit(node.body, 0, end);
-    if (node.exit !== null) { out.push('/'); forget(); emit(node.body, end, node.body.length); }
+    if (node.exit !== null) { out.push('/'); forget(); tally = tail; emit(node.body, end, node.body.length); }
     out.push(`]${node.count}`);
     forget();
+    tally = outer;
+    for (const k of ['notes', 'clocks']) tally[k] += node.count * head[k] + (node.count - 1) * tail[k];
     sim = after;
   };
   const loop = (node) => {
@@ -421,17 +464,20 @@ function convertTrack(cmds, kind, m, song) {
       const second = pass(node, false, s);        // ... and now the third
       if (first !== second) {
         // the first pass differs: it is the lead-in, and the second is what repeats
+        sim.ph = 0;
         emit(node.body, 0, node.body.length);
         if (pass(node, false, cloneState(s)) !== second) report.warn('repeatDrifts');
       }
       out.push('L');
       forget();
+      sim.ph = 0;
+      tally = { notes: 0, clocks: 0 };            // what repeats is what counts
       emit(node.body, 0, node.body.length);
       return;
     }
     if (stable(node, sim)) { asRepeat(node); return; }
     // its passes differ: write them out, unless that gets long
-    const keep = { out, sim: cloneState(sim), txt: { ...txt } };
+    const keep = { out, sim: cloneState(sim), txt: { ...txt }, tally: { ...tally } };
     out = [];
     const end = node.exit ?? node.body.length;
     let fits = true;
@@ -440,12 +486,12 @@ function convertTrack(cmds, kind, m, song) {
       fits = out.length <= UNROLL_LIMIT;
     }
     if (fits) { keep.out.push(...out); out = keep.out; report.count('repeatsWrittenOut'); return; }
-    out = keep.out; sim = keep.sim; txt = keep.txt;
+    out = keep.out; sim = keep.sim; txt = keep.txt; tally = keep.tally;
     report.warn('repeatDrifts');
     asRepeat(node);
   };
   emit(items, 0, items.length);
-  return out;
+  return { tokens: out, notes: tally.notes, clocks: tally.clocks };
 }
 
 // Tokens as rows of the part: notes run together, everything else is spaced.
@@ -502,10 +548,32 @@ function usualNote(cmds) {
   return periods[periods.length >> 1];
 }
 
-// mgsToMuc(bytes, { fileName }) -> { text, title, report }
-// Throws an Error with a plain message for a file that is not MGS, is damaged or becomes too long.
-export function mgsToMuc(bytes, { fileName = '' } = {}) {
-  const m = parseMgs(bytes);
+// What a part costs: its notes a second, and whether it runs a vibrato (M) or, on the SSG and
+// SCC, an envelope that keeps moving (every clock of those writes registers).
+const partLoad = (tr, clockRate) => ({
+  kind: tr.kind,
+  notes: tr.clocks ? (tr.notes / tr.clocks) * clockRate : 0,
+  lfo: tr.tokens.some((t) => /^M\d+,\d+,-?[1-9]/.test(t)),
+  env: (tr.kind === 'psg' || tr.kind === 'scc') && tr.tokens.some((t) => /^E\d+,\d+,(?!0,\d+,0,)/.test(t)),
+});
+// The register writes a second the song makes at its busiest, estimated from that: per note of
+// each kind of part, and per clock of a part for its vibrato, its envelope and (SSG, SCC) its
+// level. The numbers are fitted to what this engine writes for 600 converted songs (the
+// busiest 10 s of each; correlation 0.94, and one song in twenty writes over half as much
+// again as its estimate, which is why Z80_WRITES is set below what was measured).
+const WRITES = {
+  note: { fm: 7.8, opll: 3.3, psg: 4.6, scc: 6.4, rhythm: 4.5 },
+  clock: { fm: 0.2, opll: 0.2, psg: 1.25, scc: 1.25, rhythm: 0 }, lfoFm: 0.5, lfoMelodic: 0.6, envelope: 0.1,
+};
+const writesPerSecond = (tracks, clockRate) => tracks.map((tr) => partLoad(tr, clockRate)).reduce((sum, p) => {
+  const melodic = p.kind === 'psg' || p.kind === 'scc';
+  return sum + p.notes * WRITES.note[p.kind]
+    + clockRate * (WRITES.clock[p.kind] + (p.lfo ? (melodic ? WRITES.lfoMelodic : WRITES.lfoFm) : 0) + (p.env ? WRITES.envelope : 0));
+}, 0);
+
+// The parsed file m as a MUC with one clock for div steps: { text, title, report }, or null when
+// the timer cannot count a clock that long at the song's slowest tempo.
+function convertAt(m, fileName, div) {
   nodeIds = new WeakMap(); nextId = 1;
   const skipped = new Map(), counts = new Map(), warnings = new Set();
   const tempos = [];
@@ -514,12 +582,10 @@ export function mgsToMuc(bytes, { fileName = '' } = {}) {
     count: (name) => counts.set(name, (counts.get(name) || 0) + 1),
     warn: (name) => warnings.add(name),
     // written in the file, as MGSDRV plays it, as the MUC plays it
-    tempo: (bpm, n) => tempos.push({ bpm, driver: 14400 / framesPerWhole(bpm), actual: 1.25 / (n * TIMER_UNIT) }),
+    tempo: (bpm, n) => tempos.push({ bpm, driver: 14400 / framesPerWhole(bpm), actual: (1.25 * div) / (n * TIMER_UNIT) }),
   };
 
   const tempo = m.tempo || 75;
-  const n0 = timerFor(tempo);
-  report.tempo(tempo, n0);
   const active = Object.keys(m.tracks).map(Number).filter((t) => hasNotes(m.tracks[t]) || hasTempo(m.tracks[t]));
   if (!active.length) throw new Error('The MGS file has no notes.');
 
@@ -529,6 +595,35 @@ export function mgsToMuc(bytes, { fileName = '' } = {}) {
   const romOf = (n) => (maps.has(n) ? maps.get(n) : n >= 15 ? 0 : n + 1);     // 0: the song's own voice
   const userPatch = new Map((m.voice?.opll || []).map((v) => [v.num, v.data]));
   const envelopes = new Map((m.voice?.env || []).map((e) => [e.num, e]));
+
+  // parts: FM tracks beyond six go to MSX-MUSIC, the ones that only use built-in voices first
+  const plain = (t) => !m.tracks[t].cmds.some((c) => (c[0] === '@' && romOf(c[1]) === 0) || c[0] === 'y' || c[0] === '@e');
+  const fm = active.filter((t) => kindOf(m, t) === 'fm');
+  const toOpll = [];
+  if (fm.length > 6) {
+    const order = [...fm].sort((a, b) => (plain(b) - plain(a)) || (b - a));
+    for (const t of order.slice(0, Math.min(3, fm.length - 6))) toOpll.push(t);
+    toOpll.sort((a, b) => a - b);
+  }
+  const onOpna = fm.filter((t) => !toOpll.includes(t));
+  if (onOpna.length > 6) { report.warn('fmTracksDropped'); onOpna.length = 6; }
+  const partOf = new Map();
+  onOpna.forEach((t, i) => partOf.set(t, { part: OPNA_FM[i], kind: 'fm' }));
+  toOpll.forEach((t, i) => partOf.set(t, { part: OPLL_FM[i], kind: 'opll' }));
+  for (const t of active) {
+    const k = kindOf(m, t);
+    if (k === 'psg') partOf.set(t, { part: PSG[t - 1], kind: k });
+    else if (k === 'scc') partOf.set(t, { part: SCC[t - 4], kind: k });
+    else if (k === 'rhythm') partOf.set(t, { part: 'G', kind: k });
+  }
+
+
+  // the clock, at the song's fastest tempo; the timer has to reach its slowest
+  const tempi = [tempo, ...[...partOf.keys()].flatMap((t) => m.tracks[t].cmds.filter((c) => c[0] === 't').map((c) => c[1]))];
+  if (div > 1 && timerExact(Math.min(...tempi), div) > 255) return null;
+  const clockRate = (192 * 60) / framesPerWhole(Math.max(...tempi)) / div;
+  const n0 = timerFor(tempo, div);
+  report.tempo(tempo, n0);
   const ticksPerFrame = 1 / 60 / (n0 * TIMER_UNIT);      // MUCOM88 clocks in a frame, at the song's tempo
   const fits = new Map(), voiceIds = new Map(), voices = [];
   // An envelope given to a voice (@e on an FM track) stays with that voice number, for every
@@ -547,6 +642,8 @@ export function mgsToMuc(bytes, { fileName = '' } = {}) {
     report,
     waves: new Map((m.voice?.scc || []).map((w) => [w.num, w.data])),
     vref: 13,
+    div, clock: 192 / div,
+    lengths: { all: 0, rounded: 0 },   // notes written, and those whose length is not whole clocks
     ticksPerFrame,
     lfoMode: m.lfoMode,
     period: 254, octave: 4,            // the track's usual note: its PSG period and octave
@@ -602,36 +699,15 @@ export function mgsToMuc(bytes, { fileName = '' } = {}) {
     },
   };
 
-  // parts: FM tracks beyond six go to MSX-MUSIC, the ones that only use built-in voices first
-  const plain = (t) => !m.tracks[t].cmds.some((c) => (c[0] === '@' && romOf(c[1]) === 0) || c[0] === 'y' || c[0] === '@e');
-  const fm = active.filter((t) => kindOf(m, t) === 'fm');
-  const toOpll = [];
-  if (fm.length > 6) {
-    const order = [...fm].sort((a, b) => (plain(b) - plain(a)) || (b - a));
-    for (const t of order.slice(0, Math.min(3, fm.length - 6))) toOpll.push(t);
-    toOpll.sort((a, b) => a - b);
-  }
-  const onOpna = fm.filter((t) => !toOpll.includes(t));
-  if (onOpna.length > 6) { report.warn('fmTracksDropped'); onOpna.length = 6; }
-  const partOf = new Map();
-  onOpna.forEach((t, i) => partOf.set(t, { part: OPNA_FM[i], kind: 'fm' }));
-  toOpll.forEach((t, i) => partOf.set(t, { part: OPLL_FM[i], kind: 'opll' }));
-  for (const t of active) {
-    const k = kindOf(m, t);
-    if (k === 'psg') partOf.set(t, { part: PSG[t - 1], kind: k });
-    else if (k === 'scc') partOf.set(t, { part: SCC[t - 4], kind: k });
-    else if (k === 'rhythm') partOf.set(t, { part: 'G', kind: k });
-  }
-
   const parts = [], body = [], tracks = [];
   let firstRow = true;
   for (const t of [...partOf.keys()].sort((a, b) => a - b)) {
     const { part, kind } = partOf.get(t), cmds = m.tracks[t].cmds;
     song.vref = kind === 'psg' || kind === 'scc' ? usualVolume(cmds) : 13;
     [song.period, song.octave] = usualNote(cmds);
-    const tokens = convertTrack(cmds, kind, m, song);
+    const { tokens, notes, clocks } = convertTrack(cmds, kind, m, song);
     if (m.tracks[t].unknown !== null) report.warn('unknownCommand');
-    const first = ['C192'];
+    const first = [`C${song.clock}`];
     if (firstRow) first.push(`t${256 - n0}`);
     firstRow = false;
     if (kind === 'fm' || kind === 'opll') {
@@ -641,7 +717,7 @@ export function mgsToMuc(bytes, { fileName = '' } = {}) {
       first.push(`v${(kind === 'opll' ? OPLL_VOLUME : FM_VOLUME)[0]}`);
     } else if (kind === 'psg' || kind === 'scc') first.push('E255,0,0,0,0,255 v0');
     else first.push(`v${RHYTHM_TOTAL},0,0,0,0,0,0`);
-    tracks.push({ part, first: first.join(' '), tokens });
+    tracks.push({ part, kind, first: first.join(' '), tokens, notes, clocks });
     parts.push({ track: t, part });
   }
   // An envelope setting used several times becomes a macro (#*n{...}, called with *n).
@@ -654,6 +730,12 @@ export function mgsToMuc(bytes, { fileName = '' } = {}) {
   const lines = [`#title ${title}`, `#comment Converted from ${fileName || 'an MGS file'} (MGS${m.version}) by MUCPlayground`];
   if (voices.some((v) => !v.opll)) lines.push('#CarrierCorrection Yes');
   lines.push('', '; An arrangement of the MGSDRV song for the OPNA: PSG on the SSG, MSX-MUSIC voices as OPNA', '; voices, its rhythm on the OPNA rhythm, the SCC as it is. Voices and envelopes are approximations.');
+  const load = writesPerSecond(tracks, clockRate);
+  if (div > 1) {
+    lines.push(`; Clock: C${song.clock}, one clock for ${div} MGS steps (${Math.round(clockRate)} a second at the fastest tempo), so that`,
+      '; MUCPLAY and MUBPLAY keep time on a 3.58 MHz Z80. Lengths that are not whole clocks are rounded in place.');
+  }
+  if (load > Z80_WRITES) lines.push('; The song may still be too much for MUCPLAY and MUBPLAY on a 3.58 MHz Z80 (they would fall behind).');
   // what could not be carried over, for whoever edits the song next
   const left = [];
   const leftOut = (...names) => names.reduce((sum, k) => sum + (skipped.get(k) || 0), 0);
@@ -673,7 +755,11 @@ export function mgsToMuc(bytes, { fileName = '' } = {}) {
   });
   if (voices.length) lines.push('');
   for (const [num, data] of [...song.waves].sort((a, b) => a[0] - b[0])) lines.push(`  @W${num}:{ ${data.join(',')} }`);
-  if (song.waves.size) lines.push('');
+  if (!song.waves.size && tracks.some((tr) => tr.kind === 'scc')) {
+    // MUCPLAY and MUC2MUB on the MSX refuse SCC rows in a song without a wave ("Invalid parameter")
+    lines.push('; The MGS defines no SCC wave: a silent one, as the MSX compiler wants a wave in a song with SCC rows.', `  @W0:{ ${new Array(32).fill(0).join(',')} }`);
+  }
+  if (song.waves.size || tracks.some((tr) => tr.kind === 'scc')) lines.push('');
   for (const [t, i] of macros) lines.push(`#*${i}{${t}}`);
   if (macros.size) lines.push('');
   lines.push(...body);
@@ -684,7 +770,30 @@ export function mgsToMuc(bytes, { fileName = '' } = {}) {
     text, title,
     report: {
       version: m.version, compressed: m.compressed, oldTiming: !m.tempo, parts, voices: voices.length,
+      // the clock: per whole note, MGS steps in one, clocks a second (fastest tempo), the
+      // register writes a second the song is estimated to make (heavy: more than a 3.58 MHz
+      // Z80 is known to keep up with), the share of the notes whose length is not whole clocks
+      clock: { perWhole: song.clock, div, rate: clockRate, load, heavy: load > Z80_WRITES, rounded: song.lengths.rounded / Math.max(1, song.lengths.all) },
       tempo: tempos, skipped: Object.fromEntries(skipped), counts: Object.fromEntries(counts), warnings: [...warnings], size,
     },
   };
+}
+
+// mgsToMuc(bytes, { fileName, div }) -> { text, title, report }
+// Throws an Error with a plain message for a file that is not MGS, is damaged or becomes too long.
+// The clock is the finest (one for 1, 2, 3 ... MGS steps) that keeps the song within Z80_WRITES;
+// div asks for one clock for that many steps whatever the song costs.
+export function mgsToMuc(bytes, { fileName = '', div: only = 0 } = {}) {
+  const m = parseMgs(bytes);
+  let best = null;
+  for (const div of only ? [only] : CLOCK_DIVS) {
+    if (best && (best.report.clock.rate * best.report.clock.div) / div < SLOWEST_CLOCK) break;
+    let r;
+    try { r = convertAt(m, fileName, div); } catch (e) { if (!best) throw e; break; }
+    if (!r) break;
+    if (best && !only && r.report.clock.rounded > MOST_ROUNDED) continue;
+    best = r;
+    if (r.report.clock.load <= Z80_WRITES) break;
+  }
+  return best;
 }
