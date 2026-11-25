@@ -46,19 +46,27 @@ const OFF = [31, 0, 0, 15, 0, 127, 0, 1, 0];
 //     takes off around the middle of the keyboard (3.4, 6.75 or 13.5 dB at o4 a) is added to the level;
 //   * tremolo and vibrato are left out.
 // The song needs #CarrierCorrection Yes: without it MUCOM88 ignores the carriers' TL.
-export function opllToOpna(patch, sustain = false) {
+//
+// levels: a software envelope MGSDRV runs on the voice (@e / @r on an FM track), as the volume
+// 0-15 of each frame. An OPNA part has no such envelope, so it is built into the carrier: the
+// envelope's steps are 3 dB each, the carrier's own decay is added, and the sum is fitted with
+// the carrier's decay rate, sustain level and sustain rate; the envelope's peak sets the level.
+export function opllToOpna(patch, sustain = false, levels = null) {
   const half = (b, rates, levels) => ({
     egt: (b >> 5) & 1, ksr: (b >> 4) & 1, ml: MULTIPLE[b & 15], ar: rates >> 4, dr: rates & 15, sl: levels >> 4, rr: levels & 15,
   });
   const mod = half(patch[0], patch[4], patch[6]), car = half(patch[1], patch[5], patch[7]);
   const tl = (patch[2] & 63) + KEY_SCALE[patch[2] >> 6], dc = (patch[3] >> 4) & 1, dm = (patch[3] >> 3) & 1, fb = patch[3] & 7;
   const out = CARRIER_TL + KEY_SCALE[patch[3] >> 6];           // the carrier's level
+  const shaped = levels && shapeCarrier(car, levels);
   const op = (o, level, carrier, ml = o.ml) => {
-    const ar = o.ar ? Math.min(31, o.ar * 2 + 4) : 0, dr = o.dr ? Math.min(31, o.dr * 2 + 3) : 0;
+    const ar = o.ar ? Math.min(31, o.ar * 2 + 4) : 0;
+    let dr = o.dr ? Math.min(31, o.dr * 2 + 3) : 0, sl = o.sl;
     // the modulator is not released at key off; the carrier's release follows SUS
-    const sr = o.egt || !o.rr ? 0 : Math.min(31, o.rr * 2 + 3);
+    let sr = o.egt || !o.rr ? 0 : Math.min(31, o.rr * 2 + 3);
     const rr = !carrier ? 0 : sustain ? 6 : o.egt ? Math.min(15, o.rr + 1) : 8;
-    return [ar, dr, sr, rr, o.sl, Math.min(127, Math.max(0, level)), o.ksr ? 2 : 0, ml, 0];
+    if (carrier && shaped) { dr = shaped.dr; sl = shaped.sl; sr = shaped.sr; level += shaped.tl; }
+    return [ar, dr, sr, rr, sl, Math.min(127, Math.max(0, level)), o.ksr ? 2 : 0, ml, 0];
   };
   const twice = (ml) => (ml === 0 ? 1 : Math.min(15, ml * 2));
   const m = tl + (dm ? 6 : 0);
@@ -67,6 +75,28 @@ export function opllToOpna(patch, sustain = false) {
   }
   if (dm) return { fb, alg: 2, ops: [op(mod, m, false), OFF, op(mod, tl + 18, false, twice(mod.ml)), op(car, out, true)] };
   return { fb, alg: 2, ops: [op(mod, tl, false), OFF, OFF, op(car, out, true)] };
+}
+
+// The carrier's envelope with a software envelope laid over it (see opllToOpna).
+// The OPLL's decay at rate r falls 11.5 * 2^(r - 3) dB a second, the OPNA's at rate x
+// 11.9 * 2^((x - 9) / 2) (both measured).
+function shapeCarrier(car, levels) {
+  const frames = Math.min(levels.length, 90), peak = Math.max(...levels.slice(0, frames));
+  const slope = (r) => (r ? 11.5 * 2 ** (r - 3) : 0), rate = (s) => (s < 0.7 ? 0 : Math.min(31, Math.max(1, Math.round(9 + 2 * Math.log2(s / 11.9)))));
+  const d1 = slope(car.dr), d2 = car.egt ? 0 : slope(car.rr), hold = car.sl * 3;
+  const own = (t) => (!d1 || t * d1 < hold ? t * d1 : hold + (t - hold / d1) * d2);
+  const target = [];
+  for (let i = 0; i < frames; i++) target.push(Math.min(60, own(i / 60) + (peak - levels[i]) * 3));
+  const last = frames - 1, weight = (i) => (i < 20 ? 2 : 1);
+  const error = (f) => { let e = 0; for (let i = 0; i < frames; i++) e += weight(i) * (f(i) - target[i]) ** 2; return e; };
+  let best = { err: error(() => 0), s1: 0, lvl: 0, s2: 0 };
+  for (let b = 1; b < last; b++) {
+    const lvl = target[b], s1 = lvl / (b / 60), s2 = Math.max(0, (target[last] - lvl) / ((last - b) / 60));
+    const err = error((i) => (i <= b ? (s1 * i) / 60 : lvl + (s2 * (i - b)) / 60));
+    if (err < best.err) best = { err, s1, lvl, s2 };
+  }
+  const sl = Math.min(15, Math.max(0, Math.round(best.lvl / 3)));
+  return { dr: sl ? rate(best.s1) : 0, sl, sr: rate(sl ? best.s2 : Math.max(best.s1, best.s2)), tl: (15 - peak) * 4 };
 }
 
 // An OPLL patch as the voice an MSX-MUSIC part (MSXA ...) needs to play it. Such a part plays
@@ -123,6 +153,25 @@ export function envelopeLevels(env, frames = HORIZON) {
   while (out.length < frames) out.push(out[out.length - 1]);          // the last level is held
   return { levels: out.slice(0, frames), mode, noise };
 }
+
+// The voice an @e envelope switches to for most of its first 40 frames (a "patch slide"), or
+// null when it stays with the track's voice.
+export function envelopeVoice(env) {
+  const time = new Map();
+  let cur = null, n = 0;
+  for (const c of env.cmds) {
+    if (n >= 40) break;
+    const add = (k) => { time.set(cur, (time.get(cur) || 0) + k); n += k; };
+    if (c[0] === '@') cur = c[1];
+    else if (c[0] === 'v') add(1);
+    else if (c[0] === 'v:' || c[0] === 'v=') add(Math.max(1, c[2]));
+    else if (c[0] === ']') { add(40 - n); break; }
+  }
+  if (n < 40) time.set(cur, (time.get(cur) || 0) + 40 - n);
+  return [...time].sort((a, b) => b[1] - a[1])[0][0];
+}
+// An @r envelope as levels 0-15 per frame (it runs AL, AR, DR, SL, SR as MUCOM88's E does).
+export const rateEnvelopeLevels = (env, frames = HORIZON) => adsr(env.al, env.ar, env.dr, env.sl, env.sr, frames).map((e) => e / 17);
 
 // MUCOM88's envelope, frame by frame: AL, then +AR to 255, -DR to SL, -SR to 0 (rates per frame).
 function adsr(al, ar, dr, sl, sr, frames) {
