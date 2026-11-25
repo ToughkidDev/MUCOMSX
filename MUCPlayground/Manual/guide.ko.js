@@ -330,7 +330,7 @@ export default [
 
 <h3>.mdx(MXDRV) 열기</h3>
 <p><code>.mdx</code>는 샤프 X68000의 드라이버 MXDRV의 음악 데이터입니다. YM2151용 FM 8트랙과 ADPCM 트랙이 있고, ADPCM 샘플은 <code>.pdx</code> 파일에 들어 있습니다. <code>.mdx</code>를 그 <code>.pdx</code>와 함께 열거나 놓으면(폴더에서는 PDX를 이름으로 찾습니다) MUC로 변환되어 <code>이름.MUC</code>로 편집기에 들어가고 재생됩니다.</p>
-<p>OPNA용 편곡입니다. FM 6트랙은 음색과 함께 OPNA의 FM으로 가고, 7~8트랙을 쓰는 곡은 파형으로 가장 잘 담기는 두 트랙이 SCC(<code>SCCA</code>, <code>SCCB</code>)로 가며 그 음색은 32샘플 파형이 됩니다. ADPCM 트랙은 <code>K</code> 파트가 되고, 곡이 쓰는 샘플은 PCM 뱅크(<code>이름.BIN</code>, <code>#pcm</code>이 가리킴)가 됩니다. 뱅크는 첨부되므로 MUC와 함께 저장하세요. PCM8(ADPCM 여러 트랙)은 트랙들을 한 채널에 겹쳐 놓고, 샘플이 겹치는 곳은 미리 섞어 별도의 샘플로 만듭니다.</p>
+<p>OPNA용 편곡입니다. FM 6트랙은 음색과 함께 OPNA의 FM으로 가고, 7~8트랙을 쓰는 곡은 파형으로 가장 잘 담기는 두 트랙이 SCC(<code>SCCA</code>, <code>SCCB</code>)로 가며 그 음색은 32샘플 파형이 됩니다. 그중 한 트랙은, 원본에 더 가깝고 곡이 허락하면 MSX-MUSIC(<code>MSXA</code>, 사용자 음색 <code>?IU</code>)으로 갑니다. 이런 MUC는 14,976바이트까지만 되고 Z80에 더 부담이 되므로, 긴 곡이나 그 때문에 클럭을 낮춰야 하는 곡은 SCC에 둡니다. 그래도 MSX-MUSIC을 쓰려면 페이지 주소에 <code>?spare=opll</code>을 붙이세요(SCC로 고정하려면 <code>?spare=scc</code>). ADPCM 트랙은 <code>K</code> 파트가 되고, 곡이 쓰는 샘플은 PCM 뱅크(<code>이름.BIN</code>, <code>#pcm</code>이 가리킴)가 됩니다. 뱅크는 첨부되므로 MUC와 함께 저장하세요. PCM8(ADPCM 여러 트랙)은 트랙들을 한 채널에 겹쳐 놓고, 샘플이 겹치는 곳은 미리 섞어 별도의 샘플로 만듭니다.</p>
 <p>옮기지 못하는 것: DT2, YM2151 자체의 LFO와 노이즈, 레지스터 직접 쓰기, SCC로 간 트랙의 팬. 곡마다 빠진 것은 MUC 머리의 주석 줄에 적힙니다. PDX가 없으면 ADPCM 파트 없이 열립니다. 3.58MHz Z80의 MUCPLAY·MUBPLAY가 제때 연주하지 못할 곡은 2틱에 한 클럭으로 잡습니다.</p>
 <h3>.mub · .vgm · .vgz 재생</h3>
 <p><b>열기…</b>나 끌어다 놓기로 재생합니다. <code>.mub</code>는 편집기 엔진으로, <code>.vgm</code>/<code>.vgz</code>는 MDPlayer4Mac의 VGM 플레이어로 재생합니다(처음 한 번 약 7 MB를 받습니다). 재생하면 채널 뷰가 자동으로 열립니다.</p>

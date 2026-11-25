@@ -3,7 +3,13 @@
 //   the eight YM2151 tracks  six on the OPNA's FM (A B C H I J), voices carried over; with
 //                            more than six, the two a 32-sample wave holds best go to the SCC
 //                            (SCCA, SCCB): the voice's steady tone as a wave, its carrier's
-//                            envelope as a software envelope
+//                            envelope as a software envelope. One of them goes to the
+//                            MSX-MUSIC instead (MSXA) where that loses less: the voice as the
+//                            nearest patch two operators make (?IU). The OPLL has one such
+//                            voice for all its channels, MucoMSX compiles a song with ?IU
+//                            another way that takes no more than 14,976 bytes of source and
+//                            costs the Z80 more: a longer song stays on the SCC, and so does
+//                            one that would need a coarser clock for it (unless asked: spare)
 //   the ADPCM track(s)       part K, with the PDX file's samples as a PCM bank; with PCM8 the
 //                            tracks are laid on one channel, and where their samples overlap
 //                            the overlap is mixed beforehand into a sample of its own
@@ -29,7 +35,7 @@
 //   pcm: { name, bytes } - the PCM bank the MUC's #pcm line names, or null
 
 import { parseMdx, parsePdx, decodeOki } from './mdx-file.js';
-import { opmToOpna, sccWave, carrierLevels, VOLUME_TL, volumeOf, usesDt2 } from './mdx-voices.js';
+import { opmToOpna, sccWave, opllPatch, carrierLevels, VOLUME_TL, volumeOf, usesDt2 } from './mdx-voices.js';
 import { fitEnvelope, envelopeText } from './mgs-voices.js';
 import {
   TIMER_UNIT, SLOWEST_CLOCK, lengthText, pieces, rows, decodeTitle, writesPerSecond,
@@ -37,7 +43,15 @@ import {
 import { encodeAdpcm, writePcmBank, resample, noteRate, RAM_SIZE, SLOTS } from './pcm-bank.js';
 
 const NOTE = ['c', 'c+', 'd', 'd+', 'e', 'f', 'f+', 'g', 'g+', 'a', 'a+', 'b'];
-const OPNA_FM = ['A', 'B', 'C', 'H', 'I', 'J'], SCC = ['SCCA', 'SCCB'];
+const OPNA_FM = ['A', 'B', 'C', 'H', 'I', 'J'], SCC = ['SCCA', 'SCCB'], OPLL = ['MSXA', 'MSXB'];
+const USER_VOICES = 16;                        // ?IU0 to ?IU15
+// A MUC with ?IU is compiled by MucoMSX's other way for the MSX parts, which takes a source of
+// 14,976 bytes at most (found by lengthening one; its guide says about 14,900).
+const PLAIN_ROWS_SOURCE = 14800;
+// ... and costs the Z80 more: with MUCPLAY on the emulated MSX, of four such songs at 118
+// clocks a second two fell behind, and the three at 89 to 106 kept time. A song with ?IU gets
+// no more clocks a second than this.
+const PLAIN_ROWS_CLOCK = 110;
 const DIVS = [1, 2, 3, 4];
 // The estimate (see convertAt) the clock is chosen by. Of the seventeen songs run with MUCPLAY on
 // the emulated MSX at one clock a tick, the fourteen estimated up to 860 kept time and the two
@@ -50,12 +64,14 @@ const PAN = [0, 2, 1, 3];                      // MXDRV 1 left, 2 right; MUCOM88
 // part's usual note, a semitone being ln 2 / 12 of it), 1/2268 of the period on the SCC.
 const fnumOf = (semi) => 618 * 2 ** ((((semi % 12) + 12) % 12) / 12);
 const SCC_PER_SEMITONE = (2268 * Math.LN2) / 12;
+// ... and on an MSX-MUSIC part half a step of the OPLL's F-number (345 at c, as measured)
+const opllSemitone = (semi) => (690 * 2 ** ((((semi % 12) + 12) % 12) / 12) * Math.LN2) / 12;
 const PCM_RATES = [3906.25, 5208.33, 7812.5, 10416.67, 15625];
 const PCM8_GAIN = [2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48, 64, 80].map((x) => x / 16);
 // Levels, set against MXDRV (MDPlayer4Mac's port) on eight songs, each group of tracks played
 // alone: part K's volume for a sample at its own level (K's volume is linear, and 255 is not
 // louder but silent), and the dB an SCC part is raised over what its voice's level works out at.
-const PCM_VOLUME = 106, PCM_LOUDEST = 250, SCC_TRIM = 5;
+const PCM_VOLUME = 106, PCM_LOUDEST = 250, SCC_TRIM = 5, OPLL_TRIM = 12;     // OPLL: as the SCC; it has no more to give above its v15
 
 // ---- a track ------------------------------------------------------------------------------------
 
@@ -74,7 +90,7 @@ function* play(items, times = 1) {
 }
 
 // The tokens of one track: strings, and for notes and rests objects the text is made of last.
-//   kind 'fm' | 'scc' | 'pcm'; ctx: what the song's tracks share (see convertAt)
+//   kind 'fm' | 'scc' | 'opll' | 'pcm'; ctx: what the song's tracks share (see convertAt)
 function convertTrack(track, kind, ctx) {
   const d = ctx.div, half = d >> 1;
   // S: everything that decides what comes out. A repeat is kept when a pass that starts from
@@ -84,7 +100,10 @@ function convertTrack(track, kind, ctx) {
     lfo: null, lfoOn: false, lfoEvery: 1,      // the vibrato set (wave, period, depth), whether it runs, clocks a step
     ph: 0, debt: 0, q: null, shown: null, slot: null,
   });
-  const semitone = kind === 'scc' ? SCC_PER_SEMITONE : (fnumOf(ctx.usual) * Math.LN2) / 12;
+  const semitone = kind === 'scc' ? SCC_PER_SEMITONE : kind === 'opll' ? opllSemitone(ctx.usual) : (fnumOf(ctx.usual) * Math.LN2) / 12;
+  // With an MSX-MUSIC part that has a voice of its own (?IU) MucoMSX compiles the SCC and
+  // MSX-MUSIC rows another way: no slides there, and repeats two deep at most.
+  const plain = ctx.plainRows && (kind === 'scc' || kind === 'opll');
   const whole = (v) => (v === 0 ? 0 : Math.abs(v) < 1 ? Math.sign(v) : Math.round(v));
 
   // n ticks from here in clocks. The place is rounded, so a run of lengths adds up to its sum;
@@ -100,6 +119,10 @@ function convertTrack(track, kind, ctx) {
   const volumeToken = (S) => {
     const att = S.vol < 16 ? VOLUME_TL[S.vol] : S.vol - 128;
     if (kind === 'fm') return `v${S.vol < 16 ? S.vol : volumeOf(att)}`;
+    if (kind === 'opll') {                                          // the OPLL's own volume: 3 dB steps, 15 the loudest
+      const p = ctx.patch(S.voice);
+      return `v${15 - Math.max(0, Math.min(15, Math.round(((att - 2) * 0.75 - (p ? Math.min(0, p.level) : 0) - OPLL_TRIM) / 3)))}`;
+    }
     if (kind === 'pcm') return `v${Math.max(1, Math.min(PCM_LOUDEST, Math.round(PCM_VOLUME * (ctx.pcm8 ? PCM8_GAIN[pcmVolume(att)] : 1))))}`;
     const w = ctx.wave(S.voice);                                    // SCC: a linear level 0-15
     const db = (att - 2) * 0.75 - (w ? Math.min(0, w.level) : 0) - ctx.sccTrim;
@@ -119,7 +142,7 @@ function convertTrack(track, kind, ctx) {
   };
 
   // items[from, to) played from state S: { out, tally }
-  const emitList = (items, from, to, S) => {
+  const emitList = (items, from, to, S, depth = 0) => {
     const out = [], tally = { notes: 0, clocks: 0, gated: 0, lfo: 0 };
     const last = () => out[out.length - 1];
     const untie = () => { if (last() === '&') out.pop(); };
@@ -155,20 +178,21 @@ function convertTrack(track, kind, ctx) {
         if (c > sounding) for (const p of pieces(c - sounding, ctx.clock)) out.push({ rest: true, len: p });
         return;
       }
-      let semi = n + 3 + S.shift + (kind === 'fm' ? 12 : 0);       // 0 is o0 d+; MUCOM88's FM octaves are one lower
+      let semi = n + 3 + S.shift + (kind === 'fm' || kind === 'opll' ? 12 : 0);    // 0 is o0 d+; MUCOM88's FM octaves are one lower
       if (kind === 'scc') semi -= 12 * (ctx.wave(S.voice)?.down || 0);
       // the gate: the note sounds stac/8 of its length, or all but 256 - stac ticks
       const on = S.stac <= 8 ? Math.floor((S.stac * ticks) / 8) : ticks - (256 - S.stac);
       const cut = tieOut ? 0 : Math.min(c - 1, Math.max(0, Math.round((ticks - Math.max(1, on)) / d)));
       if (cut !== S.q) { out.push(`q${cut}`); S.q = cut; }
-      if (kind === 'fm') tally.gated += Math.min(c, cut);
+      if (kind === 'fm' || kind === 'opll') tally.gated += Math.min(c, cut);
       if (S.lfoOn) tally.lfo += Math.max(0, c - (tiedIn ? 0 : Math.round(S.lfoDelay / d))) / S.lfoEvery;
       const l = last();
       if (tiedIn && l === '&' && out[out.length - 2]?.semi === semi && !out[out.length - 2].to && !porta && out[out.length - 2].len + c <= 255) {
         out.pop(); out[out.length - 1].len += c;                   // the same note tied on: one note
       } else {
         if (!tiedIn) tally.notes++;
-        const to = porta ? semi + Math.round((porta * ticks) / 16384) : semi;
+        let to = porta ? semi + Math.round((porta * ticks) / 16384) : semi;
+        if (to !== semi && plain) { ctx.skip('slides (SCC and MSX-MUSIC parts)'); to = semi; }
         if (to !== semi && c <= 255 && Math.abs(to - semi) <= 24) { out.push({ semi, to, len: c }); tally.lfo += c; }   // a slide moves on every clock
         else pieces(c, ctx.clock).forEach((p, i, a) => { out.push({ semi, len: p }); if (i < a.length - 1) out.push('&'); });
       }
@@ -185,6 +209,7 @@ function convertTrack(track, kind, ctx) {
           if (!ctx.voices.has(x[1])) { skip('@ (voice not defined)'); break; }
           S.voice = x[1];
           if (kind === 'fm') out.push(`@${ctx.voiceId(x[1])}`);
+          else if (kind === 'opll') { const u = ctx.patch(x[1]); out.push(`?IU${u.id}`); const v = volumeToken(S); out.push(v); S.shown = v; }
           else { const w = ctx.wave(x[1]); out.push(`@${w.id}`, w.envelope); const v = volumeToken(S); out.push(v); S.shown = v; }
           break;
         case 'v': case '(': case ')': {
@@ -193,7 +218,7 @@ function convertTrack(track, kind, ctx) {
           else if (x[0] === ')') S.vol = mode ? Math.min(15, S.vol + 1) : Math.max(128, S.vol - 1);
           else S.vol = mode ? Math.max(0, S.vol - 1) : Math.min(255, S.vol + 1);
           if (kind === 'pcm' && !ctx.pcm8) break;                  // without PCM8 the ADPCM has one level
-          if (kind === 'scc' && S.voice === null) break;
+          if ((kind === 'scc' || kind === 'opll') && S.voice === null) break;
           const v = volumeToken(S);
           if (x[0] !== 'v' && kind === 'fm' && mode) out.push(x[0]);
           else if (v !== S.shown || x[0] === 'v') out.push(v);
@@ -211,7 +236,7 @@ function convertTrack(track, kind, ctx) {
           S.shift = Math.round(x[1] / 64);
           out.push(`D${Math.round(((x[1] - 64 * S.shift) / 64) * semitone)}`);
           break;
-        case 'p': if (kind === 'scc') skip('pan (SCC part)'); else out.push(`p${PAN[x[1] & 3]}`); break;
+        case 'p': if (kind === 'scc' || kind === 'opll') skip('pan (SCC and MSX-MUSIC parts)'); else out.push(`p${PAN[x[1] & 3]}`); break;
         case 'F': if (kind === 'pcm') S.rate = Math.min(4, x[1]); else if (x[1]) skip('noise'); break;
         case 'MD': S.lfoDelay = x[1]; if (kind !== 'pcm' && S.lfo && S.lfoOn) out.push(vibrato(S)); break;   // M carries the delay
         case 'MP': if (kind !== 'pcm') { S.lfo = [x[1], x[2], x[3]]; out.push(vibrato(S)); } break;
@@ -233,16 +258,16 @@ function convertTrack(track, kind, ctx) {
       // a repeat: the passes from the states they really start in
       const end = x.exit ?? x.body.length, unknown = (T) => { T.q = null; return T; };
       const S0 = unknown(structuredClone(S));
-      const a = emitList(x.body, 0, x.body.length, S0);            // S0 is now the state after one pass
+      const a = emitList(x.body, 0, x.body.length, S0, depth + 1); // S0 is now the state after one pass
       const S1 = unknown(structuredClone(S0));
-      const b = x.count > 1 ? emitList(x.body, 0, x.body.length, S1) : a;
+      const b = x.count > 1 ? emitList(x.body, 0, x.body.length, S1, depth + 1) : a;
       const same = (p, q) => JSON.stringify(p) === JSON.stringify(q);
       const settled = x.count <= 2 || same({ ...S0, ph: S0.ph % d }, { ...S1, ph: S1.ph % d });
-      if (x.count > 1 && same(a.out, b.out) && settled && S0.debt === 0 && !a.out.includes('L')) {
+      if (x.count > 1 && same(a.out, b.out) && settled && S0.debt === 0 && !a.out.includes('L') && !(plain && depth >= 2)) {
         untie();
         const T = unknown(structuredClone(S));
-        const headPart = emitList(x.body, 0, end, T), mid = structuredClone(T);
-        const tailPart = x.exit === null ? null : emitList(x.body, end, x.body.length, T);
+        const headPart = emitList(x.body, 0, end, T, depth + 1), mid = structuredClone(T);
+        const tailPart = x.exit === null ? null : emitList(x.body, end, x.body.length, T, depth + 1);
         out.push('[', ...headPart.out);
         if (tailPart) out.push('/', ...tailPart.out);
         out.push(`]${x.count}`);
@@ -252,7 +277,7 @@ function convertTrack(track, kind, ctx) {
         S.ph = (x.exit === null ? T.ph : mid.ph) % d;
       } else {
         ctx.count('repeatsWrittenOut');
-        for (let k = 0; k < x.count; k++) add(emitList(x.body, 0, k === x.count - 1 ? end : x.body.length, S));
+        for (let k = 0; k < x.count; k++) add(emitList(x.body, 0, k === x.count - 1 ? end : x.body.length, S, depth));
       }
     }
     return { out, tally };
@@ -309,6 +334,29 @@ function text(tokens, clock) {
 
 // ---- which tracks go where ------------------------------------------------------------------
 
+// What an OPLL voice would lose of an FM track: how far the tone of the nearest patch is
+// from the voice's (a patch follows a tone that moves in a note part of the way), DT2, a pan
+// to one side. voices: the voices the track uses (the OPLL has room for USER_VOICES).
+function opllLoss(m, t) {
+  let total = 0, loss = 0, panned = 0, voice = null, pan = 3, lfo = 0, slides = 0, sliding = false;
+  const voices = new Set();
+  for (const [x, times] of play(m.tracks[t].items)) {
+    if (x[0] === '@') voice = x[1];
+    else if (x[0] === 'p') pan = x[1];
+    else if (x[0] === 'MH' || x[0] === 'MA') lfo = 0.3;
+    else if (x[0] === '_') sliding = x[1] !== 0;
+    else if (x[0] === 'n') {
+      const n = x[2] * times;
+      total += n;
+      if (pan !== 3) panned += n;
+      if (sliding) slides += n;
+      sliding = false;
+      if (voice !== null && m.voices.has(voice)) { voices.add(voice); const p = opllPatch(m.voices.get(voice)); loss += n * ((1 - p.match * p.match) + 0.5 * p.moves + (p.dt2 ? 0.5 : 0)); }
+    }
+  }
+  total = Math.max(1, total);
+  return { loss: loss / total + (0.3 * panned) / total + lfo, slides: slides / total, voices };
+}
 // What an SCC wave would lose of each FM track, lowest first: the tone its voices have beyond
 // fifteen harmonics and how far it moves in a note, DT2, a pan to one side, high notes.
 function sccOrder(m, tracks, waves) {
@@ -395,7 +443,8 @@ const unroll = (items) => items.flatMap((x) => {
 
 // ---- the song at one clock ----------------------------------------------------------------------
 
-function convertAt(m, fileName, pdx, div, vibratoStep = 1) {
+function convertAt(m, fileName, pdx, div, spare = 'auto') {
+  const vibratoStep = 1;
   const skipped = new Map(), counts = new Map(), warnings = new Set(), tempos = [];
   const fm = [], pcmTracks = [];
   m.tracks.forEach((t, i) => { if (hasNotes(t.items)) (i < 8 ? fm : pcmTracks).push(i); });
@@ -424,14 +473,19 @@ function convertAt(m, fileName, pdx, div, vibratoStep = 1) {
   const looping = m.tracks.find((t) => t.loop !== null && hasNotes(t.items));
   const timeline = { marks, loopAt: looping ? lengthOf(looping.items.slice(0, looping.loop)) : null, end: Math.max(...m.tracks.map((t) => lengthOf(t.items))) };
 
-  // voices: OPNA voices by first use, SCC waves by first use
-  const voiceIds = new Map(), waves = new Map();
+  // voices: OPNA voices by first use, SCC waves by first use, OPLL patches by first use
+  const voiceIds = new Map(), waves = new Map(), patches = new Map();
   const measured = new Map();
   const measure = (n) => { if (!m.voices.has(n)) return null; if (!measured.has(n)) measured.set(n, sccWave(m.voices.get(n))); return measured.get(n); };
   const ctxBase = {
     div, clock, clockSeconds, vibratoStep, pcm8, voices: m.voices, sccTrim: SCC_TRIM,
     timer, skip: (name) => skipped.set(name, (skipped.get(name) || 0) + 1), count: (name) => counts.set(name, (counts.get(name) || 0) + 1),
     voiceId: (n) => { if (!voiceIds.has(n)) voiceIds.set(n, voiceIds.size); return voiceIds.get(n); },
+    patch: (n) => {
+      if (n === null || !m.voices.has(n)) return null;
+      if (!patches.has(n)) patches.set(n, { ...opllPatch(m.voices.get(n)), id: Math.min(USER_VOICES - 1, patches.size) });
+      return patches.get(n);
+    },
     wave: (n) => {
       if (n === null || !m.voices.has(n)) return null;
       if (!waves.has(n)) {
@@ -445,13 +499,30 @@ function convertAt(m, fileName, pdx, div, vibratoStep = 1) {
     },
   };
 
-  // parts: six FM tracks on the OPNA, the rest (two at most) on the SCC
-  const toScc = fm.length > 6 ? sccOrder(m, fm, measure).slice(0, Math.min(2, fm.length - 6)).map((x) => x.t) : [];
-  const onOpna = fm.filter((t) => !toScc.includes(t));
+  // parts: six FM tracks on the OPNA; the rest (two at most), the ones an SCC wave holds best,
+  // on the SCC or on the MSX-MUSIC with a voice of its own - whichever loses less. The OPLL has
+  // one such voice for all its channels, so one track goes there, or two that play the same voice.
+  // spare: 'scc' and 'opll' ask for one of the two whatever is lost.
+  const spared = fm.length > 6 ? sccOrder(m, fm, measure).slice(0, Math.min(2, fm.length - 6)) : [];
+  let toOpll = [];
+  if (spared.length && spare !== 'scc') {
+    const o = spared.map((x) => opllLoss(m, x.t)), fits = (i) => o[i].voices.size <= USER_VOICES && o[i].voices.size > 0;
+    // with ?IU the SCC rows take no slides either
+    const slides = o.reduce((s, x) => s + 0.5 * x.slides, 0);
+    const options = [{ opll: [], loss: spared.reduce((s, x) => s + x.loss, 0) }];
+    spared.forEach((x, i) => { if (fits(i)) options.push({ opll: [x.t], loss: o[i].loss + spared.reduce((s, y, k) => s + (k === i ? 0 : y.loss), 0) + slides }); });
+    if (spared.length === 2 && fits(0) && o[0].voices.size === 1 && [...o[0].voices][0] === [...o[1].voices][0] && o[1].voices.size === 1) options.push({ opll: spared.map((x) => x.t), loss: o[0].loss + o[1].loss + slides });
+    const pick = (spare === 'opll' ? options.filter((x) => x.opll.length) : options).sort((a, b) => a.loss - b.loss || b.opll.length - a.opll.length)[0];
+    if (pick) toOpll = pick.opll;
+  }
+  const toScc = spared.map((x) => x.t).filter((t) => !toOpll.includes(t));
+  const onOpna = fm.filter((t) => !toScc.includes(t) && !toOpll.includes(t));
   if (onOpna.length > 6) { warnings.add('fmTracksDropped'); onOpna.length = 6; }
   const partOf = new Map();
   onOpna.forEach((t, i) => partOf.set(t, { part: OPNA_FM[i], kind: 'fm' }));
   toScc.sort((a, b) => a - b).forEach((t, i) => partOf.set(t, { part: SCC[i], kind: 'scc' }));
+  toOpll.sort((a, b) => a - b).forEach((t, i) => partOf.set(t, { part: OPLL[i], kind: 'opll' }));
+  ctxBase.plainRows = toOpll.length > 0;
   // voices whose wave plays an octave down, with notes that would then be under the SCC's o1 c
   const tooLow = new Set();
   for (const t of toScc) { let voice = null, shift = 0; for (const x of walk(m.tracks[t].items)) { if (x[0] === '@') voice = x[1]; else if (x[0] === 'D') shift = Math.round(x[1] / 64); else if (x[0] === 'n' && x[1] + 3 + shift - 12 < 12) tooLow.add(voice); } }
@@ -474,7 +545,7 @@ function convertAt(m, fileName, pdx, div, vibratoStep = 1) {
   let first = true;
   const convert = (t, part, kind, extra = {}) => {
     let usual = 9;
-    if (kind === 'fm') { const n = new Map(); for (const [x, times] of play(m.tracks[t].items)) if (x[0] === 'n') n.set((x[1] + 3) % 12, (n.get((x[1] + 3) % 12) || 0) + x[2] * times); usual = [...n].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 9; }
+    if (kind === 'fm' || kind === 'opll') { const n = new Map(); for (const [x, times] of play(m.tracks[t].items)) if (x[0] === 'n') n.set((x[1] + 3) % 12, (n.get((x[1] + 3) % 12) || 0) + x[2] * times); usual = [...n].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 9; }
     const r = convertTrack(extra.track || m.tracks[t], kind, { ...ctxBase, usual, sample: single, ...extra });
     const startsWithTempo = r.tokens.some((x, i) => /^t\d/.test(x) && !r.tokens.slice(0, i).some((y) => /^[a-gr{]/.test(y)));
     const head = [`C${clock}`];
@@ -544,7 +615,8 @@ function convertAt(m, fileName, pdx, div, vibratoStep = 1) {
   const lines = [`#title ${title}`, `#comment Converted from ${fileName || 'an MDX file'} (MXDRV) by MUCPlayground`, '#CarrierCorrection Yes'];
   if (bank) lines.push(`#pcm ${bankName}`);
   lines.push('', "; An arrangement of the MXDRV song for the OPNA: six FM tracks with their voices, the ADPCM track's",
-    '; samples as a PCM bank for part K. A seventh and eighth FM track are on the SCC, their voice as a wave.');
+    '; samples as a PCM bank for part K. A seventh and eighth FM track are on the SCC, their voice as a wave,',
+    '; or on the MSX-MUSIC, their voice as the nearest one its two operators make.');
   // What the song costs: the estimate of mgs-to-muc.js for everything but the vibrato, and
   // for the vibrato what it writes: every step the frequency, on the SCC twice.
   const vibrato = tracks.reduce((s, t) => s + (t.clocks ? (t.lfo / t.clocks) * clockRate : 0), 0);
@@ -555,7 +627,8 @@ function convertAt(m, fileName, pdx, div, vibratoStep = 1) {
   if (vibratoStep > 1) lines.push(`; Vibrato: a step every ${vibratoStep} clocks, not every clock, so that MUCPLAY and MUBPLAY keep time on a 3.58 MHz Z80.`);
   if (load > MDX_WRITES) lines.push('; The song may still be too much for MUCPLAY and MUBPLAY on a 3.58 MHz Z80 (they would fall behind).');
   const left = [...skipped].map(([k, n]) => `${k} x${n}`);
-  if ([...voiceIds.keys(), ...waves.keys()].some((n) => usesDt2(m.voices.get(n)))) left.push('DT2 of the voices');
+  if ([...voiceIds.keys(), ...waves.keys(), ...patches.keys()].some((n) => usesDt2(m.voices.get(n)))) left.push('DT2 of the voices');
+  if (patches.size > USER_VOICES) left.push(`MSX-MUSIC voices beyond ${USER_VOICES}`);
   if (warnings.has('fmTracksDropped')) left.push('FM tracks beyond eight');
   if (warnings.has('noPdx')) left.push(`the ADPCM track (no PDX file${m.pdx ? `: ${m.pdx}` : ''})`);
   if (warnings.has('pcmSlots')) left.push(`samples beyond the ${SLOTS} a PCM bank holds`);
@@ -568,16 +641,28 @@ function convertAt(m, fileName, pdx, div, vibratoStep = 1) {
   for (const [n, w] of [...waves].sort((a, b) => a[1].id - b[1].id)) {
     lines.push(`; MXDRV voice ${n} as a wave (${Math.round(w.kept * 100)}% of its tone${w.down ? ', an octave down for the operator at half the note' : ''})`, `  @W${w.id}:{ ${w.wave.join(',')} }`);
   }
+  // the OPLL patches come before every row (they are global, ?IU0 to ?IU15)
+  for (const [n, u] of [...patches].sort((a, b) => a[1].id - b[1].id)) {
+    if (u.id === USER_VOICES - 1 && [...patches.values()].filter((x) => x.id === u.id)[0] !== u) continue;
+    lines.push(`; MXDRV voice ${n} as an MSX-MUSIC voice (its tone ${Math.round(u.match * 100)}% alike)`, `  ?IU${u.id}={${u.bytes.join(',')}}`);
+  }
   lines.push('', ...body, '');
   const out = lines.join('\n');
   const size = new TextEncoder().encode(out).length;
+  // too long for a song with a voice of the MSX-MUSIC's own (in Shift-JIS, two bytes at most
+  // for what is not ASCII): the SCC takes the track instead
+  if (toOpll.length && [...out].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? 1 : 2), 0) > PLAIN_ROWS_SOURCE) {
+    const r = convertAt(m, fileName, pdx, div, 'scc');
+    if (r) r.report.warnings.push('msxMusicTooLong');
+    return r;
+  }
   if (size > 65536) throw new Error(`The MDX file becomes a ${size}-byte MUC (at most 65,536).`);
   return {
     text: out, title,
     pcm: bank ? { name: bankName, bytes: bank } : null,
     report: {
       parts: [...[...partOf].map(([track, p]) => ({ track, part: p.part })), ...(tracks.some((t) => t.part === 'K') ? [{ track: 8, part: 'K' }] : [])],
-      voices: voiceIds.size, waves: waves.size, pdx: m.pdx, pcm: pcmInfo,
+      voices: voiceIds.size, waves: waves.size, patches: Math.min(USER_VOICES, patches.size), pdx: m.pdx, pcm: pcmInfo,
       clock: { perWhole: clock, div, rate: clockRate, load, heavy: load > MDX_WRITES },
       vibrato: { steps: vibrato, every: vibratoStep },
       tempo: tempos, timeline, skipped: Object.fromEntries(skipped), counts: Object.fromEntries(counts), warnings: [...warnings], size,
@@ -585,20 +670,24 @@ function convertAt(m, fileName, pdx, div, vibratoStep = 1) {
   };
 }
 
-// mdxToMuc(bytes, { fileName, pdx, div }) -> { text, title, report, pcm }
+// mdxToMuc(bytes, { fileName, pdx, div, spare }) -> { text, title, report, pcm }
 // Throws an Error with a plain message for a file that is not MDX, is packed or becomes too long.
 // The clock is the finest (one for 1, 2, 3 or 4 ticks) that keeps the song within what a Z80
 // plays in time; div asks for one clock for that many ticks whatever the song costs.
-export function mdxToMuc(bytes, { fileName = '', pdx = null, div: only = 0 } = {}) {
+export function mdxToMuc(bytes, { fileName = '', pdx = null, div: only = 0, spare = 'auto' } = {}) {
   const m = parseMdx(bytes);
   let best = null;
   for (const div of only ? [only] : DIVS) {
     if (best && (best.report.clock.rate * best.report.clock.div) / div < SLOWEST_CLOCK) break;
     let r;
-    try { r = convertAt(m, fileName, pdx, div); } catch (e) { if (!best) throw e; break; }
+    try { r = convertAt(m, fileName, pdx, div, spare); } catch (e) { if (!best) throw e; break; }
     if (!r) break;
+    const tooFast = (x) => x.report.parts.some((p) => p.part.startsWith('MSX')) && x.report.clock.rate > PLAIN_ROWS_CLOCK;
+    // an MSX-MUSIC voice that would need a coarser clock: the SCC takes the track at this one,
+    // unless the MSX-MUSIC was asked for
+    if (tooFast(r) && spare === 'auto') r = convertAt(m, fileName, pdx, div, 'scc');
     best = r;
-    if (r.report.clock.load <= MDX_WRITES) break;
+    if (r.report.clock.load <= MDX_WRITES && !tooFast(r)) break;
   }
   return best;
 }

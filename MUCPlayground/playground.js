@@ -231,7 +231,7 @@ const T = {
     mgsFailed: (n) => `${n} (MGS) could not be converted: `,
     mdxFailed: (n) => `${n} (MDX) could not be converted: `,
     mdxConverted: (n, parts, note) => `Converted ${n} (MXDRV) to a MUC for the OPNA, ${parts} parts${note ? `; ${note}` : ''}. It is an arrangement: voices and levels are approximations, and what could not be carried over is listed at the top of the MUC.`,
-    mdxNoPdx: (f) => `the ADPCM track is left out, as ${f || 'the PDX file'} was not with it (open or drop it together with the MDX)`, mdxScc: (n) => `${n} FM track${n > 1 ? 's' : ''} on the SCC`,
+    mdxNoPdx: (f) => `the ADPCM track is left out, as ${f || 'the PDX file'} was not with it (open or drop it together with the MDX)`, mdxScc: (n) => `${n} FM track${n > 1 ? 's' : ''} on the SCC`, mdxOpll: (n) => `${n} FM track${n > 1 ? 's' : ''} on the MSX-MUSIC with a voice of its own`,
     mdxClock: (d) => `one clock for ${d} ticks`, mdxPcm: (n, kb) => `${n} samples as a PCM bank (${kb} KB)`,
     mgsConverted: (n, parts, left) => `Converted ${n} (MGSDRV) to a MUC for the OPNA, ${parts} parts${left ? `; not carried over: ${left}` : ''}. It is an arrangement: voices and envelopes are approximations.`,
     mgsNoY: (n) => `${n} register writes (y; mostly drum pitch)`, mgsNoHardEnv: 'the PSG hardware envelope', mgsNoOpllEnv: 'envelopes on the MSX-MUSIC parts',
@@ -423,7 +423,7 @@ const T = {
     mgsFailed: (n) => `${n}(MGS)을 변환하지 못했습니다: `,
     mdxFailed: (n) => `${n}(MDX)을 변환하지 못했습니다: `,
     mdxConverted: (n, parts, note) => `${n}(MXDRV)을 OPNA용 MUC로 변환했습니다, ${parts}개 파트${note ? `. ${note}` : ''}. 편곡이므로 음색과 음량은 근사치이고, 옮기지 못한 것은 MUC 머리의 주석에 적혀 있습니다.`,
-    mdxNoPdx: (f) => `${f || 'PDX 파일'}이 함께 없어서 ADPCM 트랙은 빠졌습니다(MDX와 함께 열거나 놓으세요)`, mdxScc: (n) => `FM ${n}트랙은 SCC로`,
+    mdxNoPdx: (f) => `${f || 'PDX 파일'}이 함께 없어서 ADPCM 트랙은 빠졌습니다(MDX와 함께 열거나 놓으세요)`, mdxScc: (n) => `FM ${n}트랙은 SCC로`, mdxOpll: (n) => `FM ${n}트랙은 MSX-MUSIC 사용자 음색으로`,
     mdxClock: (d) => `${d}틱에 한 클럭`, mdxPcm: (n, kb) => `샘플 ${n}개를 PCM 뱅크로(${kb}KB)`,
     mgsConverted: (n, parts, left) => `${n}(MGSDRV)을 OPNA용 MUC로 변환했습니다, ${parts}개 파트${left ? `. 옮기지 못한 것: ${left}` : ''}. 편곡에 해당합니다: 음색과 엔벨로프는 근사입니다.`,
     mgsNoY: (n) => `레지스터 직접 쓰기 ${n}회(y, 대부분 드럼 음높이)`, mgsNoHardEnv: 'PSG 하드웨어 엔벨로프', mgsNoOpllEnv: 'MSX-MUSIC 파트의 엔벨로프',
@@ -615,7 +615,7 @@ const T = {
     mgsFailed: (n) => `${n}（MGS）を変換できませんでした: `,
     mdxFailed: (n) => `${n}（MDX）を変換できませんでした: `,
     mdxConverted: (n, parts, note) => `${n}（MXDRV）をOPNA用のMUCに変換しました、${parts}パート${note ? `。${note}` : ''}。編曲なので音色と音量は近似で、移せなかったものはMUC冒頭のコメントにあります。`,
-    mdxNoPdx: (f) => `${f || 'PDXファイル'}が一緒にないため、ADPCMトラックは省かれました（MDXと一緒に開くかドロップしてください）`, mdxScc: (n) => `FM ${n}トラックはSCCへ`,
+    mdxNoPdx: (f) => `${f || 'PDXファイル'}が一緒にないため、ADPCMトラックは省かれました（MDXと一緒に開くかドロップしてください）`, mdxScc: (n) => `FM ${n}トラックはSCCへ`, mdxOpll: (n) => `FM ${n}トラックはMSX-MUSICのユーザー音色へ`,
     mdxClock: (d) => `${d}ティックで1クロック`, mdxPcm: (n, kb) => `サンプル${n}個をPCMバンクに（${kb}KB）`,
     mgsConverted: (n, parts, left) => `${n}（MGSDRV）をOPNA用のMUCに変換しました、${parts}パート${left ? `。移せなかったもの: ${left}` : ''}。アレンジに当たります: 音色とエンベロープは近似です。`,
     mgsNoY: (n) => `レジスタ直接書き込み${n}回（y、ほとんどはドラムの音程）`, mgsNoHardEnv: 'PSGのハードウェアエンベロープ', mgsNoOpllEnv: 'MSX-MUSICパートのエンベロープ',
@@ -1621,7 +1621,10 @@ function readMdx(name, bytes, side) {
   try {
     const want = pdxWanted(parseMdx(bytes).pdx);
     const found = want ? side.find((f) => f.name.split(/[\\/]/).pop().toLowerCase() === want) || files.get(want) : null;
-    const r = mdxToMuc(bytes, { fileName: name, pdx: found ? new Uint8Array(found.data) : null });
+    // ?spare=opll (or scc) in the page's address asks for the MSX-MUSIC (or the SCC) for the
+    // FM tracks the OPNA has no channel for; otherwise the converter chooses
+    const asked = new URLSearchParams(location.search).get('spare');
+    const r = mdxToMuc(bytes, { fileName: name, pdx: found ? new Uint8Array(found.data) : null, spare: asked === 'opll' || asked === 'scc' ? asked : 'auto' });
     return {
       name: name.replace(/\.[^.]*$/, '') + '.MUC', text: r.text, mgs: { from: name, report: r.report, mdx: true },
       files: r.pcm ? [{ name: r.pcm.name, data: r.pcm.bytes.buffer.slice(r.pcm.bytes.byteOffset, r.pcm.bytes.byteOffset + r.pcm.bytes.byteLength) }] : [],
@@ -1657,6 +1660,8 @@ function mdxNote(report) {
   const out = [];
   const scc = report.parts.filter((p) => p.part.startsWith('SCC')).length;
   if (scc) out.push(t('mdxScc', scc));
+  const opll = report.parts.filter((p) => p.part.startsWith('MSX')).length;
+  if (opll) out.push(t('mdxOpll', opll));
   if (report.pcm) out.push(t('mdxPcm', report.pcm.samples, Math.round(report.pcm.bytes / 1024)));
   if (report.warnings.includes('noPdx')) out.push(t('mdxNoPdx', report.pdx));
   if (report.clock.div > 1) out.push(t('mdxClock', report.clock.div));

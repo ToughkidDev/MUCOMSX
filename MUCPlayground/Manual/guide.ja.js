@@ -330,7 +330,7 @@ export default [
 
 <h3>.mdx（MXDRV）を開く</h3>
 <p><code>.mdx</code>はシャープX68000のドライバMXDRVの音楽データです。YM2151用のFM 8トラックとADPCMトラックがあり、ADPCMのサンプルは<code>.pdx</code>ファイルに入っています。<code>.mdx</code>をその<code>.pdx</code>と一緒に開くかドロップすると（フォルダからはPDXを名前で探します）、MUCに変換されて<code>名前.MUC</code>としてエディタに入り、再生されます。</p>
-<p>OPNA用の編曲です。FM 6トラックは音色ごとOPNAのFMへ、7～8トラック使う曲は波形で最もよく表せる2トラックがSCC（<code>SCCA</code>、<code>SCCB</code>）へ行き、その音色は32サンプルの波形になります。ADPCMトラックは<code>K</code>パートになり、曲が使うサンプルはPCMバンク（<code>名前.BIN</code>、<code>#pcm</code>が指します）になります。バンクは添付されるので、MUCと一緒に保存してください。PCM8（複数のADPCMトラック）はトラックを1チャンネルに重ね、サンプルが重なる所はあらかじめミックスして別のサンプルにします。</p>
+<p>OPNA用の編曲です。FM 6トラックは音色ごとOPNAのFMへ、7～8トラック使う曲は波形で最もよく表せる2トラックがSCC（<code>SCCA</code>、<code>SCCB</code>）へ行き、その音色は32サンプルの波形になります。そのうち1トラックは、原曲により近く曲が許せばMSX-MUSIC（<code>MSXA</code>、ユーザー音色<code>?IU</code>）へ行きます。このようなMUCは14,976バイトまでで、Z80の負担も増えるため、長い曲やそのためにクロックを粗くする必要がある曲はSCCのままにします。それでもMSX-MUSICを使うには、ページのアドレスに<code>?spare=opll</code>を付けてください（SCCに固定するには<code>?spare=scc</code>）。ADPCMトラックは<code>K</code>パートになり、曲が使うサンプルはPCMバンク（<code>名前.BIN</code>、<code>#pcm</code>が指します）になります。バンクは添付されるので、MUCと一緒に保存してください。PCM8（複数のADPCMトラック）はトラックを1チャンネルに重ね、サンプルが重なる所はあらかじめミックスして別のサンプルにします。</p>
 <p>移せないもの: DT2、YM2151自身のLFOとノイズ、レジスタ直接書き込み、SCCへ行ったトラックのパン。曲ごとに失われたものはMUC冒頭のコメント行に書かれます。PDXがなければADPCMパートなしで開きます。3.58MHzのZ80でMUCPLAY・MUBPLAYが間に合わない曲は、2ティックで1クロックにします。</p>
 <h3>.mub · .vgm · .vgz の再生</h3>
 <p><b>開く…</b>かドラッグ&amp;ドロップで再生します。<code>.mub</code>はエディタのエンジンで、<code>.vgm</code>/<code>.vgz</code>はMDPlayer4MacのVGMプレイヤーで再生します（初回だけ約7 MBをダウンロードします）。再生するとチャンネルビューが自動的に開きます。</p>

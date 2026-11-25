@@ -139,3 +139,93 @@ export function carrierLevels(v, frames = 150) {
   const off = fall(c.rr * 2 + 1, c.ks);                   // RR is half as fine as the other rates
   return { levels: out, release: off ? Math.min(255, (255 * off) / 60 / 30) : 255 };
 }
+
+// ---- the voice on the OPLL ----------------------------------------------------------------------
+
+// A YM2413 has two operators a voice, and one voice of its own (eight register bytes) for
+// all its channels. The patch nearest to a YM2151 voice is looked for by the tone: of the
+// modulator's multiple, level, feedback and the two wave forms, the setting whose steady
+// spectrum is nearest to the voice's (the cosine of the two, harmonics 1 to 40). Multiples
+// are tried from the voice's own operators. The envelopes come from the loudest carrier and
+// from the operator that modulates it.
+const OPLL_MULT = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 12, 12, 15, 15];
+const HARMONICS = 32, M = 128;
+const COS = new Float64Array(HARMONICS * M), SIN = new Float64Array(HARMONICS * M);
+for (let k = 0; k < HARMONICS; k++) for (let n = 0; n < M; n++) { COS[k * M + n] = Math.cos((2 * Math.PI * (k + 1) * n) / M); SIN[k * M + n] = Math.sin((2 * Math.PI * (k + 1) * n) / M); }
+// the levels of harmonics 1 to HARMONICS of M samples, as a vector of length 1
+function spectrum(x) {
+  const a = new Float64Array(HARMONICS);
+  let total = 0;
+  for (let k = 0; k < HARMONICS; k++) {
+    let c = 0, s = 0;
+    for (let n = 0, at = k * M; n < M; n++, at++) { c += x[n] * COS[at]; s += x[n] * SIN[at]; }
+    a[k] = Math.hypot(c, s); total += a[k] * a[k];
+  }
+  total = Math.sqrt(total) || 1;
+  for (let k = 0; k < HARMONICS; k++) a[k] /= total;
+  return a;
+}
+// the steady spectrum of modulator -> carrier (multiples in periods of the window)
+const scratch = new Float64Array(M);
+function twoOps(mm, mc, tl, fb, dm, dc) {
+  const amp = 10 ** (-(tl * 0.75) / 20), beta = fb ? Math.PI * 2 ** (fb - 5) : 0, w = (2 * Math.PI) / M;
+  let p1 = 0, p2 = 0;
+  for (let n = fb ? 0 : 2 * M; n < 3 * M; n++) {
+    let m = Math.sin(n * w * mm + beta * (p1 + p2) / 2);
+    if (dm && m < 0) m = 0;
+    m *= amp; p2 = p1; p1 = m;
+    if (n < 2 * M) continue;
+    const c = Math.sin(n * w * mc + 4 * Math.PI * m);
+    scratch[n - 2 * M] = dc && c < 0 ? 0 : c;
+  }
+  return spectrum(scratch);
+}
+// a period of N samples as M (N is a multiple of M)
+const thin = (x) => Float64Array.from({ length: M }, (_, i) => x[i * (x.length / M)]);
+const fitted = new Map();
+// The OPLL patch for a voice: { bytes (the eight registers), match (0-1: how near its tone
+// is), level (dB of the voice's own peak, which the part's volume carries), moves, dt2 }.
+export function opllPatch(v) {
+  const key = JSON.stringify(v);
+  if (fitted.has(key)) return fitted.get(key);
+  const ops = CHAIN.map((k) => v.ops[k]), carriers = CARRIERS[v.con];
+  const a = period(v, false), b = period(v, true), scale = a.half ? 2 : 1;
+  const target = spectrum(thin(a.out)), late = spectrum(thin(b.out));
+  let same = 0;
+  for (let i = 0; i < HARMONICS; i++) same += target[i] * late[i];
+  const moves = 1 - same;
+  const nearest = (r) => OPLL_MULT.reduce((best, m, i) => (Math.abs(m - r) < Math.abs(OPLL_MULT[best] - r) ? i : best), 0);
+  const mults = (list) => [...new Set(list.map((k) => nearest(ops[k].mul || 0.5)))];
+  const cars = mults(carriers), mods = [...new Set([...mults([0, 1, 2, 3]), ...cars])];
+  let best = { score: -1 };
+  const tryOne = (mm, mc, tl, fb, dm, dc) => {
+    const y = twoOps(OPLL_MULT[mm] * scale, OPLL_MULT[mc] * scale, tl, fb, dm, dc);
+    let s = 0;
+    for (let i = 0; i < HARMONICS; i++) s += y[i] * target[i];
+    if (s > best.score) best = { score: s, mm, mc, tl, fb, dm, dc };
+  };
+  for (const mc of cars) for (const mm of mods) for (let tl = 0; tl < 64; tl += 3) for (const fb of [0, 2, 4, 5, 6, 7]) for (const dm of [0, 1]) for (const dc of [0, 1]) tryOne(mm, mc, tl, fb, dm, dc);
+  const at = { ...best };
+  for (let tl = Math.max(0, at.tl - 2); tl <= Math.min(63, at.tl + 2); tl++) for (let fb = Math.max(0, at.fb - 1); fb <= Math.min(7, at.fb + 1); fb++) tryOne(at.mm, at.mc, tl, fb, at.dm, at.dc);
+  // envelopes: the loudest carrier's, and that of the operator before it in the algorithm
+  const c = carriers.map((k) => k).sort((x, y) => ops[x].tl - ops[y].tl)[0];
+  const before = v.con <= 3 ? 2 : v.con === 4 ? c - 1 : v.con === 5 ? 0 : v.con === 6 && c === 1 ? 0 : c;
+  const clamp = (x) => Math.max(0, Math.min(15, Math.round(x)));
+  const env = (o) => {
+    const held = o.d2r === 0;
+    return {
+      first: (held ? 0x20 : 0) | (o.ks >= 2 ? 0x10 : 0),
+      rates: (o.ar >= 30 ? 15 : clamp((o.ar - 4) / 2)) << 4 | clamp((o.d1r - 3) / 2),
+      levels: o.d1l << 4 | (held ? clamp(o.rr - 1) : clamp((o.d2r - 3) / 2)),
+    };
+  };
+  const em = env(ops[before]), ec = env(ops[c]);
+  let full = 0;
+  for (const x of a.out) full = Math.max(full, Math.abs(x));
+  const out = {
+    bytes: [em.first | best.mm, ec.first | best.mc, best.tl, best.dc << 4 | best.dm << 3 | best.fb, em.rates, ec.rates, em.levels, ec.levels],
+    match: best.score, level: 20 * Math.log10(Math.max(1e-6, full)), moves, dt2: usesDt2(v),
+  };
+  fitted.set(key, out);
+  return out;
+}
