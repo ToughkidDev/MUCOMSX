@@ -62,11 +62,18 @@ const PSG = ['D', 'E', 'F'], SCC = ['SCCA', 'SCCB', 'SCCC', 'SCCD', 'SCCE'];
 // moves 60 times a second, so no clock above that is heard as such; below it envelopes and
 // vibrato get coarser. Z80_WRITES is from running all 844 songs of a collection on that
 // MSX: songs estimated up to 1350 kept time, the two estimated at 1380 and 1510 did not
-// (they do at the coarser clock they now get), and one at 1230 (five SCC parts with a vibrato
-// that moves on every clock) falls behind all the same.
+// (they do at the coarser clock they now get), and one at 1230 fell behind for its vibrato
+// (see MOST_VIBRATO).
 const CLOCK_DIVS = [1, 2, 3, 4, 6, 8];
 const Z80_WRITES = 1300;
 const SLOWEST_CLOCK = 30;                    // clocks a second: no coarser clock than this
+// The vibrato. Every step of a vibrato or a pitch fall is a calculation and a frequency write.
+// The song of the 844 with the most steps (13 of its 16 parts moving on each of 60 clocks a
+// second, 780 steps) fell behind on that MSX though its estimate is within Z80_WRITES, and
+// keeps time with a step every other clock (the width kept, the period as near as two clocks
+// a step allow); the next, at 660, keeps time as it is. Above MOST_VIBRATO steps a second the
+// song's vibrato is written that way.
+const MOST_VIBRATO = 700;
 const MOST_ROUNDED = 0.25;                  // nor one that rounds more than this share of the notes
 
 // Frames MGSDRV takes for a whole note, and the timer-B count nearest to a clock of div steps.
@@ -186,7 +193,7 @@ function act(x, st, kind, song, counting) {
   const lfo = () => {
     const half = st.lp + (song.lfoMode ? 0 : 1), frames = st.ls + 1;
     if (!st.lp || !st.lt) return { tokens: ['MF0'] };
-    const rate = Math.min(255, Math.max(1, Math.round(frames * song.ticksPerFrame)));
+    const rate = Math.min(255, Math.max(song.vibratoStep, Math.round(frames * song.ticksPerFrame)));
     const count = Math.min(255, Math.max(1, Math.round((half * frames * song.ticksPerFrame) / rate)));
     const depth = whole(((half * st.lt) / 8) * (melodic ? perPeriod : perFnum) / count);
     return { tokens: [`M${Math.min(255, Math.round((st.ld + 2) * song.ticksPerFrame))},${rate},${depth},${count}`] };
@@ -197,7 +204,7 @@ function act(x, st, kind, song, counting) {
     if (!st.pf || st.pf === 128) return { tokens: ['MF0'] };
     const perFrame = st.pf < 128 ? -2.232 * st.pf : (st.pf - 128) * Math.max(1, 9 - song.octave) * perPeriod;
     const perTick = perFrame / song.ticksPerFrame;
-    const rate = Math.abs(perTick) >= 1 ? 1 : Math.min(255, Math.round(1 / Math.abs(perTick)));
+    const rate = Math.max(song.vibratoStep, Math.abs(perTick) >= 1 ? 1 : Math.min(255, Math.round(1 / Math.abs(perTick))));
     return { tokens: [`M0,${rate},${whole(perTick * rate)},255`] };
   };
   const rhythmVolume = () => {
@@ -576,6 +583,12 @@ const WRITES = {
   note: { fm: 7.8, opll: 3.3, psg: 4.6, scc: 6.4, rhythm: 4.5 },
   clock: { fm: 0.2, opll: 0.2, psg: 1.25, scc: 1.25, rhythm: 0 }, lfoFm: 0.5, lfoMelodic: 0.6, envelope: 0.1, gated: 1,
 };
+// Vibrato (and pitch fall) steps a second, all parts together: a part steps every so many
+// clocks as the fastest M it sets.
+const vibratoSteps = (tracks, clockRate) => tracks.reduce((sum, tr) => {
+  const rates = tr.tokens.filter((t) => /^M\d+,\d+,-?[1-9]/.test(t)).map((t) => +t.split(',')[1]);
+  return sum + (rates.length ? clockRate / Math.min(...rates) : 0);
+}, 0);
 const writesPerSecond = (tracks, clockRate) => tracks.map((tr) => partLoad(tr, clockRate)).reduce((sum, p) => {
   const melodic = p.kind === 'psg' || p.kind === 'scc';
   return sum + p.notes * WRITES.note[p.kind] + p.gated * WRITES.gated
@@ -584,7 +597,7 @@ const writesPerSecond = (tracks, clockRate) => tracks.map((tr) => partLoad(tr, c
 
 // The parsed file m as a MUC with one clock for div steps: { text, title, report }, or null when
 // the timer cannot count a clock that long at the song's slowest tempo.
-function convertAt(m, fileName, div) {
+function convertAt(m, fileName, div, vibratoStep = 1) {
   nodeIds = new WeakMap(); nextId = 1;
   const skipped = new Map(), counts = new Map(), warnings = new Set();
   const tempos = [];
@@ -656,6 +669,7 @@ function convertAt(m, fileName, div) {
     div, clock: 192 / div,
     lengths: { all: 0, rounded: 0 },   // notes written, and those whose length is not whole clocks
     ticksPerFrame,
+    vibratoStep,                       // a vibrato or a pitch fall moves no oftener than every so many clocks
     lfoMode: m.lfoMode,
     period: 254, octave: 4,            // the track's usual note: its PSG period and octave
     voiceEnvelopes,
@@ -741,10 +755,15 @@ function convertAt(m, fileName, div) {
   const lines = [`#title ${title}`, `#comment Converted from ${fileName || 'an MGS file'} (MGS${m.version}) by MUCPlayground`];
   if (voices.some((v) => !v.opll)) lines.push('#CarrierCorrection Yes');
   lines.push('', '; An arrangement of the MGSDRV song for the OPNA: PSG on the SSG, MSX-MUSIC voices as OPNA', '; voices, its rhythm on the OPNA rhythm, the SCC as it is. Voices and envelopes are approximations.');
-  const load = writesPerSecond(tracks, clockRate);
+  const load = writesPerSecond(tracks, clockRate), vibrato = vibratoSteps(tracks, clockRate);
+  if (vibratoStep === 1 && vibrato > MOST_VIBRATO) return convertAt(m, fileName, div, 2);
   if (div > 1) {
     lines.push(`; Clock: C${song.clock}, one clock for ${div} MGS steps (${Math.round(clockRate)} a second at the fastest tempo), so that`,
       '; MUCPLAY and MUBPLAY keep time on a 3.58 MHz Z80. Lengths that are not whole clocks are rounded in place.');
+  }
+  if (vibratoStep > 1) {
+    lines.push(`; Vibrato: a step every ${vibratoStep} clocks, not every clock (the parts together would step it over ${MOST_VIBRATO} times a`,
+      '; second), so that MUCPLAY and MUBPLAY keep time on a 3.58 MHz Z80. Its width stays, its period as near as that allows.');
   }
   if (load > Z80_WRITES) lines.push('; The song may still be too much for MUCPLAY and MUBPLAY on a 3.58 MHz Z80 (they would fall behind).');
   // what could not be carried over, for whoever edits the song next
@@ -785,6 +804,8 @@ function convertAt(m, fileName, div) {
       // register writes a second the song is estimated to make (heavy: more than a 3.58 MHz
       // Z80 is known to keep up with), the share of the notes whose length is not whole clocks
       clock: { perWhole: song.clock, div, rate: clockRate, load, heavy: load > Z80_WRITES, rounded: song.lengths.rounded / Math.max(1, song.lengths.all) },
+      // vibrato steps a second of all parts together, and the clocks between two steps at least
+      vibrato: { steps: vibrato, every: vibratoStep },
       tempo: tempos, skipped: Object.fromEntries(skipped), counts: Object.fromEntries(counts), warnings: [...warnings], size,
     },
   };
