@@ -326,7 +326,18 @@ function text(tokens, clock) {
     octave(fl(t.semi));
     if (t.to === undefined) { out.push(name(t.semi) + lt); continue; }
     const a = Math.min(8, Math.max(1, fl(t.semi))), b = Math.min(8, Math.max(1, fl(t.to)));
-    out.push(`{${name(t.semi)}${(b > a ? '>' : '<').repeat(Math.abs(b - a))}${name(t.to)}}${lengthText(t.len, clock)}`);
+    const slide = (x, ox, y, oy, len) => `{${name(x)}${(oy > ox ? '>' : '<').repeat(Math.abs(oy - ox))}${name(y)}}${lengthText(len, clock)}`;
+    // A slide tied on to its own first note: the compilers of MucoMSX and of the playground's
+    // engine each join that note to another one, and the driver leaves the pitch where the
+    // slide stopped (see mgs-to-muc.js). Written a clock shorter and with a slide of one clock
+    // back, it plays as meant with both.
+    const next = tokens[i + 1] === '&' ? tokens[i + 2] : null;
+    if (next && typeof next !== 'string' && !next.rest && next.to === undefined && next.semi === t.semi) {
+      if (t.len < 2) { out.push(name(t.semi) + lengthText(t.len, clock)); continue; }
+      out.push(slide(t.semi, a, t.to, b, t.len - 1), '&', slide(t.to, b, t.semi, a, 1));
+      continue;
+    }
+    out.push(slide(t.semi, a, t.to, b, t.len));
     oct = b;
   }
   return out;

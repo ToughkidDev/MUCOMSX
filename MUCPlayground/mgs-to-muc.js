@@ -141,13 +141,14 @@ function buildTree(cmds, report) {
 // kind: 'psg' | 'scc' | 'fm' | 'opll' | 'rhythm'
 // state: oct, len, gate, detune (dc coarse, df fine), LFO (lon, ld delay, lp depth, ls speed,
 // lt step in 1/8), pf pitch fall, pp / po a portamento's start, ph / debt the place within a
-// clock (see clocks() in act) (all);
+// clock (see clocks() in act), tie (an & waits for its note), last (the last note that was not
+// a portamento, octave * 12 + pitch), end (where a portamento since then ended, or -1) (all);
 // env, k, off (psg, scc); patch, user, sus, vol, fenv (the envelope on the voice), penv (the
 // envelopes given to voices so far), ymod (user voice registers written with y) (fm, opll);
 // lv (rhythm)
 const clamp15 = (v) => Math.min(15, Math.max(0, v));
 const startState = (kind, song) => ({
-  oct: 4, len: 48, gate: 8, dc: 0, df: 0, lon: 0, ld: 0, lp: 0, ls: 0, lt: 0, pf: 0, pp: -1, po: 0, ph: 0, debt: 0,
+  oct: 4, len: 48, gate: 8, dc: 0, df: 0, lon: 0, ld: 0, lp: 0, ls: 0, lt: 0, pf: 0, pp: -1, po: 0, ph: 0, debt: 0, tie: 0, last: -1, end: -1,
   env: -1, k: 0, off: 0, patch: 0, user: -1, sus: 0, vol: 0, fenv: song.voiceEnvelopes.get(0) ?? -1, penv: '', ymod: '',
   lv: kind === 'rhythm' ? [0, 0, 0, 0, 0] : null,
 });
@@ -232,9 +233,17 @@ function act(x, st, kind, song, counting) {
     case 'l': st.len = x[1]; return null;
     case 'q': if (kind === 'rhythm') return null; st.gate = x[1]; return null;
     case 'note': {
-      if (kind === 'rhythm' || x[1] >= 12) return timed({ note: 'r' }, x[2] ?? st.len, x[2], false);
+      if (kind === 'rhythm' || x[1] >= 12) { st.tie = 0; return timed({ note: 'r' }, x[2] ?? st.len, x[2], false); }
       // from: where a portamento (_) starts; legato: MGSDRV's q0 on FM keeps the key down
       const a = { note: x[1], gate: st.gate, from: st.pp < 0 ? null : [st.pp, st.po], legato: fmLike && st.gate === 0 };
+      // A note tied on (&) that is the note played last sets no pitch in MGSDRV, and a
+      // portamento does not count as a note played: "c _c e & c" slides up and stays on e
+      // (shift: how far from its name the note sounds). A rest in between changes nothing.
+      const key = st.oct * 12 + x[1];
+      if (st.pp >= 0) st.end = key;
+      else if (st.tie && st.end >= 0 && key === st.last) a.shift = st.end - key;
+      else { st.last = key; st.end = -1; }
+      st.tie = 0;
       st.pp = -1;
       return timed(a, x[2] ?? st.len, x[2], true);
     }
@@ -252,7 +261,7 @@ function act(x, st, kind, song, counting) {
       const f = x[1];
       return timed({ drums: (f & 16 ? 1 : 0) | (f & 8 ? 2 : 0) | (f & 2 ? 4 : 0) | (f & 1 ? 8 : 0) | (f & 4 ? 16 : 0) }, x[2] ?? st.len, x[2], true);
     }
-    case '&': return { tokens: ['&'] };
+    case '&': st.tie = 1; return { tokens: ['&'] };
     case 't': { const n = timerFor(x[1], song.div); if (counting) song.report.tempo(x[1], n); return { tokens: [`t${256 - n}`] }; }
     case 'v':
       if (kind === 'rhythm') { st.lv.fill(x[1]); return rhythmVolume(); }
@@ -344,7 +353,7 @@ function convertTrack(cmds, kind, m, song) {
       if (!a) continue;
       if (a.tokens) for (const t of a.tokens) h = mixText(h, t);
       else if (a.keyoff) h = mix(h, 0x4a);
-      else h = mix(mix(h, a.drums !== undefined ? 512 + a.drums : a.note === 'r' ? 255 : st.oct * 16 + a.note + (a.gate << 8) + (a.from ? (a.from[0] + a.from[1] * 16 + 1) << 12 : 0)), a.len);
+      else h = mix(mix(h, a.drums !== undefined ? 512 + a.drums : a.note === 'r' ? 255 : st.oct * 16 + a.note + (a.gate << 8) + (a.from ? (a.from[0] + a.from[1] * 16 + 1) << 12 : 0) + (a.shift ? (a.shift + 128) << 20 : 0)), a.len);
     }
     return h;
   };
@@ -393,6 +402,32 @@ function convertTrack(cmds, kind, m, song) {
     txt.gate = cut;
   };
   let legatoAt = -1;                           // where the & of a q0 note was written
+  // A slide tied on to its own first note ({ab}8 &a). MUCOM88's compilers join a tied note to
+  // the same note before it, and after a slide that is the slide's first note: MucoMSX then
+  // drops the tied note and adds its length to the last plain note it wrote, the playground's
+  // engine adds it to the slide; neither plays what is written, and they differ. A command
+  // between the & and the note keeps the two apart in both, but on FM and the MSX-MUSIC the
+  // driver leaves the pitch of a tied note of the same name where the slide stopped. So there
+  // the slide is written a clock shorter, with a slide of one clock back to its first note;
+  // the SSG and the SCC set the pitch again, and an octave command in between is enough.
+  // backToStart(name, oct) before the note is written; it gives the place of the & to part
+  // the note from (to be done once the note is written and still follows it directly), or -1.
+  let slid = null;                             // the slide last written: { out, at, name, oct, to, toOct, len }
+  const slideText = (name, oct, to, toOct, len) => `{${name}${(toOct > oct ? '>' : '<').repeat(Math.abs(toOct - oct))}${to}}${lengthText(len, song.clock)}`;
+  const backToStart = (name, oct) => {
+    const s = slid;
+    slid = null;
+    if (!s || s.out !== out || out[s.at + 1] !== '&' || s.name !== name || s.oct !== oct) return -1;
+    if (out.slice(s.at + 2).some((x) => /^[a-gr[\]/L{&]/.test(x))) return -1;
+    if (kind === 'psg' || kind === 'scc') return out.length === s.at + 2 ? s.at + 1 : -1;
+    if (s.len < 2) out[s.at] = name + lengthText(s.len, song.clock);
+    else {
+      out[s.at] = slideText(name, oct, s.to, s.toOct, s.len - 1);
+      out.splice(s.at + 2, 0, slideText(s.to, s.toOct, name, oct, 1), '&');
+    }
+    txt.oct = oct;
+    return -1;
+  };
   // notes and clocks written, with repeats counted as often as they play (for the song's load);
   // gated: the clocks that fall within q of the end of a note or a rest
   let tally = { notes: 0, clocks: 0, gated: 0 };
@@ -441,7 +476,7 @@ function convertTrack(cmds, kind, m, song) {
       } else if (a.note === 'r') sound('r', a.len, a.auto, null);
       else if (a.keyoff) { if (out[out.length - 1] === '&' && legatoAt === out.length - 1) out.pop(); }
       else {
-        const key = a.note + (tune ? tune[a.note] : 0), name = NOTE[((key % 12) + 12) % 12], carry = Math.floor(key / 12);
+        const key = a.note + (tune ? tune[a.note] : 0) + (a.shift || 0), name = NOTE[((key % 12) + 12) % 12], carry = Math.floor(key / 12);
         const from = a.from && a.from[0] + (tune ? tune[a.from[0]] : 0);
         const startOct = a.from && Math.min(8, Math.max(1, a.from[1] + Math.floor(from / 12))), endOct = Math.min(8, Math.max(1, sim.oct + carry));
         if (a.from && (startOct !== endOct || ((from % 12) + 12) % 12 !== ((key % 12) + 12) % 12) && a.len <= 255) {
@@ -450,9 +485,14 @@ function convertTrack(cmds, kind, m, song) {
           gateFor(a.len, a.len, a.gate);
           played(a.len, true);
           gated(a.len);
-          out.push(`{${NOTE[((from % 12) + 12) % 12]}${(endOct > startOct ? '>' : '<').repeat(Math.abs(endOct - startOct))}${name}}${lengthText(a.len, clock)}`);
+          out.push(slideText(NOTE[((from % 12) + 12) % 12], startOct, name, endOct, a.len));
+          slid = { out, at: out.length - 1, name: NOTE[((from % 12) + 12) % 12], oct: startOct, to: name, toOct: endOct, len: a.len };
           txt.oct = endOct;
-        } else sound(name, a.len, a.auto, carry, a.gate);
+        } else {
+          const tie = backToStart(name, endOct);
+          sound(name, a.len, a.auto, carry, a.gate);
+          if (tie >= 0 && /^[a-g]/.test(out[tie + 1])) out.splice(tie + 1, 0, `o${endOct}`);
+        }
         if (a.legato) { out.push('&'); legatoAt = out.length - 1; }
       }
     }
@@ -500,7 +540,10 @@ function convertTrack(cmds, kind, m, song) {
       emit(node.body, 0, i === node.count - 1 ? end : node.body.length);
       fits = out.length <= UNROLL_LIMIT;
     }
-    if (fits) { keep.out.push(...out); out = keep.out; report.count('repeatsWrittenOut'); return; }
+    if (fits) {
+      if (slid && slid.out === out) { slid.at += keep.out.length; slid.out = keep.out; }
+      keep.out.push(...out); out = keep.out; report.count('repeatsWrittenOut'); return;
+    }
     out = keep.out; sim = keep.sim; txt = keep.txt; tally = keep.tally;
     report.warn('repeatDrifts');
     asRepeat(node);
