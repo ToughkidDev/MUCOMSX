@@ -15,7 +15,7 @@ export default [
   <li><b>手助けしてくれるエディタ</b>: 文法の色分け、入力中のコマンド候補、入力しながらの自動チェック、エラーごとの「意味・直し方」の説明があります。</li>
   <li><b>見るためのツール</b>: トラッカー（パターン・ピアノロール）、チャンネルごとのオシロスコープ、チャンネルごとの鍵盤、MDPlayer4Macと同じチャンネルビューがあります。</li>
   <li><b>音色・波形・PCMの編集</b>: FM音色エディタ、SCC波形エディタ、PCMサンプルエディタ（いずれもFurnace風）と音色バンクがあります。</li>
-  <li><b>ファイル</b>: <code>.muc</code>を開いて保存し、<code>.mub</code>・<code>.vgm</code>に書き出し、<code>.mub</code>・<code>.vgm</code>・<code>.vgz</code>を再生します。プレイリストやリポジトリのサンプルも使えます。</li>
+  <li><b>ファイル</b>: <code>.muc</code>を開いて保存し、MGSDRVの<code>.mgs</code>をMUCに変換して開き、<code>.mub</code>・<code>.vgm</code>に書き出し、<code>.mub</code>・<code>.vgm</code>・<code>.vgz</code>を再生します。プレイリストやリポジトリのサンプルも使えます。</li>
   <li><b>共有</b>: サーバーなしで、リンク1つに曲（と小さな添付ファイル）を入れて送れます。</li>
 </ul>
 
@@ -296,8 +296,8 @@ export default [
     html: `
 <h3>開く</h3>
 <ul>
-  <li><b>開く…</b>: <code>.muc</code>、<code>.mub</code>、<code>.vgm</code>、<code>.vgz</code>と音色・PCMファイル（<code>.dat</code>、<code>.pcm</code>、<code>.bin</code>、<code>.wav</code>）を開きます。曲とそのファイルを一緒に選ぶと（<kbd>Ctrl</kbd>/<kbd>⌘</kbd>または<kbd>Shift</kbd>+クリック）、ファイルが先に添付されてから曲が開きます。</li>
-  <li><b>ドラッグ&amp;ドロップ</b>: ファイルをページにドロップするだけです。<code>.muc</code>はエディタで開いて再生し、<code>.mub</code>/<code>.vgm</code>は再生します。フォルダをドロップするとプレイリストとして開きます。</li>
+  <li><b>開く…</b>: <code>.muc</code>、<code>.mgs</code>、<code>.mub</code>、<code>.vgm</code>、<code>.vgz</code>と音色・PCMファイル（<code>.dat</code>、<code>.pcm</code>、<code>.bin</code>、<code>.wav</code>）を開きます。曲とそのファイルを一緒に選ぶと（<kbd>Ctrl</kbd>/<kbd>⌘</kbd>または<kbd>Shift</kbd>+クリック）、ファイルが先に添付されてから曲が開きます。</li>
+  <li><b>ドラッグ&amp;ドロップ</b>: ファイルをページにドロップするだけです。<code>.muc</code>はエディタで開いて再生し（<code>.mgs</code>も変換して同じく）、<code>.mub</code>/<code>.vgm</code>は再生します。フォルダをドロップするとプレイリストとして開きます。</li>
   <li><b>フォルダ…</b>: 自分のパソコンのフォルダを開いて曲の一覧を表示します（名前で検索、サブフォルダ別）。曲を開くと、その曲が指定したファイルをフォルダから探して自動的に添付します。Chrome・Edgeはフォルダを記憶します。</li>
 </ul>
 
@@ -321,6 +321,11 @@ export default [
   <tr><td>.vgm</td><td>すべてのチップへの書き込みを記録したVGM 1.71。ループのある曲は最初から1回 + ループをもう1回、最大10分。</td></tr>
 </table>
 <div class="warn">コメントにハングルなどShift-JISにない文字を書くと、エディタでは見えますが<code>.muc</code>で保存するときに<code>?</code>に置き換わります。長く残したいメモは英語か日本語で書くか、共有リンクで保管してください。</div>
+
+<h3>.mgs（MGSDRV）を開く</h3>
+<p><code>.mgs</code>はMSXのPSG、SCC、MSX-MUSIC用のMGSDRV音楽データです。1つだけ開いてもドロップしても、プレイリストに入れてもかまいません。MUCに変換され、<code>名前.MUC</code>としてエディタに入って再生され、その後は普通のMUCと同じように編集・保存できます。圧縮されたファイルとMGSDRV 3.04より前のファイルも読みます。</p>
+<p>結果は原曲のコピーではなく<b>OPNA用のアレンジ</b>です。PSGトラックはSSG（<code>D E F</code>）へ、MSX-MUSICの音色はOPNAのFM音色（<code>A B C H I J</code>）へ、リズムはOPNAのリズム（<code>G</code>）へ移し、SCCはそのまま（<code>SCCA</code>–<code>SCCE</code>）です。FMトラックが7–9本の曲は最大3本をMSX-MUSICパート（<code>MSXA</code>–<code>MSXC</code>）に残します。音符、音長、繰り返し、テンポはそのまま移し、音色・エンベロープ・ビブラート・スライドは原曲に合わせた近似です。<code>?</code>コマンドは使わないので、曲の大きさの上限は通常の65,536バイトです。</p>
+<p>移せなかったものはステータス行とMUC先頭のコメント行に書かれます。レジスタ直接書き込み（<code>y</code>、ほとんどはドラムの音程）、PSGのハードウェアエンベロープ、MSX-MUSICパートのエンベロープです。壊れたファイルやMUCにすると長すぎるファイルは開かず、ステータス行に理由を表示します。</p>
 
 <h3>.mub · .vgm · .vgz の再生</h3>
 <p><b>開く…</b>かドラッグ&amp;ドロップで再生します。<code>.mub</code>はエディタのエンジンで、<code>.vgm</code>/<code>.vgz</code>はMDPlayer4MacのVGMプレイヤーで再生します（初回だけ約7 MBをダウンロードします）。再生するとチャンネルビューが自動的に開きます。</p>
@@ -357,7 +362,7 @@ export default [
     id: 'playlist',
     title: 'プレイリスト',
     html: `
-<p><b>☰ プレイリスト</b>は右側に曲の一覧（<code>.muc</code>、<code>.mub</code>、<code>.vgm</code>、<code>.vgz</code>）を開きます。曲を押すと再生し、✕で外し、<b>空にする</b>で一覧を空にします。中央のバーで幅を変えます。</p>
+<p><b>☰ プレイリスト</b>は右側に曲の一覧（<code>.muc</code>、<code>.mgs</code>、<code>.mub</code>、<code>.vgm</code>、<code>.vgz</code>）を開きます。曲を押すと再生し、✕で外し、<b>空にする</b>で一覧を空にします。中央のバーで幅を変えます。</p>
 
 <h3>曲を入れる</h3>
 <ul>

@@ -653,6 +653,18 @@ export function mgsToMuc(bytes, { fileName = '' } = {}) {
   const title = decodeTitle(m.title, fileName.replace(/\.[^.]*$/, ''));
   const lines = [`#title ${title}`, `#comment Converted from ${fileName || 'an MGS file'} (MGS${m.version}) by MUCPlayground`];
   if (voices.some((v) => !v.opll)) lines.push('#CarrierCorrection Yes');
+  lines.push('', '; An arrangement of the MGSDRV song for the OPNA: PSG on the SSG, MSX-MUSIC voices as OPNA', '; voices, its rhythm on the OPNA rhythm, the SCC as it is. Voices and envelopes are approximations.');
+  // what could not be carried over, for whoever edits the song next
+  const left = [];
+  const leftOut = (...names) => names.reduce((sum, k) => sum + (skipped.get(k) || 0), 0);
+  if (leftOut('y')) left.push(`register writes (y) x${leftOut('y')}`);
+  if (leftOut('s', 'm')) left.push(`the PSG hardware envelope (s, m) x${leftOut('s', 'm')}`);
+  if (leftOut('@e (MSX-MUSIC part)')) left.push(`envelopes on the MSX-MUSIC parts x${leftOut('@e (MSX-MUSIC part)')}`);
+  if (leftOut('@ (wave not defined)')) left.push(`an SCC wave without a definition x${leftOut('@ (wave not defined)')}`);
+  if (warnings.has('repeatDrifts')) left.push('a repeat whose passes differ (written once)');
+  if (warnings.has('fmTracksDropped')) left.push('FM tracks beyond nine');
+  if (warnings.has('unknownCommand')) left.push('a command this reader does not know (the track ends there)');
+  if (left.length) lines.push(...rows(';', 'Not carried over:', left.map((x, i) => x + (i < left.length - 1 ? ',' : '')).join(' ').split(' ')));
   lines.push('');
   if (voices.length > 256) throw new Error('The MGS file needs more than 256 FM voices as a MUC.');
   voices.forEach((v, id) => {

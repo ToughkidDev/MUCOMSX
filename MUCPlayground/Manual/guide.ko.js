@@ -15,7 +15,7 @@ export default [
   <li><b>도와주는 편집기</b>: 문법 색칠, 입력 중 명령 제안, 입력하는 동안의 자동 검사, 오류마다 "무슨 뜻·고치는 법" 설명이 있습니다.</li>
   <li><b>보는 도구</b>: 트래커(패턴·피아노 롤), 채널별 오실로스코프, 채널별 건반, MDPlayer4Mac과 같은 채널 뷰가 있습니다.</li>
   <li><b>음색·파형·PCM 편집</b>: FM 음색 편집기, SCC 파형 편집기, PCM 샘플 편집기(모두 Furnace 스타일)와 음색 뱅크가 있습니다.</li>
-  <li><b>파일</b>: <code>.muc</code>를 열고 저장하며, <code>.mub</code>·<code>.vgm</code>으로 내보내고, <code>.mub</code>·<code>.vgm</code>·<code>.vgz</code>를 재생합니다. 플레이리스트와 저장소 샘플도 씁니다.</li>
+  <li><b>파일</b>: <code>.muc</code>를 열고 저장하며, MGSDRV의 <code>.mgs</code>를 MUC로 변환해 열고, <code>.mub</code>·<code>.vgm</code>으로 내보내고, <code>.mub</code>·<code>.vgm</code>·<code>.vgz</code>를 재생합니다. 플레이리스트와 저장소 샘플도 씁니다.</li>
   <li><b>공유</b>: 서버 없이 링크 하나에 곡(과 작은 첨부 파일)을 담아 보냅니다.</li>
 </ul>
 
@@ -296,8 +296,8 @@ export default [
     html: `
 <h3>열기</h3>
 <ul>
-  <li><b>열기…</b>: <code>.muc</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>와 음색·PCM 파일(<code>.dat</code>, <code>.pcm</code>, <code>.bin</code>, <code>.wav</code>)을 엽니다. 곡과 그 파일들을 함께 고르면(<kbd>Ctrl</kbd>/<kbd>⌘</kbd> 또는 <kbd>Shift</kbd>+클릭) 파일이 먼저 첨부된 뒤 곡이 열립니다.</li>
-  <li><b>끌어다 놓기</b>: 파일을 페이지에 놓으면 됩니다. <code>.muc</code>는 편집기에 열리고 재생되며, <code>.mub</code>/<code>.vgm</code>은 재생됩니다. 폴더를 놓으면 플레이리스트로 열립니다.</li>
+  <li><b>열기…</b>: <code>.muc</code>, <code>.mgs</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>와 음색·PCM 파일(<code>.dat</code>, <code>.pcm</code>, <code>.bin</code>, <code>.wav</code>)을 엽니다. 곡과 그 파일들을 함께 고르면(<kbd>Ctrl</kbd>/<kbd>⌘</kbd> 또는 <kbd>Shift</kbd>+클릭) 파일이 먼저 첨부된 뒤 곡이 열립니다.</li>
+  <li><b>끌어다 놓기</b>: 파일을 페이지에 놓으면 됩니다. <code>.muc</code>는 편집기에 열리고 재생되며(<code>.mgs</code>도 변환되어 같게), <code>.mub</code>/<code>.vgm</code>은 재생됩니다. 폴더를 놓으면 플레이리스트로 열립니다.</li>
   <li><b>폴더…</b>: 내 컴퓨터의 폴더를 열어 곡 목록을 보여 줍니다(이름 검색, 하위 폴더별). 곡을 열면 그 곡이 지정한 파일을 폴더에서 찾아 자동으로 첨부합니다. Chrome·Edge는 폴더를 기억합니다.</li>
 </ul>
 
@@ -321,6 +321,11 @@ export default [
   <tr><td>.vgm</td><td>모든 칩 쓰기를 기록한 VGM 1.71. 루프가 있는 곡은 처음부터 한 번 + 루프 한 번 더, 최대 10분.</td></tr>
 </table>
 <div class="warn">주석에 한글을 쓰면 편집기에서는 보이지만 <code>.muc</code>로 저장할 때 <code>?</code>로 바뀝니다. 오래 보관할 메모는 영어나 일본어로 쓰거나 공유 링크로 보관하세요.</div>
+
+<h3>.mgs(MGSDRV) 열기</h3>
+<p><code>.mgs</code>는 MSX의 PSG, SCC, MSX-MUSIC용 MGSDRV 음악 데이터입니다. 하나만 열거나 놓아도 되고 플레이리스트에 넣어도 됩니다. MUC로 변환되어 <code>이름.MUC</code>로 편집기에 들어가고 재생되며, 그 뒤로는 보통의 MUC처럼 편집하고 저장합니다. 압축된 파일과 MGSDRV 3.04 이전 파일도 읽습니다.</p>
+<p>결과는 원곡의 복사본이 아니라 <b>OPNA용 편곡</b>입니다. PSG 트랙은 SSG(<code>D E F</code>)로, MSX-MUSIC 음색은 OPNA FM 음색(<code>A B C H I J</code>)으로, 리듬은 OPNA 리듬(<code>G</code>)으로 가고, SCC는 그대로(<code>SCCA</code>–<code>SCCE</code>) 둡니다. FM 트랙이 7–9개인 곡은 최대 3개를 MSX-MUSIC 파트(<code>MSXA</code>–<code>MSXC</code>)에 남깁니다. 음표, 길이, 반복, 템포는 그대로 옮기고, 음색·엔벨로프·비브라토·슬라이드는 원곡에 맞춘 근사입니다. <code>?</code> 명령을 쓰지 않으므로 곡 크기 한도는 보통의 65,536바이트입니다.</p>
+<p>옮기지 못한 것은 상태 줄과 MUC 맨 위의 주석 줄에 적힙니다. 레지스터 직접 쓰기(<code>y</code>, 대부분 드럼 음높이), PSG 하드웨어 엔벨로프, MSX-MUSIC 파트의 엔벨로프입니다. 손상된 파일이나 MUC로 바꾸면 너무 길어지는 파일은 열지 않고 상태 줄에 이유를 보여 줍니다.</p>
 
 <h3>.mub · .vgm · .vgz 재생</h3>
 <p><b>열기…</b>나 끌어다 놓기로 재생합니다. <code>.mub</code>는 편집기 엔진으로, <code>.vgm</code>/<code>.vgz</code>는 MDPlayer4Mac의 VGM 플레이어로 재생합니다(처음 한 번 약 7 MB를 받습니다). 재생하면 채널 뷰가 자동으로 열립니다.</p>
@@ -357,7 +362,7 @@ export default [
     id: 'playlist',
     title: '플레이리스트',
     html: `
-<p><b>☰ 플레이리스트</b>는 오른쪽에 곡 목록(<code>.muc</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>)을 엽니다. 곡을 누르면 재생하고, ✕로 빼고, <b>비우기</b>로 목록을 비웁니다. 가운데 막대로 폭을 바꿉니다.</p>
+<p><b>☰ 플레이리스트</b>는 오른쪽에 곡 목록(<code>.muc</code>, <code>.mgs</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>)을 엽니다. 곡을 누르면 재생하고, ✕로 빼고, <b>비우기</b>로 목록을 비웁니다. 가운데 막대로 폭을 바꿉니다.</p>
 
 <h3>곡 넣기</h3>
 <ul>

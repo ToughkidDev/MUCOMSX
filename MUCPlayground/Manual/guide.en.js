@@ -15,7 +15,7 @@ export default [
   <li><b>An editor that helps</b>: Syntax colouring, command suggestions as you type, checks while you type, and a "what it means / how to fix" explanation for every error.</li>
   <li><b>Tools to look at the music</b>: A tracker (pattern and piano roll), an oscilloscope for each channel, a keyboard for each channel, and a channel view like MDPlayer4Mac's.</li>
   <li><b>Voice, wave and PCM editing</b>: An FM voice editor, an SCC wave editor and a PCM sample editor (all in Furnace style), and voice banks.</li>
-  <li><b>Files</b>: Open and save <code>.muc</code>, export <code>.mub</code> and <code>.vgm</code>, and play <code>.mub</code>, <code>.vgm</code> and <code>.vgz</code>. There are also playlists and the repository's samples.</li>
+  <li><b>Files</b>: Open and save <code>.muc</code>, open MGSDRV <code>.mgs</code> files as a MUC, export <code>.mub</code> and <code>.vgm</code>, and play <code>.mub</code>, <code>.vgm</code> and <code>.vgz</code>. There are also playlists and the repository's samples.</li>
   <li><b>Sharing</b>: Send a song (and its small attached files) in a single link, with no server.</li>
 </ul>
 
@@ -296,8 +296,8 @@ export default [
     html: `
 <h3>Opening</h3>
 <ul>
-  <li><b>Open…</b>: Opens <code>.muc</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code> and voice/PCM files (<code>.dat</code>, <code>.pcm</code>, <code>.bin</code>, <code>.wav</code>). Pick a song together with its files (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> or <kbd>Shift</kbd>+click), and the files are attached first, then the song opens.</li>
-  <li><b>Drag and drop</b>: Drop files on the page. A <code>.muc</code> opens in the editor and plays; a <code>.mub</code>/<code>.vgm</code> plays. Drop a folder to open it as a playlist.</li>
+  <li><b>Open…</b>: Opens <code>.muc</code>, <code>.mgs</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code> and voice/PCM files (<code>.dat</code>, <code>.pcm</code>, <code>.bin</code>, <code>.wav</code>). Pick a song together with its files (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> or <kbd>Shift</kbd>+click), and the files are attached first, then the song opens.</li>
+  <li><b>Drag and drop</b>: Drop files on the page. A <code>.muc</code> opens in the editor and plays (an <code>.mgs</code> too, converted); a <code>.mub</code>/<code>.vgm</code> plays. Drop a folder to open it as a playlist.</li>
   <li><b>Folder…</b>: Opens a folder on your computer and lists its songs (search by name, grouped by subfolder). When you open a song, the files it names are found in the folder and attached automatically. Chrome and Edge remember the folder.</li>
 </ul>
 
@@ -321,6 +321,11 @@ export default [
   <tr><td>.vgm</td><td>A VGM 1.71 that records every chip write. A song with a loop is recorded once through plus the loop once more, up to 10 minutes.</td></tr>
 </table>
 <div class="warn">Korean text in comments shows in the editor, but turns into <code>?</code> when you save as <code>.muc</code>. Write notes you want to keep in English or Japanese, or keep them in a share link.</div>
+
+<h3>Opening .mgs (MGSDRV)</h3>
+<p>An <code>.mgs</code> file is MGSDRV's music data for the MSX's PSG, SCC and MSX-MUSIC. Open or drop one, alone or in a playlist, and it is converted to a MUC, put in the editor as <code>NAME.MUC</code> and played; from there you edit and save it like any MUC. Compressed files and files from before MGSDRV 3.04 are read too.</p>
+<p>The result is an <b>arrangement for the OPNA</b>, not a copy: the PSG tracks play on the SSG (<code>D E F</code>), the MSX-MUSIC voices become OPNA FM voices (<code>A B C H I J</code>), its rhythm plays on the OPNA rhythm (<code>G</code>) and the SCC stays as it is (<code>SCCA</code>–<code>SCCE</code>). A song with seven to nine FM tracks keeps up to three on MSX-MUSIC parts (<code>MSXA</code>–<code>MSXC</code>). Notes, lengths, repeats and tempo carry over as they are; voices, envelopes, vibrato and slides are fitted to the original and are approximations. No <code>?</code> commands are written, so the song has the ordinary 65,536-byte limit.</p>
+<p>The status line and the comment lines at the top of the MUC say what could not be carried over: register writes (<code>y</code>, mostly the pitch of the drums), the PSG hardware envelope, and envelopes on the MSX-MUSIC parts. A file that is damaged, or too long as a MUC, is not opened and the status line says why.</p>
 
 <h3>Playing .mub · .vgm · .vgz</h3>
 <p>Play them with <b>Open…</b> or drag and drop. A <code>.mub</code> plays on the editor's engine, and a <code>.vgm</code>/<code>.vgz</code> on MDPlayer4Mac's VGM player (about 7 MB is downloaded the first time). The channel view opens automatically when it plays.</p>
@@ -357,7 +362,7 @@ export default [
     id: 'playlist',
     title: 'Playlist',
     html: `
-<p><b>☰ Playlist</b> opens a list of songs (<code>.muc</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>) on the right. Click a song to play it, ✕ to take it off the list, and <b>Clear</b> to empty the list. Drag the middle bar to change the width.</p>
+<p><b>☰ Playlist</b> opens a list of songs (<code>.muc</code>, <code>.mgs</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>) on the right. Click a song to play it, ✕ to take it off the list, and <b>Clear</b> to empty the list. Drag the middle bar to change the width.</p>
 
 <h3>Adding songs</h3>
 <ul>
