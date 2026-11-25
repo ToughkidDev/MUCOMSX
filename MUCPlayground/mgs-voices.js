@@ -131,27 +131,43 @@ export const OPLL_VOLUME = [0, 0, 0, 0, 0, 1, 2, 4, 5, 7, 8, 10, 11, 13, 14, 15]
 const HORIZON = 150;        // frames (1/60 s) of an envelope that are fitted
 
 // The levels (0-15) an @e envelope steps through, one per frame, and the tone / noise mode
-// and noise period it starts with.
-export function envelopeLevels(env, frames = HORIZON) {
-  const out = [];
-  let cur = 15, loop = -1, mode = env.mode, noise = env.noise, ended = false;
+// and noise period it sounds with. An envelope may change both on its way (a drum: one frame
+// of tone, then noise): MUCOM88 has one setting for the note, so it is the one most of the
+// envelope's level sounds with. It may also write the PSG's mixer itself (y7,n), which is how
+// a drum envelope ends: with tone and noise both off for the part's channel (0-2; -1: not a
+// PSG part) the level is nothing from there on, whatever the last step was.
+export function envelopeLevels(env, frames = HORIZON, channel = -1) {
+  const out = [], weight = new Map(), periods = new Map();
+  let cur = 15, loop = -1, mode = env.mode, noise = env.noise, ended = false, off = false;
+  const push = (level) => {
+    out.push(off ? 0 : level);
+    if (off || !level) return;
+    weight.set(mode, (weight.get(mode) || 0) + level);
+    if (mode >= 2) periods.set(noise, (periods.get(noise) || 0) + level);
+  };
   for (const c of env.cmds) {
     if (out.length >= frames) break;
-    if (c[0] === 'v') { cur = c[1]; out.push(cur); }
-    else if (c[0] === 'v:') { cur = c[1]; for (let i = 0; i < Math.max(1, c[2]); i++) out.push(cur); }
+    if (c[0] === 'v') { cur = c[1]; push(cur); }
+    else if (c[0] === 'v:') { cur = c[1]; for (let i = 0; i < Math.max(1, c[2]); i++) push(cur); }
     else if (c[0] === 'v=') {
       const n = Math.max(1, c[2]), from = out.length ? cur : c[1], d = c[1] - from;
-      for (let i = 0; i < n; i++) out.push(from + Math.sign(d) * Math.floor((i * Math.abs(d)) / n));
+      for (let i = 0; i < n; i++) push(from + Math.sign(d) * Math.floor((i * Math.abs(d)) / n));
       cur = c[1];
     } else if (c[0] === '[') loop = out.length;
     else if (c[0] === ']') { ended = true; break; }
-    else if (c[0] === '/' && !out.length) mode = c[1] || mode;
-    else if (c[0] === 'n' && !out.length) noise = c[1];
+    else if (c[0] === '/') { if (c[1]) { mode = c[1]; off = false; } }
+    else if (c[0] === 'n') noise = c[1];
+    else if (c[0] === 'y' && c[1] === 7 && channel >= 0) {
+      const set = (((c[2] >> channel) & 1) ? 0 : 1) | (((c[2] >> (channel + 3)) & 1) ? 0 : 2);
+      if (set) { mode = set; off = false; } else off = true;
+    }
   }
+  if (off) push(0);                                                    // silent from the frame after the last step
   if (!out.length) out.push(15);
   if (ended && loop >= 0 && loop < out.length) { for (let i = loop; out.length < frames; i = i + 1 < out.length ? i + 1 : loop) out.push(out[i]); out.length = frames; }
   while (out.length < frames) out.push(out[out.length - 1]);          // the last level is held
-  return { levels: out.slice(0, frames), mode, noise };
+  const most = (map, or) => (map.size ? [...map].sort((a, b) => b[1] - a[1])[0][0] : or);
+  return { levels: out.slice(0, frames), mode: most(weight, mode), noise: most(periods, noise) };
 }
 
 // The voice an @e envelope switches to for most of its first 40 frames (a "patch slide"), or
@@ -190,7 +206,7 @@ function adsr(al, ar, dr, sl, sr, frames) {
 // MGSDRV subtracts (15 - v) from the envelope's level; MUCOM88 multiplies. The fit is made on
 // what the track's usual volume (vref) leaves of the envelope, scaled so that its peak is the
 // full envelope; `peak` (0-15) is the envelope's own highest level, which the volume carries.
-export function fitEnvelope(levels, vref = 15) {
+export function fitEnvelope(levels, vref = 15, lag = 0) {
   const cut = levels.map((l) => Math.max(0, l - (15 - vref)));
   const peak = Math.max(...levels), top = Math.max(...cut);
   if (top <= 0) return { al: 255, ar: 0, dr: 0, sl: 255, sr: 0, peak };
@@ -199,18 +215,26 @@ export function fitEnvelope(levels, vref = 15) {
   const al = p > 0 ? Math.round(target[0]) : 255, ar = p > 0 ? (255 - target[0]) / p : 0;
   const z = target.slice(p), last = z[z.length - 1];
   const weight = (i) => (i < 20 ? 2 : i < 60 ? 1 : 0.4);
-  const error = (dr, sl, sr) => { const e = adsr(255, 0, dr, sl, sr, z.length); let s = 0; for (let i = 0; i < z.length; i++) s += weight(i) * (e[i] - z[i]) ** 2; return s; };
+  // An envelope that starts at its peak stays there one clock longer in MUCOM88 than in MGSDRV
+  // (the clock its attack takes, with nothing to rise to). With a clock of a frame or longer
+  // that is `lag` frames, and the fit is made on what MUCOM88 will play: the same envelope,
+  // that much later.
+  const late = p > 0 ? 0 : lag;
+  const error = (dr, sl, sr) => { const e = adsr(255, 0, dr, sl, sr, z.length); let s = 0; for (let i = 0; i < z.length; i++) s += weight(i) * (e[Math.max(0, i - late)] - z[i]) ** 2; return s; };
   let best = { dr: 0, sl: 255, sr: 0, err: error(0, 255, 0) };
   const firstAt = (v) => { const i = z.findIndex((x) => x <= v); return i < 0 ? z.length : i; };
   for (let b = 1; b < Math.min(z.length, 90); b++) {
     if (z[b] >= z[b - 1] && b > 1) continue;                  // break points only where the level falls
-    const sl = z[b], dr = (255 - sl) / b;
+    const sl = z[b];
     const tails = [0];
     if (last < sl) { const e = firstAt(last); if (e > b) tails.push((sl - last) / (e - b)); }
     if (sl > 0) { const e = firstAt(0); if (e > b && e < z.length) tails.push(sl / (e - b)); }
-    for (const sr of tails) {
-      const err = error(dr, sl, sr);
-      if (err < best.err) best = { dr, sl, sr, err };
+    // the fall to the break point: in the envelope's own time, or in what the lag leaves of it
+    for (const dr of late ? [(255 - sl) / b, (255 - sl) / Math.max(1, b - late)] : [(255 - sl) / b]) {
+      for (const sr of tails) {
+        const err = error(dr, sl, sr);
+        if (err < best.err) best = { dr, sl, sr, err };
+      }
     }
   }
   return { al, ar, dr: best.dr, sl: Math.round(best.sl), sr: best.sr, peak };

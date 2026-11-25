@@ -676,14 +676,14 @@ function convertAt(m, fileName, div, vibratoStep = 1) {
     envelope(num) {
       // no envelope chosen, or a number without a definition: the plain level, released at k
       const env = envelopes.get(num) || { type: 'e', mode: 0, noise: 0, cmds: [['v', 15]] };
-      const key = `${envelopes.has(num) ? num : -1}:${this.vref}`;
+      const key = `${envelopes.has(num) ? num : -1}:${this.vref}:${this.psgChannel}`;
       let f = fits.get(key);
       if (!f) {
         if (env.type === 'r') {
           f = { mode: env.mode, noise: env.noise, off: 0, usesK: false, text: () => envelopeText(env, env.rr, ticksPerFrame) };
         } else {
-          const { levels, mode, noise } = envelopeLevels(env);
-          const fit = fitEnvelope(levels, this.vref);
+          const { levels, mode, noise } = envelopeLevels(env, undefined, this.psgChannel);
+          const fit = fitEnvelope(levels, this.vref, Math.floor(1 / ticksPerFrame + 0.25));
           // k: the level falls by one step (16 of 255) every k frames after key off; k0 at once
           f = { mode, noise, off: 15 - fit.peak, usesK: true, text: (k) => envelopeText(fit, k ? 16 / k : 255, ticksPerFrame) };
         }
@@ -729,6 +729,7 @@ function convertAt(m, fileName, div, vibratoStep = 1) {
   for (const t of [...partOf.keys()].sort((a, b) => a - b)) {
     const { part, kind } = partOf.get(t), cmds = m.tracks[t].cmds;
     song.vref = kind === 'psg' || kind === 'scc' ? usualVolume(cmds) : 13;
+    song.psgChannel = kind === 'psg' ? t - 1 : -1;      // for an envelope that writes the PSG's mixer
     [song.period, song.octave] = usualNote(cmds);
     const { tokens, notes, clocks, gated } = convertTrack(cmds, kind, m, song);
     if (m.tracks[t].unknown !== null) report.warn('unknownCommand');
