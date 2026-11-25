@@ -60,9 +60,12 @@ const PSG = ['D', 'E', 'F'], SCC = ['SCCA', 'SCCB', 'SCCC', 'SCCD', 'SCCE'];
 // Z80_WRITES therefore gets one clock for 2, 3, 4, 6 or 8 steps, the first that fits, stays
 // at SLOWEST_CLOCK or above and leaves most note lengths whole clocks. MGSDRV itself only
 // moves 60 times a second, so no clock above that is heard as such; below it envelopes and
-// vibrato get coarser.
+// vibrato get coarser. Z80_WRITES is from running all 844 songs of a collection on that
+// MSX: songs estimated up to 1350 kept time, the two estimated at 1380 and 1510 did not
+// (they do at the coarser clock they now get), and one at 1230 (five SCC parts with a vibrato
+// that moves on every clock) falls behind all the same.
 const CLOCK_DIVS = [1, 2, 3, 4, 6, 8];
-const Z80_WRITES = 1200;
+const Z80_WRITES = 1300;
 const SLOWEST_CLOCK = 30;                    // clocks a second: no coarser clock than this
 const MOST_ROUNDED = 0.25;                  // nor one that rounds more than this share of the notes
 
@@ -317,7 +320,7 @@ function convertTrack(cmds, kind, m, song) {
   // default length of a part is not a quarter until l says so).
   // mask (the drums of the rhythm part) and q are set while the song plays, so the text
   // cannot count on them across a repeat: they are written again after every [ / ] and L.
-  let txt = { oct: null, len: null, mask: null, q: null };
+  let txt = { oct: null, len: null, mask: null, q: null, gate: 0 };   // gate: the q in force, known or not
   const forget = () => { txt.mask = null; txt.q = null; };
   // #psg_tune: the pitch table of the PSG and SCC tracks. Each note moves by the nearest
   // number of semitones to where the table puts it (the fine rest comes with detune).
@@ -380,11 +383,14 @@ function convertTrack(cmds, kind, m, song) {
   const gateFor = (n, tail, gate) => {
     const cut = gate >= 8 || gate <= 0 ? 0 : Math.min(tail - 1, n - Math.max(1, Math.floor((n * gate) / 8)));
     if (cut !== txt.q) { out.push(`q${cut}`); txt.q = cut; }
+    txt.gate = cut;
   };
   let legatoAt = -1;                           // where the & of a q0 note was written
-  // notes and clocks written, with repeats counted as often as they play (for the song's load)
-  let tally = { notes: 0, clocks: 0 };
+  // notes and clocks written, with repeats counted as often as they play (for the song's load);
+  // gated: the clocks that fall within q of the end of a note or a rest
+  let tally = { notes: 0, clocks: 0, gated: 0 };
   const played = (n, sounding) => { tally.clocks += n; if (sounding && n > 0) tally.notes++; };
+  const gated = (n) => { tally.gated += Math.min(n, txt.gate); };
   const clock = song.clock;
   const sound = (name, n, auto, carry, gate = 8) => {
     if (auto && n > 0 && n <= 255 && n !== txt.len) { out.push(`l${lengthText(n, clock)}`); txt.len = n; }
@@ -392,6 +398,7 @@ function convertTrack(cmds, kind, m, song) {
     played(n, name !== 'r');
     const ps = pieces(n, clock);
     if (carry !== null) gateFor(n, ps[ps.length - 1], gate);
+    gated(n);
     ps.forEach((p, i) => {
       out.push(name + (p === txt.len ? '' : lengthText(p, clock)));
       if (i < ps.length - 1 && name !== 'r') out.push('&');
@@ -435,6 +442,7 @@ function convertTrack(cmds, kind, m, song) {
           setOctave(Math.floor(from / 12), a.from[1]);
           gateFor(a.len, a.len, a.gate);
           played(a.len, true);
+          gated(a.len);
           out.push(`{${NOTE[((from % 12) + 12) % 12]}${(endOct > startOct ? '>' : '<').repeat(Math.abs(endOct - startOct))}${name}}${lengthText(a.len, clock)}`);
           txt.oct = endOct;
         } else sound(name, a.len, a.auto, carry, a.gate);
@@ -446,7 +454,7 @@ function convertTrack(cmds, kind, m, song) {
     const end = node.exit ?? node.body.length;
     const after = cloneState(sim);
     runLoop(node, after);
-    const outer = tally, head = tally = { notes: 0, clocks: 0 }, tail = { notes: 0, clocks: 0 };
+    const outer = tally, head = tally = { notes: 0, clocks: 0, gated: 0 }, tail = { notes: 0, clocks: 0, gated: 0 };
     out.push('[');
     forget();
     emit(node.body, 0, end);
@@ -454,7 +462,7 @@ function convertTrack(cmds, kind, m, song) {
     out.push(`]${node.count}`);
     forget();
     tally = outer;
-    for (const k of ['notes', 'clocks']) tally[k] += node.count * head[k] + (node.count - 1) * tail[k];
+    for (const k of ['notes', 'clocks', 'gated']) tally[k] += node.count * head[k] + (node.count - 1) * tail[k];
     sim = after;
   };
   const loop = (node) => {
@@ -471,7 +479,7 @@ function convertTrack(cmds, kind, m, song) {
       out.push('L');
       forget();
       sim.ph = 0;
-      tally = { notes: 0, clocks: 0 };            // what repeats is what counts
+      tally = { notes: 0, clocks: 0, gated: 0 };  // what repeats is what counts
       emit(node.body, 0, node.body.length);
       return;
     }
@@ -491,7 +499,7 @@ function convertTrack(cmds, kind, m, song) {
     asRepeat(node);
   };
   emit(items, 0, items.length);
-  return { tokens: out, notes: tally.notes, clocks: tally.clocks };
+  return { tokens: out, notes: tally.notes, clocks: tally.clocks, gated: tally.gated };
 }
 
 // Tokens as rows of the part: notes run together, everything else is spaced.
@@ -548,26 +556,29 @@ function usualNote(cmds) {
   return periods[periods.length >> 1];
 }
 
-// What a part costs: its notes a second, and whether it runs a vibrato (M) or, on the SSG and
-// SCC, an envelope that keeps moving (every clock of those writes registers).
+// What a part costs: its notes a second, whether it runs a vibrato (M) or, on the SSG and
+// SCC, an envelope that keeps moving (every clock of those writes registers), and on FM the
+// clocks a second that fall within q of the end of a note or a rest (MUCOM88 writes the key
+// off again on each of those).
 const partLoad = (tr, clockRate) => ({
   kind: tr.kind,
   notes: tr.clocks ? (tr.notes / tr.clocks) * clockRate : 0,
+  gated: tr.clocks && (tr.kind === 'fm' || tr.kind === 'opll') ? (tr.gated / tr.clocks) * clockRate : 0,
   lfo: tr.tokens.some((t) => /^M\d+,\d+,-?[1-9]/.test(t)),
   env: (tr.kind === 'psg' || tr.kind === 'scc') && tr.tokens.some((t) => /^E\d+,\d+,(?!0,\d+,0,)/.test(t)),
 });
 // The register writes a second the song makes at its busiest, estimated from that: per note of
 // each kind of part, and per clock of a part for its vibrato, its envelope and (SSG, SCC) its
-// level. The numbers are fitted to what this engine writes for 600 converted songs (the
+// level. Those numbers are fitted to what this engine writes for 600 converted songs (the
 // busiest 10 s of each; correlation 0.94, and one song in twenty writes over half as much
-// again as its estimate, which is why Z80_WRITES is set below what was measured).
+// again as its estimate); the one write per gated clock is counted from the engine.
 const WRITES = {
   note: { fm: 7.8, opll: 3.3, psg: 4.6, scc: 6.4, rhythm: 4.5 },
-  clock: { fm: 0.2, opll: 0.2, psg: 1.25, scc: 1.25, rhythm: 0 }, lfoFm: 0.5, lfoMelodic: 0.6, envelope: 0.1,
+  clock: { fm: 0.2, opll: 0.2, psg: 1.25, scc: 1.25, rhythm: 0 }, lfoFm: 0.5, lfoMelodic: 0.6, envelope: 0.1, gated: 1,
 };
 const writesPerSecond = (tracks, clockRate) => tracks.map((tr) => partLoad(tr, clockRate)).reduce((sum, p) => {
   const melodic = p.kind === 'psg' || p.kind === 'scc';
-  return sum + p.notes * WRITES.note[p.kind]
+  return sum + p.notes * WRITES.note[p.kind] + p.gated * WRITES.gated
     + clockRate * (WRITES.clock[p.kind] + (p.lfo ? (melodic ? WRITES.lfoMelodic : WRITES.lfoFm) : 0) + (p.env ? WRITES.envelope : 0));
 }, 0);
 
@@ -705,7 +716,7 @@ function convertAt(m, fileName, div) {
     const { part, kind } = partOf.get(t), cmds = m.tracks[t].cmds;
     song.vref = kind === 'psg' || kind === 'scc' ? usualVolume(cmds) : 13;
     [song.period, song.octave] = usualNote(cmds);
-    const { tokens, notes, clocks } = convertTrack(cmds, kind, m, song);
+    const { tokens, notes, clocks, gated } = convertTrack(cmds, kind, m, song);
     if (m.tracks[t].unknown !== null) report.warn('unknownCommand');
     const first = [`C${song.clock}`];
     if (firstRow) first.push(`t${256 - n0}`);
@@ -717,7 +728,7 @@ function convertAt(m, fileName, div) {
       first.push(`v${(kind === 'opll' ? OPLL_VOLUME : FM_VOLUME)[0]}`);
     } else if (kind === 'psg' || kind === 'scc') first.push('E255,0,0,0,0,255 v0');
     else first.push(`v${RHYTHM_TOTAL},0,0,0,0,0,0`);
-    tracks.push({ part, kind, first: first.join(' '), tokens, notes, clocks });
+    tracks.push({ part, kind, first: first.join(' '), tokens, notes, clocks, gated });
     parts.push({ track: t, part });
   }
   // An envelope setting used several times becomes a macro (#*n{...}, called with *n).
