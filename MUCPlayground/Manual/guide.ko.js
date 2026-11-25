@@ -15,7 +15,7 @@ export default [
   <li><b>도와주는 편집기</b>: 문법 색칠, 입력 중 명령 제안, 입력하는 동안의 자동 검사, 오류마다 "무슨 뜻·고치는 법" 설명이 있습니다.</li>
   <li><b>보는 도구</b>: 트래커(패턴·피아노 롤), 채널별 오실로스코프, 채널별 건반, MDPlayer4Mac과 같은 채널 뷰가 있습니다.</li>
   <li><b>음색·파형·PCM 편집</b>: FM 음색 편집기, SCC 파형 편집기, PCM 샘플 편집기(모두 Furnace 스타일)와 음색 뱅크가 있습니다.</li>
-  <li><b>파일</b>: <code>.muc</code>를 열고 저장하며, MGSDRV의 <code>.mgs</code>를 MUC로 변환해 열고, <code>.mub</code>·<code>.vgm</code>으로 내보내고, <code>.mub</code>·<code>.vgm</code>·<code>.vgz</code>를 재생합니다. 플레이리스트와 저장소 샘플도 씁니다.</li>
+  <li><b>파일</b>: <code>.muc</code>를 열고 저장하며, MGSDRV의 <code>.mgs</code>와 MXDRV의 <code>.mdx</code>를 MUC로 변환해 열고, <code>.mub</code>·<code>.vgm</code>으로 내보내고, <code>.mub</code>·<code>.vgm</code>·<code>.vgz</code>를 재생합니다. 플레이리스트와 저장소 샘플도 씁니다.</li>
   <li><b>공유</b>: 서버 없이 링크 하나에 곡(과 작은 첨부 파일)을 담아 보냅니다.</li>
 </ul>
 
@@ -296,8 +296,8 @@ export default [
     html: `
 <h3>열기</h3>
 <ul>
-  <li><b>열기…</b>: <code>.muc</code>, <code>.mgs</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>와 음색·PCM 파일(<code>.dat</code>, <code>.pcm</code>, <code>.bin</code>, <code>.wav</code>)을 엽니다. 곡과 그 파일들을 함께 고르면(<kbd>Ctrl</kbd>/<kbd>⌘</kbd> 또는 <kbd>Shift</kbd>+클릭) 파일이 먼저 첨부된 뒤 곡이 열립니다.</li>
-  <li><b>끌어다 놓기</b>: 파일을 페이지에 놓으면 됩니다. <code>.muc</code>는 편집기에 열리고 재생되며(<code>.mgs</code>도 변환되어 같게), <code>.mub</code>/<code>.vgm</code>은 재생됩니다. 폴더를 놓으면 플레이리스트로 열립니다.</li>
+  <li><b>열기…</b>: <code>.muc</code>, <code>.mgs</code>, <code>.mdx</code>(<code>.pdx</code>와 함께), <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>와 음색·PCM 파일(<code>.dat</code>, <code>.pcm</code>, <code>.bin</code>, <code>.wav</code>)을 엽니다. 곡과 그 파일들을 함께 고르면(<kbd>Ctrl</kbd>/<kbd>⌘</kbd> 또는 <kbd>Shift</kbd>+클릭) 파일이 먼저 첨부된 뒤 곡이 열립니다.</li>
+  <li><b>끌어다 놓기</b>: 파일을 페이지에 놓으면 됩니다. <code>.muc</code>는 편집기에 열리고 재생되며(<code>.mgs</code>와 <code>.mdx</code>도 변환되어 같게), <code>.mub</code>/<code>.vgm</code>은 재생됩니다. 폴더를 놓으면 플레이리스트로 열립니다.</li>
   <li><b>폴더…</b>: 내 컴퓨터의 폴더를 열어 곡 목록을 보여 줍니다(이름 검색, 하위 폴더별). 곡을 열면 그 곡이 지정한 파일을 폴더에서 찾아 자동으로 첨부합니다. Chrome·Edge는 폴더를 기억합니다.</li>
 </ul>
 
@@ -328,6 +328,10 @@ export default [
 <p><b>클럭.</b> MGS는 온음표를 192스텝으로 세고, MUC는 보통 스텝마다 한 클럭을 씁니다(<code>C192</code>). 파트가 많고 템포가 빠른 곡은 그대로면 3.58MHz Z80의 MUCPLAY·MUBPLAY가 제때 연주하지 못하므로, 그런 곡은 클럭을 성기게 잡습니다(<code>C96</code>, <code>C64</code>, <code>C48</code>: 2, 3, 4스텝에 한 클럭, 초당 30클럭 아래로는 내리지 않음). 이때 MUC 머리의 주석 줄에 표시됩니다. 클럭에 딱 맞지 않는 길이는 그 자리에서 반올림하므로 파트끼리 어긋나지 않고, 엔벨로프와 비브라토의 빠르기는 그대로입니다. MGSDRV 자체는 초당 60번 움직입니다. 파트들의 비브라토가 합쳐서 초당 700스텝을 넘는 곡은 비브라토를 클럭마다가 아니라 2클럭마다 움직이게 씁니다(폭은 그대로이고 주기는 그 조건에서 가장 가까운 값). 이것도 주석 줄에 표시됩니다.</p>
 <p>옮기지 못한 것은 상태 줄과 MUC 맨 위의 주석 줄에 적힙니다. 레지스터 직접 쓰기(<code>y</code>, 대부분 드럼 음높이), PSG 하드웨어 엔벨로프, MSX-MUSIC 파트의 엔벨로프입니다. 손상된 파일이나 MUC로 바꾸면 너무 길어지는 파일은 열지 않고 상태 줄에 이유를 보여 줍니다.</p>
 
+<h3>.mdx(MXDRV) 열기</h3>
+<p><code>.mdx</code>는 샤프 X68000의 드라이버 MXDRV의 음악 데이터입니다. YM2151용 FM 8트랙과 ADPCM 트랙이 있고, ADPCM 샘플은 <code>.pdx</code> 파일에 들어 있습니다. <code>.mdx</code>를 그 <code>.pdx</code>와 함께 열거나 놓으면(폴더에서는 PDX를 이름으로 찾습니다) MUC로 변환되어 <code>이름.MUC</code>로 편집기에 들어가고 재생됩니다.</p>
+<p>OPNA용 편곡입니다. FM 6트랙은 음색과 함께 OPNA의 FM으로 가고, 7~8트랙을 쓰는 곡은 파형으로 가장 잘 담기는 두 트랙이 SCC(<code>SCCA</code>, <code>SCCB</code>)로 가며 그 음색은 32샘플 파형이 됩니다. ADPCM 트랙은 <code>K</code> 파트가 되고, 곡이 쓰는 샘플은 PCM 뱅크(<code>이름.BIN</code>, <code>#pcm</code>이 가리킴)가 됩니다. 뱅크는 첨부되므로 MUC와 함께 저장하세요. PCM8(ADPCM 여러 트랙)은 트랙들을 한 채널에 겹쳐 놓고, 샘플이 겹치는 곳은 미리 섞어 별도의 샘플로 만듭니다.</p>
+<p>옮기지 못하는 것: DT2, YM2151 자체의 LFO와 노이즈, 레지스터 직접 쓰기, SCC로 간 트랙의 팬. 곡마다 빠진 것은 MUC 머리의 주석 줄에 적힙니다. PDX가 없으면 ADPCM 파트 없이 열립니다. 3.58MHz Z80의 MUCPLAY·MUBPLAY가 제때 연주하지 못할 곡은 2틱에 한 클럭으로 잡습니다.</p>
 <h3>.mub · .vgm · .vgz 재생</h3>
 <p><b>열기…</b>나 끌어다 놓기로 재생합니다. <code>.mub</code>는 편집기 엔진으로, <code>.vgm</code>/<code>.vgz</code>는 MDPlayer4Mac의 VGM 플레이어로 재생합니다(처음 한 번 약 7 MB를 받습니다). 재생하면 채널 뷰가 자동으로 열립니다.</p>
 `,
@@ -363,7 +367,7 @@ export default [
     id: 'playlist',
     title: '플레이리스트',
     html: `
-<p><b>☰ 플레이리스트</b>는 오른쪽에 곡 목록(<code>.muc</code>, <code>.mgs</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>)을 엽니다. 곡을 누르면 재생하고, ✕로 빼고, <b>비우기</b>로 목록을 비웁니다. 가운데 막대로 폭을 바꿉니다.</p>
+<p><b>☰ 플레이리스트</b>는 오른쪽에 곡 목록(<code>.muc</code>, <code>.mgs</code>, <code>.mdx</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>)을 엽니다. 곡을 누르면 재생하고, ✕로 빼고, <b>비우기</b>로 목록을 비웁니다. 가운데 막대로 폭을 바꿉니다.</p>
 
 <h3>곡 넣기</h3>
 <ul>

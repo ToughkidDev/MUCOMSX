@@ -19,6 +19,8 @@ import { encodeSong, decodeSong, encodeFile, decodeFile, sharedRequest, pageBase
 import { mubPcm } from './mub-pcm.js';
 import { isMgs } from './mgs-file.js';
 import { mgsToMuc } from './mgs-to-muc.js';
+import { parseMdx } from './mdx-file.js';
+import { mdxToMuc } from './mdx-to-muc.js';
 import { zip } from './zip.js';
 import { mucVoices, voiceLines, writeDat as writeDatSlot, newDat as newDatBytes, readDat, voiceKey, importVoices } from './voice-bank.js';
 import { readScwd, writeScwd, isScwd, mucWaves, waveLine, waveKey, waveShape, importWaves } from './scc-bank.js';
@@ -92,7 +94,7 @@ const T = {
     manual: 'Full MML guide:',
     credit1: "Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: MDPlayer4Mac and MUCOMSX by ToughkidCST, mucomDotNET and MDSound by kuma4649. GPL-3.0.",
     credit2: 'MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.', source: 'Source and licenses',
-    drop: 'Drop .muc / .mgs / .mub / .vgm / .vgz to play — voice and PCM files are attached; drop a folder to choose a song from it',
+    drop: 'Drop .muc / .mgs / .mdx / .mub / .vgm / .vgz to play — voice and PCM files are attached; drop a folder to choose a song from it',
     loading: 'Loading the engine (about 11 MB, first time only)…', ready: 'Ready. Press Play or Ctrl+Enter.',
     loadFailed: 'The engine could not be loaded: ', compiling: 'Compiling…', playing: 'Playing',
     compiled: (ms, size) => `Compiled in ${ms} ms, ${size.toLocaleString()} bytes.`,
@@ -227,6 +229,10 @@ const T = {
     clickToStart: 'Click anywhere on the page to start the sound (the browser needs a click first).',
     unsupported: (n) => `${n} is not a file this player opens.`,
     mgsFailed: (n) => `${n} (MGS) could not be converted: `,
+    mdxFailed: (n) => `${n} (MDX) could not be converted: `,
+    mdxConverted: (n, parts, note) => `Converted ${n} (MXDRV) to a MUC for the OPNA, ${parts} parts${note ? `; ${note}` : ''}. It is an arrangement: voices and levels are approximations, and what could not be carried over is listed at the top of the MUC.`,
+    mdxNoPdx: (f) => `the ADPCM track is left out, as ${f || 'the PDX file'} was not with it (open or drop it together with the MDX)`, mdxScc: (n) => `${n} FM track${n > 1 ? 's' : ''} on the SCC`,
+    mdxClock: (d) => `one clock for ${d} ticks`, mdxPcm: (n, kb) => `${n} samples as a PCM bank (${kb} KB)`,
     mgsConverted: (n, parts, left) => `Converted ${n} (MGSDRV) to a MUC for the OPNA, ${parts} parts${left ? `; not carried over: ${left}` : ''}. It is an arrangement: voices and envelopes are approximations.`,
     mgsNoY: (n) => `${n} register writes (y; mostly drum pitch)`, mgsNoHardEnv: 'the PSG hardware envelope', mgsNoOpllEnv: 'envelopes on the MSX-MUSIC parts',
     mgsDrift: 'a repeat that changes from pass to pass', mgsTracksDropped: 'FM tracks beyond nine', mgsUnknown: 'a command this reader does not know', playingFile: (n) => `Playing ${n}`,
@@ -280,7 +286,7 @@ const T = {
     manual: 'MML 전체 설명:',
     credit1: '컴파일러, 드라이버, 칩 에뮬레이션은 MDPlayer4Mac의 것을 브라우저용으로 빌드했습니다: ToughkidCST의 MDPlayer4Mac과 MUCOMSX, kuma4649의 mucomDotNET과 MDSound. GPL-3.0.',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0.', source: '소스와 라이선스',
-    drop: '.muc / .mgs / .mub / .vgm / .vgz를 놓으면 재생합니다 — 음색·PCM 파일은 첨부되고, 폴더를 놓으면 그 안의 곡을 고를 수 있습니다',
+    drop: '.muc / .mgs / .mdx / .mub / .vgm / .vgz를 놓으면 재생합니다 — 음색·PCM 파일은 첨부되고, 폴더를 놓으면 그 안의 곡을 고를 수 있습니다',
     loading: '엔진을 불러오는 중 (약 11 MB, 처음 한 번만)…', ready: '준비됐습니다. 재생 또는 Ctrl+Enter를 누르세요.',
     loadFailed: '엔진을 불러오지 못했습니다: ', compiling: '컴파일 중…', playing: '재생 중',
     compiled: (ms, size) => `${ms} ms에 컴파일, ${size.toLocaleString()} 바이트.`,
@@ -415,6 +421,10 @@ const T = {
     clickToStart: '페이지 아무 곳이나 클릭하면 소리가 나옵니다 (브라우저가 먼저 클릭을 요구합니다).',
     unsupported: (n) => `${n}은(는) 열 수 없는 파일입니다.`,
     mgsFailed: (n) => `${n}(MGS)을 변환하지 못했습니다: `,
+    mdxFailed: (n) => `${n}(MDX)을 변환하지 못했습니다: `,
+    mdxConverted: (n, parts, note) => `${n}(MXDRV)을 OPNA용 MUC로 변환했습니다, ${parts}개 파트${note ? `. ${note}` : ''}. 편곡이므로 음색과 음량은 근사치이고, 옮기지 못한 것은 MUC 머리의 주석에 적혀 있습니다.`,
+    mdxNoPdx: (f) => `${f || 'PDX 파일'}이 함께 없어서 ADPCM 트랙은 빠졌습니다(MDX와 함께 열거나 놓으세요)`, mdxScc: (n) => `FM ${n}트랙은 SCC로`,
+    mdxClock: (d) => `${d}틱에 한 클럭`, mdxPcm: (n, kb) => `샘플 ${n}개를 PCM 뱅크로(${kb}KB)`,
     mgsConverted: (n, parts, left) => `${n}(MGSDRV)을 OPNA용 MUC로 변환했습니다, ${parts}개 파트${left ? `. 옮기지 못한 것: ${left}` : ''}. 편곡에 해당합니다: 음색과 엔벨로프는 근사입니다.`,
     mgsNoY: (n) => `레지스터 직접 쓰기 ${n}회(y, 대부분 드럼 음높이)`, mgsNoHardEnv: 'PSG 하드웨어 엔벨로프', mgsNoOpllEnv: 'MSX-MUSIC 파트의 엔벨로프',
     mgsDrift: '회차마다 달라지는 반복', mgsTracksDropped: '9개를 넘는 FM 트랙', mgsUnknown: '알 수 없는 명령', playingFile: (n) => `${n} 재생 중`,
@@ -468,7 +478,7 @@ const T = {
     manual: 'MMLの詳しい説明:',
     credit1: 'コンパイラ・ドライバ・チップエミュレーションはMDPlayer4Macのものをブラウザ向けにビルドしています: ToughkidCST氏のMDPlayer4MacとMUCOMSX、kuma4649氏のmucomDotNETとMDSound。GPL-3.0。',
     credit2: 'MUCOM88 © 古代祐三, CC BY-NC-SA 4.0。', source: 'ソースとライセンス',
-    drop: '.muc / .mgs / .mub / .vgm / .vgzをドロップすると再生します — 音色・PCMファイルは添付され、フォルダをドロップするとその中の曲を選べます',
+    drop: '.muc / .mgs / .mdx / .mub / .vgm / .vgzをドロップすると再生します — 音色・PCMファイルは添付され、フォルダをドロップするとその中の曲を選べます',
     loading: 'エンジンを読み込み中（約11 MB、初回のみ）…', ready: '準備完了。再生またはCtrl+Enterを押してください。',
     loadFailed: 'エンジンを読み込めませんでした: ', compiling: 'コンパイル中…', playing: '再生中',
     compiled: (ms, size) => `${ms} msでコンパイル、${size.toLocaleString()}バイト。`,
@@ -603,6 +613,10 @@ const T = {
     clickToStart: 'ページのどこかをクリックすると音が出ます（ブラウザが最初のクリックを必要とします）。',
     unsupported: (n) => `${n}は開けないファイルです。`,
     mgsFailed: (n) => `${n}（MGS）を変換できませんでした: `,
+    mdxFailed: (n) => `${n}（MDX）を変換できませんでした: `,
+    mdxConverted: (n, parts, note) => `${n}（MXDRV）をOPNA用のMUCに変換しました、${parts}パート${note ? `。${note}` : ''}。編曲なので音色と音量は近似で、移せなかったものはMUC冒頭のコメントにあります。`,
+    mdxNoPdx: (f) => `${f || 'PDXファイル'}が一緒にないため、ADPCMトラックは省かれました（MDXと一緒に開くかドロップしてください）`, mdxScc: (n) => `FM ${n}トラックはSCCへ`,
+    mdxClock: (d) => `${d}ティックで1クロック`, mdxPcm: (n, kb) => `サンプル${n}個をPCMバンクに（${kb}KB）`,
     mgsConverted: (n, parts, left) => `${n}（MGSDRV）をOPNA用のMUCに変換しました、${parts}パート${left ? `。移せなかったもの: ${left}` : ''}。アレンジに当たります: 音色とエンベロープは近似です。`,
     mgsNoY: (n) => `レジスタ直接書き込み${n}回（y、ほとんどはドラムの音程）`, mgsNoHardEnv: 'PSGのハードウェアエンベロープ', mgsNoOpllEnv: 'MSX-MUSICパートのエンベロープ',
     mgsDrift: '回ごとに変わる繰り返し', mgsTracksDropped: '9本を超えるFMトラック', mgsUnknown: '不明なコマンド', playingFile: (n) => `${n}を再生中`,
@@ -1392,7 +1406,7 @@ async function loadFolderSong(folder, path) {
     const entry = folder.entries.find((e) => e.path === path);
     const data = await (await entry.get()).arrayBuffer();
     if (kindOf(name, data) !== 'muc') { playFile(name, data); return; }
-    const song = readSong(name, data);
+    const song = readSong(name, data, await mdxSideFiles(name, data, { folder, path }));
     if (!song) return;
     clearFiles();
     openMuc(song);
@@ -1549,7 +1563,7 @@ async function openPicked(list, playMuc) {
     else if (!playable) playable = { name: f.name, data, kind };
   }
   // A MUC replaces your song in the editor: ask first (nothing changes when you cancel).
-  const song = playable?.kind === 'muc' ? readSong(playable.name, playable.data) : null;
+  const song = playable?.kind === 'muc' ? readSong(playable.name, playable.data, others) : null;
   if (playable?.kind === 'muc' && (!song || !(await guardEditor()))) return;
   for (const f of others) { attach(f.name, f.data); attached.push(f.name); }
   if (!playable) {
@@ -1572,6 +1586,7 @@ function kindOf(name, data) {
   const b = new Uint8Array(data, 0, Math.min(4, data.byteLength));
   const magic = String.fromCharCode(...b);
   if (/\.mgs$/i.test(name) || (magic.startsWith('MGS') && isMgs(new Uint8Array(data)))) return 'muc';
+  if (/\.mdx$/i.test(name)) return 'muc';
   if (magic === 'Vgm ' || (b[0] === 0x1f && b[1] === 0x8b)) return 'vgm';
   if (/^(MUB8|MUC8|muPb|msPb)$/.test(magic)) return 'mub';
   if (/\.muc$/i.test(name)) return 'muc';
@@ -1585,8 +1600,9 @@ function kindOf(name, data) {
 // (mgs-to-muc.js) and gets the name NAME.MUC; `converted` then says what the conversion did.
 // Returns null, with the reason in the status line, for an MGS that cannot be converted.
 let converted = null;       // { from, report } of the MGS the editor's song came from, else null
-function readSong(name, buffer) {
+function readSong(name, buffer, side = []) {
   const bytes = new Uint8Array(buffer);
+  if (/\.mdx$/i.test(name)) return readMdx(name, bytes, side);
   if (!isMgs(bytes) && !/\.mgs$/i.test(name)) return { name, text: decodeText(buffer), mgs: null };
   try {
     const r = mgsToMuc(bytes, { fileName: name });
@@ -1596,9 +1612,60 @@ function readSong(name, buffer) {
     return null;
   }
 }
-// The status line after a song was opened: what an MGS conversion did comes first.
+// An MDX file (MXDRV, Sharp X68000) as a MUC (mdx-to-muc.js). Its ADPCM samples are in the
+// PDX file it names: that is looked for among `side` (files that came with the song) and the
+// files attached, and becomes a PCM bank the song's #pcm names (song.files, attached by
+// attachSongFiles once the song is the editor's).
+const pdxWanted = (pdx) => (pdx ? pdx.replace(/\.pdx$/i, '').toLowerCase() + '.pdx' : '');
+function readMdx(name, bytes, side) {
+  try {
+    const want = pdxWanted(parseMdx(bytes).pdx);
+    const found = want ? side.find((f) => f.name.split(/[\\/]/).pop().toLowerCase() === want) || files.get(want) : null;
+    const r = mdxToMuc(bytes, { fileName: name, pdx: found ? new Uint8Array(found.data) : null });
+    return {
+      name: name.replace(/\.[^.]*$/, '') + '.MUC', text: r.text, mgs: { from: name, report: r.report, mdx: true },
+      files: r.pcm ? [{ name: r.pcm.name, data: r.pcm.bytes.buffer.slice(r.pcm.bytes.byteOffset, r.pcm.bytes.byteOffset + r.pcm.bytes.byteLength) }] : [],
+    };
+  } catch (e) {
+    setStatus(t('mdxFailed', name) + (e.message || e), true);
+    return null;
+  }
+}
+// The PDX file an MDX names, from where the song came from: files given with it, the folder
+// it is in, the repository folder it is in. [] when it is not an MDX or there is none.
+async function mdxSideFiles(name, data, where = {}) {
+  if (!/\.mdx$/i.test(name)) return [];
+  let want = '';
+  try { want = pdxWanted(parseMdx(new Uint8Array(data)).pdx); } catch { return []; }
+  if (!want) return [];
+  const base = (p) => p.split(/[\\/]/).pop().toLowerCase(), dirOfPath = (p) => p.slice(0, p.lastIndexOf('/') + 1);
+  const given = (where.files || []).find((f) => base(f.name) === want);
+  if (given) return [given];
+  if (where.folder && where.path) {
+    const e = where.folder.entries.find((x) => dirOfPath(x.path) === dirOfPath(where.path) && base(x.path) === want) || where.folder.entries.find((x) => base(x.path) === want);
+    if (e) { try { return [{ name: base(e.path), data: await (await e.get()).arrayBuffer() }]; } catch { /* unreadable: the song opens without it */ } }
+  }
+  if (where.repo) {
+    for (const n of [want.toUpperCase(), want, want.replace(/\.pdx$/, '.PDX')]) {
+      try { return [{ name: n, data: await fetchRepoFile(dirOfPath(where.repo) + n) }]; } catch { /* not there under this name */ }
+    }
+  }
+  return [];
+}
+function attachSongFiles(song) { for (const f of song.files || []) attach(f.name, f.data); }
+function mdxNote(report) {
+  const out = [];
+  const scc = report.parts.filter((p) => p.part.startsWith('SCC')).length;
+  if (scc) out.push(t('mdxScc', scc));
+  if (report.pcm) out.push(t('mdxPcm', report.pcm.samples, Math.round(report.pcm.bytes / 1024)));
+  if (report.warnings.includes('noPdx')) out.push(t('mdxNoPdx', report.pdx));
+  if (report.clock.div > 1) out.push(t('mdxClock', report.clock.div));
+  return out.join(', ');
+}
+// The status line after a song was opened: what an MGS or MDX conversion did comes first.
 function openedStatus(...parts) {
-  const note = converted ? t('mgsConverted', converted.from, converted.report.parts.length, mgsLeftOut(converted.report)) : '';
+  const note = !converted ? '' : converted.mdx ? t('mdxConverted', converted.from, converted.report.parts.length, mdxNote(converted.report))
+    : t('mgsConverted', converted.from, converted.report.parts.length, mgsLeftOut(converted.report));
   return [note, ...parts].filter(Boolean).join(' · ');
 }
 // What a conversion could not carry over and what it had to guess, in a few words.
@@ -1621,6 +1688,7 @@ function openMuc(song) {
   sourceName = song.name;
   converted = song.mgs;
   setSource(song.text);
+  attachSongFiles(song);
   current = 'mine';
   saveSong();
   $('examples').value = 'mine';
@@ -1816,7 +1884,7 @@ function setPlaylistMode(on) {
 }
 $('playlistToggle').addEventListener('click', () => setPlaylistMode(!playlistMode));
 
-const songKind = (name) => (/\.(muc|mgs)$/i.test(name) ? 'muc' : /\.mub$/i.test(name) ? 'mub' : 'vgm');
+const songKind = (name) => (/\.(muc|mgs|mdx)$/i.test(name) ? 'muc' : /\.mub$/i.test(name) ? 'mub' : 'vgm');
 // The songs of a folder, in path order; each finds its voice / PCM files in the folder.
 function folderItems(folder) {
   return folder.entries.filter((e) => PLAYABLE.test(e.path))
@@ -1887,7 +1955,7 @@ async function playItem(item, { play: start = true, asked = false } = {}) {
   let data;
   try { data = await item.load(); } catch (e) { setStatus(t('sampleFailed') + (e.message || e), true); return; }
   if (item.kind !== 'muc') { playFile(item.name, data); return; }
-  const song = readSong(item.name, data);
+  const song = readSong(item.name, data, await mdxSideFiles(item.name, data, { files: item.files, folder: item.folder, path: item.folderPath, repo: item.repoPath }));
   if (!song) return;
   clearFiles();
   for (const f of item.files || []) attach(f.name, f.data);
@@ -2882,7 +2950,7 @@ window.addEventListener('resize', () => { traceDirty = true; });
 const REPO = 'ToughkidDev/MUCOMSX', BRANCH = 'main', SAMPLES_ROOT = 'Samples/';
 const TREE_URL = `https://api.github.com/repos/${REPO}/git/trees/${BRANCH}?recursive=1`;
 const rawUrl = (path) => `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${path.split('/').map(encodeURIComponent).join('/')}`;
-const PLAYABLE = /\.(muc|mgs|mub|vgm|vgz)$/i;
+const PLAYABLE = /\.(muc|mgs|mdx|mub|vgm|vgz)$/i;
 let sampleTree = null;   // { live, at, files: [path] }
 
 async function readSampleTree(force) {
@@ -3007,13 +3075,14 @@ async function loadRepoFile(path, force = false, { openOnly = false } = {}) {
       playFile(name, data, path);
       return 'played';
     }
-    const song = readSong(name, data);
+    const song = readSong(name, data, await mdxSideFiles(name, data, { repo: path }));
     if (!song) return false;
     if (!force && !(await guardEditor())) { setStatus(engineReady ? t('ready') : t('loading')); return false; }
     stop();
     clearFiles();
     converted = song.mgs;
     setSource(song.text);
+    attachSongFiles(song);
     sourceName = song.name;
     current = 'repo:' + path;
     saveSong();

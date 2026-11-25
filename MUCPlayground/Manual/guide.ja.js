@@ -15,7 +15,7 @@ export default [
   <li><b>手助けしてくれるエディタ</b>: 文法の色分け、入力中のコマンド候補、入力しながらの自動チェック、エラーごとの「意味・直し方」の説明があります。</li>
   <li><b>見るためのツール</b>: トラッカー（パターン・ピアノロール）、チャンネルごとのオシロスコープ、チャンネルごとの鍵盤、MDPlayer4Macと同じチャンネルビューがあります。</li>
   <li><b>音色・波形・PCMの編集</b>: FM音色エディタ、SCC波形エディタ、PCMサンプルエディタ（いずれもFurnace風）と音色バンクがあります。</li>
-  <li><b>ファイル</b>: <code>.muc</code>を開いて保存し、MGSDRVの<code>.mgs</code>をMUCに変換して開き、<code>.mub</code>・<code>.vgm</code>に書き出し、<code>.mub</code>・<code>.vgm</code>・<code>.vgz</code>を再生します。プレイリストやリポジトリのサンプルも使えます。</li>
+  <li><b>ファイル</b>: <code>.muc</code>を開いて保存し、MGSDRVの<code>.mgs</code>とMXDRVの<code>.mdx</code>をMUCに変換して開き、<code>.mub</code>・<code>.vgm</code>に書き出し、<code>.mub</code>・<code>.vgm</code>・<code>.vgz</code>を再生します。プレイリストやリポジトリのサンプルも使えます。</li>
   <li><b>共有</b>: サーバーなしで、リンク1つに曲（と小さな添付ファイル）を入れて送れます。</li>
 </ul>
 
@@ -296,8 +296,8 @@ export default [
     html: `
 <h3>開く</h3>
 <ul>
-  <li><b>開く…</b>: <code>.muc</code>、<code>.mgs</code>、<code>.mub</code>、<code>.vgm</code>、<code>.vgz</code>と音色・PCMファイル（<code>.dat</code>、<code>.pcm</code>、<code>.bin</code>、<code>.wav</code>）を開きます。曲とそのファイルを一緒に選ぶと（<kbd>Ctrl</kbd>/<kbd>⌘</kbd>または<kbd>Shift</kbd>+クリック）、ファイルが先に添付されてから曲が開きます。</li>
-  <li><b>ドラッグ&amp;ドロップ</b>: ファイルをページにドロップするだけです。<code>.muc</code>はエディタで開いて再生し（<code>.mgs</code>も変換して同じく）、<code>.mub</code>/<code>.vgm</code>は再生します。フォルダをドロップするとプレイリストとして開きます。</li>
+  <li><b>開く…</b>: <code>.muc</code>、<code>.mgs</code>、<code>.mdx</code>（<code>.pdx</code>と一緒に）、<code>.mub</code>、<code>.vgm</code>、<code>.vgz</code>と音色・PCMファイル（<code>.dat</code>、<code>.pcm</code>、<code>.bin</code>、<code>.wav</code>）を開きます。曲とそのファイルを一緒に選ぶと（<kbd>Ctrl</kbd>/<kbd>⌘</kbd>または<kbd>Shift</kbd>+クリック）、ファイルが先に添付されてから曲が開きます。</li>
+  <li><b>ドラッグ&amp;ドロップ</b>: ファイルをページにドロップするだけです。<code>.muc</code>はエディタで開いて再生し（<code>.mgs</code>と<code>.mdx</code>も変換して同じく）、<code>.mub</code>/<code>.vgm</code>は再生します。フォルダをドロップするとプレイリストとして開きます。</li>
   <li><b>フォルダ…</b>: 自分のパソコンのフォルダを開いて曲の一覧を表示します（名前で検索、サブフォルダ別）。曲を開くと、その曲が指定したファイルをフォルダから探して自動的に添付します。Chrome・Edgeはフォルダを記憶します。</li>
 </ul>
 
@@ -328,6 +328,10 @@ export default [
 <p><b>クロック。</b> MGSは全音符を192ステップで数え、MUCは通常ステップごとに1クロックを使います（<code>C192</code>）。パートが多くテンポの速い曲はそのままでは3.58MHzのZ80でMUCPLAY・MUBPLAYが間に合わないため、そのような曲はクロックを粗くします（<code>C96</code>、<code>C64</code>、<code>C48</code>: 2、3、4ステップで1クロック、毎秒30クロック未満にはしません）。その場合はMUC冒頭のコメント行に示されます。クロックに合わない長さはその位置で丸めるのでパート同士はずれず、エンベロープとビブラートの速さは変わりません。MGSDRV自体は毎秒60回動きます。全パートのビブラートが合わせて毎秒700ステップを超える曲は、ビブラートを毎クロックではなく2クロックごとに動かします（幅はそのまま、周期はその条件で最も近い値）。これもコメント行に示されます。</p>
 <p>移せなかったものはステータス行とMUC先頭のコメント行に書かれます。レジスタ直接書き込み（<code>y</code>、ほとんどはドラムの音程）、PSGのハードウェアエンベロープ、MSX-MUSICパートのエンベロープです。壊れたファイルやMUCにすると長すぎるファイルは開かず、ステータス行に理由を表示します。</p>
 
+<h3>.mdx（MXDRV）を開く</h3>
+<p><code>.mdx</code>はシャープX68000のドライバMXDRVの音楽データです。YM2151用のFM 8トラックとADPCMトラックがあり、ADPCMのサンプルは<code>.pdx</code>ファイルに入っています。<code>.mdx</code>をその<code>.pdx</code>と一緒に開くかドロップすると（フォルダからはPDXを名前で探します）、MUCに変換されて<code>名前.MUC</code>としてエディタに入り、再生されます。</p>
+<p>OPNA用の編曲です。FM 6トラックは音色ごとOPNAのFMへ、7～8トラック使う曲は波形で最もよく表せる2トラックがSCC（<code>SCCA</code>、<code>SCCB</code>）へ行き、その音色は32サンプルの波形になります。ADPCMトラックは<code>K</code>パートになり、曲が使うサンプルはPCMバンク（<code>名前.BIN</code>、<code>#pcm</code>が指します）になります。バンクは添付されるので、MUCと一緒に保存してください。PCM8（複数のADPCMトラック）はトラックを1チャンネルに重ね、サンプルが重なる所はあらかじめミックスして別のサンプルにします。</p>
+<p>移せないもの: DT2、YM2151自身のLFOとノイズ、レジスタ直接書き込み、SCCへ行ったトラックのパン。曲ごとに失われたものはMUC冒頭のコメント行に書かれます。PDXがなければADPCMパートなしで開きます。3.58MHzのZ80でMUCPLAY・MUBPLAYが間に合わない曲は、2ティックで1クロックにします。</p>
 <h3>.mub · .vgm · .vgz の再生</h3>
 <p><b>開く…</b>かドラッグ&amp;ドロップで再生します。<code>.mub</code>はエディタのエンジンで、<code>.vgm</code>/<code>.vgz</code>はMDPlayer4MacのVGMプレイヤーで再生します（初回だけ約7 MBをダウンロードします）。再生するとチャンネルビューが自動的に開きます。</p>
 `,
@@ -363,7 +367,7 @@ export default [
     id: 'playlist',
     title: 'プレイリスト',
     html: `
-<p><b>☰ プレイリスト</b>は右側に曲の一覧（<code>.muc</code>、<code>.mgs</code>、<code>.mub</code>、<code>.vgm</code>、<code>.vgz</code>）を開きます。曲を押すと再生し、✕で外し、<b>空にする</b>で一覧を空にします。中央のバーで幅を変えます。</p>
+<p><b>☰ プレイリスト</b>は右側に曲の一覧（<code>.muc</code>、<code>.mgs</code>、<code>.mdx</code>、<code>.mub</code>、<code>.vgm</code>、<code>.vgz</code>）を開きます。曲を押すと再生し、✕で外し、<b>空にする</b>で一覧を空にします。中央のバーで幅を変えます。</p>
 
 <h3>曲を入れる</h3>
 <ul>

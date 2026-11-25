@@ -15,7 +15,7 @@ export default [
   <li><b>An editor that helps</b>: Syntax colouring, command suggestions as you type, checks while you type, and a "what it means / how to fix" explanation for every error.</li>
   <li><b>Tools to look at the music</b>: A tracker (pattern and piano roll), an oscilloscope for each channel, a keyboard for each channel, and a channel view like MDPlayer4Mac's.</li>
   <li><b>Voice, wave and PCM editing</b>: An FM voice editor, an SCC wave editor and a PCM sample editor (all in Furnace style), and voice banks.</li>
-  <li><b>Files</b>: Open and save <code>.muc</code>, open MGSDRV <code>.mgs</code> files as a MUC, export <code>.mub</code> and <code>.vgm</code>, and play <code>.mub</code>, <code>.vgm</code> and <code>.vgz</code>. There are also playlists and the repository's samples.</li>
+  <li><b>Files</b>: Open and save <code>.muc</code>, open MGSDRV <code>.mgs</code> and MXDRV <code>.mdx</code> files as a MUC, export <code>.mub</code> and <code>.vgm</code>, and play <code>.mub</code>, <code>.vgm</code> and <code>.vgz</code>. There are also playlists and the repository's samples.</li>
   <li><b>Sharing</b>: Send a song (and its small attached files) in a single link, with no server.</li>
 </ul>
 
@@ -296,8 +296,8 @@ export default [
     html: `
 <h3>Opening</h3>
 <ul>
-  <li><b>Open…</b>: Opens <code>.muc</code>, <code>.mgs</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code> and voice/PCM files (<code>.dat</code>, <code>.pcm</code>, <code>.bin</code>, <code>.wav</code>). Pick a song together with its files (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> or <kbd>Shift</kbd>+click), and the files are attached first, then the song opens.</li>
-  <li><b>Drag and drop</b>: Drop files on the page. A <code>.muc</code> opens in the editor and plays (an <code>.mgs</code> too, converted); a <code>.mub</code>/<code>.vgm</code> plays. Drop a folder to open it as a playlist.</li>
+  <li><b>Open…</b>: Opens <code>.muc</code>, <code>.mgs</code>, <code>.mdx</code> (with its <code>.pdx</code>), <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code> and voice/PCM files (<code>.dat</code>, <code>.pcm</code>, <code>.bin</code>, <code>.wav</code>). Pick a song together with its files (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> or <kbd>Shift</kbd>+click), and the files are attached first, then the song opens.</li>
+  <li><b>Drag and drop</b>: Drop files on the page. A <code>.muc</code> opens in the editor and plays (an <code>.mgs</code> or <code>.mdx</code> too, converted); a <code>.mub</code>/<code>.vgm</code> plays. Drop a folder to open it as a playlist.</li>
   <li><b>Folder…</b>: Opens a folder on your computer and lists its songs (search by name, grouped by subfolder). When you open a song, the files it names are found in the folder and attached automatically. Chrome and Edge remember the folder.</li>
 </ul>
 
@@ -328,6 +328,10 @@ export default [
 <p><b>The clock.</b> MGS counts 192 steps to a whole note, and the MUC normally has one clock for each (<code>C192</code>). A song with many parts at a fast tempo would then be more than MUCPLAY and MUBPLAY can play in time on a 3.58 MHz Z80, so such a song gets a coarser clock (<code>C96</code>, <code>C64</code> or <code>C48</code>: one clock for 2, 3 or 4 steps, never fewer than 30 a second), and a comment line at the top of the MUC says so. Lengths that are not whole clocks are rounded in place, so the parts stay together, and envelopes and vibrato keep their speed. MGSDRV itself moves 60 times a second. A song whose parts together step their vibrato more than 700 times a second gets a vibrato step every two clocks instead of every clock (its width stays, its period as near as that allows); a comment line says that too.</p>
 <p>The status line and the comment lines at the top of the MUC say what could not be carried over: register writes (<code>y</code>, mostly the pitch of the drums), the PSG hardware envelope, and envelopes on the MSX-MUSIC parts. A file that is damaged, or too long as a MUC, is not opened and the status line says why.</p>
 
+<h3>Opening .mdx (MXDRV)</h3>
+<p>An <code>.mdx</code> file is the music data of MXDRV, the Sharp X68000's driver: eight FM tracks for the YM2151 and an ADPCM track whose samples are in a <code>.pdx</code> file. Open or drop the <code>.mdx</code> together with its <code>.pdx</code> (from a folder the PDX is found by its name), and it is converted to a MUC, put in the editor as <code>NAME.MUC</code> and played.</p>
+<p>It is an arrangement for the OPNA. Six FM tracks go to the OPNA's FM with their voices; when a song uses seven or eight, the two that a wave holds best go to the SCC (<code>SCCA</code>, <code>SCCB</code>), their voice as a 32-sample wave. The ADPCM track becomes part <code>K</code>, and the samples the song uses become a PCM bank (<code>NAME.BIN</code>, which <code>#pcm</code> names): it is attached, so save it along with the MUC. With PCM8 (several ADPCM tracks) the tracks are laid on the one channel, and where samples overlap the overlap is mixed beforehand into a sample of its own.</p>
+<p>Not carried over: DT2, the YM2151's own LFO and noise, register writes, and the pan of the tracks on the SCC; comment lines at the top of the MUC say what a song lost. Without its PDX a song opens without the ADPCM part. A song that would be more than MUCPLAY and MUBPLAY play in time on a 3.58 MHz Z80 gets one clock for two ticks.</p>
 <h3>Playing .mub · .vgm · .vgz</h3>
 <p>Play them with <b>Open…</b> or drag and drop. A <code>.mub</code> plays on the editor's engine, and a <code>.vgm</code>/<code>.vgz</code> on MDPlayer4Mac's VGM player (about 7 MB is downloaded the first time). The channel view opens automatically when it plays.</p>
 `,
@@ -363,7 +367,7 @@ export default [
     id: 'playlist',
     title: 'Playlist',
     html: `
-<p><b>☰ Playlist</b> opens a list of songs (<code>.muc</code>, <code>.mgs</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>) on the right. Click a song to play it, ✕ to take it off the list, and <b>Clear</b> to empty the list. Drag the middle bar to change the width.</p>
+<p><b>☰ Playlist</b> opens a list of songs (<code>.muc</code>, <code>.mgs</code>, <code>.mdx</code>, <code>.mub</code>, <code>.vgm</code>, <code>.vgz</code>) on the right. Click a song to play it, ✕ to take it off the list, and <b>Clear</b> to empty the list. Drag the middle bar to change the width.</p>
 
 <h3>Adding songs</h3>
 <ul>

@@ -30,7 +30,7 @@ import {
   OPLL_ROM, OPLL_NAMES, opllToOpna, opllSelector, FM_VOLUME, OPLL_VOLUME, envelopeLevels, fitEnvelope, envelopeText, envelopeVoice, rateEnvelopeLevels,
 } from './mgs-voices.js';
 
-const TIMER_UNIT = 1152 / 3993600;          // seconds per timer-B count
+export const TIMER_UNIT = 1152 / 3993600;          // seconds per timer-B count
 const NOTE = ['c', 'c+', 'd', 'd+', 'e', 'f', 'f+', 'g', 'g+', 'a', 'a+', 'b'];
 // MGSDRV's own pitch table of the PSG and SCC (periods of octave 1, c to b).
 const PSG_TUNE = [3421, 3228, 3047, 2876, 2715, 2562, 2419, 2283, 2155, 2034, 1920, 1812];
@@ -64,16 +64,16 @@ const PSG = ['D', 'E', 'F'], SCC = ['SCCA', 'SCCB', 'SCCC', 'SCCD', 'SCCE'];
 // MSX: songs estimated up to 1350 kept time, the two estimated at 1380 and 1510 did not
 // (they do at the coarser clock they now get), and one at 1230 fell behind for its vibrato
 // (see MOST_VIBRATO).
-const CLOCK_DIVS = [1, 2, 3, 4, 6, 8];
-const Z80_WRITES = 1300;
-const SLOWEST_CLOCK = 30;                    // clocks a second: no coarser clock than this
+export const CLOCK_DIVS = [1, 2, 3, 4, 6, 8];
+export const Z80_WRITES = 1300;
+export const SLOWEST_CLOCK = 30;                    // clocks a second: no coarser clock than this
 // The vibrato. Every step of a vibrato or a pitch fall is a calculation and a frequency write.
 // The song of the 844 with the most steps (13 of its 16 parts moving on each of 60 clocks a
 // second, 780 steps) fell behind on that MSX though its estimate is within Z80_WRITES, and
 // keeps time with a step every other clock (the width kept, the period as near as two clocks
 // a step allow); the next, at 660, keeps time as it is. Above MOST_VIBRATO steps a second the
 // song's vibrato is written that way.
-const MOST_VIBRATO = 700;
+export const MOST_VIBRATO = 700;
 const MOST_ROUNDED = 0.25;                  // nor one that rounds more than this share of the notes
 
 // Frames MGSDRV takes for a whole note, and the timer-B count nearest to a clock of div steps.
@@ -82,13 +82,13 @@ const timerExact = (tempo, div) => (framesPerWhole(tempo) * div) / (192 * 60 * T
 const timerFor = (tempo, div) => Math.min(255, Math.max(1, Math.round(timerExact(tempo, div))));
 
 // A length in clocks as MML, with clock clocks to the whole note: 4, 8., %7 ...
-function lengthText(n, clock) {
+export function lengthText(n, clock) {
   if (clock % n === 0) return String(clock / n);
   if (n % 3 === 0 && clock % (n / 3 * 2) === 0) return `${clock / (n / 3 * 2)}.`;
   return `%${n}`;
 }
 // A length of any size in pieces of at most 255 clocks (whole notes first).
-function pieces(n, clock) {
+export function pieces(n, clock) {
   const out = [], big = clock * Math.floor(255 / clock);
   while (n > 255) { out.push(big); n -= big; }
   if (n > 0) out.push(n);
@@ -510,7 +510,7 @@ function convertTrack(cmds, kind, m, song) {
 }
 
 // Tokens as rows of the part: notes run together, everything else is spaced.
-function rows(part, first, tokens, width = 96) {
+export function rows(part, first, tokens, width = 96) {
   const lines = [];
   let cur = `${part} ${first}`.trimEnd(), glue = false;
   for (const t of tokens) {
@@ -524,7 +524,7 @@ function rows(part, first, tokens, width = 96) {
   return lines;
 }
 
-function decodeTitle(bytes, fallback) {
+export function decodeTitle(bytes, fallback) {
   let text = '';
   try { text = new TextDecoder('shift_jis').decode(bytes); } catch { text = String.fromCharCode(...bytes); }
   text = text.replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim();
@@ -585,11 +585,11 @@ const WRITES = {
 };
 // Vibrato (and pitch fall) steps a second, all parts together: a part steps every so many
 // clocks as the fastest M it sets.
-const vibratoSteps = (tracks, clockRate) => tracks.reduce((sum, tr) => {
+export const vibratoSteps = (tracks, clockRate) => tracks.reduce((sum, tr) => {
   const rates = tr.tokens.filter((t) => /^M\d+,\d+,-?[1-9]/.test(t)).map((t) => +t.split(',')[1]);
   return sum + (rates.length ? clockRate / Math.min(...rates) : 0);
 }, 0);
-const writesPerSecond = (tracks, clockRate) => tracks.map((tr) => partLoad(tr, clockRate)).reduce((sum, p) => {
+export const writesPerSecond = (tracks, clockRate) => tracks.map((tr) => partLoad(tr, clockRate)).reduce((sum, p) => {
   const melodic = p.kind === 'psg' || p.kind === 'scc';
   return sum + p.notes * WRITES.note[p.kind] + p.gated * WRITES.gated
     + clockRate * (WRITES.clock[p.kind] + (p.lfo ? (melodic ? WRITES.lfoMelodic : WRITES.lfoFm) : 0) + (p.env ? WRITES.envelope : 0));
