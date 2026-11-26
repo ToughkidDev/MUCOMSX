@@ -41,6 +41,7 @@ import {
   TIMER_UNIT, SLOWEST_CLOCK, lengthText, pieces, rows, decodeTitle, writesPerSecond,
 } from './mgs-to-muc.js';
 import { encodeAdpcm, writePcmBank, resample, noteRate, RAM_SIZE, SLOTS } from './pcm-bank.js';
+import { nearestDrum, DRUM_NAMES } from './mdx-drums.js';
 
 const NOTE = ['c', 'c+', 'd', 'd+', 'e', 'f', 'f+', 'g', 'g+', 'a', 'a+', 'b'];
 const OPNA_FM = ['A', 'B', 'C', 'H', 'I', 'J'], SCC = ['SCCA', 'SCCB'], OPLL = ['MSXA', 'MSXB'];
@@ -72,6 +73,19 @@ function plainRowsObject(lines, waves) {
   return Math.round(n);
 }
 const DIVS = [1, 2, 3, 4];
+// ADPCM samples that sound like one of the OPNA's rhythm drums (mdx-drums.js) can be played by
+// its rhythm part G instead of part K: they take no room in the PCM bank and sound together
+// with each other and with the ADPCM. A sample goes there when its likeness is DRUM_LIKE or
+// more (of the 1,050 samples of 88 PDX files 244 are; the six drums are 0.68 at most among
+// themselves). Levels, measured with the engine: part K plays a sample's loudest 5 ms at
+// K_PEAK of what the sample holds; a drum's loudest 5 ms at rhythm total 63, level 31 is
+// RHYTHM_PEAK, and each step of either is 0.75 dB. The part is written at RHYTHM_TOTAL with
+// one level a drum for the song: that of most of its hits.
+const DRUM_LIKE = 0.85, K_PEAK = 0.35, RHYTHM_TOTAL = 55;
+const RHYTHM_PEAK = [0.56, 0.349, 0.267, 0.302, 0.399, 0.335];
+// a track's items without some commands (repeats keep their shape)
+const without = (items, drop) => items.flatMap((x) => (!Array.isArray(x)
+  ? [{ ...x, body: without(x.body, drop), exit: x.exit === null ? null : without(x.body.slice(0, x.exit), drop).length }] : drop(x) ? [] : [x]));
 const TEMPO_PARTS = ['D', 'E', 'F'];            // SSG parts that carry the tempo commands of tracks without a part
 // The estimate (see convertAt) the clock is chosen by. Of the seventeen songs run with MUCPLAY on
 // the emulated MSX at one clock a tick, the fourteen estimated up to 860 kept time and the two
@@ -180,13 +194,23 @@ function convertTrack(track, kind, ctx) {
       const tiedIn = S.tiedIn, tieOut = S.tie;
       S.tie = false; S.tiedIn = tieOut;
       let delay = !tiedIn && S.kd ? Math.min(S.kd, ticks) : 0;
-      if (kind === 'pcm') delay = 0;
+      if (kind === 'pcm' || kind === 'rhythm') delay = 0;
       if (delay) { rest(delay); ticks -= delay; }
       if (ticks <= 0) { S.porta = 0; return; }
       const c = clocks(S, ticks, tiedIn || tieOut ? 0 : 1);
       tally.clocks += c;
       const porta = S.porta; S.porta = 0;
       if (!c) return;                                              // a tied fragment that falls on the clock before
+      if (kind === 'rhythm') {
+        // a drum of the OPNA's: the mask of the drums that are hit, and c for as long as the note
+        const mask = ctx.drum(n, S.rate), ps = pieces(c, ctx.clock);
+        if (!mask) { for (const p of ps) { const l = last(); if (l && l.rest && l.len + p <= 255) l.len += p; else out.push({ rest: true, len: p }); } return; }
+        if (S.slot !== mask) { out.push(`@${mask}`); S.slot = mask; }
+        tally.notes++;
+        out.push({ hit: true, len: ps[0] });
+        for (const p of ps.slice(1)) out.push({ rest: true, len: p });
+        return;
+      }
       if (kind === 'pcm') {
         const s = ctx.sample(n, S.rate);
         if (!s) { for (const p of pieces(c, ctx.clock)) { const l = last(); if (l && l.rest && l.len + p <= 255) l.len += p; else out.push({ rest: true, len: p }); } return; }
@@ -222,6 +246,10 @@ function convertTrack(track, kind, ctx) {
     };
     const command = (x) => {
       const skip = (name) => { ctx.skip(name); };
+      // the rhythm part and a silent part take the notes and rests only (and the ADPCM's rate)
+      if (kind === 'rhythm' && x[0] === 'F') { S.rate = Math.min(4, x[1]); return; }
+      if ((kind === 'rhythm' || kind === 'silent') && !['r', 'n', 't', 'p'].includes(x[0])) return;
+      if (kind === 'rhythm' && x[0] === 'p') { S.off = (x[1] & 3) === 0; return; }
       switch (x[0]) {
         case 'r': rest(x[1]); break;
         case 'n': note(x[1], x[2]); break;
@@ -314,6 +342,7 @@ function convertTrack(track, kind, ctx) {
   const head = [], lead = track.loop === null ? track.items.length : track.loop;
   if (kind === 'fm') head.push('v8');
   if (kind === 'pcm') head.push(`v${PCM_VOLUME}`);
+  if (kind === 'rhythm') head.push(ctx.drumLevels);
   const a = emitList(track.items, 0, lead, S);
   let tokens = [...head, ...a.out], tally = a.tally;
   if (track.loop !== null) {
@@ -349,6 +378,7 @@ function text(tokens, clock) {
     }
     const lt = t.len === len && t.to === undefined ? '' : lengthText(t.len, clock);
     if (t.rest) { out.push(`r${lt}`); continue; }
+    if (t.hit) { out.push(`c${lt}`); continue; }
     const fl = (s) => Math.floor(s / 12), name = (s) => NOTE[((s % 12) + 12) % 12];
     octave(fl(t.semi));
     if (t.to === undefined) { out.push(name(t.semi) + lt); continue; }
@@ -431,8 +461,8 @@ function pcmNote(rate) {
 
 // The PCM tracks laid on one: [{ at (ticks), sounds: [{ n, rate, gain, from (seconds) }] }] for
 // every hit, with what still sounds from the other tracks then. loopAt, end: ticks (null: no loop).
-function mergePcm(m, tracks, seconds, pcmBytes) {
-  const hits = [];
+function mergePcm(m, tracks, seconds, pcmBytes, drumOf = () => null) {
+  const hits = [], drums = [];
   let loopAt = null, end = 0;
   for (const t of tracks) {
     const tr = m.tracks[t];
@@ -446,7 +476,9 @@ function mergePcm(m, tracks, seconds, pcmBytes) {
         else if (x[0] === '(') vol = vol < 16 ? Math.max(0, vol - 1) : Math.min(255, vol + 1);
         else if (x[0] === ')') vol = vol < 16 ? Math.min(15, vol + 1) : Math.max(128, vol - 1);
         else if (x[0] === 'n') {
-          if (pcmBytes[x[1]]) hits.push({ at, track: t, n: x[1], rate, gain: PCM8_GAIN[pcmVolume(vol < 16 ? VOLUME_TL[vol] : vol - 128)], order: k++ });
+          const d = drumOf(x[1], rate);
+          if (d) drums.push({ at, drum: d.drum });
+          else if (pcmBytes[x[1]]) hits.push({ at, track: t, n: x[1], rate, gain: PCM8_GAIN[pcmVolume(vol < 16 ? VOLUME_TL[vol] : vol - 128)], order: k++ });
           at += x[2];
         }
       }
@@ -468,7 +500,7 @@ function mergePcm(m, tracks, seconds, pcmBytes) {
     const lastOut = out[out.length - 1];
     if (lastOut && lastOut.at === h.at) lastOut.sounds = sounds; else out.push({ at: h.at, sounds });
   }
-  return { hits: out, loopAt, end };
+  return { hits: out, drums, loopAt, end };
 }
 // a list of items with every repeat written out (play() then gives each command once per pass)
 const unroll = (items) => items.flatMap((x) => {
@@ -481,7 +513,7 @@ const unroll = (items) => items.flatMap((x) => {
 
 // ---- the song at one clock ----------------------------------------------------------------------
 
-function convertAt(m, fileName, pdx, div, spare = 'auto') {
+function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
   const vibratoStep = 1;
   const skipped = new Map(), counts = new Map(), warnings = new Set(), tempos = [];
   const fm = [], pcmTracks = [];
@@ -573,7 +605,37 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
   let bank = null, pcmInfo = null;
   const pcmBytes = pdx ? parsePdx(pdx) : null;
   const slots = new Map();                       // key -> { slot, note, seconds, data (Float32Array at the note's rate) }
+  // the samples that go to the rhythm part, and the level of each drum there
+  const likeDrum = new Map();                    // "n:rate" -> { drum, like, peak } | null
+  const drumOf = (n, rate) => {
+    if (!useDrums || !pcmBytes?.[n]) return null;
+    const key = `${n}:${rate}`;
+    if (!likeDrum.has(key)) { const r = nearestDrum(decodeOki(pcmBytes[n]), PCM_RATES[rate]); likeDrum.set(key, r && r.like >= DRUM_LIKE ? r : null); }
+    return likeDrum.get(key);
+  };
+  const drumHits = DRUM_NAMES.map(() => new Map());   // per drum: the level a hit asks for -> how often
+  if (useDrums && pcmBytes) for (const t of pcmTracks) {
+    let rate = 4, vol = 8;
+    for (const [x, times] of play(m.tracks[t].items)) {
+      if (x[0] === 'F') rate = Math.min(4, x[1]);
+      else if (x[0] === 'v') vol = x[1];
+      else if (x[0] === '(') vol = vol < 16 ? Math.max(0, vol - 1) : Math.min(255, vol + 1);
+      else if (x[0] === ')') vol = vol < 16 ? Math.min(15, vol + 1) : Math.max(128, vol - 1);
+      else if (x[0] === 'n') {
+        const d = drumOf(x[1], rate);
+        if (!d) continue;
+        // what part K would have made of it, against the drum at RHYTHM_TOTAL: steps of 0.75 dB under level 31
+        const wanted = K_PEAK * d.peak * (pcm8 ? PCM8_GAIN[pcmVolume(vol < 16 ? VOLUME_TL[vol] : vol - 128)] : 1);
+        const steps = Math.round((20 * Math.log10((RHYTHM_PEAK[d.drum] * 10 ** ((-(63 - RHYTHM_TOTAL) * 0.75) / 20)) / wanted)) / 0.75);
+        const level = Math.max(0, Math.min(31, 31 - steps));
+        drumHits[d.drum].set(level, (drumHits[d.drum].get(level) || 0) + times);
+      }
+    }
+  }
+  const drumCount = drumHits.reduce((n, h) => n + [...h.values()].reduce((a, b) => a + b, 0), 0);
+  const drumLevels = `v${RHYTHM_TOTAL},${drumHits.map((h) => (h.size ? [...h].sort((a, b) => b[1] - a[1])[0][0] : 0)).join(',')}`;
   const single = (n, rate) => {
+    if (drumOf(n, rate)) return null;
     const key = `${n}:${rate}`;
     if (!slots.has(key)) {
       if (!pcmBytes?.[n] || slots.size >= SLOTS) { if (pcmBytes?.[n]) warnings.add('pcmSlots'); return null; }
@@ -599,11 +661,18 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
   for (const t of [...partOf.keys()].sort((a, b) => a - b)) convert(t, partOf.get(t).part, partOf.get(t).kind);
 
   if (pcmTracks.length && pcmBytes) {
-    if (pcmTracks.length === 1) convert(pcmTracks[0], 'K', 'pcm');
-    else {
+    const rhythm = (track) => convert(pcmTracks[0], 'G', 'rhythm', { track, drumLevels, drum: (n, rate) => (typeof n === 'object' ? n.mask : drumOf(n, rate) ? 1 << drumOf(n, rate).drum : 0) });
+    if (pcmTracks.length === 1) {
+      convert(pcmTracks[0], 'K', 'pcm');
+      // the same track again for the drums, without its tempo commands (part K has them)
+      if (drumCount) {
+        const tr = m.tracks[pcmTracks[0]], lead = tr.loop === null ? tr.items.length : tr.loop, tempo = (x) => x[0] === 't';
+        rhythm({ items: without(tr.items, tempo), loop: tr.loop === null ? null : without(tr.items.slice(0, lead), tempo).length });
+      }
+    } else {
       // how long a sample has sounded when the next one starts: by the tempo over the song's ticks
       const seconds = (tick) => { let s = 0, at = 0, tempo = DEFAULT_TEMPO; for (const [k, v] of marks) { if (k >= tick) break; s += (k - at) * tickSeconds(tempo); at = k; tempo = v; } return s + (tick - at) * tickSeconds(tempo); };
-      const merged = mergePcm(m, pcmTracks, seconds, pcmBytes);
+      const merged = mergePcm(m, pcmTracks, seconds, pcmBytes, drumOf);
       // a mix for every kind of overlap, the most used first, while the bank has room
       const keyOf = (s) => s.map((x) => `${x.n}:${x.rate}:${x.gain}:${x.from}`).sort().join('|');
       const uses = new Map();
@@ -643,12 +712,31 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
       const track = { items: items.map((x) => (x[0] === 'hit' ? ['n', x[1], x[2]] : x)), loop };
       convert(pcmTracks[0], 'K', 'pcm', { track, pcm8: false, sample: (s) => s });
       pcmInfo = { tracks: pcmTracks.length, mixes: mixes.size };
+      // the drums of all the tracks as one: every tick with a hit is a note of the drums hit there
+      if (merged.drums.length) {
+        const at = new Map();
+        for (const d of merged.drums) at.set(d.at, (at.get(d.at) || 0) | (1 << d.drum));
+        const ticks = [...at.keys()].sort((a, b) => a - b), gItems = [];
+        let pos = 0, gLoop = null;
+        const reach = (tick) => { if (tick > pos) { gItems.push(['r', tick - pos]); pos = tick; } };
+        ticks.forEach((tick, i) => {
+          if (merged.loopAt !== null && gLoop === null && tick >= merged.loopAt) { reach(merged.loopAt); gLoop = gItems.length; }
+          reach(tick);
+          const next = i + 1 < ticks.length ? ticks[i + 1] : merged.end;
+          const len = Math.max(1, (merged.loopAt !== null && gLoop === null ? Math.min(next, merged.loopAt) : next) - tick);
+          gItems.push(['n', { mask: at.get(tick) }, len]);
+          pos = tick + len;
+        });
+        if (merged.loopAt !== null && gLoop === null) { reach(merged.loopAt); gLoop = gItems.length; }
+        reach(merged.end);
+        rhythm({ items: gItems, loop: gLoop });
+      }
     }
     const entries = [...slots.values()].map((s) => ({ n: s.slot, name: `S${s.slot}`, volume: 0, adpcm: encodeAdpcm(s.data) }));
     const size = entries.reduce((n, e) => n + Math.ceil(e.adpcm.length / 4) * 4, 0);
     if (size > RAM_SIZE) throw new Error(`The PDX samples this song uses take ${Math.round(size / 1024)} KB as a PCM bank (at most ${RAM_SIZE >> 10} KB).`);
     bank = entries.length ? writePcmBank(entries) : null;
-    pcmInfo = { ...(pcmInfo || { tracks: 1, mixes: 0 }), samples: entries.length, bytes: size };
+    pcmInfo = { ...(pcmInfo || { tracks: 1, mixes: 0 }), samples: entries.length, bytes: size, drums: [...likeDrum.values()].filter(Boolean).length, drumHits: drumCount };
   } else if (pcmTracks.length) warnings.add('noPdx');
 
   // Tempo commands of tracks that are not a part of their own (a track without notes, the
@@ -676,6 +764,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
   lines.push('', "; An arrangement of the MXDRV song for the OPNA: six FM tracks with their voices, the ADPCM track's",
     '; samples as a PCM bank for part K. A seventh and eighth FM track are on the SCC, their voice as a wave,',
     '; or on the MSX-MUSIC, their voice as the nearest one its two operators make.');
+  if (pcmInfo?.drums) lines.push(`; ${pcmInfo.drums} of the ADPCM samples sound like the OPNA's own drums and are played by its rhythm part (G).`);
   // What the song costs: the estimate of mgs-to-muc.js for everything but the vibrato, and
   // for the vibrato what it writes: every step the frequency, on the SCC twice.
   const vibrato = tracks.reduce((s, t) => s + (t.clocks ? (t.lfo / t.clocks) * clockRate : 0), 0);
@@ -713,7 +802,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
   // for what is not ASCII): the SCC takes the track instead
   if (toOpll.length && ([...out].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? 1 : 2), 0) > PLAIN_ROWS_SOURCE
     || plainRowsObject(body, waves.size) > PLAIN_ROWS_OBJECT)) {
-    const r = convertAt(m, fileName, pdx, div, 'scc');
+    const r = convertAt(m, fileName, pdx, div, 'scc', useDrums);
     if (r) r.report.warnings.push('msxMusicTooLong');
     return r;
   }
@@ -731,24 +820,39 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
   };
 }
 
-// mdxToMuc(bytes, { fileName, pdx, div, spare }) -> { text, title, report, pcm }
+// mdxToMuc(bytes, { fileName, pdx, div, spare, drums }) -> { text, title, report, pcm }
 // Throws an Error with a plain message for a file that is not MDX, is packed or becomes too long.
 // The clock is the finest (one for 1, 2, 3 or 4 ticks) that keeps the song within what a Z80
 // plays in time; div asks for one clock for that many ticks whatever the song costs.
-export function mdxToMuc(bytes, { fileName = '', pdx = null, div: only = 0, spare = 'auto' } = {}) {
+// drums: 'auto' sends the samples that sound like the OPNA's drums to its rhythm part when the
+// song gains by it (it has more samples than a PCM bank holds or more than its 256 KB, or
+// ADPCM hits that overlap and were cut); 'always' whenever there are such samples; 'never'.
+export function mdxToMuc(bytes, { fileName = '', pdx = null, div: only = 0, spare = 'auto', drums = 'auto' } = {}) {
   const m = parseMdx(bytes);
-  let best = null;
-  for (const div of only ? [only] : DIVS) {
-    if (best && (best.report.clock.rate * best.report.clock.div) / div < SLOWEST_CLOCK) break;
-    let r;
-    try { r = convertAt(m, fileName, pdx, div, spare); } catch (e) { if (!best) throw e; break; }
-    if (!r) break;
-    const tooFast = (x) => x.report.parts.some((p) => p.part.startsWith('MSX')) && x.report.clock.rate > PLAIN_ROWS_CLOCK;
-    // an MSX-MUSIC voice that would need a coarser clock: the SCC takes the track at this one,
-    // unless the MSX-MUSIC was asked for
-    if (tooFast(r) && spare === 'auto') r = convertAt(m, fileName, pdx, div, 'scc');
-    best = r;
-    if (r.report.clock.load <= MDX_WRITES && !tooFast(r)) break;
+  const attempt = (useDrums) => {
+    let best = null;
+    for (const div of only ? [only] : DIVS) {
+      if (best && (best.report.clock.rate * best.report.clock.div) / div < SLOWEST_CLOCK) break;
+      let r;
+      try { r = convertAt(m, fileName, pdx, div, spare, useDrums); } catch (e) { if (!best) throw e; break; }
+      if (!r) break;
+      const tooFast = (x) => x.report.parts.some((p) => p.part.startsWith('MSX')) && x.report.clock.rate > PLAIN_ROWS_CLOCK;
+      // an MSX-MUSIC voice that would need a coarser clock: the SCC takes the track at this one,
+      // unless the MSX-MUSIC was asked for
+      if (tooFast(r) && spare === 'auto') r = convertAt(m, fileName, pdx, div, 'scc', useDrums);
+      best = r;
+      if (r.report.clock.load <= MDX_WRITES && !tooFast(r)) break;
+    }
+    return best;
+  };
+  if (drums === 'never' || !pdx) return attempt(false);
+  if (drums === 'always') return attempt(true);
+  let plain = null, refused = null;
+  try { plain = attempt(false); } catch (e) { refused = e; }
+  const gains = refused ? /PCM bank/.test(refused.message) : plain.report.warnings.includes('pcmSlots') || plain.report.counts.pcmOverlapsCut > 0;
+  if (gains) {
+    try { const r = attempt(true); if (r?.report.pcm?.drums) return r; } catch { /* no better with the drums: as without them */ }
   }
-  return best;
+  if (refused) throw refused;
+  return plain;
 }
