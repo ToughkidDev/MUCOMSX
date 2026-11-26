@@ -1616,11 +1616,14 @@ function readSong(name, buffer, side = []) {
 // PDX file it names: that is looked for among `side` (files that came with the song) and the
 // files attached, and becomes a PCM bank the song's #pcm names (song.files, attached by
 // attachSongFiles once the song is the editor's).
-const pdxWanted = (pdx) => (pdx ? pdx.replace(/\.pdx$/i, '').toLowerCase() + '.pdx' : '');
+// Names are compared in lower case and one Unicode form (a Mac spells a Japanese name's
+// voiced kana in two characters, the MDX in one).
+const sameCase = (s) => s.normalize('NFC').toLowerCase();
+const pdxWanted = (pdx) => (pdx ? sameCase(pdx.replace(/\.pdx$/i, '')) + '.pdx' : '');
 function readMdx(name, bytes, side) {
   try {
     const want = pdxWanted(parseMdx(bytes).pdx);
-    const found = want ? side.find((f) => f.name.split(/[\\/]/).pop().toLowerCase() === want) || files.get(want) : null;
+    const found = want ? side.find((f) => sameCase(f.name.split(/[\\/]/).pop()) === want) || files.get(want) || [...files].find(([n]) => sameCase(n) === want)?.[1] : null;
     // ?spare=opll (or scc) in the page's address asks for the MSX-MUSIC (or the SCC) for the
     // FM tracks the OPNA has no channel for; otherwise the converter chooses
     const asked = new URLSearchParams(location.search).get('spare');
@@ -1641,7 +1644,7 @@ async function mdxSideFiles(name, data, where = {}) {
   let want = '';
   try { want = pdxWanted(parseMdx(new Uint8Array(data)).pdx); } catch { return []; }
   if (!want) return [];
-  const base = (p) => p.split(/[\\/]/).pop().toLowerCase(), dirOfPath = (p) => p.slice(0, p.lastIndexOf('/') + 1);
+  const base = (p) => sameCase(p.split(/[\\/]/).pop()), dirOfPath = (p) => p.slice(0, p.lastIndexOf('/') + 1);
   const given = (where.files || []).find((f) => base(f.name) === want);
   if (given) return [given];
   if (where.folder && where.path) {

@@ -49,10 +49,30 @@ const USER_VOICES = 16;                        // ?IU0 to ?IU15
 // 14,976 bytes at most (found by lengthening one; its guide says about 14,900).
 const PLAIN_ROWS_SOURCE = 14800;
 // ... and costs the Z80 more: with MUCPLAY on the emulated MSX, of four such songs at 118
-// clocks a second two fell behind, and the three at 89 to 106 kept time. A song with ?IU gets
-// no more clocks a second than this.
-const PLAIN_ROWS_CLOCK = 110;
+// clocks a second two fell behind; of a larger set, the four at 106 to 109 fell behind and the
+// thirteen up to 98 kept time. A song with ?IU gets no more clocks a second than this.
+const PLAIN_ROWS_CLOCK = 100;
+// ... and its SCC and MSX-MUSIC rows together compile to one object of 4,096 bytes at most.
+// Its size is estimated from the rows (fitted to the engine's sizes for 170 songs, within 13%):
+// a note or an octave mark about a byte, a rest 1.2, a tie 7, v 6, q 4.5, D 5.6, M 8.6, MF 3.3,
+// ?IU 6.4, a repeat 6, its / 16, a wave 45, 160 for the rest. Above PLAIN_ROWS_OBJECT the SCC
+// takes the track (the largest that compiled was 2,656, the smallest that did not 4,522).
+const PLAIN_ROWS_OBJECT = 3500;
+function plainRowsObject(lines, waves) {
+  let n = 160 + 45 * waves;
+  for (const l of lines) {
+    if (!/^(SCC[A-E]|MSX[A-J]) /.test(l)) continue;
+    for (const m of l.slice(l.indexOf(' ') + 1).matchAll(/\?IU\d+|MF\d|M-?\d[-\d,]*|E[\d,]+|D-?\d+|@\d+|[vql][%\d.]+|o\d|[a-g][+-]?[%\d.]*|r[%\d.]*|[[\]/L&<>]/g)) {
+      const s = m[0], c = s[0];
+      n += s.startsWith('?IU') ? 6.4 : s.startsWith('MF') ? 3.3 : c === 'M' ? 8.6 : c === 'D' ? 5.6 : c === 'v' ? 6 : c === 'q' ? 4.5
+        : c === '&' ? 7 : c === '[' || c === ']' ? 3 : c === '/' ? 16 : c === 'r' ? 1.2 + (s.length > 1 ? 0.4 : 0)
+        : /[a-g]/.test(c) ? 1 + (/[%\d]/.test(s) ? 0.4 : 0) : c === 'o' || c === '<' || c === '>' ? 1 : 0;
+    }
+  }
+  return Math.round(n);
+}
 const DIVS = [1, 2, 3, 4];
+const TEMPO_PARTS = ['D', 'E', 'F'];            // SSG parts that carry the tempo commands of tracks without a part
 // The estimate (see convertAt) the clock is chosen by. Of the seventeen songs run with MUCPLAY on
 // the emulated MSX at one clock a tick, the fourteen estimated up to 860 kept time and the two
 // that fell behind are estimated at 1480 and 1560 (and write about 1950 registers a second).
@@ -99,6 +119,7 @@ function convertTrack(track, kind, ctx) {
     vol: 8, stac: 8, kd: 0, porta: 0, tie: false, tiedIn: false, voice: null, lfoDelay: 0, rate: 4, shift: 0,
     lfo: null, lfoOn: false, lfoEvery: 1,      // the vibrato set (wave, period, depth), whether it runs, clocks a step
     ph: 0, debt: 0, q: null, shown: null, slot: null,
+    off: false,                                // pan 0: the track's output is off, its notes are rests
   });
   const semitone = kind === 'scc' ? SCC_PER_SEMITONE : kind === 'opll' ? opllSemitone(ctx.usual) : (fnumOf(ctx.usual) * Math.LN2) / 12;
   // With an MSX-MUSIC part that has a voice of its own (?IU) MucoMSX compiles the SCC and
@@ -155,6 +176,7 @@ function convertTrack(track, kind, ctx) {
       if (l && l.rest && l.len + c <= 255) l.len += c; else for (const p of pieces(c, ctx.clock)) out.push({ rest: true, len: p });
     };
     const note = (n, ticks) => {
+      if (S.off) { S.tie = false; S.tiedIn = false; S.porta = 0; rest(ticks); return; }
       const tiedIn = S.tiedIn, tieOut = S.tie;
       S.tie = false; S.tiedIn = tieOut;
       let delay = !tiedIn && S.kd ? Math.min(S.kd, ticks) : 0;
@@ -236,7 +258,12 @@ function convertTrack(track, kind, ctx) {
           S.shift = Math.round(x[1] / 64);
           out.push(`D${Math.round(((x[1] - 64 * S.shift) / 64) * semitone)}`);
           break;
-        case 'p': if (kind === 'scc' || kind === 'opll') skip('pan (SCC and MSX-MUSIC parts)'); else out.push(`p${PAN[x[1] & 3]}`); break;
+        case 'p':
+          // pan 0 is no output at all (MUCOM88's p has no such value): the notes become rests
+          S.off = (x[1] & 3) === 0;
+          if (S.off) { untie(); break; }
+          if (kind === 'scc' || kind === 'opll') skip('pan (SCC and MSX-MUSIC parts)'); else out.push(`p${PAN[x[1] & 3]}`);
+          break;
         case 'F': if (kind === 'pcm') S.rate = Math.min(4, x[1]); else if (x[1]) skip('noise'); break;
         case 'MD': S.lfoDelay = x[1]; if (kind !== 'pcm' && S.lfo && S.lfoOn) out.push(vibrato(S)); break;   // M carries the delay
         case 'MP': if (kind !== 'pcm') { S.lfo = [x[1], x[2], x[3]]; out.push(vibrato(S)); } break;
@@ -465,8 +492,15 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
   // tempo: the fastest and slowest tick, and the timer count of a clock of div ticks
   const tempoList = [];
   for (const t of m.tracks) for (const x of walk(t.items)) if (x[0] === 't') tempoList.push(x[1]);
-  const firstTempo = tempoList.length ? tempoList[0] : DEFAULT_TEMPO;
-  const all = tempoList.length ? tempoList : [DEFAULT_TEMPO];
+  // the tempo over the song's ticks (once through): every track's tempo commands are the
+  // song's. Until the first of them MXDRV plays at its own tempo; of those at tick 0 the last
+  // track's is the one that stays.
+  const marksOf = (tr) => { const out = []; let at = 0; for (const [x] of play(unroll(tr.items))) { if (x[0] === 'r') at += x[1]; else if (x[0] === 'n') at += x[2]; else if (x[0] === 't') out.push([at, x[1]]); } return out; };
+  const marks = m.tracks.flatMap(marksOf);
+  marks.sort((a, b) => a[0] - b[0]);
+  const atStart = marks.filter(([at]) => at === 0);
+  const firstTempo = atStart.length ? atStart[atStart.length - 1][1] : DEFAULT_TEMPO;
+  const all = [...tempoList, ...(atStart.length ? [] : [DEFAULT_TEMPO])];
   const exact = (tempo) => (tickSeconds(tempo) * div) / TIMER_UNIT;
   if (div > 1 && exact(Math.min(...all)) > 255) return null;      // the timer cannot count a clock that long
   const timer = (tempo) => {
@@ -477,10 +511,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
   const clockRate = 1 / tickSeconds(Math.max(...all)) / div, clock = 192 / div;
   const clockSeconds = (timer(firstTempo) * TIMER_UNIT);
 
-  // the tempo over the song's ticks (once through), and where it loops
-  const marks = [];
-  for (const t of m.tracks) { let at = 0; for (const [x] of play(unroll(t.items))) { if (x[0] === 'r') at += x[1]; else if (x[0] === 'n') at += x[2]; else if (x[0] === 't') marks.push([at, x[1]]); } }
-  marks.sort((a, b) => a[0] - b[0]);
+  // where the song loops
   const looping = m.tracks.find((t) => t.loop !== null && hasNotes(t.items));
   const timeline = { marks, loopAt: looping ? lengthOf(looping.items.slice(0, looping.loop)) : null, end: Math.max(...m.tracks.map((t) => lengthOf(t.items))) };
 
@@ -620,6 +651,23 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
     pcmInfo = { ...(pcmInfo || { tracks: 1, mixes: 0 }), samples: entries.length, bytes: size };
   } else if (pcmTracks.length) warnings.add('noPdx');
 
+  // Tempo commands of tracks that are not a part of their own (a track without notes, the
+  // ADPCM tracks of a song without its PDX or with several of them laid on part K) are the
+  // song's all the same: such a track becomes a silent SSG part, its notes rests, unless
+  // every tempo it sets is set at the same tick by a part that is written.
+  const own = new Set([...partOf.keys(), ...(pcmTracks.length === 1 && pcmBytes ? pcmTracks : [])]);
+  const written = new Set([...own].flatMap((t) => marksOf(m.tracks[t]).map(([at, v]) => `${at}:${v}`)));
+  const silent = (items) => items.flatMap((x) => (!Array.isArray(x) ? [{ ...x, body: silent(x.body), exit: x.exit === null ? null : silent(x.body.slice(0, x.exit)).length }]
+    : x[0] === 'n' ? [['r', x[2]]] : x[0] === 'r' || x[0] === 't' ? [x] : []));
+  const carriers = m.tracks.map((tr, t) => t).filter((t) => !own.has(t) && marksOf(m.tracks[t]).some(([at, v]) => !written.has(`${at}:${v}`) && !(at === 0 && v === firstTempo)));
+  carriers.slice(0, TEMPO_PARTS.length).forEach((t, i) => {
+    const tr = m.tracks[t], lead = tr.loop === null ? tr.items.length : tr.loop;
+    const track = { items: silent(tr.items), loop: tr.loop === null ? null : silent(tr.items.slice(0, lead)).length };
+    const r = convertTrack(track, 'silent', { ...ctxBase, usual: 9, sample: single });
+    body.push(...rows(TEMPO_PARTS[i], `C${clock}`, r.tokens));
+  });
+  if (carriers.length > TEMPO_PARTS.length) warnings.add('tempoTracks');
+
   // ---- the text
   const title = decodeTitle(m.title, fileName.replace(/\.[^.]*$/, ''));
   const bankName = `${(fileName.replace(/\.[^.]*$/, '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 8) || 'MDX').toUpperCase()}.BIN`;
@@ -643,6 +691,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
   if (warnings.has('fmTracksDropped')) left.push('FM tracks beyond eight');
   if (warnings.has('noPdx')) left.push(`the ADPCM track (no PDX file${m.pdx ? `: ${m.pdx}` : ''})`);
   if (warnings.has('pcmSlots')) left.push(`samples beyond the ${SLOTS} a PCM bank holds`);
+  if (warnings.has('tempoTracks')) left.push(`tempo commands of more than ${TEMPO_PARTS.length} tracks without a part`);
   if (left.length) lines.push(`; Not carried over: ${left.join(', ')}`);
   lines.push('');
   for (const [n, id] of [...voiceIds].sort((a, b) => a[1] - b[1])) {
@@ -662,7 +711,8 @@ function convertAt(m, fileName, pdx, div, spare = 'auto') {
   const size = new TextEncoder().encode(out).length;
   // too long for a song with a voice of the MSX-MUSIC's own (in Shift-JIS, two bytes at most
   // for what is not ASCII): the SCC takes the track instead
-  if (toOpll.length && [...out].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? 1 : 2), 0) > PLAIN_ROWS_SOURCE) {
+  if (toOpll.length && ([...out].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? 1 : 2), 0) > PLAIN_ROWS_SOURCE
+    || plainRowsObject(body, waves.size) > PLAIN_ROWS_OBJECT)) {
     const r = convertAt(m, fileName, pdx, div, 'scc');
     if (r) r.report.warnings.push('msxMusicTooLong');
     return r;

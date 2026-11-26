@@ -24,7 +24,7 @@
 // A PDX file is 96 pairs of offset and length (32 bits, big-endian) and the samples: 4-bit
 // ADPCM of the OKI MSM6258, low nibble first.
 //
-// parseMdx(bytes) -> { title (bytes), pdx (name or ''), voices: Map(n -> voice), tracks: [track] }
+// parseMdx(bytes) -> { title (bytes), pdx (name or '', read as Shift-JIS), voices: Map(n -> voice), tracks: [track] }
 //   voice: { fl, con, mask, ops: 4 x { dt1, mul, tl, ks, ar, ame, d1r, dt2, d2r, d1l, rr } } (M1, M2, C1, C2)
 //   track: { items, loop } - items is a list of commands and repeats, loop the index in items
 //          the track plays on from when it reaches its end (null: it ends)
@@ -114,6 +114,11 @@ function parseTrack(b, start, end) {
   return { items: top, loop };
 }
 
+// A file name as the X68000 wrote it (Shift-JIS; a PDX is often named in Japanese).
+function sjis(bytes) {
+  try { return new TextDecoder('shift_jis').decode(bytes); } catch { return String.fromCharCode(...bytes); }
+}
+
 export function parseMdx(bytes) {
   const b = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
   const h = headerOf(b);
@@ -138,7 +143,7 @@ export function parseMdx(bytes) {
   const tracks = h.tracks.map((o) => (h.base + o < b.length ? parseTrack(b, h.base + o, endOf(o)) : { items: [], loop: null }));
   return {
     title: b.slice(0, h.titleEnd),
-    pdx: String.fromCharCode(...b.slice(h.pdxAt, h.pdxEnd)).trim(),
+    pdx: sjis(b.slice(h.pdxAt, h.pdxEnd)).trim(),
     voices, tracks,
   };
 }
