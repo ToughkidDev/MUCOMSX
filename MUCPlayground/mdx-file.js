@@ -169,6 +169,9 @@ function parseTrack(b, start, end) {
     if (NAMES[c]) { list.push([NAMES[c], b[p + 1]]); p += 2; continue; }
     p++;                                               // a command this reader does not know: one byte
   }
+  // a command the file ends in the middle of is not one
+  const whole = (x) => !Array.isArray(x) || x.every((v) => typeof v !== 'number' || Number.isFinite(v));
+  while (list.length && !whole(list[list.length - 1])) list.pop();
   // a repeat left open at the end of the track stays as it is; a loop point inside one cannot be kept
   return { items: top, loop };
 }

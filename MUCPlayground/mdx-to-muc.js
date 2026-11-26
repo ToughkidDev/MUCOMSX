@@ -313,6 +313,8 @@ function convertTrack(track, kind, ctx) {
     // a repeat too long for that (PEEL_FROM commands) has its first passes written out, up to
     // PEELED of them, and the rest is tried again from there (a tie into a repeat is not kept).
     const repeat = (x, peeled) => {
+      // 256 passes (a count of 0 in the file) are one pass and 255: a repeat of MUCOM88 has a byte
+      if (x.count > 255) { add(emitList(x.body, 0, x.body.length, S, depth)); repeat({ ...x, count: 255 }, peeled); return; }
       const end = x.exit ?? x.body.length, unknown = (T) => { T.q = null; return T; };
       const S0 = unknown(structuredClone(S));
       const a = emitList(x.body, 0, x.body.length, S0, depth + 1); // S0 is now the state after one pass
@@ -676,7 +678,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false, tigh
     let rate = 4, vol = 8;
     for (const [x, times] of play(m.tracks[t].items)) {
       if (x[0] === 'F') rate = Math.min(4, x[1]);
-      else if (x[0] === 'v') vol = x[1];
+      else if (x[0] === 'v') vol = x[1] < 128 ? Math.min(15, x[1]) : x[1];
       else if (x[0] === '(') vol = vol < 16 ? Math.max(0, vol - 1) : Math.min(255, vol + 1);
       else if (x[0] === ')') vol = vol < 16 ? Math.min(15, vol + 1) : Math.max(128, vol - 1);
       else if (x[0] === 'n') {
@@ -685,7 +687,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false, tigh
         // what part K would have made of it, against the drum at RHYTHM_TOTAL: steps of 0.75 dB under level 31
         const wanted = K_PEAK * d.peak * (pcm8 ? PCM8_GAIN[pcmVolume(vol < 16 ? VOLUME_TL[vol] : vol - 128)] : 1);
         const steps = Math.round((20 * Math.log10((RHYTHM_PEAK[d.drum] * 10 ** ((-(63 - RHYTHM_TOTAL) * 0.75) / 20)) / wanted)) / 0.75);
-        const level = Math.max(0, Math.min(31, 31 - steps));
+        const level = Number.isFinite(steps) ? Math.max(0, Math.min(31, 31 - steps)) : 31;
         drumHits[d.drum].set(level, (drumHits[d.drum].get(level) || 0) + times);
       }
     }
@@ -900,6 +902,13 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false, tigh
   for (const [n, u] of [...patches].sort((a, b) => a[1].id - b[1].id)) {
     if (u.id === USER_VOICES - 1 && [...patches.values()].filter((x) => x.id === u.id)[0] !== u) continue;
     lines.push(`; MXDRV voice ${n} as an MSX-MUSIC voice (its tone ${Math.round(u.match * 100)}% alike)`, `  ?IU${u.id}={${u.bytes.join(',')}}`);
+  }
+  // a comment row no longer than the compilers take (MucoMSX: 1,023 bytes): a long list goes on in the next
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i][0] !== ';' || lines[i].length <= 160) continue;
+    const cut = lines[i].lastIndexOf(', ', 150);
+    if (cut < 20) continue;
+    lines.splice(i, 1, lines[i].slice(0, cut + 1), ';   ' + lines[i].slice(cut + 2));
   }
   lines.push('', ...body, '');
   const out = lines.join('\n');
