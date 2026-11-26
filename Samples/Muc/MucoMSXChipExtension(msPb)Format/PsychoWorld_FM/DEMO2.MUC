@@ -1,0 +1,46 @@
+#mucom88 1.7
+#title Demo 2 / The Revelation
+#composer Kenji Yamazaki, Yuko Yamazaki
+#author ToughkidCST
+#comment Psycho World (MSX-MUSIC)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension OPLL parts, msPb0109).
+
+?IU0={48,50,6,32,64,64,4,116}
+?IU1={81,66,19,32,19,16,66,1}
+?IU2={255,112,25,32,80,31,5,1}
+?IU3={17,17,8,32,250,178,32,244}
+MSXA t198 ?IR2 v14 D-5 o7 e%50 q0 ^%12 e%13 l%12 f e%13 e%50 ^%12 e%13 f e%13 d%37 < a%38 > d%25 c%50
+MSXA < b%50 e%50 b%25 > c < e%13 ^%75 d c%13 d%37 < a%38 > d%25 c%50 < b%50 > e%50 b%25 > c d%13
+MSXA ^%75 c < b%13 > c%37 < a%38 > c%25 e%100 v13 < [ d f+%13 c f+%13 < a+ > f+%13 c f+%13 ]2 [
+MSXA < a+ > f+%13 < g+ > f+%13 < f+ > f+%13 < g+ > f+%13 ]2 ?IR3 v14 o4 [ b > c%13 d d+%13 < ]30
+MSXA d c%13 < b g+%13 g f%13 d+ d%13 g%100 ^%100
+MSXB ?IR3 v12 D-5 o6 c%50 q0 ^%12 c%13 l%12 d c%13 c%50 ^%12 c%13 d c%13 < a%37 f%38 a%25 a%50
+MSXB g+%50 > c%37 d%38 e%25 < b%37 > c%38 d%25 < a%37 > d%38 < a%25 g+%37 a%38 b%25 > c%37 d%38
+MSXB e%25 d%50 g%50 f%37 c%38 d%25 < b%100 r ?IR2 v13 > [ e%13 r ]15 e%13 ?IR3 v14 o4 [ g g+%13
+MSXB a a+%13 ]30 f d+%13 d c%13 < b g+%13 g f%13 d+%100 ^%100
+MSXC ?IR4 v5 D-5 q0 o6 l%12 a e%13 c < a%13 e a%13 > c e%13 v6 a e%13 c < a%13 e a%13 > c e%13
+MSXC v7 a e%13 c < a%13 e a%13 > c e%13 v8 a e%13 c < a%13 e a%13 > c e%13 v9 a e%13 c < a%13 e
+MSXC a%13 > c e%13 v10 a e%13 c < a%13 e a%13 > c e%13 v11 a e%13 c < a%13 e a%13 > c e%13 v12 a
+MSXC e%13 c < a%13 e a%13 > c e%13 v13 a e%13 c < a%13 e a%13 > c e%13 v14 [ a e%13 c < a%13 e
+MSXC a%13 > c e%13 ]3 r%6 ?IR2 v13 [ d f+%13 c f+%13 < a+ > f+%13 c f+%13 ]2 < a+ > f+%13 < g+ >
+MSXC f+%13 < f+ > f+%13 < g+ > f+%13 < a+ > f+%13 < g+ > f+%13 < f+ > f+%13 < g+ > f+%7 r%100
+MSXC r%100 r%100 r%100 r%100 r%100 r%100 r%100 ?IU0 v5 o3 b > c%13 d d+%13 v6 < b > c%13 d d+%13
+MSXC v7 < b > c%13 d d+%13 v8 < b > c%13 d d+%13 v9 < b > c%13 d d+%13 v10 < b > c%13 d d+%13
+MSXC v11 < b > c%13 d d+%13 v12 < b > c%13 d d+%13 v13 [ < b > c%13 d d+%13 ]8 ?IR3 v14 o2 g%100
+MSXC ^%100
+MSXH ?IU1 v4 D-5 o6 a%100 v5 ^%100 v6 ^%100 v7 q0 ^%50 g+%50 v8 a%100 v9 ^%100 v10 ^%100 v11
+MSXH ^%50 g+%50 v12 a%100 v13 ^%100 ^%100 ^%50 g+%50 ?IU2 > d%100 d%100 < a+%100 a+%100 r%6 ?IR2
+MSXH > l%12 [ g+ v12 g+%13 v11 g+ v9 g+%13 v8 g+ v7 g+%13 v6 g+ v5 g+%13 v13 f v12 f%13 v11 f v9
+MSXH f%13 v8 f v7 f%13 v6 f v5 f%13 v13 b v12 b%13 v11 b v9 b%13 v8 b v7 b%13 v6 b v5 b%13 v13 d
+MSXH v12 d%13 v11 d v9 d%13 v8 d v7 d%13 v6 d v5 d%13 v13 ]4 c v12 c%13 v11 c v9 c%13 v8 c v7
+MSXH c%13 v6 c v5 c%13 v4 c v3 c%13 v2 c v1 c%13 ^%37 ^%7
+MSXI ?IU1 v4 D-5 o6 c%100 v5 ^%100 v6 ^%100 v7 q0 ^%50 < b%50 v8 > c%100 v9 ^%100 v10 ^%100 v11
+MSXI ^%50 < b%50 v12 > c%100 v13 ^%100 ^%100 ^%50 < b%50 ?IU2 a+%100 a+%100 f+%100 f+%100 ?IR2
+MSXI o7 [ g+%100 f%100 b%100 d%100 ]4 l%12 c ?IU3 v6 o3 l%6 c > c%7 v7 < c > c v8 < c > c%7 v9 <
+MSXI c > c v10 < c > c%7 v11 < c > c v12 < c > c%7 v13 < c > c v14 < c > c%7 v15 [ < c > c < c >
+MSXI c%7 ]3
+MSXJ ?IR6 v12 D-5 q0 o3 a%100 g%100 f%100 e%100 a%100 g%100 f%100 e%100 a%100 g%100 f%100 e%100
+MSXJ ?IU2 v13 o1 f+%100 f+%100 d+%100 d+%100 ?IR6 > [ g+%100 f%100 b%100 d%100 ]4 l%12 c ?IU3 v6
+MSXJ l%6 c > c%7 v7 < c > c v8 < c > c%7 v9 < c > c v10 < c > c%7 v11 < c > c v12 < c > c%7 v13
+MSXJ < c > c v14 < c > c%7 v15 [ < c > c < c > c%7 ]3
+MSXG q1 [ r%100 ]34

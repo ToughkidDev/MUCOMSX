@@ -1,0 +1,121 @@
+#mucom88 1.7
+#title Stage 2 / Volcanic Area
+#composer Kenji Yamazaki, Yuko Yamazaki
+#author ToughkidCST
+#comment Psycho World (MSX-MUSIC + OPNA)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension OPLL/OPNA parts, msPb010A).
+
+?IU0={20,83,12,32,199,245,17,3}
+MSXA L ?IU0 v14 D-5 q0 o5 b%23 > l%11 f+ b%47 ^%11 r%12 a%12 g+ e%12 g f+%12 d%12 e < b%24 > f+
+MSXA b%35 > d%12 d v13 d%12 d v12 d%12 d%12 v11 d d%12 v10 d d%12 v14 o5 b%23 > f+%12 b%46 ^%12
+MSXA r%12 a g+%12 e g%12 f+%12 d e%12 < b%23 > f+%12 b%35 > d d%12 v13 d d%12 v12 d%12 d v11
+MSXA d%12 d v10 d%12 d%12 v14 o5 d g+%12 > d%12 < g+%5 > d%12 g+%12 d%5 g+%12 b%12 > l%5 d <
+MSXA g+%6 d%6 g+%6 d%6 < g+ > d%6 < g+%6 d%6 g+%6 d < g+%6 > d%6 < g+%6 d%6 < g+%6 o5 l%11 d
+MSXA g+%12 > d < g+%6 > d%12 g+ d%6 g+%12 b > d%6 < g+%6 d%6 g+%6 l%5 d < g+%6 > d%6 < g+%6 d%6
+MSXA g+ d%6 < g+%6 > d%6 < g+%6 d%6 < g+ ?IU0 o5 b%24 > l%11 f+ b%47 ^%11 r%12 a g+%12 e%12 g
+MSXA f+%12 d%12 e < b%23 > f+%12 b%35 > d d%12 v13 d%12 d v12 d%12 d v11 d%12 d%12 v10 d d%12
+MSXA ?IU0 v12 o5 e%12 r d%12 r e%12 r%12 g r%12 a b%12 > e%6 d+%6 d < a%12 b%12 d e%12 e r%12
+MSXA d%12 r e%12 r g%12 r%12 a b%12 > e%6 d+%5 d%12 < g%6 f+%6 e d%12 e%12 ?IU0 v14 b%23 > f+
+MSXA b%47 ^%11 r%12 a%12 g+ e%12 g%12 f+ d%12 e < b%24 > f+ b%35 > d%12 d v13 d%12 d v12 d%12
+MSXA d%12 v11 d d%12 v10 d%12 d ?IU0 v12 o5 e%12 r d%12 r%12 e r%12 g r%12 a%12 b > e%6 d+%6
+MSXA d%12 < a b%12 d e%12 e%12 r d%12 r e%12 r%12 g r%12 a b%12 > e%6 d+%6 d < g%6 f+%6 e%12 d
+MSXA e%12
+MSXB L ?IR11 v13 D-5 q0 o5 b%23 > l%11 f+ b%47 ^%11 r%12 a%12 g+ e%12 g f+%12 d%12 e < b%24 > f+
+MSXB b%35 > d%12 d v12 d%12 d v11 d%12 d%12 v10 d d%12 v9 d d%12 v13 o5 b%23 > f+%12 b%46 ^%12
+MSXB r%12 a g+%12 e g%12 f+%12 d e%12 < b%23 > f+%12 b%35 > d d%12 v12 d d%12 v11 d%12 d v10
+MSXB d%12 d v9 d%12 d%12 v13 o5 d g+%12 > d%12 < g+%5 > d%12 g+%12 d%5 g+%12 b%12 > d%93 o5 d
+MSXB g+%12 > d < g+%6 > d%12 g+ d%6 g+%12 b > d%93 o5 b%24 > f+ b%47 ^%11 r%12 a g+%12 e%12 g
+MSXB f+%12 d%12 e < b%23 > f+%12 b%35 > d d%12 v12 d%12 d v11 d%12 d v10 d%12 d%12 v9 d d%12
+MSXB ?IU0 v12 o4 b%12 r a%12 r b%12 r%12 > d r%12 e f+%12 b%6 a+%6 a e%12 f+%12 < a b%12 b r%12
+MSXB a%12 r b%12 r > d%12 r%12 e f+%12 b%6 a+%5 a%12 d%6 c+%6 < b a%12 b%12 ?IR11 v13 > b%23 >
+MSXB f+ b%47 ^%11 r%12 a%12 g+ e%12 g%12 f+ d%12 e < b%24 > f+ b%35 > d%12 d v12 d%12 d v11 d%12
+MSXB d%12 v10 d d%12 v9 d%12 d ?IU0 v12 o4 b%12 r a%12 r%12 b r%12 > d r%12 e%12 f+ b%6 a+%6
+MSXB a%12 e f+%12 < a b%12 b%12 r a%12 r b%12 r%12 > d r%12 e f+%12 b%6 a+%6 a d%6 c+%6 < b%12 a
+MSXB b%12
+MSXC L ?IR10 v14 D-5 q0 o7 b%69 > f+%23 f%70 ^%12 l%11 d < b%24 r%45 r%1 > a%12 a v13 a%12 a v12
+MSXC a%12 a%12 v11 a a%12 v10 a a%12 v14 f%93 e%70 ^%11 < a%12 b%23 r%45 r%2 > a a%12 v13 a a%12
+MSXC v12 a%12 a v11 a%12 a v10 a%12 a%12 v14 d%35 g+%46 ^%12 d%34 g+%47 ^%12 d%34 g+%47 ^%11
+MSXC d%35 g+%23 < a%24 a+ b%70 > f+%23 f%70 ^%12 d < b%23 r%45 r%2 > a a%12 v13 a%12 a v12 a%12
+MSXC a v11 a%12 a%12 v10 a a%12 r%12 ?IU0 v11 o4 e r%12 d r%12 e%12 r d%12 r e%12 r%12 d r%12
+MSXC e%12 r d%12 r e%12 r%12 d r%12 e r%12 d%12 r e%12 r d%12 r%12 e r%12 d%12 ?IR10 v14 o7 b%69
+MSXC > f+%23 f%70 ^%12 d < b%24 r%45 r%1 > a%12 a v13 a%12 a v12 a%12 a%12 v11 a a%12 v10 a%12 a
+MSXC r%12 ?IU0 v11 o4 e r%12 d%12 r e%12 r d%12 r%12 e r%12 d%12 r e%12 r d%12 r%12 e r%12 d
+MSXC r%12 e%12 r d%12 r e%12 r%12 d r%12 e%12 r d%12
+MSXH L ?IR11 v11 D-5 q0 o3 b%9 r%2 > b%10 r%2 a%9 r%2 < b%10 r%2 > b%20 r%3 a%10 r%2 < b%9 r%2 >
+MSXH b%21 r%3 a%9 r%2 < b%10 r%2 b%9 r%2 > d%30 r%5 < b%10 r%2 > b%10 r%2 a%9 r%2 < b%10 r%2 >
+MSXH b%20 r%3 a%10 r%2 < b%9 r%2 > b%20 r%3 a%10 r%2 < b%10 r%2 > b%9 r%2 a%20 r%3 a%10 r%2 <
+MSXH b%10 r%2 > b%9 r%2 a%10 r%2 < b%10 r%2 > b%20 r%3 a%9 r%2 < b%10 r%2 > b%20 r%3 a%10 r%2 <
+MSXH b%9 r%2 b%10 r%2 > d%30 r%5 < b%10 r%2 > b%9 r%2 a%10 r%2 < b%9 r%2 > b%21 r%3 a%9 r%2 <
+MSXH b%10 r%2 > b%20 r%3 a%10 r%2 < b%9 r%2 > b%10 r%2 a%20 r%3 a%10 r%2 f%20 r%3 f%10 r%2 <
+MSXH f%46 ^%10 r%2 > f%20 r%3 f%9 r%2 < f%47 ^%10 r%2 > f%20 r%3 f%9 r%2 < f%47 ^%9 r%2 > f%21
+MSXH r%3 f%9 r%2 < f%20 r%3 > e%21 r%3 d%9 r%2 < b%10 r%2 > b%10 r%2 a%9 r%2 < b%10 r%2 > b%20
+MSXH r%3 a%10 r%2 < b%9 r%2 > b%20 r%3 a%10 r%2 < b%10 r%2 b%9 r%2 > d%30 r%5 < b%10 r%2 > b%9
+MSXH r%2 a%10 r%2 < b%10 r%2 > b%20 r%3 a%9 r%2 < b%10 r%2 > b%20 r%3 a%10 r%2 < b%9 r%2 > b%10
+MSXH r%2 a%20 r%3 a%10 r%2 r%12 ?IU0 < l%11 e r%12 d r%12 e%12 r d%12 r e%12 r%12 d r%12 e%12 r
+MSXH d%12 r e%12 r%12 d r%12 e r%12 d%12 r e%12 r d%12 r%12 e r%12 d%12 ?IR11 b%9 r%2 > b%10 r%2
+MSXH a%9 r%2 < b%10 r%2 > b%20 r%3 a%10 r%2 < b%9 r%2 > b%21 r%3 a%9 r%2 < b%10 r%2 b%10 r%2 >
+MSXH d%29 r%5 < b%10 r%2 > b%10 r%2 a%9 r%2 < b%10 r%2 > b%20 r%3 a%10 r%2 < b%9 r%2 > b%20 r%3
+MSXH a%10 r%2 < b%10 r%2 > b%9 r%2 a%21 r%3 a%9 r%2 r%12 ?IU0 < e r%12 d%12 r e%12 r d%12 r%12 e
+MSXH r%12 d%12 r e%12 r d%12 r%12 e r%12 d r%12 e%12 r d%12 r e%12 r%12 d r%12 e%12 r d%12
+MSXI L ?IR11 v11 D-5 q0 o2 b%9 r%2 o4 f+%10 r%2 e%9 r%2 o2 b%10 r%2 o4 f+%20 r%3 e%10 r%2 o2 b%9
+MSXI r%2 o4 f+%21 r%3 e%9 r%2 o2 b%10 r%2 b%9 r%2 o4 a%30 r%5 o2 b%10 r%2 o4 f+%10 r%2 e%9 r%2
+MSXI o2 b%10 r%2 o4 f+%20 r%3 e%10 r%2 o2 b%9 r%2 o4 f+%20 r%3 e%10 r%2 o2 b%10 r%2 o4 f+%9 r%2
+MSXI e%20 r%3 e%10 r%2 o2 b%10 r%2 o4 f+%9 r%2 e%10 r%2 o2 b%10 r%2 o4 f+%20 r%3 e%9 r%2 o2 b%10
+MSXI r%2 o4 f+%20 r%3 e%10 r%2 o2 b%9 r%2 b%10 r%2 o4 a%30 r%5 o2 b%10 r%2 o4 f+%9 r%2 e%10 r%2
+MSXI o2 b%9 r%2 o4 f+%21 r%3 e%9 r%2 o2 b%10 r%2 o4 f+%20 r%3 e%10 r%2 o2 b%9 r%2 o4 f+%10 r%2
+MSXI e%20 r%3 e%10 r%2 < b%20 r%3 b%10 r%2 < f%46 ^%10 r%2 > b%20 r%3 b%9 r%2 < f%47 ^%10 r%2 >
+MSXI b%20 r%3 b%9 r%2 < f%47 ^%9 r%2 > b%21 r%3 b%9 r%2 < f%20 r%3 > b%21 r%3 a%9 r%2 < b%10 r%2
+MSXI o4 f+%10 r%2 e%9 r%2 o2 b%10 r%2 o4 f+%20 r%3 e%10 r%2 o2 b%9 r%2 o4 f+%20 r%3 e%10 r%2 o2
+MSXI b%10 r%2 b%9 r%2 o4 a%30 r%5 o2 b%10 r%2 o4 f+%9 r%2 e%10 r%2 o2 b%10 r%2 o4 f+%20 r%3 e%9
+MSXI r%2 o2 b%10 r%2 o4 f+%20 r%3 e%10 r%2 o2 b%9 r%2 o4 f+%10 r%2 e%20 r%3 e%10 r%2 ?IU0 v15 o6
+MSXI b%12 > l%11 d e%23 a%12 g+%12 f+%23 < b > d%12 e%23 a%12 g+%12 f+ < b%12 > d e%24 a g+%12
+MSXI f+%23 < b%12 > d e%23 a%12 g+%12 f+ < b%12 > d%12 ?IR11 v11 o2 b%9 r%2 o4 f+%10 r%2 e%9 r%2
+MSXI o2 b%10 r%2 o4 f+%20 r%3 e%10 r%2 o2 b%9 r%2 o4 f+%21 r%3 e%9 r%2 o2 b%10 r%2 b%10 r%2 o4
+MSXI a%29 r%5 o2 b%10 r%2 o4 f+%10 r%2 e%9 r%2 o2 b%10 r%2 o4 f+%20 r%3 e%10 r%2 o2 b%9 r%2 o4
+MSXI f+%20 r%3 e%10 r%2 o2 b%10 r%2 o4 f+%9 r%2 e%21 r%3 e%9 r%2 ?IU0 v15 o6 b%12 > d e%24 a
+MSXI g+%12 f+%23 < b%12 > d e%24 a g+%12 f+ < b%12 > d%12 e%23 a g+%12 f+%23 < b%12 > d e%24 a
+MSXI g+%12 f+%12 < b > d%12
+MSXJ L ?IR2 v14 D-5 q0 o2 b%3 r%2 [ b%3 r%3 b%7 r%5 b%6 r%5 ]3 b%3 r%3 b%3 r%3 b%7 r%5 b%6 r%5
+MSXJ b%3 r%3 b%7 r%5 b%6 r%5 b%3 r%3 > e%7 r%5 d%6 r%5 < b%3 r%3 [ b%3 r%3 b%7 r%5 b%6 r%5 ]3 [
+MSXJ b%3 r%3 b%3 r%3 b%6 r%5 b%7 r%5 b%3 r%3 b%6 r%5 b%7 r%5 b%3 r%3 > e%6 r%5 d%7 r%5 < b%3 r%3
+MSXJ [ b%3 r%3 b%6 r%5 b%7 r%5 ]3 ]2 b%3 r%3 b%3 r%2 b%7 r%5 b%7 r%5 b%3 r%2 b%7 r%5 b%7 r%5 b%3
+MSXJ r%2 > e%7 r%5 d%7 r%5 ?IR15 v11 f%14 r%9 f%7 r%5 < f%46 ^%7 r%5 > f%14 r%9 f%6 r%5 < f%47
+MSXJ ^%7 r%5 > f%14 r%9 f%6 r%5 < f%47 ^%6 r%5 > f%15 r%9 f%6 r%5 < f%14 r%9 e%15 r%9 d%6 r%5
+MSXJ ?IR2 v14 b%3 r%3 [ b%3 r%3 b%7 r%5 b%6 r%5 ]3 b%3 r%3 b%3 r%3 b%6 r%5 b%7 r%5 b%3 r%3 b%6
+MSXJ r%5 b%7 r%5 b%3 r%3 > e%7 r%5 d%6 r%5 < b%3 r%3 [ b%3 r%3 b%6 r%5 b%7 r%5 ]3 b%3 r%3 b%3
+MSXJ r%3 b%6 r%5 b%7 r%5 b%3 r%3 b%6 r%5 b%7 r%5 b%3 r%3 > e%6 r%5 d%7 r%5 r%12 ?IR15 v11 > l%11
+MSXJ e r%12 d r%12 e%12 r d%12 r e%12 r%12 d r%12 e%12 r d%12 r e%12 r%12 d r%12 e r%12 d%12 r
+MSXJ e%12 r d%12 r%12 e r%12 d%12 ?IR2 v14 o2 b%3 r%2 [ b%3 r%3 b%7 r%5 b%6 r%5 ]3 b%3 r%3 b%3
+MSXJ r%3 b%7 r%5 b%6 r%5 b%3 r%3 b%7 r%5 b%6 r%5 b%3 r%3 > e%7 r%5 d%6 r%5 < b%3 r%3 [ b%3 r%3
+MSXJ b%7 r%5 b%6 r%5 ]3 b%3 r%3 b%3 r%3 b%6 r%5 b%7 r%5 b%3 r%3 b%7 r%5 b%6 r%5 b%3 r%3 > e%7
+MSXJ r%5 d%6 r%5 r%12 ?IR15 v11 > e r%12 d%12 r e%12 r d%12 r%12 e r%12 d%12 r e%12 r d%12 r%12
+MSXJ e r%12 d r%12 e%12 r d%12 r e%12 r%12 d r%12 e%12 r d%12
+# *0{v54,19,19,19,19,19,0}
+# *1{v54,27,19,19,19,19,0}
+# *2{v54,19,23,19,19,19,0}
+# *3{v54,19,23,23,19,19,0}
+# *4{v54,27,19,23,19,19,0}
+# *5{v54,27,23,23,19,19,0}
+# *6{v54,27,23,19,19,19,0}
+G t198 L l%11 *4 @13 c *0 @8 c%12 *2 @10 c *0 @8 c%12 *1 @9 c%12 *0 @8 c [ *2 @10 c%12 *0 @8 c
+G *4 @13 c%12 *0 @8 c%12 *2 @10 c *0 @8 c%12 *1 @9 c *0 @8 c%12 ]2 *2 @10 c%12 *0 @8 c [ *4 @13
+G c%12 *0 @8 c *2 @10 c%12 *0 @8 c%12 *1 @9 c *0 @8 c%12 *2 @10 c *0 @8 c%12 ]2 [ *4 @13 c%12 *0
+G @8 c *2 @10 c%12 *0 @8 c *1 @9 c%12 *0 @8 c%12 *2 @10 c *0 @8 c%12 ]2 *4 @13 c *0 @8 c%12 *2
+G @10 c%12 *0 @8 c *6 @11 c%12 c c%6 c%12 c%6 *4 @13 c *0 @8 c%12 *2 @10 c%12 *0 @8 c c%12 *1 @9
+G c%6 c%5 [ *5 @15 c%12 *0 @8 c%12 *4 @13 c *0 @8 c%12 *2 @10 c *0 @8 c%12 c%12 *1 @9 c%5 c%6 ]2
+G *5 @15 c%12 *0 @8 c *4 @13 c%12 *0 @8 c%12 *2 @10 c *0 @8 c%12 *6 @11 c c%12 c%12 c *4 @13
+G c%12 *0 @8 c%12 *2 @10 c [ *0 @8 c%12 *1 @9 c *0 @8 c%12 *2 @10 c%12 *0 @8 c *4 @13 c%12 *0 @8
+G c *2 @10 c%12 ]2 *0 @8 c%12 *1 @9 c *0 @8 c%12 *2 @10 c *0 @8 c%12 *5 @15 c%12 [ *0 @8 c *6
+G @11 c%12 ]2 c%6 c%6 *1 @9 c%6 *6 @11 c%5 c%6 c%6 *1 @9 c%6 *0 @8 c%6 l%5 *3 @14 c *1 @9 c%6
+G c%6 *0 @8 c%6 *3 @14 c%6 *1 @9 c [ c%6 *0 @8 c%6 *3 @14 c%6 *1 @9 c%6 c *0 @8 c%6 *3 @14 c%6
+G *1 @9 c%6 c%6 *0 @8 c *3 @14 c%6 *1 @9 c%6 c%6 *0 @8 c%6 *3 @14 c *1 @9 c%6 ]2 c%6 *0 @8 c%6
+G *3 @14 c%6 *1 @9 c c%6 *0 @8 c%6 *3 @14 c%6 *1 @9 c%6 c *0 @8 c%6 *3 @14 c%6 *1 @9 c%6 c%6 *0
+G @8 c *3 @14 c%6 *1 @9 c%6 *5 @15 c%6 c%6 *1 @9 c%6 *0 @8 c [ *5 @15 c%6 *0 @8 c%6 ]2 l%11 *4
+G @13 c [ *0 @8 c%12 *2 @10 c *0 @8 c%12 *1 @9 c%12 *0 @8 c *2 @10 c%12 *0 @8 c *4 @13 c%12 ]2
+G *0 @8 c%12 *2 @10 c *0 @8 c%12 *1 @9 c *0 @8 c%12 *2 @10 c%12 *0 @8 c *5 @15 c%12 *0 @8 c *6
+G @11 c%12 *0 @8 c%12 *6 @11 c c%6 c%6 *1 @9 c%6 *6 @11 c%6 c%5 c%6 *1 @9 c%6 *0 @8 c%6 *3 @14
+G c%6 l%5 *1 @9 c [ c%6 *0 @8 c%6 *3 @14 c%6 *1 @9 c%6 c *0 @8 c%6 *3 @14 c%6 *1 @9 c%6 c%6 *0
+G @8 c *3 @14 c%6 *1 @9 c%6 c%6 *0 @8 c%6 *3 @14 c *1 @9 c%6 ]2 c%6 *0 @8 c%6 *3 @14 c%6 *1 @9 c
+G c%6 *0 @8 c%6 *3 @14 c%6 *1 @9 c%6 c *0 @8 c%6 *3 @14 c%6 *1 @9 c%6 c%6 *0 @8 c *3 @14 c%6 *1
+G @9 c%6 c%6 *0 @8 c%6 *3 @14 c%6 *1 @9 c *5 @15 c%6 c%6 *1 @9 c%6 *0 @8 c%6 *5 @15 c *0 @8 c%6
+G *5 @15 c%6 *0 @8 c%6

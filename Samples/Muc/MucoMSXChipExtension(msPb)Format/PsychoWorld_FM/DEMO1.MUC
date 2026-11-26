@@ -1,0 +1,191 @@
+#mucom88 1.7
+#title Demo (Cutscene)
+#composer Kenji Yamazaki, Yuko Yamazaki
+#author ToughkidCST
+#comment Psycho World (MSX-MUSIC + OPNA)
+#CarrierCorrection Yes
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension OPLL/OPNA parts, msPb010A).
+
+  @1
+   0,2
+   27,17,5,8,1,12,2,4,0
+   31,0,0,15,0,127,0,1,0
+   31,0,0,15,0,127,0,1,0
+   31,13,9,15,0,0,2,3,0
+  @2
+   7,4
+   31,31,0,1,0,30,2,1,0
+   17,31,0,15,1,10,0,1,0
+   31,31,0,1,0,127,2,1,0
+   17,31,0,15,1,30,0,2,0
+  @3
+   0,4
+   19,13,0,2,8,11,0,1,0
+   31,31,0,15,0,14,0,1,0
+   19,13,0,2,8,3,0,1,0
+   31,31,0,15,0,22,0,2,0
+  @4
+   7,2
+   19,7,0,1,1,29,0,1,0
+   31,0,0,15,0,127,0,1,0
+   31,0,0,15,0,127,0,1,0
+   19,31,0,15,0,0,0,1,0
+  @5
+   0,2
+   31,7,5,8,1,45,2,3,0
+   31,0,0,15,0,127,0,1,0
+   31,0,0,15,0,127,0,1,0
+   27,11,9,15,2,0,0,1,0
+  @6
+   0,2
+   31,7,5,8,1,41,2,3,0
+   31,0,0,15,0,127,0,1,0
+   31,0,0,15,0,127,0,1,0
+   27,11,9,15,2,2,0,1,0
+  @7
+   0,2
+   31,7,5,8,1,37,2,3,0
+   31,0,0,15,0,127,0,1,0
+   31,0,0,15,0,127,0,1,0
+   27,11,9,15,2,0,0,1,0
+  @8
+   0,2
+   31,7,5,8,1,33,2,3,0
+   31,0,0,15,0,127,0,1,0
+   31,0,0,15,0,127,0,1,0
+   27,11,9,15,2,0,0,1,0
+  @9
+   0,2
+   27,5,0,7,5,13,0,0,0
+   31,0,0,15,0,127,0,1,0
+   31,0,0,15,0,127,0,1,0
+   29,13,0,15,0,0,2,1,0
+  @10
+   0,2
+   27,5,0,7,5,13,0,0,0
+   31,0,0,15,0,127,0,1,0
+   31,0,0,15,0,127,0,1,0
+   29,13,0,15,0,20,2,1,0
+
+?IU0={32,113,13,32,193,213,86,6}
+?IU2={65,81,14,32,181,233,132,4}
+MSXA ?IR10 v13 D-5 q0 o5 e%33 d+%34 d%23 ^%11 c+%34 c%22 < b%23 > e%33 d+%34 d%23 ^%11 c+%34
+MSXA c%22 < b%23 ?IR7 o6 l%11 e e%22 < e%23 e f+ g%12 a%22 g f+%23 g f+ d%12 > e e%22 < e%23 e
+MSXA f+ g%12 a%22 g f+%23 g a b%12 ?IR10 e%33 d+%34 d%23 ^%11 c+%34 c%22 < b%23 > e%33 d+%34
+MSXA d%23 ^%11 c+%34 c%22 < b%23 ?IR7 o6 e e%22 < e%23 e f+ g%12 a%22 g f+%23 g f+ d%12 > e e%22
+MSXA < e%23 e f+ g%12 a%22 g f+%23 g a b%12 o7 e v12 e v11 e v10 e%12 v9 e v8 e v7 e v6 e%12
+MSXA r%33 ?IU0 v12 o5 g%45 ^%12 f+%90 r%33 g%45 ^%12 g+%90 r%33 g%45 ^%12 f+%90 r%33 g%45 ^%12
+MSXA g+%90 ?IR7 v13 > e e%22 < e%23 e f+ g%12 a%22 g f+%23 g f+ d%12 > e e%22 < e%23 e f+ g%12
+MSXA a%22 g f+%23 g a b%12 > c%67 e%23 d+%90 < c%45 e%22 a%23 g%45 f+%45 > e v12 e v11 e v10
+MSXA e%12 v9 e v8 e v7 e v6 e%12 v5 e v4 e v3 e v2 e%12 v1 e%45 r%90 r%90 ?IR10 v10 e < b > f+ <
+MSXA b%12 > g < b > e < b%12 v11 > c < g > d < g%12 > e < g > c < g%12 v12 a e b e%12 > c < e a
+MSXA e%12 v13 g < b > f+ < b%12 > e < b > d < b%12 ?IR7 v14 o6 [ e%45 > e%45 < b%45 ^%11 g a
+MSXA b%12 > c%45 ^%11 < a b > c%12 < b%33 > c%6 < b%6 a%22 g f+%12 ]2 r%22 ?IR10 g%23 f+ g%22
+MSXA g%12 v10 g v9 g v8 g v7 g%12 v6 g v5 g v4 g v3 g%12
+MSXB ?IR10 v13 D-5 q0 o4 [ b%33 a+%34 a%23 ^%11 g+%34 g%22 f+%23 ]2 o6 l%11 b b%22 < b%23 b > d
+MSXB e%12 f+%22 e d%23 e d < b%12 > b b%22 < b%23 b > d e%12 f+%22 e d%23 e f+ g%12 o4 [ b%33
+MSXB a+%34 a%23 ^%11 g+%34 g%22 f+%23 ]2 o6 b b%22 < b%23 b > d e%12 f+%22 e d%23 e d < b%12 > b
+MSXB b%22 < b%23 b > d e%12 f+%22 e d%23 e f+ g%12 ?IR7 b v12 b v11 b v10 b%12 v9 b v8 b v7 b v6
+MSXB b%12 r%33 ?IU0 v12 < e%45 ^%12 d+%90 r%33 e%45 ^%12 f%90 r%33 e%45 ^%12 d+%90 r%33 e%45
+MSXB ^%12 f%90 ?IR10 v13 > b b%22 < b%23 b > d e%12 f+%22 e d%23 e d < b%12 > b b%22 < b%23 b >
+MSXB d e%12 f+%22 e d%23 e f+ g%12 a%67 > c%23 < b%90 a%45 > c%22 f+%23 e%45 d+%45 o5 b v12 b
+MSXB v11 b v10 b%12 v9 b v8 b v7 b v6 b%12 v5 b v4 b v3 b v2 b%12 v1 b%45 r%90 r%90 v10 > g d a
+MSXB d%12 b d g d%12 v11 e < b > f+ < b%12 > g < b > e < b%12 v12 > c < g > d < g%12 > e < g > c
+MSXB < g%12 v13 b d a d%12 g d f+ d%12 ?IR7 v14 b%45 > b%45 g%45 ^%11 e f+ g%12 a%45 ^%11 f+ g
+MSXB a%12 g%33 a%6 g%6 f+%22 e d%12 < b%45 > b%45 g%45 ^%11 e f+ g%12 a%45 ^%11 f+ g a%12 g%33
+MSXB a%6 g%6 f+%22 e d%12 r%22 ?IR10 e%23 d e%22 e%12 v10 e v9 e v8 e v7 e%12 v6 e v5 e v4 e v3
+MSXB e%12
+MSXC ?IR10 v13 D-5 q0 o4 [ g%33 f+%34 f%23 ^%11 e%34 d+%22 d%23 ]2 ?IR1 v15 o6 l%11 e e v14 e
+MSXC v13 e%12 v12 e v11 e v10 e v9 e%12 v15 < d%45 f+%45 > e e v14 e v13 e%12 v12 e v11 e v10 e
+MSXC v9 e%12 v15 < a%45 > d%45 ?IR10 v13 o4 [ g%33 f+%34 f%23 ^%11 e%34 d+%22 d%23 ]2 ?IR1 v15
+MSXC o6 e e v14 e v13 e%12 v12 e v11 e v10 e v9 e%12 v15 < d%45 f+%45 > e e v14 e v13 e%12 v12 e
+MSXC v11 e v10 e v9 e%12 v15 < a%45 > d%45 ?IR7 v13 g v12 g v11 g v10 g%12 v9 g v8 g v7 g v6
+MSXC g%12 r%33 ?IU0 v12 o4 b%45 ^%12 a+%90 r%33 b%45 ^%12 c%90 r%33 b%45 ^%12 a+%90 r%33 b%45
+MSXC ^%12 c%90 ?IR1 v15 o6 e e v14 e v13 e%12 v12 e v11 e v10 e v9 e%12 v15 < d%45 f+%45 > e e
+MSXC v14 e v13 e%12 v12 e v11 e v10 e v9 e%12 v15 < a%45 > d%45 e%90 < b%90 a%67 f+%23 > c%45 <
+MSXC b%45 ?IR12 v6 > e < b > f+ < b%12 > g < b > e < b%12 v7 > c < g > d < g%12 > e < g > c <
+MSXC g%12 v8 a e b e%12 > c < e a e%12 v9 g < b > f+ < b%12 > e < b > d < b%12 v10 o6 e < b > f+
+MSXC < b%12 > g < b > e < b%12 v11 > c < g > d < g%12 > e < g > c < g%12 v12 a e b e%12 > c < e
+MSXC a e%12 v13 g < b > f+ < b%12 > e < b > d < b%12 ?IR10 v14 [ o6 e < b > f+ < b%12 > g < b >
+MSXC e < b%12 > c < g > d < g%12 > e < g > c < g%12 a e b e%12 > c < e a e%12 g < b > f+ < b%12
+MSXC > e < b > d < b%12 ]2 r%22 > b%23 a b%22 b%12 v10 b v9 b v8 b v7 b%12 v6 b v5 b v4 b v3
+MSXC b%12
+MSXH r%90 r%90 r%90 r%90 ?IR1 v15 D-5 q0 o5 l%11 b b v14 b v13 b%12 v12 b v11 b v10 b v9 b%12
+MSXH v15 < a%45 > d%45 b b v14 b v13 b%12 v12 b v11 b v10 b v9 b%12 v15 f+%45 b%45 r%90 r%90
+MSXH r%90 r%90 b b v14 b v13 b%12 v12 b v11 b v10 b v9 b%12 v15 < a%45 > d%45 b b v14 b v13 b%12
+MSXH v12 b v11 b v10 b v9 b%12 v15 f+%45 b%45 ?IR10 v13 > b v12 b v11 b v10 b%12 v9 b v8 b v7 b
+MSXH v6 b%12 ?IR7 v13 o3 e%90 d+%90 e%90 c%90 e%90 d+%90 e%90 c%90 ?IR1 v15 o5 b b v14 b v13
+MSXH b%12 v12 b v11 b v10 b v9 b%12 v15 < a%45 > d%45 b b v14 b v13 b%12 v12 b v11 b v10 b v9
+MSXH b%12 v15 f+%45 b%45 > c%90 < f+%90 e%67 d%23 g%45 f+%45 ?IR3 v6 > e < b > f+ < b%12 > g < b
+MSXH > e < b%12 v7 > c < g > d < g%12 > e < g > c < g%12 v8 a e b e%12 > c < e a e%12 v9 g < b >
+MSXH f+ < b%12 > e < b > d < b%12 v10 o6 e < b > f+ < b%12 > g < b > e < b%12 v11 > c < g > d <
+MSXH g%12 > e < g > c < g%12 v12 a e b e%12 > c < e a e%12 v13 g < b > f+ < b%12 > e < b > d <
+MSXH b%12 ?IR10 v14 o6 g d a d%12 b d g d%12 e < b > f+ < b%12 > g < b > e < b%12 > c < g > d <
+MSXH g%12 > e < g > c < g%12 b d a d%12 g d f+ d%12 > g d a d%12 b d g d%12 e < b > f+ < b%12 >
+MSXH g < b > e < b%12 > c < g > d < g%12 > e < g > c < g%12 b d a d%12 g d f+ d%12 r%22 ?IU0 v13
+MSXH g%23 f+ g%22 g%12 v10 g v9 g v8 g v7 g%12 v6 g v5 g v4 g v3 g%12
+MSXJ ?IR15 v13 D-5 q0 o2 l%11 [ e > e o1 a+ > a+%12 < b > b d > d%12 < e > e o1 a+ > a+%12 < b >
+MSXJ b < f+ > f+%12 ]2 ?IU2 e e > e < e%12 e e%5 e%6 > e%6 < e e%6 d d > d < d%12 d d%5 d%6 >
+MSXJ d%6 < d d%6 c c > c < c%12 c c%5 c%6 > c%6 < c c%6 < a a > a < a%12 b > b d d+%12 ?IR15 [ e
+MSXJ > e o1 a+ > a+%12 < b > b d > d%12 < e > e o1 a+ > a+%12 < b > b < f+ > f+%12 ]2 ?IU2 e e >
+MSXJ e < e%12 e e%5 e%6 > e%6 < e e%6 d d > d < d%12 d d%5 d%6 > d%6 < d d%6 c c > c < c%12 c
+MSXJ c%5 c%6 > c%6 < c c%6 < a a > a < a%12 b > b d d+%12 e v12 e v11 e v10 e%12 v9 e v8 e v7 e
+MSXJ v6 e%12 ?IR7 v13 e%90 d+%90 e%90 c%90 e%90 d+%90 e%90 c%90 ?IU2 e e > e < e%12 e e%5 e%6 >
+MSXJ e%6 < e e%6 d d > d < d%12 d d%5 d%6 > d%6 < d d%6 c c > c < c%12 c c%5 c%6 > c%6 < c c%6 <
+MSXJ a a > a < a%12 b > b d d+%12 c c > c < c%12 c c%5 c%6 > c%6 < c c%6 < b b > b < b%12 b b%5
+MSXJ b%6 > b%6 < b b%6 > c c > c < c%12 c c%5 c%6 > c%6 < c c%6 d d > d < d%12 d > d < d+ >
+MSXJ d+%12 e v12 e v11 e v10 e%12 v9 e v8 e v7 e v6 e%12 v5 e v4 e v3 e v2 e%12 v1 e%45 r%90
+MSXJ r%90 r%90 r%90 r%90 r%90 ?IR6 v14 [ e%67 e%6 d+%5 d%12 c%67 c%6 < b%5 a+%12 a%67 a%6 g+%5
+MSXJ g%12 f+%45 b%22 > d%23 ]2 r%22 e%23 d e%22 e%12 v10 e v9 e v8 e v7 e%12 v6 e v5 e v4 e v3
+MSXJ e%12
+I t198 @1 H3,4,0 v8 D-5 q0 o2 l%11 e > e D-8 o1 a+ > a+%12 < b > b D-6 d > d%12 < e > e D-8 o1
+I a+ > a+%12 < b > b D-6 < f+ > f+%12 e > e D-8 o1 a+ > a+%12 < b > b D-6 d > d%12 < e > e D-8
+I o1 a+ > a+%12 < b > b D-6 < f+ > f+%12 @2 v15 o5 g g v14 g v12 g%12 v11 g v9 g v8 g v6 g%12
+I v15 < f+%45 a%45 > g g v14 g v12 g%12 v11 g v9 g v8 g v6 g%12 v15 d%45 f+%45 @1 v8 o2 [ e > e
+I D-8 o1 a+ > a+%12 < b > b D-6 d > d%12 < e > e D-8 o1 a+ > a+%12 < b > b D-6 < f+ > f+%12 ]2
+I @2 v15 o5 g g v14 g v12 g%12 v11 g v9 g v8 g v6 g%12 v15 < f+%45 a%45 > g g v14 g v12 g%12 v11
+I g v9 g v8 g v6 g%12 v15 d%45 f+%45 @3 v12 > g v11 g v9 g v8 g%12 v6 g v5 g v3 g v2 g%12 @4 v12
+I D-9 o3 b%90 a+%90 b%90 D-6 g+%90 D-9 b%90 a+%90 b%90 D-6 g+%90 @2 v15 o5 g g v14 g v12 g%12
+I v11 g v9 g v8 g v6 g%12 v15 < f+%45 a%45 > g g v14 g v12 g%12 v11 g v9 g v8 g v6 g%12 v15 d%45
+I f+%45 @5 H3,0,0 v11 o7 l%5 c @6 v11 < a%6 e c%6 @5 v11 > c%6 @6 v11 < a e%6 c%6 @5 v11 > c @6
+I v11 < a%6 e c%6 @5 v11 > c%6 @6 v11 < a e%6 c%6 D-9 b D-6 f+%6 D-4 d+ @7 v11 D-9 < b%6 @6 v11
+I > b%6 D-6 f+ D-4 d+%6 @7 v11 D-9 < b%6 @6 v11 > b D-6 f+%6 D-4 d+ @7 v11 D-9 < b%6 @6 v11 >
+I b%6 D-6 f+ D-4 d+%6 @7 v11 D-9 < b%6 @5 v11 D-5 o7 c @6 v11 D-7 < a%6 D-5 e c%6 @5 v11 > c%6
+I @6 v11 D-7 < a D-5 e%6 c%6 @5 v11 > c @6 v11 D-7 < a%6 D-5 e c%6 @5 v11 > c%6 @6 v11 D-7 < a
+I D-5 e%6 c%6 c g%6 e @7 v11 < c%6 @6 v11 > c%6 g e%6 @7 v11 < c%6 D-9 b D-6 f+%6 D-4 d+ @8 v11
+I D-9 < b%6 @7 v11 > b%6 D-6 f+ D-4 d+%6 @8 v11 D-9 < b%6 @6 v2 D-5 o6 l%11 g d D-7 a d%12 D-9 b
+I D-6 d g d%12 v3 e @7 v3 D-9 < b @6 v3 D-6 > f+ @7 v3 D-9 < b%12 @6 v3 D-5 > g @7 v3 D-9 < b @6
+I v3 D-5 > e @7 v3 D-9 < b%12 @6 v5 D-5 > c @7 v5 < g @6 v5 > d @7 v5 < g%12 @6 v5 > e @7 v5 < g
+I @6 v5 > c @7 v5 < g%12 v6 D-9 b D-6 d a d%12 g d f+ d%12 @6 v8 > g d a d%12 D-9 b D-6 d g d%12
+I v9 e @7 v9 D-9 < b @6 v9 D-6 > f+ @7 v9 D-9 < b%12 @6 v9 D-5 > g @7 v9 D-9 < b @6 v9 D-5 > e
+I @7 v9 D-9 < b%12 @6 v11 D-5 > c @7 v11 < g @6 v11 > d @7 v11 < g%12 @6 v11 > e @7 v11 < g @6
+I v11 > c @7 v11 < g%12 v12 D-9 b D-6 d a d%12 g d f+ d%12 @9 H3,4,0 v11 [ D-9 b%90 D-5 > c%90
+I D-7 < a%90 D-5 g%45 f+%45 ]2 r%22 v12 e%23 d e%22 e%12 v8 e v6 e v5 e v3 e%12 v2 e v0 e @10 v6
+I e v5 e%12
+# *0{v54,27,15,15,15,15,0}
+# *1{v54,15,23,15,15,15,0}
+# *2{v54,27,23,15,15,15,0}
+# *3{v54,27,23,23,15,15,0}
+# *4{v54,27,15,23,15,15,0}
+# *5{v54,15,15,15,15,15,0}
+G l%11 [ [ *4 @13 c *0 @9 c *1 @10 c *0 @9 c%12 c c *1 @10 c *0 @9 c%12 ]3 *4 @13 c *0 @9 c *1
+G @10 c *0 @9 c%12 *1 @10 c%5 c%6 *0 @9 c *2 @11 c c%12 [ *4 @13 c *0 @9 c *1 @10 c *0 @9 c%12 c
+G c%5 c%6 *1 @10 c%6 *0 @9 c c%6 ]3 *4 @13 c *0 @9 c *1 @10 c *0 @9 c%12 *3 @15 c *2 @11 c%5 c%6
+G *0 @9 c%6 *2 @11 c%5 c%6 c%6 ]2 *3 @15 c *5 @8 c c c%12 *2 @11 c%5 c%6 *0 @9 c *2 @11 c c%12
+G *3 @15 c%22 *0 @9 c%23 *2 @11 c%7 *1 @10 c%8 c%7 *2 @11 c%8 *1 @10 c%7 c%8 *3 @15 c%22 *0 @9
+G c%23 *2 @11 c c c c%12 *3 @15 c%22 *0 @9 c%23 *2 @11 c%7 *1 @10 c%8 c%7 *2 @11 c%8 *1 @10 c%7
+G c%8 *3 @15 c%22 *0 @9 c *1 @10 c%6 c%6 *3 @15 c%22 *0 @9 c%6 c%5 c%12 *3 @15 c%22 *0 @9 c%23
+G *2 @11 c%7 *1 @10 c%8 c%7 *2 @11 c%8 *1 @10 c%7 c%8 *3 @15 c%22 *0 @9 c *1 @10 c%6 c%6 *2 @11
+G c c c c%12 *3 @15 c%22 *0 @9 c *1 @10 c%6 c%6 *2 @11 c%5 *1 @10 c%6 *0 @9 c%5 c%6 *3 @15 c *0
+G @9 c%12 *3 @15 c%5 *2 @11 c%6 *0 @9 c%5 c%6 *3 @15 c%6 *2 @11 c%5 *0 @9 c%6 c%6 *4 @13 c%5 *2
+G @11 c%6 c%5 c%6 *3 @15 c%6 *2 @11 c%5 *3 @15 c%6 *2 @11 c%6 [ *4 @13 c *0 @9 c *1 @10 c *0 @9
+G c%12 c c%5 c%6 *1 @10 c%6 *0 @9 c c%6 ]3 *4 @13 c *0 @9 c *1 @10 c *0 @9 c%12 *3 @15 c *2 @11
+G c *3 @15 c *2 @11 c%12 [ *4 @13 c *0 @9 c *1 @10 c *0 @9 c%12 c c%5 c%6 *1 @10 c%6 *0 @9 c c%6
+G ]3 *4 @13 c *0 @9 c *1 @10 c *0 @9 c%12 *3 @15 c%5 *2 @11 c%6 *0 @9 c%5 c%6 *2 @11 c%6 *0 @1
+G c%5 *2 @11 c%6 *0 @9 c%6 *3 @15 c%90 r%90 r%90 r%90 r%90 r%90 r%90 r%90 c%22 *0 @9 c%23 *2 @11
+G c%7 *1 @10 c%8 c%7 *2 @11 c%8 *1 @10 c%7 c%8 *3 @15 c%22 *0 @9 c%23 *2 @11 c%15 c%15 *0 c%15
+G *3 @15 c%22 *0 @9 c *2 @11 c%6 *1 @10 c%6 *2 @11 c%22 c%23 [ *3 @15 c%22 *2 @11 c%8 *1 @10 c%7
+G c%8 ]2 *3 @15 c%22 *0 @9 c%23 *2 @11 c%7 *1 @10 c%8 c%7 *2 @11 c%8 *1 @10 c%7 c%8 *3 @15 c%22
+G *0 @9 c%23 *2 @11 c%15 c%15 *0 c%15 *3 @15 c%22 *0 @9 c *2 @11 c%6 *1 @10 c%6 *2 @11 c%22 c%23
+G *3 @15 c *2 @11 c c%6 c%5 c%12 *3 @15 c *2 @11 c%5 c%6 c c%6 c%6 *0 @9 c c *3 @15 c *0 @9 c%12
+G c *3 @15 c *0 @9 c *3 @15 c%12 r%90

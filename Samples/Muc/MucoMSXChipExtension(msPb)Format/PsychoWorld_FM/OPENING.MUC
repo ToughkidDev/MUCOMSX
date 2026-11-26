@@ -1,0 +1,134 @@
+#mucom88 1.7
+#title Opening + Title
+#composer Kenji Yamazaki, Yuko Yamazaki
+#author ToughkidCST
+#comment Psycho World (MSX-MUSIC + OPNA)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension OPLL/OPNA parts, msPb010A).
+
+?IU0={65,81,14,32,181,233,132,4}
+?IU1={32,113,13,32,193,213,86,6}
+MSXA ?IR7 v13 D-5 q0 o7 c%36 g%24 l%12 [ f e d c%36 g%24 ]3 f e d < c%24 g%24 f e d e%24 d c%48
+MSXA ^%12 r < a+%24 > f%24 e d c d%96 r c%24 g%24 f e d e%24 d c%48 ^%12 r < a+%24 > f%24 e d c
+MSXA d%72 ^%12 f%24 e%36 e%6 f%6 g%24 > c%24 c%24 < a+%24 > d+ d c < a+ > c%36 < g+%6 a+%6 >
+MSXA c%24 d+%24 d+%24 d%24 c%24 < a+ > c%48 < e%6 f%6 g%24 > c%24 c%24 < a+%24 > d+ d c < a+ >
+MSXA c%36 < g+%6 a+%6 > c%24 d+%24 d+%24 d%24 d+%24 f%24 [ e%36 c%6 d%6 e%24 g%24 f%36 d%36 <
+MSXA a+%24 > d+%36 < g%6 a+%6 > d+%24 g%24 a%36 f%36 c%24 ]2 ?IR11 v14 o4 [ g a+ a > c < a+ > d
+MSXA c < a+ [ f a g a+ a > c < a+ a ]2 g a+ a > c < a+ > d c < a+ ]2 ?IR2 v15 o6 f%96 a%48 >
+MSXA c%48 < a+%72 g%24 > g%96 < g+%96 a+%48 > c%48 < b%72 > c%24 d%96 ?IR4 v14 < e%36 f g%16
+MSXA f%16 e%16 e%36 f g%16 f%16 e%16 d+%36 f g%16 f%16 d+%16 g%48 b%48 > c%24 g%24 f%16 e%16
+MSXA d%16 c%24 g%24 f%16 e%16 d%16 c%24 g%24 f%16 e%16 f%16 g%96 ?IR7 v13 < e%36 e%6 f%6 g%24 >
+MSXA c%24 c%24 < a+%24 > d+ d c < a+ > c%36 < g+%6 a+%6 > c%24 d+%24 d+%24 d%24 c%24 < a+ > c%48
+MSXA < e%6 f%6 g%24 > c%24 c%24 < a+%24 > d+ d c < a+ > c%36 < g+%6 a+%6 > c%24 d+%24 d+%24 d%24
+MSXA d+%24 f%24 [ e%36 c%6 d%6 e%24 g%24 f%36 d%36 < a+%24 > d+%36 < g%6 a+%6 > d+%24 g%24 a%36
+MSXA f%36 c%24 ]2 c%36 g%24 f e d c%36 g%24 f e d c%48 ^%12 < d+ g+ > c d%48 ^%12 < f a+ > d v14
+MSXA e%48 v13 ^%12 v12 ^%12 v11 ^%12 v10 ^%12 v9 ^%12 v8 ^%12 v7 ^%12 v6 ^%12 v5 ^%12 v4 ^%12 v3
+MSXA ^%12 v2 ^%12
+MSXB ?IR12 v13 D-5 q0 o8 l%12 [ c < c d c > ]7 c < c d c ?IR11 v12 o4 [ e%22 r%14 e%22 r%14 e%7
+MSXB r%5 e%7 r%5 e%22 r%14 e%22 r%14 e%7 r%5 e%7 r%5 d%22 r%14 d%22 r%14 d%7 r%5 d%7 r%5 d%22
+MSXB r%14 d%22 r%14 d%7 r%5 d%7 r%5 ]2 ?IR10 v14 o6 [ c < g e > c < g e > c < g a+ f d a+ f d a+
+MSXB f > d+ c < g+ > d+ c < g+ > d+ c g d < b > g d < b > g d ]2 [ g e c g e c g e f d < a+ > f
+MSXB d < a+ > f d a+ g d+ a+ g d+ a+ g > c < a f > c < a f > c < a ]2 ?IR6 v15 o4 l%6 d a+ g >
+MSXB d%72 ^%6 < c a f > c%72 ^%6 < f > c < a > f%72 ^%6 < g > d < a+ > g%72 ^%6 < d a+ g > d%72
+MSXB ^%6 < c a f > c%72 ^%6 < f > c < a > f%72 ^%6 < g > d < a+ > g%72 ^%6 r%3 ?IR2 D-8 > f%72
+MSXB ^%18 ^%3 r%3 a%48 > c%36 ^%6 ^%3 r%3 < a+%72 g%18 ^%3 r%3 > g%72 ^%18 ^%3 r%3 < g+%72 ^%18
+MSXB ^%3 r%3 a+%48 > c%36 ^%6 ^%3 r%3 < b%72 > c%18 ^%3 r%3 d%72 ^%18 ^%3 ?IR4 v14 D-5 < c%36
+MSXB l%12 d e%16 d%16 c%16 c%36 d e%16 d%16 c%16 c%36 d d+%16 d%16 c%16 < b%48 g%48 > c%24 g%24
+MSXB f%16 e%16 d%16 c%24 g%24 f%16 e%16 d%16 c%24 g%24 f%16 e%16 f%16 g%96 ?IR10 [ c < g e > c <
+MSXB g e > c < g a+ f d a+ f d a+ f > d+ c < g+ > d+ c < g+ > d+ c g d < b > g d < b > g d ]2 [
+MSXB g e c g e c g e f d < a+ > f d < a+ > f d a+ g d+ a+ g d+ a+ g > c < a f > c < a f > c < a
+MSXB ]2 ?IR7 v13 c%36 g%24 f e d c%36 g%24 f e d d+%48 ^%12 < g+ > c d+ f%48 ^%12 < a+ > d f v14
+MSXB g%48 v13 ^%12 v12 ^%12 v11 ^%12 v10 ^%12 v9 ^%12 v8 ^%12 v7 ^%12 v6 ^%12 v5 ^%12 v4 ^%12 v3
+MSXB ^%12 v2 ^%12
+MSXC ?IR7 v12 D-5 q0 o3 c%96 < a+%96 g+%96 g%96 ?IU0 q5 > l%12 [ c ]16 < [ a+ ]16 > [ c ]16 < [
+MSXC a+ ]16 ?IU0 [ > c c c c c c c c < a+ a+ a+ a+ a+ a+ a+ a+ g+ g+ g+ g+ g+ g+ g+ g+ g g g g g
+MSXC g g g ]2 ?IU0 > [ c c c c c c c c < a+ a+ a+ a+ a+ a+ a+ a+ > d+ d+ d+ d+ d+ d+ d+ d+ f f f
+MSXC f f f f f ]2 ?IR3 q0 < g%6 r%6 g r g%6 r%6 g%6 r%6 g r g%6 [ r%6 f%6 r%6 f r f%6 ]4 r%6 g%6
+MSXC r%6 g r g%6 r%6 g%6 r%6 g r g%6 r%6 v13 [ g%6 r%6 g r g%6 r%6 g%6 r%6 g r g%6 [ r%6 f%6 r%6
+MSXC f r f%6 ]4 r%6 ]2 [ g%6 r%6 g r g%6 r%6 ]4 [ g+%6 r%6 g+ r g+%6 r%6 ]4 [ g%6 r%6 g r g%6
+MSXC r%6 ]4 ?IR7 v12 > c%96 < a+%96 g+%96 g%96 > c%96 < a+%96 g+%96 g%96 ?IU0 [ > c c c c c c c
+MSXC c < a+ a+ a+ a+ a+ a+ a+ a+ g+ g+ g+ g+ g+ g+ g+ g+ g g g g g g g g ]2 ?IU0 > [ c c c c c c
+MSXC c c < a+ a+ a+ a+ a+ a+ a+ a+ > d+ d+ d+ d+ d+ d+ d+ d+ f f f f f f f f ]2 ?IR7 v13 c%96 <
+MSXC a+%96 g+%96 a+%96 c%48 v12 ^%12 v11 ^%12 v10 ^%12 v9 ^%12 v8 ^%12 v7 ^%12 v6 ^%12 v5 ^%12
+MSXC v4 ^%12 v3 ^%12 v2 ^%12 v1 ^%12
+MSXH ?IU1 v10 D-5 q0 o6 e%96 d%96 c%96 c%96 r%6 ?IR7 v12 c%24 g%24 l%12 f e d%6 r%6 e%24 d c%48
+MSXH ^%6 r%6 r < a+%24 > f%24 e d c%6 r%6 d%72 r%18 r%6 r c%24 g%24 f e d%6 r%6 e%24 d c%48 ^%6
+MSXH r%6 r < a+%24 > f%24 e d c%6 r%6 d%72 ^%12 f%18 r%6 v13 e%36 e%6 f%6 g%24 > c%18 r%6 c%24 <
+MSXH a+%24 > d+ d c < a+%6 r%6 > c%36 < g+%6 a+%6 > c%24 d+%18 r%6 d+%24 d%24 c%24 < a+%6 r%6 >
+MSXH c%48 < e%6 f%6 g%24 > c%18 r%6 c%24 < a+%24 > d+ d c < a+%6 r%6 > c%36 < g+%6 a+%6 > c%24
+MSXH d+%18 r%6 d+%24 d%24 d+%24 f%18 ?IR9 o5 e%36 e%6 g%6 > c%24 e%24 < d%36 d%6 f%6 a+%24 >
+MSXH d%24 < d+%36 d+%6 g%6 a+%24 > d+%24 < f%36 f%6 a%6 > c%24 f%24 < e%36 e%6 g%6 > c%24 e%24 <
+MSXH d%36 d%6 f%6 a+%24 > d%24 < d+%36 g%6 a+%6 > d+%24 g%24 < f%36 f%6 a%6 > c%24 f%24 ?IU1 v11
+MSXH d%96 c%96 f%96 g%96 ?IU1 d%96 c%96 f%96 g%96 c%96 a%48 > c%48 < d%96 g%48 a+%48 c%96 f%48
+MSXH g+%48 d%96 g%48 b%48 ?IU1 e%96 d%96 c%96 < b%96 e%96 d%96 c%96 < b%96 r%6 ?IR7 v13 o6 e%36
+MSXH e%6 f%6 g%24 > c%18 r%6 c%24 < a+%24 > d+ d c < a+%6 r%6 > c%36 < g+%6 a+%6 > c%24 d+%18
+MSXH r%6 d+%24 d%24 c%24 < a+%6 r%6 > c%48 < e%6 f%6 g%24 > c%18 r%6 c%24 < a+%24 > d+ d c <
+MSXH a+%6 r%6 > c%36 < g+%6 a+%6 > c%24 d+%18 r%6 d+%24 d%24 d+%24 f%18 ?IR9 o5 e%36 e%6 g%6 >
+MSXH c%24 e%24 < d%36 d%6 f%6 a+%24 > d%24 < d+%36 d+%6 g%6 a+%24 > d+%24 < f%36 f%6 a%6 > c%24
+MSXH f%24 < e%36 e%6 g%6 > c%24 e%24 < d%36 d%6 f%6 a+%24 > d%24 < d+%36 g%6 a+%6 > d+%24 g%24 <
+MSXH f%36 f%6 a%6 > c%24 f%24 ?IU1 v10 > c%96 < a+%96 c%96 > d%96 v11 e%48 v10 ^%12 v9 ^%12 v8
+MSXH ^%12 v7 ^%12 v6 ^%12 v5 ^%12 v4 ^%12 v3 ^%12 v2 ^%12 v1 ^%12 ^%12 ^%12
+MSXI ?IU1 v10 D-5 q0 o6 g%96 f%96 d+%96 e%96 ?IR11 v12 o4 [ g%22 r%14 g%22 r%14 g%7 r%5 g%7 r%5
+MSXI g%22 r%14 g%22 r%14 g%7 r%5 g%7 r%5 f%22 r%14 f%22 r%14 f%7 r%5 f%7 r%5 f%22 r%14 f%22 r%14
+MSXI f%7 r%5 f%7 r%5 ]2 ?IR7 v13 > c%36 c%6 d%6 e%24 g%24 < a+%36 a+%6 > c%6 d%24 < a+%24 > c%36
+MSXI c%6 d%6 d+%24 g%24 g%24 f%24 d+%24 l%12 d c%48 c%6 d%6 e%24 g%24 < a+%36 a+%6 > c%6 d%24 <
+MSXI a+%24 > c%36 c%6 d%6 d+%24 g%24 g%24 f%24 d+%24 d%24 ?IR10 v14 > [ e c < g > e c < g > e c
+MSXI d < a+ f > d < a+ f > d [ < a+ > g d+ ]3 a f c a f c a f ]2 ?IU1 v11 < a+%96 a%96 > c%96
+MSXI d%96 ?IU1 < a+%96 a%96 > c%96 d%96 < a%96 > f%48 a%48 < a+%96 > d%48 g%48 < g+%96 > c%48
+MSXI f%48 < b%96 > d%48 g%48 ?IU1 g%96 f%96 d+%96 d%96 g%96 f%96 d+%96 d%96 ?IR7 v13 < c%36 c%6
+MSXI d%6 e%24 g%24 < a+%36 a+%6 > c%6 d%24 < a+%24 > c%36 c%6 d%6 d+%24 g%24 g%24 f%24 d+%24 d
+MSXI c%48 c%6 d%6 e%24 g%24 < a+%36 a+%6 > c%6 d%24 < a+%24 > c%36 c%6 d%6 d+%24 g%24 g%24 f%24
+MSXI d+%24 d%24 ?IR10 v14 > [ e c < g > e c < g > e c d < a+ f > d < a+ f > d [ < a+ > g d+ ]3 a
+MSXI f c a f c a f ]2 ?IU1 v10 g%96 f%96 g+%96 a+%96 ?IR11 v13 > l%6 [ c < g e c > ]3 c < g e c
+MSXI v12 > c < g v11 e c v10 > c < g v9 e c v8 > c < g v7 e c v6 > c v5 < g v4 e v2 c
+MSXJ ?IU1 v10 D-5 q0 o7 c%96 < a+%96 g+%96 g%96 ?IR12 v14 < l%12 [ e g > c e g > c e g o5 ]2 [ d
+MSXJ f a+ > d f a+ > d f o5 ]2 [ e g > c e g > c e g o5 ]2 d f a+ > d f a+ > d f o5 d f a+ > d f
+MSXJ a+ > d f r%96 r%96 r%96 r%72 r r%96 r r%96 r%96 r%96 ?IR3 v13 < l%6 g e c e g%12 > c%12 < g
+MSXJ e c e g%12 > c%12 < f d < a+ > d f%12 a+%12 f d < a+ > d f%12 a+%12 d+ < a+ g a+ > d+%12
+MSXJ g%12 d+ < a+ g a+ > d+%12 g%12 f c < a > c f%12 a%12 f c < a > c f%12 a%12 g e c e g%12 >
+MSXJ c%12 < g e c e g%12 > c%12 < f d < a+ > d f%12 a+%12 f d < a+ > d f%12 a+%12 d+ < a+ g a+ >
+MSXJ d+%12 g%12 d+ < a+ g a+ > d+%12 g%12 f c < a > c f%12 a%12 f g < a+ c f g < a c ?IU1 v11 >
+MSXJ g%96 f%96 a%96 a+%96 ?IU1 g%96 f%96 a%96 a+%96 f%96 > c%48 f%48 < g%96 a+%48 > d%48 < f%96
+MSXJ g+%48 > c%48 < g%96 b%48 > d%48 ?IU1 > c%96 < a+%96 g+%96 g%96 c%96 < a+%96 g+%96 g%96 r%96
+MSXJ r%96 r%96 r%72 r%12 r%96 r%12 r%96 r%96 r%96 ?IR3 v13 > g e c e g%12 > c%12 < g e c e g%12
+MSXJ > c%12 < f d < a+ > d f%12 a+%12 f d < a+ > d f%12 a+%12 d+ < a+ g a+ > d+%12 g%12 d+ < a+
+MSXJ g a+ > d+%12 g%12 f c < a > c f%12 a%12 f c < a > c f%12 a%12 g e c e g%12 > c%12 < g e c e
+MSXJ g%12 > c%12 < f d < a+ > d f%12 a+%12 f d < a+ > d f%12 a+%12 d+ < a+ g a+ > d+%12 g%12 d+
+MSXJ < a+ g a+ > d+%12 g%12 f c < a > c f%12 a%12 f g < a+ c f g < a c ?IU1 v10 o6 e%96 < d%96
+MSXJ d+%96 f%96 v11 g%48 v10 ^%12 v9 ^%12 v8 ^%12 v7 ^%12 v6 ^%12 v5 ^%12 v4 ^%12 v3 ^%12 v2
+MSXJ ^%12 v1 ^%12 ^%12 e%12
+# *0{v54,27,15,15,15,15,0}
+# *1{v54,27,27,15,15,15,0}
+# *2{v54,15,15,15,15,15,0}
+# *3{v54,27,15,27,15,15,0}
+# *4{v54,15,27,15,15,15,0}
+# *5{v54,27,27,27,15,15,0}
+G t198 *3 @13 c%24 *1 @11 c%24 *0 c%8 c%8 c%8 c%8 c%8 c%8 *3 @13 c%24 *0 @9 c%24 *1 @11 c%16
+G c%16 *0 @9 c%16 *3 @13 c%24 l%12 *0 @9 c *4 @10 c%6 c%6 *1 @11 c%24 *0 @9 c%24 *3 @15 c *0 @11
+G c c c *1 c%6 c%6 c%6 c%6 c%6 c%6 c%6 c%6 *3 @13 c [ *2 @8 c *0 @9 c c *2 @8 c *0 @9 c *1 @11 c
+G c *0 @9 c ]3 *2 @8 c *0 @9 c c *2 @8 c *0 @9 c *1 @11 c c *3 @13 c [ *2 @8 c *0 @9 c c *2 @8 c
+G *0 @9 c *1 @11 c c *0 @9 c ]3 *2 @8 c *0 @9 c c *2 @8 c *1 @11 c c c *3 @13 c *2 @8 c *1 @11 c
+G *2 @8 c *0 @9 c *2 @8 c *1 @11 c *0 @9 c *2 @8 c *0 @9 c [ *1 @11 c *0 @9 c c *2 @8 c ]2 *1
+G @11 c *2 @8 c *0 @9 c *2 @8 c *1 @11 c *0 @9 c *2 @8 c *0 @9 c *1 @11 c *0 @9 c c *2 @8 c *1
+G @11 c *0 @9 c *3 @13 c *2 @8 c *1 @11 c *2 @8 c *0 @9 c *2 @8 c *1 @11 c *0 @9 c *2 @8 c *0 @9
+G c *4 @10 c [ *0 @9 c c *2 @8 c *1 @11 c ]2 *2 @8 c *0 @9 c *2 @8 c *1 @11 c *0 @9 c *2 @8 c *0
+G @9 c *1 @11 c *0 @9 c *1 @11 [ c%6 *4 @10 c%6 *1 @11 c ]2 [ *3 @13 c [ *2 @8 c *1 @11 c ]3 *2
+G @8 c ]3 *3 @13 c [ *2 @8 c *1 @11 c ]3 c *3 @13 c [ *1 @11 c c *0 @9 c ]2 *1 @11 c *3 @13 c *1
+G @11 c [ c *0 @9 c *1 @11 ]2 c c *3 @13 c *0 @9 c *1 @11 c *0 @9 c *4 @10 c *0 @9 c *1 @11 c c
+G *5 @15 c%6 *4 @10 c%6 *0 @9 c *1 @11 c%6 *4 @10 c%6 *0 @9 c *1 @11 c c c c [ *3 @13 c *0 @9 [
+G c%24 c c ]7 *5 @15 c c c ]2 [ *3 @13 c *0 @9 c%24 c c c%24 c ]7 *3 @13 c *0 @9 c%24 c c *1 @11
+G c c c *3 @13 c%24 *1 @11 c%24 *0 c%8 c%8 c%8 c%8 c%8 c%8 *3 @13 c%24 *0 @9 c%24 *1 @11 c%16
+G c%16 *0 @9 c%16 *3 @13 c%24 *0 @9 c *4 @10 c%6 c%6 *1 @11 c%24 *0 @9 c%24 [ *5 @15 c%24 *4 @10
+G c%6 c%6 *1 @11 c ]2 *3 @13 c%24 *1 @11 c%24 *0 c%8 c%8 c%8 c%8 c%8 c%8 *3 @13 c%24 *0 @9 c%24
+G *1 @11 c%16 c%16 *0 @9 c%16 *3 @13 c%24 *0 @9 c *4 @10 c%6 c%6 *1 @11 c%24 *0 @9 c%24 *3 @15 c
+G *0 @11 c c c *1 c%6 c%6 c%6 c%6 c%6 c%6 c%6 c%6 *3 @13 c *2 @8 c *1 @11 c *2 @8 c *0 @9 c *2
+G @8 c *1 @11 c *0 @9 c *2 @8 c *0 @9 c [ *1 @11 c *0 @9 c c *2 @8 c ]2 *1 @11 c *2 @8 c *0 @9 c
+G *2 @8 c *1 @11 c *0 @9 c *2 @8 c *0 @9 c *1 @11 c *0 @9 c c *2 @8 c *1 @11 c *0 @9 c *3 @13 c
+G *2 @8 c *1 @11 c *2 @8 c *0 @9 c *2 @8 c *1 @11 c *0 @9 c *2 @8 c *0 @9 c *4 @10 c [ *0 @9 c c
+G *2 @8 c *1 @11 c ]2 *2 @8 c *0 @9 c *2 @8 c *1 @11 c *0 @9 c *2 @8 c *0 @9 c *1 @11 c *0 @9 c
+G *1 @11 [ c%6 *4 @10 c%6 *1 @11 c ]2 [ *3 @13 c [ *2 @8 c *1 @11 c ]3 *2 @8 c ]3 *3 @13 c [ *2
+G @8 c *1 @11 c ]3 c *3 @13 c [ *1 @11 c c *0 @9 c ]2 *1 @11 c *3 @13 c *1 @11 c [ c *0 @9 c *1
+G @11 ]2 c c *3 @13 c *0 @9 c *1 @11 c *0 @9 c *4 @10 c *0 @9 c *1 @11 c c *5 @15 c%6 *4 @10 c%6
+G *0 @9 c *1 @11 c%6 *4 @10 c%6 *0 @9 c *1 @11 c c c c *3 @13 c%24 *1 @11 c%24 *0 c%8 c%8 c%8
+G c%8 c%8 c%8 *3 @13 c%24 *0 @9 c%24 *1 @11 c%16 c%16 *0 @9 c%16 *3 @13 c%24 *0 @9 c *4 @10 c%6
+G c%6 *1 @11 c%24 *0 @9 c%24 *3 @15 c *0 @11 c c c *1 c%6 c%6 c%6 c%6 c%6 c%6 c%6 c%6 *3 @13
+G c%96 r%96

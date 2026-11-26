@@ -1,0 +1,14 @@
+#mucom88 1.7
+#title Psycho World - Jingle
+#composer Kenji Yamazaki, Yuko Yamazaki
+#author ToughkidCST
+#comment Psycho World (MSX-MUSIC)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension OPLL parts, msPb0109).
+
+MSXA t198 ?IR3 v13 D-5 q0 o6 l%15 f+ < b > d f+ e%30 d c+ d c+ < b a b f+ < b%30
+MSXB ?IR3 v13 D-5 q0 o6 l%15 d < f+ b > d c+%30 < b a b a f+ e f+ d < f+%30
+MSXC r%15 ?IR2 v14 D-5 q0 o6 f+%60 e%60 d%60 < b%45
+MSXH r%7 ?IR2 v14 D-5 q0 o6 d%60 c+%60 < b%60 f+%45 ^%8
+MSXI ?IR2 v14 D-5 q0 o5 b%60 a%60 g%60 d%60
+MSXJ ?IR3 v13 D-5 q0 o2 b%60 a%60 g%60 b%60
+MSXG q1 r%120 r%120
