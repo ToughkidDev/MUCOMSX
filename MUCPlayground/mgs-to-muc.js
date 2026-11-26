@@ -157,6 +157,36 @@ const stateKey = (st) => Object.values(st).join(';');
 
 // What command x does from state st (changed in place): null, { note, len, key } for a note or
 // rest, { drums, len } for a rhythm hit (len in clocks), or { tokens: [...] } to write.
+// p as MUCOM88's M: the step every so many clocks, and its text.
+function fallOf(pf, song) {
+  if (!pf || pf === 128) return null;
+  const perFrame = pf < 128 ? -2.232 * pf : (pf - 128) * Math.max(1, 9 - song.octave) * (-2268 / song.period);
+  const perTick = perFrame / song.ticksPerFrame;
+  const rate = Math.max(song.vibratoStep, Math.abs(perTick) >= 1 ? 1 : Math.min(255, Math.round(1 / Math.abs(perTick))));
+  const depth = perTick * rate;
+  return { rate, depth: depth === 0 ? 0 : Math.abs(depth) < 1 ? Math.sign(depth) : Math.round(depth) };
+}
+const fallText = (pf, song, depth = null) => { const f = fallOf(pf, song); return f ? `M0,${f.rate},${depth ?? f.depth},255` : 'MF0'; };
+// The same for one note of an SSG or SCC part. The players keep such a pitch as an SSG period of
+// 12 bits (124,800 Hz over the frequency: on the SCC 30.5 Hz and up), and M's step is one step
+// of it in octave 1, half of one in octave 2 and so on. A fall that leaves that range comes back
+// in at the other end, as a high note. MGSDRV's does too, but its range goes 12% further down
+// (111,861 Hz), so a low drum that has faded by then there has not here. A fall that would
+// leave the range within the note is therefore made less steep: so that it gets there when
+// MGSDRV's does where that is in the first half of the note (the jump is the sound), and so
+// that it does not get there within the note otherwise.
+const SSG_CLOCK = 124800, PSG_CLOCK = 111860.78, C1 = 32.7032, SSG_TOP = 4090;
+function fallForNote(pf, song, octave, semitone, clocks) {
+  const f = fallOf(pf, song);
+  if (!f || f.depth >= 0) return fallText(pf, song);
+  const scale = 2 ** (octave - 1), inOctave1 = SSG_CLOCK / (C1 * 2 ** (semitone / 12)), fall = -f.depth;
+  const room = SSG_TOP * scale - inOctave1, theirs = SSG_TOP * scale * (SSG_CLOCK / PSG_CLOCK) - inOctave1;
+  const steps = Math.ceil((clocks + 1) / f.rate);
+  if (fall * steps <= room) return fallText(pf, song);
+  const fits = Math.floor(2 * theirs / fall <= steps ? (fall * room) / theirs : room / steps);
+  return fits < 1 ? 'MF0' : fallText(pf, song, -fits);
+}
+
 // song.skip counts what is left out (only when counting).
 function act(x, st, kind, song, counting) {
   const skip = (name) => { if (counting) song.report.skip(name); return null; };
@@ -201,13 +231,7 @@ function act(x, st, kind, song, counting) {
   };
   // p: the period grows every frame, by n/4 of 0.39% of it below 128 and by (n - 128) steps of
   // the octave's size above: MUCOM88's M with a long first leg does a one-way slide.
-  const fall = () => {
-    if (!st.pf || st.pf === 128) return { tokens: ['MF0'] };
-    const perFrame = st.pf < 128 ? -2.232 * st.pf : (st.pf - 128) * Math.max(1, 9 - song.octave) * perPeriod;
-    const perTick = perFrame / song.ticksPerFrame;
-    const rate = Math.max(song.vibratoStep, Math.abs(perTick) >= 1 ? 1 : Math.min(255, Math.round(1 / Math.abs(perTick))));
-    return { tokens: [`M0,${rate},${whole(perTick * rate)},255`] };
-  };
+  const fall = () => ({ tokens: [fallText(st.pf, song)] });
   const rhythmVolume = () => {
     // an OPLL volume step is 3 dB, an OPNA rhythm level step 0.75 dB
     const il = (top, v) => Math.max(0, top - 4 * (15 - v));
@@ -236,6 +260,7 @@ function act(x, st, kind, song, counting) {
       if (kind === 'rhythm' || x[1] >= 12) { st.tie = 0; return timed({ note: 'r' }, x[2] ?? st.len, x[2], false); }
       // from: where a portamento (_) starts; legato: MGSDRV's q0 on FM keeps the key down
       const a = { note: x[1], gate: st.gate, from: st.pp < 0 ? null : [st.pp, st.po], legato: fmLike && st.gate === 0 };
+      if (melodic && st.pf && st.pf !== 128 && !st.lp) a.fall = st.pf;
       // A note tied on (&) that is the note played last sets no pitch in MGSDRV, and a
       // portamento does not count as a note played: "c _c e & c" slides up and stays on e
       // (shift: how far from its name the note sounds). A rest in between changes nothing.
@@ -336,14 +361,21 @@ function convertTrack(cmds, kind, m, song) {
   // default length of a part is not a quarter until l says so).
   // mask (the drums of the rhythm part) and q are set while the song plays, so the text
   // cannot count on them across a repeat: they are written again after every [ / ] and L.
-  let txt = { oct: null, len: null, mask: null, q: null, gate: 0 };   // gate: the q in force, known or not
-  const forget = () => { txt.mask = null; txt.q = null; };
+  let txt = { oct: null, len: null, mask: null, q: null, gate: 0, m: null };   // gate: the q in force, known or not; m: the M
+  const forget = () => { txt.mask = null; txt.q = null; txt.m = null; };
   // #psg_tune: the pitch table of the PSG and SCC tracks. Each note moves by the nearest
   // number of semitones to where the table puts it (the fine rest comes with detune).
   const tune = (kind === 'psg' || kind === 'scc') && m.voice?.psgTune
     ? m.voice.psgTune.map((p, i) => (p > 0 ? Math.round(12 * Math.log2(PSG_TUNE[i] / p)) : 0)) : null;
 
   // ---- the model: a hash of what items[from, to) sound and write from state st
+  // The M of a note with a fall (p) in force, and whether any note of the part needs another
+  // than p itself gives: only then is the M looked after note by note.
+  let fitted = false;
+  const fitFor = (a, oct) => {
+    const key = a.note + (tune ? tune[a.note] : 0) + (a.shift || 0);
+    return fallForNote(a.fall, song, Math.min(8, Math.max(1, oct + Math.floor(key / 12))), ((key % 12) + 12) % 12, a.len);
+  };
   const run = (list, from, to, st) => {
     let h = 0x811c9dc5;
     for (let i = from; i < to; i++) {
@@ -351,9 +383,10 @@ function convertTrack(cmds, kind, m, song) {
       if (!Array.isArray(x)) { h = mix(h, runLoop(x, st)); continue; }
       const a = act(x, st, kind, song, false);
       if (!a) continue;
+      if (a.fall && !fitted && fitFor(a, st.oct) !== fallText(a.fall, song)) fitted = true;
       if (a.tokens) for (const t of a.tokens) h = mixText(h, t);
       else if (a.keyoff) h = mix(h, 0x4a);
-      else h = mix(mix(h, a.drums !== undefined ? 512 + a.drums : a.note === 'r' ? 255 : st.oct * 16 + a.note + (a.gate << 8) + (a.from ? (a.from[0] + a.from[1] * 16 + 1) << 12 : 0) + (a.shift ? (a.shift + 128) << 20 : 0)), a.len);
+      else h = mix(mix(h, a.drums !== undefined ? 512 + a.drums : a.note === 'r' ? 255 : st.oct * 16 + a.note + (a.gate << 8) + (a.from ? (a.from[0] + a.from[1] * 16 + 1) << 12 : 0) + (a.shift ? (a.shift + 128) << 20 : 0)), a.len + (a.fall ? a.fall << 16 : 0));
     }
     return h;
   };
@@ -452,6 +485,7 @@ function convertTrack(cmds, kind, m, song) {
     : t[0] === '@' && (kind === 'fm' || kind === 'opll') ? '@' : null);
   const write = (t) => {
     const k = kindOfToken(t);
+    if (t[0] === 'M') txt.m = t === 'MF1' ? null : t;
     if (k) {
       for (let j = out.length - 1; j >= 0 && !/^[a-gr[\]/L{]/.test(out[j]); j--) {
         if (kindOfToken(out[j]) !== k) continue;
@@ -489,6 +523,11 @@ function convertTrack(cmds, kind, m, song) {
           slid = { out, at: out.length - 1, name: NOTE[((from % 12) + 12) % 12], oct: startOct, to: name, toOct: endOct, len: a.len };
           txt.oct = endOct;
         } else {
+          if (a.fall) {
+            const t = fitFor(a, sim.oct), plain = fallText(a.fall, song);
+            if (t !== plain) fitted = true;
+            if (fitted && t !== txt.m) write(t);
+          }
           const tie = backToStart(name, endOct);
           sound(name, a.len, a.auto, carry, a.gate);
           if (tie >= 0 && /^[a-g]/.test(out[tie + 1])) out.splice(tie + 1, 0, `o${endOct}`);
@@ -548,6 +587,7 @@ function convertTrack(cmds, kind, m, song) {
     report.warn('repeatDrifts');
     asRepeat(node);
   };
+  run(items, 0, items.length, cloneState(sim));          // (a walk without writing: sets fitted)
   emit(items, 0, items.length);
   return { tokens: out, notes: tally.notes, clocks: tally.clocks, gated: tally.gated };
 }
