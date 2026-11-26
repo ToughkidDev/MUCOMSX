@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MucPlaygroundWeb",
   "resources": {
-    "hash": "sha256-Ls7EeZgDk+sBkhdVUcqQ0kOs7axk+cFpgl2eCVJ9JCo=",
+    "hash": "sha256-0trT9svwuEyr+a8X2SYCSySNqEDPFJIQCFgWU7acH9k=",
     "jsModuleNative": {
       "dotnet.native.8.0.33.o4cm7qh3rc.js": "sha256-V22TJ9QWTAqANfHoZPyhiFZWuYcMOd1PsZRF95bpngk="
     },
@@ -9,15 +9,15 @@
       "dotnet.runtime.8.0.33.q1mn7mvd0d.js": "sha256-aa75BhVU2iAzc0Nj93nvwfQ2raXDjiW4VBNfRLHRJgM="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-tEcM+996bQwEILTnBeB5dPD6HKPJsqBXO9V2wM/dQfY="
+      "dotnet.native.wasm": "sha256-Er3okRyBu1PyrVSaMkouctVP92hJHilticX6mHAwOgQ="
     },
     "assembly": {
-      "MDSound.wasm": "sha256-Z7PhhcRevlF7UZYs5rT3RliRpywoBHNzBe6Nfslbj8A=",
-      "MucEngine.wasm": "sha256-6B+ogO8fXcUrVgnwR48nvj3LpWeRoD40N8yDADXYvIM=",
+      "MDSound.wasm": "sha256-F42Hsr/tB+DCa662S6RV62er+casi7DTApzwBMAu79M=",
+      "MucEngine.wasm": "sha256-KjG+LNvJLgPamTl4HHQtAvFWEWwQLbLkSCHzVH06PMk=",
       "mucomDotNETCommon.wasm": "sha256-QCeL8NAnghByxHH70pLS30B2MypKtnixhh1b0dfkWy0=",
-      "mucomDotNETCompiler.wasm": "sha256-0WdNAXFa8zNT9fRz9uShgR8LmFsfoQxzhilva+RnSvM=",
-      "mucomDotNETDriver.wasm": "sha256-3NW1/t2/77EzoSf6b/60G4TQouCza59wMfdZu76WEHQ=",
-      "MucPlaygroundWeb.wasm": "sha256-Ha/1QhEBo5oRSPZ/TBwe5+p1XaLVhHdmAI1WE/K+t1A=",
+      "mucomDotNETCompiler.wasm": "sha256-/Ekz1O1MwB8pfgznGgfjkm6q1cQ9TgJx5tDtUxaNNw8=",
+      "mucomDotNETDriver.wasm": "sha256-8Hw/JNrq4+XkufGcwPQtJ04YXijwxA9HoA7odCYGvgI=",
+      "MucPlaygroundWeb.wasm": "sha256-peEFru6K4VjhbtEUk0an4pm4fQ6EYyXyDry9vP74Ddk=",
       "musicDriverInterface.wasm": "sha256-lTTNsHR2pS1u6wioXWfqcN3KJc5KtFOl3PFmFgeegz0=",
       "netstandard.wasm": "sha256-VeeuEJwutVjvcxMnvFgyL8N5sNUM1P/LDffuaI57nMo=",
       "System.Collections.Concurrent.wasm": "sha256-4rwdO22vFfJUds2HM9BBYJEbtftNrOTTS3xxi1o7JbI=",

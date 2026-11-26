@@ -100,6 +100,11 @@ public static class MucEngine
         string body = Position.Replace(text, "").Trim();
         foreach (var t in templates)
             if (t.Pattern.IsMatch(body)) return t.Code;
+        // a message with a detail after it: "... definition file. (@68: the voice file has @0 to @67)"
+        var detail = System.Text.RegularExpressions.Regex.Match(body, @"^(.*\S)\s+\(@\d+: [^()]*\)$", System.Text.RegularExpressions.RegexOptions.Singleline);
+        if (detail.Success)
+            foreach (var t in templates)
+                if (t.Pattern.IsMatch(detail.Groups[1].Value)) return t.Code;
         return "";
     }
 

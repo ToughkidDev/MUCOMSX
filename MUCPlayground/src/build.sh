@@ -9,7 +9,7 @@
 set -euo pipefail
 
 MDP4MAC_REPO=https://github.com/ToughkidDev/MDPlayer4Mac.git
-MDP4MAC_COMMIT=a4e3f28d7e66fb8e63ed7f06652689f9a8ec088a   # v0.3.4
+MDP4MAC_COMMIT=4af505059b720798dc99e04498bd9801926d4f5e   # v0.3.4
 
 here="$(cd "$(dirname "$0")" && pwd)"
 playground="$(dirname "$here")"
