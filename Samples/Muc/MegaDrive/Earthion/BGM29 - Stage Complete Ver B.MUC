@@ -1,0 +1,48 @@
+#mucom88 1.7
+#title Stage Complete Ver. B
+#composer Yuzo Koshiro
+#author ToughkidCST
+#comment Earthion (Ancient, 2025)
+#driver mucomDotNET
+#voice EARTHION.DAT
+#pcm EARTH29.BIN
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F), K = PCM
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{r o6d%5 r}
+#*2{r o5e%5 r}
+#*3{@15 o1e16 @19 e16 @21 e16}
+
+A C96 l96 vm2 t194 r4 @2 v122 p3 o4f+%5 r <f+%5 r%7 g+%11 r >f+%5 r b%5 *2 g+%5
+A r <g+%5 r v95 g+%11 r v122 b%5 r <b%5 r%7 a+%11 r >f%5 r a+%5 r >f%5 r a+%5 r
+A f%5 r c%5 r <f%5 r <a+%5 r >f%5 r t193 a+%5 r <a+%5 r >c%5 r c%5 r%7 d%11 r
+A v95 d%11 r
+
+B C96 l96 vm2 r4 @105 v119 p3 o6d%5 r <a%5 *2 >e%35 r v106 e%17 r v119 g%5 *1
+B <a%5 r >f%29 r v106 f%23 r v119 c%5 *1 f%5 *1 g%5 *1 e%5 r a%11 r v101 a%11 r
+
+C C96 l96 vm2 r4 @105 v122 p2 o5a%5 *2 <b%5 r >b%35 r v109 b%17 r v122 >d%5 r
+C <a%5 *2 >c%29 r v111 c%23 r v122 <a+%5 r >c%5 *1 <a+%5 r >c%5 r <g%5 r >c%5 r
+C e%11 r v103 e%11 r
+
+D C96 l96 @0 r4 P1 E255,255,0,255,0,116 v8 D20 o4a%10 r12 D14 b%34 r%20 D26
+D >d%10 r12 c%34 r%20 E255,255,0,255,0,255 D18 <a+24 r48 D26 >d24 r48 f24 r48
+D D18 <a+24 r48 D32 >c24 r48 g24 r48 c24 r48 d24 r%255 r%255 r%188
+
+E C96 l96 @0 r4 P1 E255,255,0,255,0,255 v8 o6d16 D20 <a16 e16 D30 >e4. v5 e8.
+E v8 D12 g16 D8 d16 D20 <a16 >f%30 v5 f4 v8 c16 D8 d16 D39 f16 D8 d16 g16 d16
+E D30 e16 E255,255,0,255,0,116 D20 a8 r%255 r%255 r%174
+
+H C96 l96 vm2 r4 @105 v122 p1 o5e%5 r <b%5 r f+%5 r >f+%17 r f+%5 r <b%5 r f+%5
+H r v109 >f+%17 r v122 a%5 *2 <b%5 r >a%29 r v109 a%23 r v122 f%11 r f%11 r g%5
+H *2 g%5 r f+%11 r v103 f+%11 r
+
+I C96 l96 vm2 r4 @15 v114 p3 o5a%5 r <a%5 r%7 >b%35 r v101 b%17 r v114 >d%5 r
+I <d%5 r%7 >c%35 r v101 c%17 r v114 <a+%5 *1 f%5 r <a+%5 r >c%5 r g%5 r c%5 *1
+I v95 d%5 r
+
+K C96 l96 p3 r48 @1 v62 D-308 o1e32 e32 e16 @2 e16 @3 e16 @4 e16 e%10 @5 v49
+K e48 @14 v62 e%10 *3 @23 e16 @26 e16 @29 e16 @31 e16 @1 e16 e8 @12 e8 *3 @24
+K e24 @25 e24 @30 e24 @32 e24 @8 e24 e24 @16 e16 @27 e16 @22 e16 @28 e16 @20
+K e16 @18 e16 @17 e16 @13 e2 r%255 r%255 r1.

@@ -1,0 +1,43 @@
+#mucom88 1.7
+#title Awakening Call
+#composer Yuzo Koshiro
+#author ToughkidCST
+#comment Earthion (Ancient, 2025)
+#driver mucomDotNET
+#voice EARTHION.DAT
+#pcm EARTH24.BIN
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F), K = PCM
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o6d <a e a e >c <g c}
+#*2{D-111 o7c}
+#*3{D66 o6e}
+
+A C96 l16 vm2 t195 r4 @10 v122 p3 o4d8 >d o3d8. >d <d >f8 >f o3f8. >f <f >g8
+A t196 >g o3g8 >g <g a%66 t195 r2
+
+B C96 l16 vm2 r4 @93 v122 p2 o3g8. D125 M1,1,-42,255 d24& MF0 d%14 D-142
+B M1,1,60,255 g32& M0,1,11,255 g48& MF0 g%7 D-97 M1,1,24,255 a+%5& MF0 a+%13
+B D150 M1,1,-50,255 f24& MF0 f%14 D-170 M1,1,50,255 a+32& M0,1,23,255 a+32& MF0
+B a+ D3 M1,1,22,255 b24& MF0 b%14 D169 M1,1,-56,255 g24& MF0 g%14 D7
+B M1,1,55,255 a32& M0,1,26,255 a32 D100 M1,1,-100,255 a48& MF0 a%64 r2
+
+D C96 l16 @0 r4 P1 E255,255,0,255,0,255 v9 D26 o5d D11 <a d >g [ D26 d D11 <a
+D ]2 D21 >f c <f >a+ f c f c D12 g D26 d <g o6c D12 <g D26 d >c D12 g%66 r2
+
+E C96 l16 @0 r4 P1 E255,255,0,255,20,255 v12 D38 o5a e D29 <a D44 *1 D39 >f D67
+E c D48 <g >c <g >d D38 <a D44 d >g d <a >a *3 *2 *3 E255,255,0,255,22,255 v11
+E *2 E255,255,0,255,23,255 v10 *3 *2 E255,255,0,255,26,255 v9 *3
+E E255,255,0,255,28,255 v8 *2 E255,255,0,255,29,255 *3 E255,255,0,255,116,255
+E v7 *2 E255,255,0,255,220,255 v6 *3 r2
+
+H C96 l16 vm2 r4 @94 v122 p3 o5a e <a *1 >f c <g >c <g >d <a d >g d <a >a e b e
+H v119 b v117 e v114 b v111 e v109 b v106 e v103 b v101 e r2
+
+I C96 l16 vm2 r4 @95 v119 p1 D6 o6d D10 <a D6 d D8 >g [ D6 d D10 <a ]2 D7 >f D5
+I c D7 <f D9 >a+ [ D7 f D5 c ]2 D8 g D6 d D8 <g D5 o7c D8 <g D6 d D5 >c D8 g%66
+I r2
+
+K C96 l16 p3 @1 v49 D-308 o1e32 v39 e32 e @2 e @3 e @7 v62 e8. @8 e8 @10 e @9
+K e8 @11 e8. @12 e%13 @14 e%5 @13 e8 @4 e8. @6 e8. @4 e @5 v49 e%66 r2
