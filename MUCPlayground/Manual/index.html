@@ -3,26 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#191f32">
 <title>MUCPlayground Manual</title>
 <meta name="description" content="MUCPlayground user's guide: playing, editing, the tracker, scope and keys, files, playlists, banks, share links, and the full MML reference.">
 <style>
+/* The colours are the logo's, as in MUCPlayground itself (../index.html). */
 :root{
-  --bg:#f4f1ea; --panel:#fffdf8; --ink:#1d1b16; --muted:#5d584c;
-  --line:#ddd6c6; --accent:#b4451f; --accent2:#1f5f7a; --code-bg:#fffdf8; --soft:#efeadf;
-  --note-bg:rgba(31,95,122,.08); --warn-bg:rgba(196,140,20,.14); --mark:rgba(242,184,0,.35);
-  --t-cmd:#1f5f7a; --t-num:#9a5b00; --t-str:#8a3b8f; --t-com:#8a8270;
-  --t-tag:#b4451f; --t-val:#2e7d4f; --t-mac:#6d4fc2;
+  --navy:#191f32; --cream:#f2ede0; --logo-line:linear-gradient(90deg,#4fc3f7,#8e7cf8 38%,#f2789f 70%,#ffa65c);
+  --bg:#f5f2ea; --panel:#fffdf8; --ink:#191f32; --muted:#5a6079;
+  --line:#ddd7c8; --accent:#d4561c; --accent2:#4553c4; --on-accent:#fff; --code-bg:#fffdf8; --soft:#efebe0;
+  --note-bg:rgba(69,83,196,.08); --warn-bg:rgba(196,140,20,.14); --mark:rgba(242,184,0,.35);
+  --t-cmd:#2c5fb3; --t-num:#9a5b00; --t-str:#a43d86; --t-com:#8a8779;
+  --t-tag:#d4561c; --t-val:#2e7d4f; --t-mac:#6d4fc2;
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans KR","Noto Sans JP",sans-serif;
   --side:290px;
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --bg:#15140f; --panel:#1e1c16; --ink:#eae5d8; --muted:#a29b89;
-    --line:#332f25; --accent:#e8794c; --accent2:#7fbcd8; --code-bg:#1a1813; --soft:#211f19;
-    --note-bg:rgba(127,188,216,.10); --warn-bg:rgba(220,170,60,.16); --mark:rgba(255,210,63,.30);
-    --t-cmd:#7fbcd8; --t-num:#e3a95a; --t-str:#d58fd0; --t-com:#8b8574;
-    --t-tag:#e8794c; --t-val:#8fcf9f; --t-mac:#b59cf2;
+    --bg:#131727; --panel:#1b2136; --ink:#ecebf3; --muted:#9aa3c7;
+    --line:#2d3554; --accent:#ffa65c; --accent2:#7fd3f7; --on-accent:#191f32; --code-bg:#161b2e; --soft:#1f2640;
+    --note-bg:rgba(127,211,247,.10); --warn-bg:rgba(220,170,60,.16); --mark:rgba(255,210,63,.30);
+    --t-cmd:#7fd3f7; --t-num:#ffc078; --t-str:#f29ac0; --t-com:#7d86a8;
+    --t-tag:#ffa65c; --t-val:#8fdba8; --t-mac:#b3a4ff;
   }
 }
 *{box-sizing:border-box}
@@ -34,16 +37,23 @@ code{font-size:.9em;background:var(--soft);border:1px solid var(--line);border-r
 kbd{font-size:.82em;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 .35em;background:var(--panel);white-space:nowrap}
 
 /* top bar */
-.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--line)}
-.top h1{margin:0;font-size:1.15rem;white-space:nowrap}
-.top h1 small{font-weight:400;color:var(--muted);margin-left:.4em}
+@font-face{font-family:"JetBrains Mono";font-weight:800;font-display:swap;src:url(../fonts/jetbrains-mono-800.woff2) format("woff2")}
+.top{--bg:#232b47; --panel:#232b47; --ink:var(--cream); --muted:#9aa3c7; --line:#3a4368; --accent:#ffa65c; --accent2:#7fd3f7; --on-accent:var(--navy);
+     position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:6px 20px 9px;background:var(--navy);color:var(--ink)}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--logo-line)}
+/* the logo (the MUC mark as drawn, "Playground", the cursor) and the name of the book */
+.top h1{margin:0;display:flex;align-items:center;gap:.21em;font:800 20px/1 "JetBrains Mono",var(--mono);white-space:nowrap}
+.top h1 a{display:flex;align-items:center;gap:.21em;color:var(--cream);text-decoration:none}
+.top h1 img{display:block;width:4.464em;height:2.214em}
+.top h1 i{width:.536em;height:1.714em;background:#ffa65c}
+.top h1 small{font:400 .8em var(--sans);color:var(--muted);margin-left:.7em}
 .top .spacer{flex:1}
 .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:6px 12px;font:inherit;font-size:.9rem;cursor:pointer;text-decoration:none}
 .btn:hover{border-color:var(--accent2)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .lang{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .lang button{border:0;background:transparent;color:var(--ink);padding:6px 10px;font:inherit;font-size:.85rem;cursor:pointer}
-.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.lang button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
 .search{flex:0 1 260px;min-width:140px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;font-size:.9rem}
 .menu-btn{display:none}
 
@@ -125,7 +135,7 @@ mark{background:var(--mark);color:inherit;border-radius:2px}
 <body>
 <header class="top">
   <button class="btn menu-btn" id="menuBtn" type="button" aria-controls="toc" aria-expanded="false">☰ <span id="menuLabel"></span></button>
-  <h1>📘 MUCPlayground <small id="docTitle">Manual</small></h1>
+  <h1 aria-label="MUCPlayground"><a href="../" aria-hidden="true" tabindex="-1"><img src="../logo/muc.jpg" width="250" height="124" alt="">Playground<i></i></a><small id="docTitle">Manual</small></h1>
   <span class="spacer"></span>
   <input class="search" id="search" type="search" autocomplete="off">
   <div class="lang" role="group" aria-label="Language">

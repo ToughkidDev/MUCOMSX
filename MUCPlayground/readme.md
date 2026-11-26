@@ -148,6 +148,7 @@ the heaviest chip); the interpreter managed 2.2× and 0.6×.
 | `template.muc` | The first template **New** offers: OPNA plus every MSX chip, commented (the chip extension templates are in `Samples/Muc/Templates/7_MSX_Extension`) |
 | `samples.json` | Offline copy of the Samples list (used when GitHub is unreachable), generated from `../Samples` |
 | `src/` | Engine glue (`Engine`), browser bindings (`Web`, `VgmWeb`), native check tool, build script |
+| `logo/`, `fonts/` | The MUC mark of the logo (`logo/muc.jpg`, as it was drawn) and the wordmark's font. The header of the page and of the manual is the logo: a line of MML, the mark, "Playground" and a cursor on the logo's navy, with the page's colours (both themes) taken from it |
 | `LICENSES/` | License texts |
 
 ## Rebuilding the engine
@@ -242,6 +243,7 @@ dotnet run -c Release --project MUCPlayground/src/NativeCheck -p:Mdp4MacDir=<MDP
 - **Furnace** by tildearrow and contributors, GPL-2.0-or-later: the SCC wave editor follows its wavetable editor (`src/gui/waveEdit.cpp`), and its shape and FM generators, wave tools and operator waveforms (`src/gui/util.cpp`) are ported to JavaScript in `wave-editor.js`; the FM voice editor follows its FM instrument editor (`src/gui/insEdit/insTabFM.cpp`: operator controls, `drawFMEnv`, the default instrument) in `fm-editor.js` (read from ToughkidDEV's fork furnace4CSTPrivate)
 - **mgsrc-js** (the decompression of compressed MGS files) and **mgsc**'s MGS format notes, by Mitsutaka Okazaki / Digital Sound Antiques, ISC — `LICENSES/mgsrc-js.txt`. **MGSC**'s manual (Ain) for the commands' meaning. The built-in YM2413 voice data is emu2413's.
 - **ymfm** tables used by the MSX playback code, BSD-3-Clause — `LICENSES/ymfm.txt`
+- **JetBrains Mono** (the logo's wordmark, weights 500 and 800, Latin; `fonts/`), © The JetBrains Mono Project Authors, SIL Open Font License 1.1 — `LICENSES/JetBrainsMono-OFL.txt`
 - **MDPlayer** by kuma4649 / **MDPlayer4Mac** by ToughkidCST, GPL-3.0 — `LICENSES/GPL-3.0.txt`. The channel view (`chview/`) is a port of MDPlayer4Mac's visualizers and MDPlayer's `DrawBuff`, and uses MDPlayer's panel and font bitmaps.
 
 MUCPlayground's engine (`engine/` and `src/`) is distributed under GPL-3.0. Its

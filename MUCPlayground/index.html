@@ -3,30 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="data:,">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23191f32'/%3E%3Cpath d='M6 22V10l5 6 5-6v12' fill='none' stroke='%237fd3f7' stroke-width='3' stroke-linejoin='round' stroke-linecap='round'/%3E%3Crect x='21' y='8' width='5' height='16' fill='%23ffa65c'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#191f32">
 <title>MUCPlayground — MUCOMSX</title>
 <meta name="description" content="Write MUCOM88 MML in your browser and hear it right away. YM2608 (OPNA), MSX PSG, SCC/SCC+ and MSX-MUSIC, using the same compiler and chip emulation as MDPlayer4Mac.">
 <style>
+/* The colours are the logo's: its navy (#191F32), the cream of "Playground" (#F2EDE0), the
+   orange of the cursor (#FFA65C) and the blue-to-violet-to-pink of the MUC mark. --on-accent
+   and --on-accent2 are the text on a field of --accent and --accent2. */
 :root{
-  --bg:#f4f1ea; --panel:#fffdf8; --ink:#1d1b16; --muted:#5d584c;
-  --line:#ddd6c6; --accent:#b4451f; --accent2:#1f5f7a;
-  --code-bg:#fffdf8; --gutter:#efeadf; --err-bg:rgba(180,69,31,.13); --warn-bg:rgba(196,140,20,.14);
+  --navy:#191f32; --cream:#f2ede0; --logo-line:linear-gradient(90deg,#4fc3f7,#8e7cf8 38%,#f2789f 70%,#ffa65c);
+  --bg:#f5f2ea; --panel:#fffdf8; --ink:#191f32; --muted:#5a6079;
+  --line:#ddd7c8; --accent:#d4561c; --accent2:#4553c4; --on-accent:#fff; --on-accent2:#fff;
+  --code-bg:#fffdf8; --gutter:#efebe0; --err-bg:rgba(212,86,28,.13); --warn-bg:rgba(196,140,20,.14);
   --err-line:#e0281b; --warn-line:#f2b800;
-  --scope:#1f5f7a;
-  --t-note:#1d1b16; --t-cmd:#1f5f7a; --t-num:#9a5b00; --t-str:#8a3b8f; --t-com:#8a8270;
-  --t-tag:#b4451f; --t-val:#2e7d4f; --t-mac:#6d4fc2; --sel:rgba(31,95,122,.25);
+  --scope:#4553c4;
+  --t-note:#191f32; --t-cmd:#2c5fb3; --t-num:#9a5b00; --t-str:#a43d86; --t-com:#8a8779;
+  --t-tag:#d4561c; --t-val:#2e7d4f; --t-mac:#6d4fc2; --sel:rgba(69,83,196,.22);
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans KR","Noto Sans JP",sans-serif;
 }
 @media (prefers-color-scheme:dark){
   :root{
-    --bg:#15140f; --panel:#1e1c16; --ink:#eae5d8; --muted:#a29b89;
-    --line:#332f25; --accent:#e8794c; --accent2:#7fbcd8;
-    --code-bg:#1a1813; --gutter:#211f19; --err-bg:rgba(232,121,76,.18); --warn-bg:rgba(220,170,60,.16);
-    --err-line:#ff4d3d; --warn-line:#ffd23f;
-    --scope:#7fbcd8;
-    --t-note:#eae5d8; --t-cmd:#7fbcd8; --t-num:#e3a95a; --t-str:#d58fd0; --t-com:#8b8574;
-    --t-tag:#e8794c; --t-val:#8fcf9f; --t-mac:#b59cf2; --sel:rgba(127,188,216,.28);
+    --bg:#131727; --panel:#1b2136; --ink:#ecebf3; --muted:#9aa3c7;
+    --line:#2d3554; --accent:#ffa65c; --accent2:#7fd3f7; --on-accent:#191f32; --on-accent2:#191f32;
+    --code-bg:#161b2e; --gutter:#1b2136; --err-bg:rgba(255,125,95,.18); --warn-bg:rgba(220,170,60,.16);
+    --err-line:#ff5c4d; --warn-line:#ffd23f;
+    --scope:#7fd3f7;
+    --t-note:#ecebf3; --t-cmd:#7fd3f7; --t-num:#ffc078; --t-str:#f29ac0; --t-com:#7d86a8;
+    --t-tag:#ffa65c; --t-val:#8fdba8; --t-mac:#b3a4ff; --sel:rgba(127,211,247,.25);
   }
 }
 *{box-sizing:border-box}
@@ -46,20 +51,43 @@ kbd{font-family:var(--mono);font-size:.74em;border:1px solid var(--line);border-
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* ---------- header ---------- */
-header.top{display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--line)}
+/* The header is the logo's own ground, in both themes: navy, with what stands on it in the
+   logo's colours (the variables are set again here, so the buttons and sliders follow), and
+   the line of the MUC mark's colours under it. */
+@font-face{font-family:"JetBrains Mono";font-weight:500;font-display:swap;src:url(fonts/jetbrains-mono-500.woff2) format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-weight:800;font-display:swap;src:url(fonts/jetbrains-mono-800.woff2) format("woff2")}
+header.top{--bg:#232b47; --panel:#232b47; --ink:var(--cream); --muted:#9aa3c7; --line:#3a4368;
+           --accent:#ffa65c; --accent2:#7fd3f7; --on-accent:var(--navy); --on-accent2:var(--navy);
+           position:relative;display:flex;align-items:center;gap:12px 20px;flex-wrap:wrap;padding:10px 20px 13px;
+           background:var(--navy);color:var(--ink)}
+header.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--logo-line)}
+header.top input[type=range]{accent-color:var(--accent)}
 .back{font-size:.88rem;color:var(--muted)}
-h1{margin:0;font-size:1.25rem;letter-spacing:-.01em}
-h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
-.byline{margin:1px 0 0;font-size:.78rem;color:var(--muted);letter-spacing:.02em}
-/* Text and menu size, left of the language switch */
-.sizes{margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px}
-.sizes + .lang{margin-left:0}
-.lang{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+/* The logo: a line of MML, the MUC mark (the image as it was drawn, on its own navy),
+   "Playground" and the cursor. Everything is in em of the wordmark, so one font size scales it. */
+h1.logo{margin:0;font:800 28px/1 "JetBrains Mono",var(--mono);letter-spacing:0;display:flex;flex-direction:column;align-items:flex-start}
+.logo-mml{position:relative;z-index:1;height:.4em;font-size:.357em;font-weight:500;line-height:1;letter-spacing:.04em;color:#9aa3c7;white-space:nowrap}
+.logo-row{display:flex;align-items:center;gap:.21em}
+.logo-row img{display:block;width:4.464em;height:2.214em}
+.logo-word{color:var(--cream);white-space:nowrap}
+.logo-cursor{width:.536em;height:1.714em;background:#ffa65c;animation:logo-cursor 1.1s steps(1) infinite}
+@keyframes logo-cursor{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.logo-cursor{animation:none}}
+@media (max-width:640px){h1.logo{font-size:22px}}
+.byline{margin:3px 0 0;font-size:.78rem;color:var(--muted);letter-spacing:.02em}
+.byline .sub{color:var(--cream);opacity:.85}
+.byline .sub::after{content:" · ";opacity:.6}
+/* The language switch over the text and menu sizes, at the right of the header */
+.top-right{margin-left:auto;display:flex;flex-direction:column-reverse;align-items:flex-end;gap:8px}
+.sizes{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px 16px}
+.sizes input[type=range]{width:92px}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
 .lang button{border:0;background:transparent;padding:4px 12px;font-size:.82rem;cursor:pointer;color:var(--muted)}
-.lang button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.lang button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
 
 /* ---------- toolbar ---------- */
 .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 20px;border-bottom:1px solid var(--line);background:var(--panel)}
+.btn.primary{box-shadow:0 1px 0 rgba(25,31,50,.18)}
 /* the loop button: once / loop / random, each with its icon */
 .song-step{padding-left:10px;padding-right:10px}
 .song-step .lm-icon path:last-child{fill:currentColor}
@@ -70,9 +98,9 @@ h1 .sub{color:var(--muted);font-weight:400;font-size:.85rem;margin-left:.5em}
      padding:6px 12px;cursor:pointer;font-size:.9rem;white-space:nowrap}
 .btn:hover{border-color:var(--accent2)}
 .btn:focus-visible,.lang button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
 .btn.primary:hover{opacity:.9}
-.btn.primary kbd{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.btn.primary kbd{background:transparent;color:var(--on-accent);border-color:color-mix(in srgb,var(--on-accent) 50%,transparent)}
 .btn[disabled]{opacity:.5;cursor:default}
 .clock{font-family:var(--mono);font-size:.95rem;min-width:6em;color:var(--muted)}
 .vol{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:.85rem}
@@ -151,9 +179,9 @@ select{border:1px solid var(--line);background:var(--bg);border-radius:8px;paddi
 .tool-group{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .tool-group button{border:0;border-right:1px solid var(--line);background:transparent;padding:0 7px;cursor:pointer;font:inherit;color:var(--muted);line-height:1.6}
 .tool-group button:last-child{border-right:0}
-.tool-group button[aria-pressed="true"]{background:var(--accent2);color:#fff}
+.tool-group button[aria-pressed="true"]{background:var(--accent2);color:var(--on-accent2)}
 .editor-foot .grp{display:inline-flex;align-items:center;gap:6px}
-.btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:var(--on-accent2)}
 .gutter{margin:0;padding:12px 10px 12px 0;min-width:52px;text-align:right;color:var(--muted);background:var(--gutter);
         border-right:1px solid var(--line);user-select:none;overflow:hidden;white-space:pre;font:inherit;line-height:inherit;opacity:.85}
 .gutter span{display:block;padding-left:8px}
@@ -200,15 +228,15 @@ textarea::selection{background:var(--sel);color:transparent}
 .wave .wave-edit{pointer-events:auto;float:right;margin:-2px 0 0 8px;padding:2px 8px}
 /* ▶ at the end of the caret's part line: plays that line */
 .line-play{position:absolute;z-index:4;width:22px;height:20px;padding:0;border:1px solid var(--accent2);border-radius:5px;background:var(--panel);color:var(--accent2);font-size:11px;line-height:1;cursor:pointer;opacity:.85}
-.line-play:hover{opacity:1;background:var(--accent2);color:#fff}
+.line-play:hover{opacity:1;background:var(--accent2);color:var(--on-accent2)}
 .line-play.stop{border-color:var(--accent);color:var(--accent);opacity:1}
-.line-play.stop:hover{background:var(--accent);color:#fff}
+.line-play.stop:hover{background:var(--accent);color:var(--on-accent)}
 /* SCC wave editor (wave-editor.js); the FM voice editor (fm-editor.js) shares its frame */
 .wavedit{flex:1;display:flex;flex-direction:column;min-height:0;overflow:auto;background:var(--panel)}
 .wavedit[hidden]{display:none!important}
 .we-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 12px;border-bottom:1px solid var(--line)}
 .we-title{font-family:var(--mono);font-size:.9rem;color:var(--t-mac)}
-.we-bar .btn[aria-pressed="true"],.we-values .btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.we-bar .btn[aria-pressed="true"],.we-values .btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:var(--on-accent2)}
 .we-bar select{padding:3px 6px}
 .we-main{flex:1;display:flex;gap:12px;padding:10px 12px;min-height:280px}
 .we-graph{flex:1;display:flex;flex-direction:column;min-width:0}
@@ -219,7 +247,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .we-panes{flex:1;min-height:0;overflow:auto;padding-right:2px}
 .we-tabs{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .we-tabs button{flex:1;border:0;background:transparent;padding:5px 6px;cursor:pointer;font-size:.82rem}
-.we-tabs button[aria-selected="true"]{background:var(--accent);color:#fff}
+.we-tabs button[aria-selected="true"]{background:var(--accent);color:var(--on-accent)}
 .we-pane{display:flex;flex-direction:column;gap:6px}
 .we-pane[hidden]{display:none}
 .we-pane label{display:flex;align-items:center;gap:6px}
@@ -366,14 +394,14 @@ textarea::selection{background:var(--sel);color:transparent}
 .man-nav{display:flex;gap:6px;overflow-x:auto;padding:8px 10px;border-bottom:1px solid var(--line);scrollbar-width:thin}
 .man-nav a{flex:none;font-size:0.907em;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--ink);background:var(--bg);white-space:nowrap}
 .man-nav a:hover{border-color:var(--accent2);color:var(--accent2);text-decoration:none}
-.man-nav a[aria-current]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.man-nav a[aria-current]{background:var(--accent2);border-color:var(--accent2);color:var(--on-accent2)}
 .man-body{flex:1;min-height:0;overflow:auto;padding:4px 14px 24px;outline:none;position:relative}
 .man-intro{color:var(--muted);margin:10px 0 4px}
 .man-sec h3{font-size:1.16em;margin:18px 0 4px;padding-bottom:4px;border-bottom:2px solid var(--accent2);color:var(--ink)}
 .man-sec-d{color:var(--muted);margin:4px 0 8px}
 .man-entry{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0;background:var(--bg)}
 .man-entry header{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px}
-.man-cmd{font-family:var(--mono);font-weight:700;font-size:1.1em;color:#fff;background:var(--accent);border-radius:6px;padding:1px 8px}
+.man-cmd{font-family:var(--mono);font-weight:700;font-size:1.1em;color:var(--on-accent);background:var(--accent);border-radius:6px;padding:1px 8px}
 .man-title{font-weight:700}
 .man-on{font-size:0.791em;font-weight:700;letter-spacing:.04em;color:var(--accent2);border:1px solid color-mix(in srgb,var(--accent2) 45%,transparent);border-radius:4px;padding:0 5px}
 .man-syntax{font-family:var(--mono);font-size:0.953em;margin:8px 0 6px;padding:4px 8px;border-left:3px solid var(--accent2);background:color-mix(in srgb,var(--accent2) 7%,transparent);white-space:pre-wrap;overflow-wrap:anywhere}
@@ -391,7 +419,7 @@ textarea::selection{background:var(--sel);color:transparent}
 .bank-bar,.bank-tools{display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;padding:6px 10px;border-bottom:1px solid var(--line)}
 .bank-bar b{font-size:.88rem}
 .bank-tabs .btn{padding:1px 10px;font-size:.78rem}
-.bank-tabs .btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.bank-tabs .btn[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:var(--on-accent2)}
 .bank-file{font-family:var(--mono);color:var(--muted);font-size:.78rem}
 .we-spacer{flex:1}
 .pe-fields{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:6px 12px;border-bottom:1px solid var(--line);font-size:.82rem}
@@ -446,11 +474,11 @@ textarea::selection{background:var(--sel);color:transparent}
 .kb .white{height:100%;background:#fdfcf8;color:#8a8577;z-index:1}
 .kb .black{height:60%;background:#2b2a27;color:#c9c4b5;border-color:#1a1918;z-index:2}
 .kb .key .nm{color:var(--accent);font-weight:700}
-.kb .white.on{background:var(--accent2);color:#fff}
-.kb .black.on{background:var(--accent2);color:#fff}
+.kb .white.on{background:var(--accent2);color:var(--on-accent2)}
+.kb .black.on{background:var(--accent2);color:var(--on-accent2)}
 .editor-foot .keys-toggle{padding:1px 8px;font-size:.78rem}
 .file-actions{display:flex;flex-wrap:wrap;gap:6px}
-.keys-toggle[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.keys-toggle[aria-pressed="true"]{background:var(--accent2);border-color:var(--accent2);color:var(--on-accent2)}
 @media (max-width:640px){.kb .key .pc,.keys-hint{display:none}}
 /* Suggestions */
 .ac{position:absolute;z-index:5;width:min(440px,calc(100% - 8px));background:var(--panel);border:1px solid var(--line);
@@ -536,8 +564,8 @@ footer p{margin:2px 0}
 .samples[open]{display:flex}
 a.btn{text-decoration:none}
 .share-top{align-self:center;padding:5px 12px;font-weight:600;border-color:var(--accent2);color:var(--accent2)}
-.share-top:hover{background:var(--accent2);color:#fff}
-.share-top[aria-pressed="true"]{background:var(--accent2);color:#fff}
+.share-top:hover{background:var(--accent2);color:var(--on-accent2)}
+.share-top[aria-pressed="true"]{background:var(--accent2);color:var(--on-accent2)}
 /* Player mode: MDPlayer4Web in place of the editor; everything else is inert and dimmed. */
 .player-frame{flex:1;width:100%;min-height:0;border:0;background:#000}
 body.player-mode #panes,body.player-mode #chview,body.player-mode #keys,body.player-mode .wavedit{display:none !important}
@@ -618,12 +646,16 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 <header class="top">
   <a class="back" href="../" data-i18n="back">← MUCOMSX</a>
   <div class="title">
-    <h1>MUCPlayground <span class="sub" data-i18n="tagline">Write MUCOM88 MML, hear it right away</span></h1>
-    <p class="byline">Written by ToughkidCST</p>
+    <h1 class="logo" aria-label="MUCPlayground">
+      <span class="logo-mml" aria-hidden="true">A t150 o4 l8 cdefgab&gt;c</span>
+      <span class="logo-row" aria-hidden="true"><img src="logo/muc.jpg" width="250" height="124" alt=""><span class="logo-word">Playground</span><span class="logo-cursor"></span></span>
+    </h1>
+    <p class="byline"><span class="sub" data-i18n="tagline">Write MUCOM88 MML, hear it right away</span>Written by ToughkidCST</p>
   </div>
   <button type="button" class="btn share-top" id="shareBtn" data-i18n-title="shareTip"><span aria-hidden="true">🔗</span> <span data-i18n="share">Share</span></button>
   <button type="button" class="btn share-top" id="playerModeBtn" aria-pressed="false" data-i18n-title="playerModeTip"><span aria-hidden="true">🎧</span> <span data-i18n="playerMode">Player mode</span></button>
   <a class="btn share-top" id="docLink" href="Manual/" target="_blank" rel="noopener" data-i18n-title="docLinkTip"><span aria-hidden="true">📘</span> <span data-i18n="docLink">Guide</span></a>
+  <div class="top-right">
   <div class="sizes">
     <label class="vol"><span data-i18n="fontSize" data-i18n-title="fontSizeTip">Text</span> <input id="fontSize" data-i18n-title="fontSizeTip" type="range" min="10" max="24" step="0.5" value="13.5"> <output id="fontSizeOut" for="fontSize">13.5</output></label>
     <label class="vol"><span data-i18n="uiSize" data-i18n-title="uiSizeTip">Menus</span> <input id="uiSize" data-i18n-title="uiSizeTip" type="range" min="100" max="200" step="10" value="100"> <output id="uiSizeOut" for="uiSize">100%</output></label>
@@ -632,6 +664,7 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
     <button type="button" data-lang="en" aria-pressed="false">EN</button>
     <button type="button" data-lang="ko" aria-pressed="false">한국어</button>
     <button type="button" data-lang="ja" aria-pressed="false">日本語</button>
+  </div>
   </div>
 </header>
 
