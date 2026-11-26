@@ -307,10 +307,12 @@ function convertTrack(track, kind, ctx) {
       }
     };
     const add = (r, times = 1) => { out.push(...r.out); for (const k of Object.keys(tally)) tally[k] += times * r.tally[k]; };
-    for (let i = from; i < to; i++) {
-      const x = items[i];
-      if (Array.isArray(x)) { command(x); continue; }
-      // a repeat: the passes from the states they really start in
+    // A repeat: the passes from the states they really start in. One whose passes come out the
+    // same is written as a repeat. Where the first passes differ from the later ones (a voice
+    // or a volume set before it is changed in it, a tie into it), all of them are written out;
+    // a repeat too long for that (PEEL_FROM commands) has its first passes written out, up to
+    // PEELED of them, and the rest is tried again from there (a tie into a repeat is not kept).
+    const repeat = (x, peeled) => {
       const end = x.exit ?? x.body.length, unknown = (T) => { T.q = null; return T; };
       const S0 = unknown(structuredClone(S));
       const a = emitList(x.body, 0, x.body.length, S0, depth + 1); // S0 is now the state after one pass
@@ -330,10 +332,17 @@ function convertTrack(track, kind, ctx) {
         // where the repeat leaves: the state of the pass before its exit, the place it stops at
         Object.assign(S, x.exit === null ? T : mid, { q: null });
         S.ph = (x.exit === null ? T.ph : mid.ph) % d;
+      } else if (x.count > 2 && peeled < PEELED && x.count * a.out.length > PEEL_FROM) {
+        add(emitList(x.body, 0, x.body.length, S, depth));
+        repeat({ ...x, count: x.count - 1 }, peeled + 1);
       } else {
         ctx.count('repeatsWrittenOut');
         for (let k = 0; k < x.count; k++) add(emitList(x.body, 0, k === x.count - 1 ? end : x.body.length, S, depth));
       }
+    };
+    for (let i = from; i < to; i++) {
+      const x = items[i];
+      if (Array.isArray(x)) command(x); else repeat(x, 0);
     }
     return { out, tally };
   };
@@ -352,6 +361,17 @@ function convertTrack(track, kind, ctx) {
     if (b.out[b.out.length - 1] === '&') b.out.pop();
     tokens.push('L', ...b.out);
     tally = b.tally;                                               // what repeats is what counts
+  }
+  // MucoMSX's other compiler (the rows of a song with ?IU) takes a tie only with a note after
+  // it: one that a rest, a repeat mark, the loop or the end follows (commands in between or
+  // not) is left out there.
+  if (plain) {
+    tokens = tokens.filter((x, i) => {
+      if (x !== '&') return true;
+      let j = i + 1;
+      while (j < tokens.length && typeof tokens[j] === 'string' && !/^[[\]/L&]/.test(tokens[j])) j++;
+      return j < tokens.length && typeof tokens[j] !== 'string' && !tokens[j].rest;
+    });
   }
   return { tokens: text(tokens, ctx.clock), notes: tally.notes, clocks: tally.clocks, gated: tally.gated, lfo: tally.lfo };
 }
@@ -506,17 +526,40 @@ function mergePcm(m, tracks, seconds, pcmBytes, drumOf = () => null) {
 const unroll = (items) => items.flatMap((x) => {
   if (Array.isArray(x)) return [x];
   const full = unroll(x.body), lastPass = x.exit === null ? full : unroll(x.body.slice(0, x.exit));
+  // (not out.push(...full): a long pass is more arguments than a call takes)
   const out = [];
-  for (let k = 0; k < x.count; k++) out.push(...(k === x.count - 1 ? lastPass : full));
+  for (let k = 0; k < x.count; k++) {
+    for (const y of k === x.count - 1 ? lastPass : full) out.push(y);
+    if (out.length > UNROLLED) throw new Error('The MDX file is too long: its repeats play more than a million commands.');
+  }
   return out;
 });
+const UNROLLED = 1000000;
+const PEEL_FROM = 400;                         // commands a repeat is when written out, from which it is peeled instead
+const PEELED = 3;                              // passes of a repeat written out before the rest is given up as one
 
 // ---- the song at one clock ----------------------------------------------------------------------
 
+// Rows without the blanks between commands (MUCOM88 needs none: "v10d&v12d"), for a song whose
+// MUC would be over 65,536 bytes with them. A ? command keeps its blanks.
+function tightRows(part, first, tokens, width = 96) {
+  const lines = [];
+  let cur = `${part} ${first}`.trimEnd(), open = true;         // open: a blank must come before the next token
+  for (const t of tokens) {
+    const sep = open || t[0] === '?' ? ' ' : '';
+    if (cur.length + sep.length + t.length > width) { lines.push(cur); cur = `${part} ${t}`; } else cur += sep + t;
+    open = t[0] === '?';
+  }
+  lines.push(cur);
+  return lines;
+}
 let keptFor = null, kept = new Map();
-function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
+function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false, tight = 0) {
+  // tight 1: no blanks between commands; 2: rows of 240 columns as well
+  const layOut = tight ? (part, first, tokens) => tightRows(part, first, tokens, tight > 1 ? 240 : 96) : rows;
   const vibratoStep = 1;
   const skipped = new Map(), counts = new Map(), warnings = new Set(), tempos = [];
+  if (m.endless?.length) warnings.add('trackTooLong');
   const fm = [], pcmTracks = [];
   m.tracks.forEach((t, i) => { if (hasNotes(t.items)) (i < 8 ? fm : pcmTracks).push(i); });
   if (!fm.length && !pcmTracks.length) throw new Error('The MDX file has no notes.');
@@ -672,7 +715,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
     if (first && !startsWithTempo) head.push(`t${256 - timer(firstTempo)}`);
     first = false;
     tracks.push({ part, kind: kind === 'pcm' ? 'rhythm' : kind, tokens: r.tokens, notes: r.notes, clocks: r.clocks, gated: r.gated, lfo: r.lfo });
-    body.push(...rows(part, head.join(' '), r.tokens));
+    body.push(...layOut(part, head.join(' '), r.tokens));
   };
   for (const t of [...partOf.keys()].sort((a, b) => a - b)) convert(t, partOf.get(t).part, partOf.get(t).kind);
 
@@ -807,7 +850,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
     const tr = m.tracks[t], lead = tr.loop === null ? tr.items.length : tr.loop;
     const track = { items: silent(tr.items), loop: tr.loop === null ? null : silent(tr.items.slice(0, lead)).length };
     const r = convertTrack(track, 'silent', { ...ctxBase, usual: 9, sample: single });
-    body.push(...rows(TEMPO_PARTS[i], `C${clock}`, r.tokens));
+    body.push(...layOut(TEMPO_PARTS[i], `C${clock}`, r.tokens));
   });
   if (carriers.length > TEMPO_PARTS.length) warnings.add('tempoTracks');
 
@@ -842,6 +885,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
   if (warnings.has('fmTracksDropped')) left.push('FM tracks beyond eight');
   if (warnings.has('noPdx')) left.push(`the ADPCM track (no PDX file${m.pdx ? `: ${m.pdx}` : ''})`);
   if (warnings.has('pcmSlots')) left.push(`samples beyond the ${SLOTS} a PCM bank holds`);
+  if (m.endless?.length) left.push(`track${m.endless.length > 1 ? 's' : ''} ${m.endless.map((i) => i + 1).join(', ')} (more than a million commands with the repeats)`);
   if (warnings.has('tempoTracks')) left.push(`tempo commands of more than ${TEMPO_PARTS.length} tracks without a part`);
   if (left.length) lines.push(`; Not carried over: ${left.join(', ')}`);
   lines.push('');
@@ -864,10 +908,11 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
   // for what is not ASCII): the SCC takes the track instead
   if (toOpll.length && ([...out].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? 1 : 2), 0) > PLAIN_ROWS_SOURCE
     || plainRowsObject(body, waves.size) > PLAIN_ROWS_OBJECT)) {
-    const r = convertAt(m, fileName, pdx, div, 'scc', useDrums);
+    const r = convertAt(m, fileName, pdx, div, 'scc', useDrums, tight);
     if (r) r.report.warnings.push('msxMusicTooLong');
     return r;
   }
+  if (size > 65536 && tight < 2) return convertAt(m, fileName, pdx, div, spare, useDrums, tight + 1);
   if (size > 65536) throw new Error(`The MDX file becomes a ${size}-byte MUC (at most 65,536).`);
   return {
     text: out, title,
@@ -894,6 +939,11 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
 // report.pcm.leftOut the numbers that are silent, and warnings has 'pcmTooLarge'.
 export function mdxToMuc(bytes, { fileName = '', pdx = null, div: only = 0, spare = 'auto', drums = 'auto' } = {}) {
   const m = parseMdx(bytes);
+  // A track whose repeats play more than a million commands (stray data, or a loop made of
+  // repeats within repeats) is left out; the others are the song.
+  const playedBy = (items, limit) => { let n = 0; for (const x of items) { n += Array.isArray(x) ? 1 : x.count * playedBy(x.body, limit); if (n > limit) return n; } return n; };
+  m.endless = [];
+  m.tracks = m.tracks.map((tr, i) => { if (playedBy(tr.items, UNROLLED) <= UNROLLED) return tr; m.endless.push(i); return { items: [], loop: null }; });
   const attempt = (useDrums) => {
     let best = null;
     for (const div of only ? [only] : DIVS) {

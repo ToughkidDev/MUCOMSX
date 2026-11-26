@@ -14,13 +14,14 @@
 //   F7             no key off after the next note (a tie or a slur)
 //   F6 n, 0        repeat n times ... F5 back (word)    F4 ahead (word): leave the last pass here
 //   F3 d (word)    detune, 1/64 semitones               F2 d (word)  slide the next note, 1/16384 semitones a tick
-//   F1 0 / F1 back the end / play on from there for ever
+//   F1 0 / F1 back the end / play on from there for ever (to where it has not played: go on from there)
 //   F0 n           key on n ticks late                  EF n / EE send to track n / wait for it
 //   ED n           noise frequency (FM), sample rate 0-4 (PCM)
 //   EC / EB        pitch / level LFO: 80 off, 81 on, or wave, period (word), depth (word)
 //   EA             the chip's LFO: 80 off, 81 on, or wave, speed, PMD, AMD, PMS/AMS
 //   E9 n           the LFOs start n ticks into a note   E8        PCM8 (eight PCM tracks)
 //   E7 1, n        fade out
+// A file packed with LZX (0.32 or 0.42) is read too: see unpacked().
 // A PDX file is 96 pairs of offset and length (32 bits, big-endian) and the samples: 4-bit
 // ADPCM of the OKI MSM6258, low nibble first.
 //
@@ -39,18 +40,69 @@ const u16 = (b, i) => (b[i] << 8) | b[i + 1];
 const s16 = (b, i) => ((u16(b, i) ^ 0x8000) - 0x8000);
 
 export function isMdx(bytes) {
-  try { return headerOf(bytes) !== null; } catch { return false; }
+  try { return headerOf(unpacked(bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes))) !== null; } catch { return false; }
 }
 
-function headerOf(b) {
+// the title, the PDX name, and where the data begins
+function frameOf(b) {
   let i = 2;
   for (; i < b.length && i < 2048; i++) if (b[i] === 0x1a && b[i - 1] === 0x0a && b[i - 2] === 0x0d) break;
   if (i >= b.length || i >= 2048) return null;
-  const titleEnd = i - 2;
   let j = i + 1;
   while (j < b.length && b[j] !== 0) j++;
   if (j >= b.length || j - i > 64) return null;
-  const base = j + 1;
+  return { titleEnd: i - 2, pdxAt: i + 1, pdxEnd: j, base: j + 1 };
+}
+
+// Many MDX files were run through LZX, the X68000 packer: the title and PDX name stay as they are and
+// the data becomes LZX's loader (which names the unpacked size and where the packed data begins), the
+// packed data, and the unpacker. A flag bit of 1 is a byte as it is; 00 is two more bits (2 to 5 bytes)
+// and a one-byte distance; 01 is a 13-bit distance with 3 bits of length (3 to 9), or with those at 0
+// one more byte of length (2 to 256), where 0 ends the data. Both 0.32 and 0.42 pack this way.
+function unpacked(b) {
+  const f = frameOf(b);
+  if (!f) return b;
+  const at = f.base;
+  if (!(b[at + 4] === 0x4c && b[at + 5] === 0x5a && b[at + 6] === 0x58)) return b;
+  const size = at + 0x16 <= b.length ? ((b[at + 0x12] << 24) | (b[at + 0x13] << 16) | (b[at + 0x14] << 8) | b[at + 0x15]) >>> 0 : 0;
+  let p = -1;                                          // the loader's own "lea packed(pc,a6.l),a6"
+  for (let k = at + 0x28; k < at + 0x100 && k + 3 < b.length; k++) {
+    if (b[k] === 0x4d && b[k + 1] === 0xfb && b[k + 2] === 0xe8) { p = k + 2 + b[k + 3]; break; }
+  }
+  if (p < 0 || size < 20 || size > 0x100000) throw new Error('The MDX file is LZX-compressed in a way this reader does not know.');
+  const out = new Uint8Array(at + size);
+  out.set(b.subarray(0, at));
+  const short = () => { throw new Error('The LZX-compressed MDX file is cut short.'); };
+  const next = () => (p < b.length ? b[p++] : short());
+  let o = at, bits = 0, held = 0;
+  const bit = () => {
+    if (!bits) { held = next(); bits = 8; }
+    bits--; held <<= 1;
+    return (held >> 8) & 1;
+  };
+  for (;;) {
+    if (bit()) { if (o >= out.length) short(); out[o++] = next(); continue; }
+    let from, n;
+    if (bit()) {
+      const w = (next() << 8) | next();
+      from = (w >> 3) - 0x2000;
+      n = w & 7;
+      if (n) n += 2;
+      else { n = next(); if (!n) break; n++; }
+    } else {
+      n = bit() * 2; n += bit() + 2;
+      from = next() - 256;
+    }
+    if (o + from < at || o + n > out.length) short();
+    for (; n > 0; n--, o++) out[o] = out[o + from];
+  }
+  return out;
+}
+
+function headerOf(b) {
+  const f = frameOf(b);
+  if (!f) return null;
+  const { titleEnd, pdxAt, pdxEnd, base } = f;
   if (base + 20 > b.length) return null;
   const offsets = [];
   for (let k = 0; k < 17 && base + k * 2 + 1 < b.length; k++) offsets.push(u16(b, base + k * 2));
@@ -59,7 +111,7 @@ function headerOf(b) {
   if (inFile.length < 2) return null;
   const count = Math.min(16, (Math.min(...inFile) - 2) >> 1);
   if (count !== 9 && count !== 16) return null;
-  return { titleEnd, pdxAt: i + 1, pdxEnd: j, base, voices: offsets[0], tracks: offsets.slice(1, 1 + count) };
+  return { titleEnd, pdxAt, pdxEnd, base, voices: offsets[0], tracks: offsets.slice(1, 1 + count) };
 }
 
 const WORD = new Set([0xf3, 0xf2]);
@@ -67,7 +119,9 @@ const NAMES = { 0xff: 't', 0xfd: '@', 0xfc: 'p', 0xfb: 'v', 0xf8: 'q', 0xf0: 'k'
 
 function parseTrack(b, start, end) {
   const top = [], stack = [], at = new Map();          // byte position -> index in the top list
-  let list = top, loop = null, p = start, guard = 0;
+  let list = top, loop = null, p = start, guard = 0, from = start;
+  const read = [];                                     // the stretches read so far, before this one
+  const go = (to) => { read.push([from, p + 3]); from = p = to; end = b.length; };
   const rest = (n) => { const last = list[list.length - 1]; if (Array.isArray(last) && last[0] === 'r') last[1] += n; else list.push(['r', n]); };
   while (p < end && guard++ < 200000) {
     if (!stack.length) at.set(p, top.length);
@@ -82,8 +136,13 @@ function parseTrack(b, start, end) {
     if (c === 0xf4) { if (stack.length) stack[stack.length - 1][1].exit = list.length; p += 3; continue; }
     if (c === 0xf1) {
       const back = s16(b, p + 1);
+      const target = p + 3 + back;
+      // Going back to something already played is the loop. Anywhere else it only goes on from there:
+      // files were made whose tracks hop over a comment to where they really are, ahead (which
+      // MXDRV 2.06 itself takes as 64 KB back and stops on) as well as back.
+      const played = (target >= from && target < p) || read.some(([x, y]) => target >= x && target < y);
+      if (b[p + 1] !== 0 && !played && !stack.length && target >= 0 && target < b.length && read.length < 64) { go(target); continue; }
       if (b[p + 1] !== 0 && back < 0) {
-        const target = p + 3 + back;
         // the place to play on from: a command at the top level (else the nearest one before it)
         let best = null;
         for (const [pos, idx] of at) if (pos <= target && (best === null || pos > best[0])) best = [pos, idx];
@@ -120,10 +179,9 @@ function sjis(bytes) {
 }
 
 export function parseMdx(bytes) {
-  const b = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  const b = unpacked(bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes));
   const h = headerOf(b);
   if (!h) throw new Error('Not an MDX file.');
-  if (b[h.base + 4] === 0x4c && b[h.base + 5] === 0x5a && b[h.base + 6] === 0x58) throw new Error('The MDX file is compressed (LZX); unpack it first.');
   const starts = [h.voices, ...h.tracks].filter((o) => h.base + o < b.length).sort((x, y) => x - y);
   const endOf = (o) => { const next = starts.find((s) => s > o); return h.base + (next ?? b.length - h.base); };
   const voices = new Map();
@@ -131,6 +189,7 @@ export function parseMdx(bytes) {
     for (let p = h.base + h.voices, end = endOf(h.voices); p + 27 <= end; p += 27) {
       const f = (at) => [0, 1, 2, 3].map((k) => b[p + at + k]);
       const dm = f(3), tl = f(7), ka = f(11), ad = f(15), d2 = f(19), dr = f(23);
+      if (voices.has(b[p])) continue;                  // MXDRV takes the first one of a number
       voices.set(b[p], {
         fl: (b[p + 1] >> 3) & 7, con: b[p + 1] & 7, mask: b[p + 2] & 15,
         ops: [0, 1, 2, 3].map((k) => ({
