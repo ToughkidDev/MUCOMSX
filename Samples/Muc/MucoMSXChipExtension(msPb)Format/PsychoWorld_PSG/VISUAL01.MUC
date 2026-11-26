@@ -1,0 +1,48 @@
+#mucom88 1.7
+#title Psycho World - BGM
+#composer Kenji Yamazaki, Yuko Yamazaki
+#author ToughkidCST
+#comment Psycho World (PSG)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension PSG parts, msPb0109).
+
+?KT0={3424,3231,3048,2880,2717,2560,2421,2284,2157,2036,1920,1814,3424,3231,3048,2880,2717,2560,2421,2280,2157,2032,1920,1814,3422,3229,3048,2876,2716,2562,2420,2284,2156,2034,1920,1813}
+PSGS ?FD1={?EN2 ?XM1,2 ?XS15 ?XS14 ?XS13 ?XS12 ?XS11 ?FR}
+PSGS ?FD2={?EN2 ?XM1,1 ?XS15 ?XM1,3 ?XS13 ?XS12 ?FR}
+PSGS ?FD3={?EN2 ?XM1,3 ?XS15 ?XS13 ?XS12 ?FR}
+PSGS ?FD4={?EN2 ?XM1,4 ?XS15 ?XS13 ?XS12 ?FR}
+PSGS ?FD10={?XM1,1 ?DW0 :11 ?DW1 :12 ?DW1 ?DW1 ?DW0 ?DW0 ?DW-1 :17 ?DW0 ?FJ10}
+PSGS ?FD18={?XM1,6 ?DW0 ?FJ10}
+PSGS ?FD19={?XM1,8 ?DW0 ?FJ10}
+PSGS ?FD20={?XT2,2 ?NP30 ?EN2 ?XM1,1 ?XS12 ?XS12 ?EN0 ?XT1,2 ?FR}
+PSGS ?FD21={?XT2,2 ?NP3 ?EN2 ?XM1,1 ?XS11 ?XS11 ?EN0 ?XT1,2 ?FR}
+PSGS ?FD22={?XT2,2 ?NP15 ?EN2 ?XM1,1 ?XS13 ?XS13 ?EN0 ?XT1,2 ?FR}
+PSGS ?FD30={g%5 ?FC21 ?FC31 g%6 ?FC20 r%5 ?FC20 r%6 ?FC22 ?EP8,2,4,0,0 ?MV- f%5 ?FC20 ?FC31 f%6
+PSGS ?FC21 r%5 ?FC20 r%6 ?FC32 ?MV- d+%5 ?FC21 ?FC31 d+%6 ?FC20 r%5 ?FC20 r%6 ?FC22 ?EP8,2,4,0,0
+PSGS ?MV- a+%5 ?FC20 ?FC31 a+%6 ?FC21 a+%5 ?FC32 ?MV- a%6 ?FC20 r%5 ?FC21 r%6 ?FC20 r%5 ?FC20 r%6
+PSGS ?FC22 r%5 ?FC20 r%6 ?FC21 r%5 ?FC20 o3 a+%6 ?FC20 o4 a+%5 ?FC21 ?FC31 a+%6 ?FC32 ?MV- a%5 ?FC20
+PSGS ?FC31 a%6 ?FC22 ?EP8,2,4,0,0 ?MV- g%5 ?FC20 ?FC31 g%6 ?FC21 ?EP8,2,4,0,0 ?MV- a%5 ?FC20 ?FC31
+PSGS a%6 ?FC32 ?MV- a+%5 ?FC21 g%6 ?FC20 ?EP- v10 ?MV2,12,2,0 g%5 ?FC32 ?MV- d+%6 ?FC22 ?EP- v10
+PSGS ?MV2,12,2,0 d+%5 ?FC20 ?MV2,11,2,0 d+%6 ?FC21 d+%5 ?FC20 ?MV2,10,2,0 d+%6 ?FC20 d+%5 ?FC21
+PSGS ?MV2,17,2,0 d+%6 ?FC20 d+%5 ?FC20 ?MV- d+%6 ?FC22 ?MV2,12,2,0 d+%5 ?FC20 ?MV2,11,2,0 d+%6 ?FC21
+PSGS d+%5 ?FC20 ?MV- d+%6 ?FR}
+PSGS ?FD31={?EP- v10 ?MV2,11,2,0 ?FR}
+PSGS ?FD32={?FC20 ?EP8,2,4,0,0 ?FR}
+PSGS ?FD33={d+%15 r%15 d%15 r%15 c%15 r%15 ?XU22 d+ ?XU1 d%8 r%16 r%16 r%16 r%4 o3 g%8 o4 g%15 f%15
+PSGS d+%15 f%15 g%7 d+%15 ?XU30 c%2 ?EP- v10 c ?XU1 c%8 ?FR}
+
+MSXD t198 ?XU1 ?XT1 ?EP8,4,2,0,0 ?EL10 ?MV2,19,2,0 ?KT0,0 o4 ?FC33 ?XU30 r%4 ?EP8,4,2,0,0 ?XU1 ?FC33
+MSXD r%16 r%16 r%13 ?EP8,4,2,0,0 g%7 f%8 g%15 g%15 r%7 ?XU23 a+ o5 ?XU1 c%15 ?EP8,4,5,0,0 ?EL7 c%7
+MSXD c%15 ?EP8,4,7,0,0 ?EL5 c%8 c%15 ?EP8,4,10,0,0 ?EL2 c%7 c%15 ?EP8,4,13,0,0 ?EL0 c%8 c%15
+MSXD ?EP8,4,14,0,0 c%7 c%15 r%16 r%7 !
+MSXE ?XU1 ?XT1 ?FC32 ?EL10 ?MV- ?KT0,12 o4 ?FC30 ?FC20 r%5 ?FC21 r%6 ?FC20 r%5 ?FC20 r%6 ?FC22 r%5
+MSXE ?FC20 r%6 ?FC21 r%5 ?FC20 r%6 ?FC20 r%5 ?FC21 r%6 ?FC20 r%5 ?FC20 [ r%6 ?FC22 r%5 ?FC22 ]2 r%6
+MSXE ?FC32 ?FC30 ?FC22 r%16 r%12 ?FC20 r%13 ?FC22 ?EP8,2,4,0,0 d%5 ?FC22 c%6 ?FC20 ?MV2,18,2,0 d%13
+MSXE ?FC22 d%13 ?FC20 r%5 ?FC22 f%6 ?FC22 ?EP- v10 ?MV2,12,2,0 f%5 ?FC22 ?MV2,11,2,0 f%6 ?FC22
+MSXE ?EP8,2,2,0,0 ?MV2,18,2,0 g%13 ?EP8,3,5,0,0 ?EL7 ?MV2,19,2,0 g%7 g%15 ?EP8,3,7,0,0 ?EL5 g%8 g%15
+MSXE ?EP8,3,10,0,0 ?EL2 g%7 g%15 ?EP8,3,13,0,0 ?EL0 g%8 g%15 ?EP8,3,14,0,0 g%7 g%15 r%16 r%7 !
+MSXF ?XU1 ?XT1 [ ?EP8,1,2,0,0 ?EL9 ?MV- ?KT0,24 o2 c%7 o3 c%8 o2 a+%15 o3 c%15 o2 g%15 a+%7 a%8 a+%7
+MSXF o3 c%15 r%8 o2 d+%7 d%8 c%7 o3 c%8 o2 a+%15 o3 c%15 o2 g%15 f%7 g%8 g+%7 a+%15 r%8 d+%7 d%8 ]3
+MSXF c%7 o3 c%8 o2 a+%15 o3 c%15 o2 g%15 a+%7 a%8 a+%7 o3 c%15 r%8 o2 d+%7 d%8 ?XU45 c ?XU1 g%7 f%8
+MSXF g%7 a+%8 o3 c%7 d+%8 c%7 o2 a+%8 g%7 c%8 ?EL10 d+%15 ?EP8,1,5,0,0 ?EL7 d+%7 d+%15 ?EP8,1,7,0,0
+MSXF ?EL5 d+%8 d+%15 ?EP8,1,10,0,0 ?EL2 d+%7 d+%15 ?EP8,1,13,0,0 ?EL0 d+%8 d+%15 ?EP8,1,14,0,0 d+%7
+MSXF d+%15 r%16 r%7 !

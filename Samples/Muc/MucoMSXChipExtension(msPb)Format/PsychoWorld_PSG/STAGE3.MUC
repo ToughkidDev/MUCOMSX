@@ -1,0 +1,57 @@
+#mucom88 1.7
+#title Stage 3 / Ice Field
+#composer Kenji Yamazaki, Yuko Yamazaki
+#author ToughkidCST
+#comment Psycho World (PSG)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension PSG parts, msPb0109).
+
+?KT0={3424,3231,3040,2880,2720,2560,2421,2288,2152,2036,1920,1808,3424,3231,3048,2880,2712,2560,2421,2280,2156,2036,1920,1816,3424,3231,3050,2876,2717,2564,2421,2284,2156,2036,1920,1812}
+PSGS ?FD1={?EN2 ?XM1,2 ?XS15 ?XS14 ?XS13 ?XS12 ?XS11 ?XS10 ?XS9 ?FR}
+PSGS ?FD2={?EN2 ?XM1,1 ?XS15 ?XM1,3 ?XS13 ?XS11 ?FR}
+PSGS ?FD3={?EN2 ?XM1,3 ?XS15 ?XS13 ?XS12 ?FR}
+PSGS ?FD10={?XM1,1 ?DW0 :11 ?DW1 :12 ?DW1 ?DW1 ?DW0 ?DW0 :16 ?DW-1 ?DW0 ?FJ10}
+PSGS ?FD18={?XM1,1 ?DW0 ?FJ10}
+PSGS ?FD19={?XM1,12 ?DW0 ?FJ10}
+PSGS ?FD20={?XT2,2 ?NP30 ?EN2 ?XM1,1 ?XS12 ?XS12 ?EN0 ?XT1,2 ?FR}
+PSGS ?FD21={?XT2,2 ?NP3 ?EN2 ?XM1,1 ?XS11 ?XS11 ?EN0 ?XT1,2 ?FR}
+PSGS ?FD22={?XT2,2 ?NP15 ?EN2 ?XM1,1 ?XS13 ?XS13 ?EN0 ?XT1,2 ?FR}
+PSGS ?FD30={d%5 ?FC21 ?EP- v9 ?MV2,12,1,0 d%5 ?FC35 d%5 ?FC21 ?FC37 g%5 ?FC20 ?EP- v9 ?MV2,12,1,0
+PSGS g%5 ?FC20 ?MV2,16,1,0 g%5 ?FC22 ?MV2,12,1,0 g%5 ?FC20 ?MV- g%5 ?FC20 ?KT0,0 o5 c%5 ?FC21
+PSGS ?MV2,12,1,0 c%5 ?FC35 c%5 ?FC21 ?MV- ?KT0,12 o4 b%5 ?FR}
+PSGS ?FD31={o3 d+%5 ?FC34 d+%5 ?FC35 d+%5 ?FC21 ?FC37 g+%5 ?FC20 o4 c%5 ?FC34 c%2 ?FC20 ?MV2,10,1,0
+PSGS c%2 ?FC35 c%5 ?FC33 ?MV- o3 g+%5 ?FC20 o4 g+%5 ?FC34 g+%5 ?FC35 g+%5 ?FC21 ?FC37 g%5 ?FC20 f%5
+PSGS ?FC34 f%2 ?FC20 ?MV2,10,1,0 f%2 ?FC22 ?FC37 d+%5 ?FC20 ?EP- v10 ?MV2,12,1,0 d+%5 ?FC33 ?MV- d%5
+PSGS ?FC34 d%5 ?FC35 d%5 ?FC21 ?MV2,12,1,0 d%5 ?FC20 ?MV2,16,1,0 d%5 ?FC21 ?MV2,12,1,0 d%2 ?FC20
+PSGS ?MV2,10,1,0 d%2 ?FC22 ?FC37 f%5 ?FC20 ?EP- v10 ?MV2,12,1,0 f%5 ?FC33 ?MV- ?FR}
+PSGS ?FD32={?FC30 ?FC20 ?MV2,12,1,0 b%5 ?FC20 ?MV2,16,1,0 b%5 ?FC22 ?MV2,12,1,0 b%2 ?FC22
+PSGS ?MV2,10,1,0 b%2 ?FR}
+PSGS ?FD33={?FC20 ?EP8,2,2,0,0 ?FR}
+PSGS ?FD34={?FC21 ?EP- v10 ?MV2,12,1,0 ?FR}
+PSGS ?FD35={?FC22 ?MV2,16,1,0 ?FR}
+PSGS ?FD36={?FC21 o5 g%2 ?FC20 e%2 ?FC20 o6 c%2 ?FC22 o5 g%2 ?FC20 e%2 ?FC21 o6 c%2 ?FC20 o5 g%2
+PSGS ?FR}
+PSGS ?FD37={?EP8,2,2,0,0 ?MV- ?FR}
+
+MSXD t198 ?XU12 ?XT1 L [ ?EP8,3,3,0,0 ?EL10 ?MV2,19,1,0 ?KT0,0 o5 g o6 c%2 o5 b%4 ?EP- v10 b b%8
+MSXD ?EP8,3,3,0,0 g o6 c%2 o5 b%3 g f ?EP- v10 f%8 ?EP8,3,3,0,0 g o6 c%2 o5 b%4 ?EP- v10 b b%8
+MSXD ?EP8,3,3,0,0 g o6 c%2 o5 b%3 g o6 d ?EP- v10 d%8 ]2 ?EP8,3,2,0,0 ?EL11 o5 c%6 d+%2 o4 g+%8 a+%4
+MSXD a+%2 o5 d%2 d+%2 d%2 c%2 o4 a+%2 o5 c%6 d+%2 o4 g+%8 a+%4 a+%2 o5 d%2 d+%4 d%4 [ o5 e%3 e%3 e%2
+MSXD f%3 f%3 f%2 g%3 e%3 g%2 o6 c%8 ]2 !
+MSXE ?XU2 ?XT1 L [ ?FC33 ?EL9 ?MV- ?KT0,12 o4 ?FC32 ?FC20 ?MV- b%5 ]3 ?FC33 ?FC32 ?FC22 ?MV- b%2
+MSXE ?FC22 b%2 [ ?FC33 ?FC32 ?FC20 ?MV- b%5 ]3 ?FC33 ?FC30 ?FC22 ?MV2,12,1,0 b%5 ?FC35 b%5 ?FC22
+MSXE ?MV2,12,1,0 b%5 ?FC22 ?MV- b%5 ?FC33 ?EL10 ?FC31 d+%5 ?FC34 d+%5 ?FC35 d+%5 ?FC21 ?MV2,12,1,0
+MSXE d+%5 ?FC33 ?MV- d%5 ?FC34 d%2 ?FC20 ?MV2,10,1,0 d%2 ?FC35 d%5 ?FC20 ?MV2,12,1,0 d%5 ?FC33 ?MV-
+MSXE ?FC31 g+%5 ?FC34 g+%5 ?FC35 g+%5 ?FC21 ?MV2,12,1,0 g+%5 ?FC22 ?FC37 a+%2 ?FC22 ?EP- v10 a+%2
+MSXE ?FC20 ?MV2,12,1,0 a+%5 ?FC35 a+%5 ?FC22 ?MV2,12,1,0 a+%5 [ ?FC20 ?EP8,2,3,0,0 ?EL9 ?MV2,11,1,0
+MSXE ?KT0,0 o5 g%2 ?FC21 e%2 ?FC20 c%2 ?FC20 g%2 ?FC22 e%2 ?FC20 c%2 ?FC21 g%2 ?FC20 e%2 ]2 [ ?FC20
+MSXE a+%2 ?FC21 f%2 ?FC20 d%2 ?FC20 a+%2 ?FC22 f%2 ?FC20 d%2 ?FC21 a+%2 ?FC20 f%2 ]2 [ ?FC20 o6 c%2
+MSXE ?FC36 ]2 [ ?FC20 o6 e%2 ?FC21 c%2 ?FC20 o5 g%2 ?FC20 o6 e%2 ?FC22 c%2 ?FC20 o5 g%2 ?FC21 o6 e%2
+MSXE ?FC20 c%2 ]2 [ ?FC20 o5 g%2 ?FC21 e%2 ?FC20 c%2 ?FC20 g%2 ?FC22 e%2 ?FC20 c%2 ?FC21 g%2 ?FC20
+MSXE e%2 ]2 [ ?FC20 a+%2 ?FC21 f%2 ?FC20 d%2 ?FC20 a+%2 ?FC22 f%2 ?FC20 d%2 ?FC21 a+%2 ?FC20 f%2 ]2
+MSXE [ ?FC20 o6 c%2 ?FC36 ]2 ?FC20 o6 e%2 ?FC21 c%2 ?FC20 o5 g%2 ?FC20 o6 c%2 ?FC22 o5 g%2 ?FC20 e%2
+MSXE ?FC21 g%2 ?FC20 e%2 ?FC22 c%2 ?EP8,3,3,0,0 ?MV2,18,1,0 e%3 [ ?FC22 ?EP8,2,3,0,0 ?MV2,11,1,0
+MSXE ?KT0,0 o5 c%2 ?EP8,3,3,0,0 ?MV2,18,1,0 ?KT0,12 o4 g%3 ]2 ?FC22 ?EP8,2,3,0,0 ?MV2,11,1,0 e%2
+MSXE ?EP8,3,3,0,0 ?MV2,18,1,0 c%3 !
+MSXF ?XU6 ?XT1 L [ [ ?EP8,1,2,0,0 ?EL7 ?MV- ?KT0,24 o2 g g%2 g g%2 o3 g%2 ]3 o2 f%2 o3 f%2 o2 a+%2
+MSXF o3 a+%2 ]8 [ [ o2 g+ o3 d+ g+ o2 g+ o3 d+ g+ o2 g+ o3 g+ ]4 [ o2 a+ o3 f a+ o2 a+ o3 f a+ o2 a+
+MSXF o3 a+ ]4 ]2 [ c%2 o4 c%2 o2 a%2 o3 a%2 o2 a+%2 o3 a+%2 o2 b%2 o3 b%2 ]8 !
