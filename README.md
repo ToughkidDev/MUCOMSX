@@ -35,6 +35,7 @@ Compose in MML · Compile on the MSX itself · Play on real hardware · Export M
 
 | Date | | |
 |---|---|---|
+| 2026-11-26 | `TOOLS` | [After v1.5-Stable (not in the ZIPs yet): MSX-MUSIC ties and vibrato across a block play at the written pitch; MUBScope and MUCScope show the sounding pitch and put FM + PSG, MSX-MUSIC + SSG and SCC + SSG on one page](shared/docs/RELEASE_NOTES.md) |
 | **2026-11-22** | `RELEASE` | [MucoMSX v1.5-Stable released — MUCVIEW, MSX1 support, direct start from MM, COM + MXR tools, sample songs in the ZIP, MUCPlayground replaces MUCVOICE](https://github.com/ToughkidDev/MUCOMSX/releases/tag/v1.5-Stable) **NEW** |
 | 2026-11-22 | `TOOLS` | [MSX1 tempo from the Makoto timer, Makoto required for playback; `/L<n>` and scope ONCE count a pass when every looping part has come round](shared/docs/RELEASE_NOTES.md) |
 | 2026-11-21 | `TOOLS` | [MUCVIEW — a read-only MUC viewer that compiles, plays and exports through MUCPLAY](MUCView/readme.md) |

@@ -325,6 +325,22 @@ Spectrum and level displays are estimates from playback data and chip state. The
 
 Use `Shift+Tab` or `C` to cycle the chip pages in channel or spectrum view. Only groups used by the song appear: OPNA, OPLL, and SCC(+)+PSG. SCC and PSG share one page with five SCC and three PSG channels; SCC-only songs show five channels. Info, mixer and full browser panels retain their focus. A switch pauses playback and restores the previous playing/paused state afterward. The `msPb` format alone does not imply OPLL channels.
 
+#### Display changes from the 2026-11-26 build
+
+These changes are not in the v1.5-Stable package (2026-11-22).
+
+- **Octave of the note names:** every row shows the pitch that sounds (C4 = 261.6 Hz). FM `o4 c` is 130.8 Hz and reads `C3`; an SSG, PSG, SCC or MSX-MUSIC note at the same pitch reads the same. Earlier builds showed PSG rows a semitone high and SCC, MSX-MUSIC and SSG rows an octave low (SCC a semitone high as well), so SSG rows now read an octave higher than before.
+- **Combinations shown on one page:** the three below need no chip page change. Other combinations change pages with `Shift+Tab` or `C` as before, and so do extension-format songs in which the kind of the OPNA parts cannot be told.
+
+| Song uses | Rows on the page |
+| --- | --- |
+| OPNA FM (and ADPCM) with the MSX PSG, no SSG | `FM1`-`FM6`, `PSGA`-`PSGC`, `ADP1` |
+| MSX-MUSIC with the OPNA SSG | `SSGA`-`SSGC`, `OPL1`-`OPL6` |
+| SCC with the OPNA SSG | `SCC1`-`SCC5`, `SSGA`-`SSGC` |
+
+- **Corrected:** the first note of a song showing as `C0` on FM rows; missing key-ons and key-offs on FM rows in songs that mix OPNA parts with MSX chip parts; PSG rows without note or level in PN6 chip-extension songs such as the sample "F-1 Spirit 3D Special FMPSG Combo".
+- **MSX-MUSIC ties and vibrato:** in songs written with chip extension commands, a tie (`&`) or an `M` vibrato that crosses the block boundary (between f+ and g) no longer sounds an octave off. It is the same correction as in MUBPLAY and MUCPLAY.
+
 When a new song is loaded, the player automatically selects its primary chip page from the used parts. Ordinary parts are compared by channel count, excluding rhythm, ADPCM-B and tempo-only parts. For raw streams that multiplex several channels, the detected chip capacities provide an estimate. SCC(+)+PSG counts as one combined page and wins a tie. A manual chip-page choice is retained through stop/replay and menu returns for the same song. Loading another song selects again; if an info or mixer panel is open, the new page appears after closing it.
 
 **View changes briefly pause and mute the music.** In Panasonic fast mode a `Tab` change takes about 0.3 seconds and a chip-page change about 1 second. After the transition, the previous playback/pause, speed and fade state is restored. ADPCM is handled so its position is retained. Switching views while manually paused does not start playback automatically.

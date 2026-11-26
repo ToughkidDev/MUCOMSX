@@ -8,6 +8,68 @@
 
 **MucoMSX v1.5-Stableは2026-11-22に公開されました。**下の「MucoMSX v1.5-Stable」節から「2026-11-22 업데이트」節までの内容がすべてv1.5-Stableに入っています。節の見出しの日付は作業日です。[v1.5-Stable更新案内](https://github.com/ToughkidDev/MUCOMSX/releases/tag/v1.5-Stable)
 
+## 2026-11-26 업데이트 — MSX-MUSIC 줄의 타이·비브라토 음높이, MUBScope·MUCScope의 채널 표시 (v1.5-Stable 이후)
+
+v1.5-Stable(2026-11-22 게시) 뒤의 변경이며, 게시된 ZIP에는 들어 있지 않습니다. 바뀐 프로그램은
+MUBPLAY, MUCPLAY, MUBScope, MUCScope입니다. MUC2MUB과 MUCEDIT은 그대로이고 MUB 파일도 바뀌지 않습니다.
+
+칩 확장 명령(`?IU` 등)을 쓰는 곡의 MSX-MUSIC 줄에서, 타이(`&`)로 다른 블록의 음에 잇거나
+(`c& g`: 블록은 f+와 g 사이에서 바뀝니다) `M` 비브라토가 그 경계를 넘으면 옥타브가 어긋난 음이
+나던 문제를 고쳤습니다. 이전 판은 음이 이어지는 동안 F-number의 아래 바이트만 다시 쓰고, 블록은
+키온·키오프 때만 썼습니다. `c& g`는 키오프까지 한 옥타브 낮은 g로 울렸고, g에 건 얕은 비브라토도
+F-number가 100H 아래로 내려가는 틱마다 거의 한 옥타브 위로 튀었습니다. 이제 블록이 바뀌면 키를
+누른 채로 함께 씁니다. 확장 명령이 없는 곡은 이전에도 맞게 연주되었고 바뀌지 않습니다.
+
+MUBScope와 MUCScope에도 같은 수정이 들어갔고, 채널 표시가 다음과 같이 바뀌었습니다. 음 이름은 모든
+행에서 실제로 울리는 음높이(C4 = 261.6Hz)로 표시합니다. 이전 빌드는 PSG 행을 반음 높게, SCC·MSX-MUSIC·
+SSG 행을 한 옥타브 낮게 표시했습니다(SSG 행은 이전보다 한 옥타브 높은 이름으로 보입니다). OPNA FM과
+MSX PSG, MSX-MUSIC과 OPNA SSG, SCC와 OPNA SSG를 쓰는 곡은 칩 페이지를 바꾸지 않아도 한 화면에
+나옵니다. 곡의 첫 음이 FM 행에 `C0`로 나오던 것, OPNA 파트와 MSX 칩 파트를 함께 쓰는 곡에서 FM 행의
+키온·키오프가 빠지던 것, PN6 칩 확장 형식 곡에서 PSG 행이 비어 있던 것도 고쳤습니다. 일반 Z80(3.58MHz)은
+연주 중 채널 화면을 그리지 않으므로 표시 변경은 해당이 없습니다. 자세한 내용은 두 스코프의 사용
+설명서 "채널뷰와 스펙트럼"에 있습니다.
+
+These changes come after v1.5-Stable (published 2026-11-22) and are not in the published ZIPs.
+MUBPLAY, MUCPLAY, MUBScope and MUCScope changed; MUC2MUB and MUCEDIT are the same, and so are MUB files.
+
+In a song that uses chip extension commands (`?IU` and the like), an MSX-MUSIC row that ties
+(`&`) into a note of another block (`c& g`: the block changes between f+ and g), or whose `M`
+vibrato crosses that boundary, sounded in the wrong octave. Earlier versions rewrote only the low
+F-number byte while a note was held and sent the block on key-on and key-off only: `c& g` sounded
+a g one octave low until the key-off, and even a shallow vibrato on g jumped almost an octave up on
+every tick where the F-number went below 100H. The block is now sent whenever it changes, with the
+key held. Songs without extension commands already played correctly and are unchanged.
+
+MUBScope and MUCScope carry the same correction, and their channel display changed. Note names
+show the pitch that sounds on every row (C4 = 261.6 Hz); earlier builds showed PSG rows a semitone
+high and SCC, MSX-MUSIC and SSG rows an octave low, so SSG rows now read an octave higher than
+before. Songs that use OPNA FM with the MSX PSG, MSX-MUSIC with the OPNA SSG, or SCC with the OPNA
+SSG are shown on one page without changing chip pages. Also corrected: the first note of a song
+showing as `C0` on FM rows, missing key-ons and key-offs on FM rows in songs that mix OPNA parts
+with MSX chip parts, and empty PSG rows in PN6 chip-extension songs. An ordinary Z80 (3.58 MHz)
+draws no channel view during playback, so the display changes do not apply there. The user guides
+of both scopes describe this under "Channel view and spectrum".
+
+v1.5-Stable（2026-11-22公開）より後の変更で、公開済みのZIPには入っていません。変わったプログラムは
+MUBPLAY、MUCPLAY、MUBScope、MUCScopeです。MUC2MUBとMUCEDITはそのままで、MUBファイルも変わりません。
+
+チップ拡張コマンド（`?IU`など）を使う曲のMSX-MUSIC行で、タイ（`&`）で別のブロックの音につなぐ
+（`c& g`：ブロックはf+とgの間で変わります）か、`M`ビブラートがその境界を越えると、オクターブの
+ずれた音が出る問題を直しました。以前の版は、音が続いている間F-numberの下位バイトだけを書き直し、
+ブロックはキーオンとキーオフのときだけ書いていました。`c& g`はキーオフまで1オクターブ低いgで鳴り、
+gにかけた浅いビブラートも、F-numberが100Hより下がるティックごとにほぼ1オクターブ上へ跳ねました。
+今はブロックが変わると、キーを押したまま一緒に書きます。拡張コマンドのない曲は以前から正しく
+演奏されており、変わりません。
+
+MUBScopeとMUCScopeにも同じ修正が入り、チャンネル表示が次のように変わりました。音名は、すべての行で
+実際に鳴っている音の高さ（C4 = 261.6Hz）で表示します。以前のビルドは、PSG行を半音高く、SCC・MSX-MUSIC・
+SSG行を1オクターブ低く表示していました（SSG行は以前より1オクターブ高い名前で表示されます）。OPNA FMと
+MSX PSG、MSX-MUSICとOPNA SSG、SCCとOPNA SSGを使う曲は、音源ページを切り替えなくても1画面に表示されます。
+曲の最初の音がFM行に`C0`と出ていたこと、OPNAパートとMSXチップのパートを併用する曲でFM行のキーオン・
+キーオフが抜けていたこと、PN6チップ拡張形式の曲でPSG行が空だったことも直しました。通常Z80（3.58MHz）は
+演奏中にチャンネル画面を描かないため、表示の変更は当てはまりません。詳しくは両スコープのユーザーガイドの
+チャンネル表示の節にあります。
+
 ## 2026-11-22 업데이트 — MUBPLAY의 CPU 가속 시점, 툴체인 ZIP에 샘플 폴더
 
 MUBPLAY가 Panasonic MSX2+(5.37MHz)와 turbo R(R800)의 자동 가속을 실행 직후에 시작합니다.

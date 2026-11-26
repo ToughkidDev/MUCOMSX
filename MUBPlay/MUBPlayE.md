@@ -39,6 +39,10 @@ The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM P
 
 - **When the CPU is switched:** the automatic acceleration on a Panasonic MSX2+ (5.37 MHz) and a turbo R (R800) now starts as soon as MUBPLAY runs, not after the song and its PCM have been read. Reading the song and uploading the PCM run on the faster CPU too, so playback starts sooner. MUCPLAY does the same. `/N` still leaves the CPU alone, and the original CPU is restored at exit.
 
+### 2026-11-26: pitch of ties and vibrato on MSX-MUSIC rows
+
+- **Ties and vibrato across a block:** in a song that uses chip extension commands (`?IU` and the like), an MSX-MUSIC row that ties (`&`) into a note of another block (`c& g`: the block changes between f+ and g), or whose `M` vibrato crosses that boundary, sounded in the wrong octave. Earlier versions rewrote only the low F-number byte while a note was held and sent the block on key-on and key-off only. The block is now sent whenever it changes, with the key held. Songs without extension commands already played correctly and are unchanged. MUB files are the same, and MUBs made earlier play correctly with this version.
+
 > Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
 

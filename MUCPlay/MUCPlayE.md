@@ -36,6 +36,10 @@ The toolchain no longer includes MUCVOICE. FM voices, SCC/SCC+ waves and ADPCM P
 - An MSX1 plays with direct output, without computing ahead, so a song that is too heavy for 3.58 MHz can still stretch a little.
 - **`/L` repeat count:** `/L<n>` no longer ends early in songs whose parts loop with different lengths or from different points. Earlier versions counted only the first part that has a loop point. A pass now counts when every looping part has come round once more. Songs whose parts all loop together end at the same point as before.
 
+### 2026-11-26: pitch of ties and vibrato on MSX-MUSIC rows
+
+- **Ties and vibrato across a block:** in a song that uses chip extension commands (`?IU` and the like), an MSX-MUSIC row that ties (`&`) into a note of another block (`c& g`: the block changes between f+ and g), or whose `M` vibrato crosses that boundary, sounded in the wrong octave. Earlier versions rewrote only the low F-number byte while a note was held and sent the block on key-on and key-off only. The block is now sent whenever it changes, with the key held. Songs without extension commands already played correctly and are unchanged. MUB files are the same, and MUBs made earlier play correctly with this version.
+
 > Limits: MUC input 65,536 bytes (MUC2MUB/MUCPLAY), normalized editing 60,000 bytes (MUCEDIT), music DATA 98,304 bytes. Page streams: OPNA 59,546 / native MSX 59,106 bytes. Minimum mapper: 512KiB. Headers, tags and PCM are separate from music DATA.
 
 
