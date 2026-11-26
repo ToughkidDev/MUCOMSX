@@ -40,7 +40,7 @@ import { fitEnvelope, envelopeText } from './mgs-voices.js';
 import {
   TIMER_UNIT, SLOWEST_CLOCK, lengthText, pieces, rows, decodeTitle, writesPerSecond,
 } from './mgs-to-muc.js';
-import { encodeAdpcm, writePcmBank, resample, noteRate, RAM_SIZE, SLOTS } from './pcm-bank.js';
+import { encodeAdpcm, writePcmBank, writeWav, resample, noteRate, RAM_SIZE, SLOTS } from './pcm-bank.js';
 import { nearestDrum, DRUM_NAMES } from './mdx-drums.js';
 
 const NOTE = ['c', 'c+', 'd', 'd+', 'e', 'f', 'f+', 'g', 'g+', 'a', 'a+', 'b'];
@@ -513,6 +513,7 @@ const unroll = (items) => items.flatMap((x) => {
 
 // ---- the song at one clock ----------------------------------------------------------------------
 
+let keptFor = null, kept = new Map();
 function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
   const vibratoStep = 1;
   const skipped = new Map(), counts = new Map(), warnings = new Set(), tempos = [];
@@ -602,15 +603,29 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
   for (const t of toScc) { let voice = null, shift = 0; for (const x of walk(m.tracks[t].items)) { if (x[0] === '@') voice = x[1]; else if (x[0] === 'D') shift = Math.round(x[1] / 64); else if (x[0] === 'n' && x[1] + 3 + shift - 12 < 12) tooLow.add(voice); } }
 
   // the PDX samples as a PCM bank
-  let bank = null, pcmInfo = null;
+  let bank = null, pcmInfo = null, sources = [];
+  const outside = [], mixUses = new Map();       // samples that are not in the bank (as WAV files); how often each mix is hit
+  const bankBase = (fileName.replace(/\.[^.]*$/, '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 8) || 'MDX').toUpperCase();
   const pcmBytes = pdx ? parsePdx(pdx) : null;
   const slots = new Map();                       // key -> { slot, note, seconds, data (Float32Array at the note's rate) }
+  // A sample decoded and at a note's rate, and what drum it is like: worked out once for a PDX
+  // (a song is converted several times over: for each clock, with and without the drums).
+  if (keptFor !== pdx) { keptFor = pdx; kept = new Map(); }
+  const audioOf = (n, rate, to) => {
+    const key = `${n}:${rate}:${to}`;
+    if (!kept.has(key)) kept.set(key, resample(decodeOki(pcmBytes[n]), PCM_RATES[rate], to));
+    return kept.get(key);
+  };
   // the samples that go to the rhythm part, and the level of each drum there
   const likeDrum = new Map();                    // "n:rate" -> { drum, like, peak } | null
   const drumOf = (n, rate) => {
     if (!useDrums || !pcmBytes?.[n]) return null;
     const key = `${n}:${rate}`;
-    if (!likeDrum.has(key)) { const r = nearestDrum(decodeOki(pcmBytes[n]), PCM_RATES[rate]); likeDrum.set(key, r && r.like >= DRUM_LIKE ? r : null); }
+    if (!likeDrum.has(key)) {
+      if (!kept.has(`drum:${key}`)) kept.set(`drum:${key}`, nearestDrum(decodeOki(pcmBytes[n]), PCM_RATES[rate]));
+      const r = kept.get(`drum:${key}`);
+      likeDrum.set(key, r && r.like >= DRUM_LIKE ? r : null);
+    }
     return likeDrum.get(key);
   };
   const drumHits = DRUM_NAMES.map(() => new Map());   // per drum: the level a hit asks for -> how often
@@ -634,13 +649,14 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
   }
   const drumCount = drumHits.reduce((n, h) => n + [...h.values()].reduce((a, b) => a + b, 0), 0);
   const drumLevels = `v${RHYTHM_TOTAL},${drumHits.map((h) => (h.size ? [...h].sort((a, b) => b[1] - a[1])[0][0] : 0)).join(',')}`;
+  const noSlot = new Map();                      // "n:rate" of the samples the bank had no number for
   const single = (n, rate) => {
     if (drumOf(n, rate)) return null;
     const key = `${n}:${rate}`;
     if (!slots.has(key)) {
-      if (!pcmBytes?.[n] || slots.size >= SLOTS) { if (pcmBytes?.[n]) warnings.add('pcmSlots'); return null; }
+      if (!pcmBytes?.[n] || slots.size >= SLOTS) { if (pcmBytes?.[n]) { warnings.add('pcmSlots'); noSlot.set(key, { n, rate }); } return null; }
       const note = pcmNote(PCM_RATES[rate]);
-      slots.set(key, { slot: slots.size + 1, note: note.semi, seconds: (pcmBytes[n].length * 2) / PCM_RATES[rate], data: resample(decodeOki(pcmBytes[n]), PCM_RATES[rate], note.rate) });
+      slots.set(key, { slot: slots.size + 1, note: note.semi, seconds: (pcmBytes[n].length * 2) / PCM_RATES[rate], data: audioOf(n, rate, note.rate) });
     }
     return slots.get(key);
   };
@@ -677,17 +693,28 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
       const keyOf = (s) => s.map((x) => `${x.n}:${x.rate}:${x.gain}:${x.from}`).sort().join('|');
       const uses = new Map();
       for (const h of merged.hits) if (h.sounds.length > 1) uses.set(keyOf(h.sounds), (uses.get(keyOf(h.sounds)) || 0) + 1);
+      for (const [k, v] of uses) mixUses.set(k, v);
       for (const h of merged.hits) for (const s of h.sounds) if (s.from === 0) single(s.n, s.rate);
       const mixes = new Map();
+      // a mix is made while the bank has a number and the room for it (4 bits a sample, 64 KB a number)
+      const adpcmBytes = (data) => Math.ceil(data.length / 8) * 4;
+      let room = RAM_SIZE - [...slots.values()].reduce((n, s) => n + adpcmBytes(s.data), 0);
+      const soundsOf = new Map();
+      for (const h of merged.hits) if (h.sounds.length > 1 && !soundsOf.has(keyOf(h.sounds))) soundsOf.set(keyOf(h.sounds), h.sounds);
       for (const [key] of [...uses].sort((a, b) => b[1] - a[1])) {
-        if (slots.size + mixes.size >= SLOTS) { warnings.add('pcmSlots'); break; }
-        const sounds = merged.hits.find((h) => keyOf(h.sounds) === key).sounds;
+        if (slots.size + mixes.size >= SLOTS || room < 64) { warnings.add('pcmSlots'); break; }
+        const sounds = soundsOf.get(key);
         const note = pcmNote(Math.max(...sounds.map((s) => PCM_RATES[s.rate])));
+        // how long it would be, before it is made: one that does not fit is not made
+        const ahead = Math.max(0, ...sounds.map((s) => Math.ceil((pcmBytes[s.n].length * 2 * note.rate) / PCM_RATES[s.rate]) - Math.round(s.from * note.rate)));
+        if (Math.ceil(ahead / 8) * 4 > room || Math.ceil(ahead / 8) * 4 - 4 > 0xffff) { warnings.add('pcmSlots'); continue; }
         let len = 0;
-        const partsOf = sounds.map((s) => { const x = resample(decodeOki(pcmBytes[s.n]), PCM_RATES[s.rate], note.rate), skip = Math.round(s.from * note.rate); len = Math.max(len, x.length - skip); return [x, skip, s.gain]; });
+        const partsOf = sounds.map((s) => { const x = audioOf(s.n, s.rate, note.rate), skip = Math.round(s.from * note.rate); len = Math.max(len, x.length - skip); return [x, skip, s.gain]; });
         const data = new Float32Array(Math.max(0, len));
         for (const [x, skip, gain] of partsOf) for (let i = skip; i < x.length; i++) data[i - skip] += x[i] * gain;
         for (let i = 0; i < data.length; i++) data[i] = Math.max(-1, Math.min(1, data[i]));
+        if (adpcmBytes(data) > room || adpcmBytes(data) - 4 > 0xffff) { warnings.add('pcmSlots'); continue; }
+        room -= adpcmBytes(data);
         mixes.set(key, { slot: slots.size + mixes.size + 1, note: note.semi, seconds: data.length / note.rate, data });
       }
       for (const [key, v] of mixes) slots.set(`mix:${key}`, v);
@@ -732,11 +759,39 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
         rhythm({ items: gItems, loop: gLoop });
       }
     }
-    const entries = [...slots.values()].map((s) => ({ n: s.slot, name: `S${s.slot}`, volume: 0, adpcm: encodeAdpcm(s.data) }));
-    const size = entries.reduce((n, e) => n + Math.ceil(e.adpcm.length / 4) * 4, 0);
-    if (size > RAM_SIZE) throw new Error(`The PDX samples this song uses take ${Math.round(size / 1024)} KB as a PCM bank (at most ${RAM_SIZE >> 10} KB).`);
-    bank = entries.length ? writePcmBank(entries) : null;
-    pcmInfo = { ...(pcmInfo || { tracks: 1, mixes: 0 }), samples: entries.length, bytes: size, drums: [...likeDrum.values()].filter(Boolean).length, drumHits: drumCount };
+    const entries = [...slots].map(([key, s]) => ({ n: s.slot, name: `S${s.slot}`, volume: 0, adpcm: encodeAdpcm(s.data), key, s }));
+    const bytesOf = (e) => Math.ceil(e.adpcm.length / 4) * 4;
+    const size = entries.reduce((n, e) => n + bytesOf(e), 0);
+    // More than the bank holds: the song is converted all the same. The samples played most
+    // go into the bank while they fit; the others keep their number with a moment of silence,
+    // and their audio is handed over as WAV files, to be cut or slowed down and put in by hand.
+    const wavOf = (e) => writeWav(e.s.data, noteRate(Math.floor(e.s.note / 12), e.s.note % 12));
+    // one number of a bank is 65,536 bytes at most (about eight seconds): a longer sample is left out the same way
+    const long = entries.filter((e) => bytesOf(e) - 4 > 0xffff);
+    for (const e of long) outside.push({ slot: e.n, bytes: bytesOf(e), long: true, file: `${bankBase}_S${e.n}.WAV`, wav: wavOf(e) });
+    if (long.length) warnings.add('pcmTooLong');
+    let inBank = entries.filter((e) => !long.includes(e));
+    if (size - long.reduce((n, e) => n + bytesOf(e), 0) > RAM_SIZE) {
+      warnings.add('pcmTooLarge');
+      const used = new Map();
+      for (const t of pcmTracks) { let rate = 4; for (const [x, times] of play(m.tracks[t].items)) { if (x[0] === 'F') rate = Math.min(4, x[1]); else if (x[0] === 'n') used.set(`${x[1]}:${rate}`, (used.get(`${x[1]}:${rate}`) || 0) + times); } }
+      const useOf = (e) => (e.key.startsWith('mix:') ? mixUses.get(e.key.slice(4)) || 0 : used.get(e.key) || 0);
+      let room = RAM_SIZE - 8 * entries.length;
+      const fit = [];
+      for (const e of [...inBank].sort((a, b) => useOf(b) - useOf(a) || a.n - b.n)) {
+        if (bytesOf(e) <= room) { fit.push(e); room -= bytesOf(e) - 8; } else outside.push({ slot: e.n, bytes: bytesOf(e), file: `${bankBase}_S${e.n}.WAV`, wav: wavOf(e) });
+      }
+      inBank = fit;
+    }
+    const real = inBank;
+    inBank = [...inBank, ...outside.map((l) => ({ n: l.slot, name: `(S${l.slot})`, volume: 0, adpcm: new Uint8Array(8).fill(0x80) }))];
+    outside.sort((a, b) => a.slot - b.slot);
+    // samples the bank had no number for (it has 32): their audio as it is in the PDX
+    for (const { n, rate } of noSlot.values()) outside.push({ slot: null, sample: n, bytes: pcmBytes[n].length, file: `${bankBase}_P${n}.WAV`, wav: writeWav(decodeOki(pcmBytes[n]), PCM_RATES[rate]) });
+    bank = inBank.length ? writePcmBank(inBank) : null;
+    sources = real.map((e) => ({ adpcm: e.adpcm, samples: e.s.data, rate: noteRate(Math.floor(e.s.note / 12), e.s.note % 12) }));
+    pcmInfo = { ...(pcmInfo || { tracks: 1, mixes: 0 }), samples: entries.length, bytes: size, drums: [...likeDrum.values()].filter(Boolean).length, drumHits: drumCount,
+      leftOut: outside.filter((l) => l.slot !== null).map((l) => l.slot), noSlot: noSlot.size, room: RAM_SIZE };
   } else if (pcmTracks.length) warnings.add('noPdx');
 
   // Tempo commands of tracks that are not a part of their own (a track without notes, the
@@ -758,12 +813,19 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
 
   // ---- the text
   const title = decodeTitle(m.title, fileName.replace(/\.[^.]*$/, ''));
-  const bankName = `${(fileName.replace(/\.[^.]*$/, '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 8) || 'MDX').toUpperCase()}.BIN`;
+  const bankName = `${bankBase}.BIN`;
   const lines = [`#title ${title}`, `#comment Converted from ${fileName || 'an MDX file'} (MXDRV) by MUCPlayground`, '#CarrierCorrection Yes'];
   if (bank) lines.push(`#pcm ${bankName}`);
   lines.push('', "; An arrangement of the MXDRV song for the OPNA: six FM tracks with their voices, the ADPCM track's",
     '; samples as a PCM bank for part K. A seventh and eighth FM track are on the SCC, their voice as a wave,',
     '; or on the MSX-MUSIC, their voice as the nearest one its two operators make.');
+  if (outside.length) {
+    const silent = outside.filter((l) => l.slot !== null), none = outside.filter((l) => l.slot === null);
+    if (silent.length) lines.push(`; PCM: the samples take ${Math.round(pcmInfo.bytes / 1024)} KB; a bank holds ${RAM_SIZE >> 10} KB, and 64 KB (about 8 s) under one number. Left out, and silent until they are put in:`,
+      `;   ${silent.map((l) => `@${l.slot} (${Math.round(l.bytes / 1024)} KB${l.long ? ', too long' : ''}, ${l.file})`).join(', ')}`);
+    if (none.length) lines.push(`; PCM: a bank has ${SLOTS} samples. Without a number, and not played: ${none.map((l) => `PDX sample ${l.sample} (${l.file})`).join(', ')}`);
+    lines.push('; Their audio comes with the song as WAV files: make room in the PCM bank (cut or slow down samples) and import them.');
+  }
   if (pcmInfo?.drums) lines.push(`; ${pcmInfo.drums} of the ADPCM samples sound like the OPNA's own drums and are played by its rhythm part (G).`);
   // What the song costs: the estimate of mgs-to-muc.js for everything but the vibrato, and
   // for the vibrato what it writes: every step the frequency, on the SCC twice.
@@ -809,7 +871,7 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
   if (size > 65536) throw new Error(`The MDX file becomes a ${size}-byte MUC (at most 65,536).`);
   return {
     text: out, title,
-    pcm: bank ? { name: bankName, bytes: bank } : null,
+    pcm: bank ? { name: bankName, bytes: bank, sources, leftOut: outside.map((l) => ({ name: l.file, bytes: l.wav, slot: l.slot })) } : null,
     report: {
       parts: [...[...partOf].map(([track, p]) => ({ track, part: p.part })), ...(tracks.some((t) => t.part === 'K') ? [{ track: 8, part: 'K' }] : [])],
       voices: voiceIds.size, waves: waves.size, patches: Math.min(USER_VOICES, patches.size), pdx: m.pdx, pcm: pcmInfo,
@@ -827,6 +889,9 @@ function convertAt(m, fileName, pdx, div, spare = 'auto', useDrums = false) {
 // drums: 'auto' sends the samples that sound like the OPNA's drums to its rhythm part when the
 // song gains by it (it has more samples than a PCM bank holds or more than its 256 KB, or
 // ADPCM hits that overlap and were cut); 'always' whenever there are such samples; 'never'.
+// A song whose samples are more than a PCM bank holds is converted all the same: the result's
+// pcm.leftOut are the samples that are not in the bank ({ name, bytes: a WAV file, slot | null }),
+// report.pcm.leftOut the numbers that are silent, and warnings has 'pcmTooLarge'.
 export function mdxToMuc(bytes, { fileName = '', pdx = null, div: only = 0, spare = 'auto', drums = 'auto' } = {}) {
   const m = parseMdx(bytes);
   const attempt = (useDrums) => {
@@ -847,12 +912,9 @@ export function mdxToMuc(bytes, { fileName = '', pdx = null, div: only = 0, spar
   };
   if (drums === 'never' || !pdx) return attempt(false);
   if (drums === 'always') return attempt(true);
-  let plain = null, refused = null;
-  try { plain = attempt(false); } catch (e) { refused = e; }
-  const gains = refused ? /PCM bank/.test(refused.message) : plain.report.warnings.includes('pcmSlots') || plain.report.counts.pcmOverlapsCut > 0;
-  if (gains) {
+  const plain = attempt(false), w = plain.report.warnings;
+  if (w.includes('pcmTooLarge') || w.includes('pcmTooLong') || w.includes('pcmSlots') || plain.report.counts.pcmOverlapsCut > 0) {
     try { const r = attempt(true); if (r?.report.pcm?.drums) return r; } catch { /* no better with the drums: as without them */ }
   }
-  if (refused) throw refused;
   return plain;
 }

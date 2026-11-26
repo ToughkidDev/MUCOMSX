@@ -232,7 +232,7 @@ const T = {
     mdxFailed: (n) => `${n} (MDX) could not be converted: `,
     mdxConverted: (n, parts, note) => `Converted ${n} (MXDRV) to a MUC for the OPNA, ${parts} parts${note ? `; ${note}` : ''}. It is an arrangement: voices and levels are approximations, and what could not be carried over is listed at the top of the MUC.`,
     mdxNoPdx: (f) => `the ADPCM track is left out, as ${f || 'the PDX file'} was not with it (open or drop it together with the MDX)`, mdxScc: (n) => `${n} FM track${n > 1 ? 's' : ''} on the SCC`, mdxOpll: (n) => `${n} FM track${n > 1 ? 's' : ''} on the MSX-MUSIC with a voice of its own`,
-    mdxClock: (d) => `one clock for ${d} ticks`, mdxPcm: (n, kb) => `${n} samples as a PCM bank (${kb} KB)`, mdxDrums: (n) => `${n} drum sample${n > 1 ? 's' : ''} on the OPNA's own rhythm part`,
+    mdxClock: (d) => `one clock for ${d} ticks`, mdxPcm: (n, kb) => `${n} samples as a PCM bank (${kb} KB)`, mdxDrums: (n) => `${n} drum sample${n > 1 ? 's' : ''} on the OPNA's own rhythm part`, mdxPcmLeft: (n, kb) => `PCM FAILED IN PART: ${n} sample${n > 1 ? 's' : ''} did not fit the PCM bank (the song needs ${kb} KB; a bank holds 256 KB, 32 samples, 64 KB each) and ${n > 1 ? 'are' : 'is'} silent. ${n > 1 ? 'They are' : 'It is'} attached as WAV: make room in the PCM tab (Edit: Trim, Resample) and Import ${n > 1 ? 'them' : 'it'}; the MUC's top comment lists the numbers`,
     mgsConverted: (n, parts, left) => `Converted ${n} (MGSDRV) to a MUC for the OPNA, ${parts} parts${left ? `; not carried over: ${left}` : ''}. It is an arrangement: voices and envelopes are approximations.`,
     mgsNoY: (n) => `${n} register writes (y; mostly drum pitch)`, mgsNoHardEnv: 'the PSG hardware envelope', mgsNoOpllEnv: 'envelopes on the MSX-MUSIC parts',
     mgsDrift: 'a repeat that changes from pass to pass', mgsTracksDropped: 'FM tracks beyond nine', mgsUnknown: 'a command this reader does not know', playingFile: (n) => `Playing ${n}`,
@@ -424,7 +424,7 @@ const T = {
     mdxFailed: (n) => `${n}(MDX)을 변환하지 못했습니다: `,
     mdxConverted: (n, parts, note) => `${n}(MXDRV)을 OPNA용 MUC로 변환했습니다, ${parts}개 파트${note ? `. ${note}` : ''}. 편곡이므로 음색과 음량은 근사치이고, 옮기지 못한 것은 MUC 머리의 주석에 적혀 있습니다.`,
     mdxNoPdx: (f) => `${f || 'PDX 파일'}이 함께 없어서 ADPCM 트랙은 빠졌습니다(MDX와 함께 열거나 놓으세요)`, mdxScc: (n) => `FM ${n}트랙은 SCC로`, mdxOpll: (n) => `FM ${n}트랙은 MSX-MUSIC 사용자 음색으로`,
-    mdxClock: (d) => `${d}틱에 한 클럭`, mdxPcm: (n, kb) => `샘플 ${n}개를 PCM 뱅크로(${kb}KB)`, mdxDrums: (n) => `드럼 샘플 ${n}개는 OPNA 리듬 파트로`,
+    mdxClock: (d) => `${d}틱에 한 클럭`, mdxPcm: (n, kb) => `샘플 ${n}개를 PCM 뱅크로(${kb}KB)`, mdxDrums: (n) => `드럼 샘플 ${n}개는 OPNA 리듬 파트로`, mdxPcmLeft: (n, kb) => `PCM 일부 실패: 샘플 ${n}개가 PCM 뱅크에 들어가지 못해 무음입니다(곡은 ${kb}KB가 필요하고, 뱅크는 256KB·32개·개당 64KB까지). WAV로 첨부했으니 PCM 탭에서 자리를 만들고(편집: 자르기, 리샘플) 가져오세요. 번호는 MUC 머리 주석에 있습니다`,
     mgsConverted: (n, parts, left) => `${n}(MGSDRV)을 OPNA용 MUC로 변환했습니다, ${parts}개 파트${left ? `. 옮기지 못한 것: ${left}` : ''}. 편곡에 해당합니다: 음색과 엔벨로프는 근사입니다.`,
     mgsNoY: (n) => `레지스터 직접 쓰기 ${n}회(y, 대부분 드럼 음높이)`, mgsNoHardEnv: 'PSG 하드웨어 엔벨로프', mgsNoOpllEnv: 'MSX-MUSIC 파트의 엔벨로프',
     mgsDrift: '회차마다 달라지는 반복', mgsTracksDropped: '9개를 넘는 FM 트랙', mgsUnknown: '알 수 없는 명령', playingFile: (n) => `${n} 재생 중`,
@@ -616,7 +616,7 @@ const T = {
     mdxFailed: (n) => `${n}（MDX）を変換できませんでした: `,
     mdxConverted: (n, parts, note) => `${n}（MXDRV）をOPNA用のMUCに変換しました、${parts}パート${note ? `。${note}` : ''}。編曲なので音色と音量は近似で、移せなかったものはMUC冒頭のコメントにあります。`,
     mdxNoPdx: (f) => `${f || 'PDXファイル'}が一緒にないため、ADPCMトラックは省かれました（MDXと一緒に開くかドロップしてください）`, mdxScc: (n) => `FM ${n}トラックはSCCへ`, mdxOpll: (n) => `FM ${n}トラックはMSX-MUSICのユーザー音色へ`,
-    mdxClock: (d) => `${d}ティックで1クロック`, mdxPcm: (n, kb) => `サンプル${n}個をPCMバンクに（${kb}KB）`, mdxDrums: (n) => `ドラムサンプル${n}個はOPNAのリズムパートへ`,
+    mdxClock: (d) => `${d}ティックで1クロック`, mdxPcm: (n, kb) => `サンプル${n}個をPCMバンクに（${kb}KB）`, mdxDrums: (n) => `ドラムサンプル${n}個はOPNAのリズムパートへ`, mdxPcmLeft: (n, kb) => `PCMは一部失敗: サンプル${n}個がPCMバンクに入らず無音です（曲は${kb}KB必要で、バンクは256KB・32個・1個64KBまで）。WAVで添付したので、PCMタブで空きを作り（編集: トリム、リサンプル）インポートしてください。番号はMUC冒頭のコメントにあります`,
     mgsConverted: (n, parts, left) => `${n}（MGSDRV）をOPNA用のMUCに変換しました、${parts}パート${left ? `。移せなかったもの: ${left}` : ''}。アレンジに当たります: 音色とエンベロープは近似です。`,
     mgsNoY: (n) => `レジスタ直接書き込み${n}回（y、ほとんどはドラムの音程）`, mgsNoHardEnv: 'PSGのハードウェアエンベロープ', mgsNoOpllEnv: 'MSX-MUSICパートのエンベロープ',
     mgsDrift: '回ごとに変わる繰り返し', mgsTracksDropped: '9本を超えるFMトラック', mgsUnknown: '不明なコマンド', playingFile: (n) => `${n}を再生中`,
@@ -1633,7 +1633,10 @@ function readMdx(name, bytes, side) {
     const r = mdxToMuc(bytes, { fileName: name, pdx: found ? new Uint8Array(found.data) : null, spare: asked === 'opll' || asked === 'scc' ? asked : 'auto', drums: drums === 'always' || drums === 'never' ? drums : 'auto' });
     return {
       name: name.replace(/\.[^.]*$/, '') + '.MUC', text: r.text, mgs: { from: name, report: r.report, mdx: true },
-      files: r.pcm ? [{ name: r.pcm.name, data: r.pcm.bytes.buffer.slice(r.pcm.bytes.byteOffset, r.pcm.bytes.byteOffset + r.pcm.bytes.byteLength) }] : [],
+      // the bank, and the samples that are not in it as WAV files (to be cut and imported in the PCM tab)
+      files: r.pcm ? [r.pcm, ...r.pcm.leftOut].map((f) => ({ name: f.name, data: f.bytes.buffer.slice(f.bytes.byteOffset, f.bytes.byteOffset + f.bytes.byteLength) })) : [],
+      // the audio the bank's samples were made of: the PCM editor starts from it, not from the ADPCM
+      pcmSources: r.pcm ? r.pcm.sources : [],
     };
   } catch (e) {
     setStatus(t('mdxFailed', name) + (e.message || e), true);
@@ -1661,7 +1664,10 @@ async function mdxSideFiles(name, data, where = {}) {
   }
   return [];
 }
-function attachSongFiles(song) { for (const f of song.files || []) attach(f.name, f.data); }
+function attachSongFiles(song) {
+  for (const f of song.files || []) attach(f.name, f.data);
+  for (const s of song.pcmSources || []) pcmSources.set(pcmKey(s.adpcm), { samples: s.samples, rate: s.rate });
+}
 function mdxNote(report) {
   const out = [];
   const scc = report.parts.filter((p) => p.part.startsWith('SCC')).length;
@@ -1670,6 +1676,7 @@ function mdxNote(report) {
   if (opll) out.push(t('mdxOpll', opll));
   if (report.pcm) out.push(t('mdxPcm', report.pcm.samples, Math.round(report.pcm.bytes / 1024)));
   if (report.pcm?.drums) out.push(t('mdxDrums', report.pcm.drums));
+  if (report.pcm?.leftOut?.length || report.pcm?.noSlot) out.push(t('mdxPcmLeft', (report.pcm.leftOut?.length || 0) + (report.pcm.noSlot || 0), Math.round(report.pcm.bytes / 1024)));
   if (report.warnings.includes('noPdx')) out.push(t('mdxNoPdx', report.pdx));
   if (report.clock.div > 1) out.push(t('mdxClock', report.clock.div));
   return out.join(', ');

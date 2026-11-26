@@ -23,6 +23,9 @@ try {
   if (output) fs.writeFileSync(output, r.text);
   else process.stdout.write(r.text);
   if (r.pcm) fs.writeFileSync(path.join(output ? path.dirname(output) : dir, r.pcm.name), r.pcm.bytes);
+  // samples that did not fit the bank: as WAV files next to it, to be cut and put in by hand
+  for (const l of r.pcm?.leftOut || []) fs.writeFileSync(path.join(output ? path.dirname(output) : dir, l.name), l.bytes);
+  if (r.pcm?.leftOut.length) console.error(`PCM: ${r.pcm.leftOut.length} sample(s) are not in the bank and silent (see the MUC's top comment): ${r.pcm.leftOut.map((l) => l.name).join(', ')}`);
   const { timeline, ...report } = r.report;
   console.error(JSON.stringify(report));
 } catch (e) {
