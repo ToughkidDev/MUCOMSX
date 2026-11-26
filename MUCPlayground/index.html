@@ -571,6 +571,11 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 .s-source{margin:0;padding:0 16px 8px;font-size:.78rem;color:var(--muted)}
 .s-list{overflow:auto;padding:0 8px 12px;border-top:1px solid var(--line)}
 .s-list details{border-bottom:1px solid var(--line)}
+/* a folder inside a folder: set in, a line down its side, no rule under it */
+.s-list details details{border-bottom:0;margin-left:14px;border-left:1px solid var(--line)}
+.s-list details details summary{font-weight:500;padding:6px 8px}
+.s-list details>ul{margin-left:0}
+.s-list details details>ul{margin-bottom:4px}
 .m-actions{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
 .s-list summary{cursor:pointer;padding:8px;font-weight:600;font-size:.9rem}
 /* Touch screens (iPhone, iPad): finger-sized rows, no double-tap zoom delay, and 16px text in

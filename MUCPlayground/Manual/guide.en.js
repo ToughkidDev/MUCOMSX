@@ -341,7 +341,7 @@ export default [
     title: 'Samples and templates',
     html: `
 <h3>Samples…</h3>
-<p>Shows the repository's <a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/Samples">Samples</a> folder, folder by folder. Find a name with the search box at the top. Click a song: a <code>.muc</code> opens in the editor (its voice and PCM files come from the same folder), and a <code>.mub</code>/<code>.vgm</code>/<code>.vgz</code> plays.</p>
+<p>Shows the repository's <a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/Samples">Samples</a> folder as a tree: click a folder to open or close it (the number is how many songs are in it and under it; the folders you opened stay open while the page is). Find a name with the search box at the top, which opens every folder it finds something in. Click a song: a <code>.muc</code> opens in the editor (its voice and PCM files come from the same folder), and a <code>.mub</code>/<code>.vgm</code>/<code>.vgz</code> plays.</p>
 <ul>
   <li><b>📂</b> next to a folder opens all the songs in that folder as a playlist.</li>
   <li>The list is read live from GitHub, so songs committed to the repository appear right away. It is remembered for 10 minutes; <b>Refresh</b> reads it again.</li>

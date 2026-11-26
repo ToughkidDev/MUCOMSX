@@ -3002,53 +3002,78 @@ function renderSampleList() {
     (paths) => { $('samplesDlg').close(); openInPlaylist(repoItems(paths)); });
 }
 
-// The playable files among `paths`, grouped by folder (folders after the first `skip`
-// characters), the ones matching `query`; onPick(path) when one is clicked, and
-// onFolder(paths) for the folder button by a folder's song count (its songs to the playlist).
+// The playable files among `paths` as a tree of folders (the path after its first `skip`
+// characters), the ones matching `query`; onPick(path) when a song is clicked, and
+// onFolder(paths) for the folder button of a folder that holds songs (its songs to the
+// playlist). A folder shows its name, not its path, and how many songs are in it and under it;
+// one that holds a single folder and nothing else is shown on one row with it ("VGMs/Game").
+// Folders start closed but for the first row of ones that only hold folders; what is opened
+// and closed is remembered for the list while the page is open, and a search opens all it finds.
 function fillSongList(list, paths, query, skip, order, onPick, onFolder = null) {
   query = query.trim().toLowerCase();
   list.innerHTML = '';
-  const groups = new Map();
+  const byName = (a, b) => a.localeCompare(b, undefined, { numeric: true });
+  const root = { path: '', dirs: new Map(), songs: [], count: 0 };
   for (const path of paths) {
     if (!PLAYABLE.test(path) || (query && !path.toLowerCase().includes(query))) continue;
     const dir = path.slice(skip, Math.max(skip, path.lastIndexOf('/')));
-    if (!groups.has(dir)) groups.set(dir, []);
-    groups.get(dir).push(path);
-  }
-  if (!groups.size) { list.innerHTML = `<p class="s-empty">${t('noMatch')}</p>`; return; }
-  for (const dir of [...groups.keys()].sort((a, b) => order(a).localeCompare(order(b)))) {
-    const d = document.createElement('details');
-    d.open = !!query || groups.size <= 3;
-    d.innerHTML = '<summary></summary><ul></ul>';
-    d.querySelector('summary').innerHTML = '<span></span><small></small>';
-    d.querySelector('summary span').textContent = dir || '/';
-    d.querySelector('summary small').textContent = groups.get(dir).length;
-    if (onFolder) {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 's-folder';
-      b.textContent = '📂';
-      b.title = t('folderToPlaylist', dir || '/');
-      b.setAttribute('aria-label', b.title);
-      // In the summary: open the playlist instead of folding the folder.
-      b.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onFolder([...groups.get(dir)].sort((a, c) => a.localeCompare(c, undefined, { numeric: true })));
-      });
-      d.querySelector('summary').appendChild(b);
+    let node = root;
+    root.count++;
+    for (const name of dir ? dir.split('/') : []) {
+      if (!node.dirs.has(name)) node.dirs.set(name, { path: node.path ? `${node.path}/${name}` : name, name, dirs: new Map(), songs: [], count: 0 });
+      node = node.dirs.get(name);
+      node.count++;
     }
-    for (const path of groups.get(dir).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))) {
+    node.songs.push(path);
+  }
+  if (!root.count) { list.innerHTML = `<p class="s-empty">${t('noMatch')}</p>`; return; }
+  const opened = list.openFolders || (list.openFolders = new Map());   // folder path -> open or not, as the user left it
+  const songs = (node, into) => {
+    if (!node.songs.length) return;
+    const ul = document.createElement('ul');
+    for (const path of node.songs.sort(byName)) {
       const name = path.slice(path.lastIndexOf('/') + 1);
       const li = document.createElement('li');
       li.innerHTML = '<button type="button"><span></span><span class="ext"></span></button>';
       li.querySelector('span').textContent = name.replace(PLAYABLE, '');
       li.querySelector('.ext').textContent = name.slice(name.lastIndexOf('.') + 1).toLowerCase();
       li.querySelector('button').addEventListener('click', () => onPick(path));
-      d.querySelector('ul').appendChild(li);
+      ul.appendChild(li);
     }
-    list.appendChild(d);
-  }
+    into.appendChild(ul);
+  };
+  const folders = (node, into, depth) => {
+    for (const first of [...node.dirs.values()].sort((a, b) => byName(order(a.path), order(b.path)))) {
+      let dir = first, label = first.name;
+      while (!dir.songs.length && dir.dirs.size === 1) { dir = [...dir.dirs.values()][0]; label += '/' + dir.name; }
+      const d = document.createElement('details');
+      d.open = !!query || (opened.has(dir.path) ? opened.get(dir.path) : depth === 0 && !dir.songs.length);
+      d.innerHTML = '<summary><span></span><small></small></summary>';
+      d.querySelector('summary span').textContent = label;
+      d.querySelector('summary small').textContent = dir.count;
+      if (!query) d.addEventListener('toggle', () => opened.set(dir.path, d.open));
+      if (onFolder && dir.songs.length) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 's-folder';
+        b.textContent = '📂';
+        b.title = t('folderToPlaylist', dir.path);
+        b.setAttribute('aria-label', b.title);
+        // In the summary: open the playlist instead of folding the folder.
+        b.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onFolder([...dir.songs].sort(byName));
+        });
+        d.querySelector('summary').appendChild(b);
+      }
+      folders(dir, d, depth + 1);
+      songs(dir, d);
+      into.appendChild(d);
+    }
+  };
+  folders(root, list, 0);
+  songs(root, list);
 }
 
 async function openSamples(force) {

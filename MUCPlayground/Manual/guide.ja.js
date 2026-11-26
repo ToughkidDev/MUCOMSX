@@ -341,7 +341,7 @@ export default [
     title: 'サンプルとテンプレート',
     html: `
 <h3>サンプル…</h3>
-<p>リポジトリの<a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/Samples">Samples</a>フォルダをフォルダごとに表示します。上の検索ボックスで名前を探し、曲を押すと<code>.muc</code>はエディタで開き（音色・PCMファイルも同じフォルダから読み込み）、<code>.mub</code>/<code>.vgm</code>/<code>.vgz</code>は再生されます。</p>
+<p>リポジトリの<a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/Samples">Samples</a>フォルダをツリーで表示します。フォルダを押すと開閉し（数字はそのフォルダと下位フォルダの曲数、開いたフォルダはページを開いている間そのまま）、上の検索ボックスで名前を探すと該当する曲のあるフォルダがすべて開きます。曲を押すと<code>.muc</code>はエディタで開き（音色・PCMファイルも同じフォルダから読み込み）、<code>.mub</code>/<code>.vgm</code>/<code>.vgz</code>は再生されます。</p>
 <ul>
   <li>フォルダの横の<b>📂</b>は、そのフォルダの曲すべてをプレイリストとして開きます。</li>
   <li>一覧はGitHubからリアルタイムに読み込むので、リポジトリに上げた曲がすぐに表示されます。10分間記憶し、<b>再読み込み</b>で読み直します。</li>

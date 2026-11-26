@@ -341,7 +341,7 @@ export default [
     title: '샘플과 템플릿',
     html: `
 <h3>샘플…</h3>
-<p>저장소의 <a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/Samples">Samples</a> 폴더를 폴더별로 보여 줍니다. 위의 검색 상자로 이름을 찾고, 곡을 누르면 <code>.muc</code>는 편집기에 열리고(음색·PCM 파일도 같은 폴더에서 가져옴) <code>.mub</code>/<code>.vgm</code>/<code>.vgz</code>는 재생됩니다.</p>
+<p>저장소의 <a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/Samples">Samples</a> 폴더를 트리로 보여 줍니다. 폴더를 누르면 열리고 닫히며(숫자는 그 폴더와 하위 폴더의 곡 수, 연 폴더는 페이지가 열려 있는 동안 유지됩니다), 위의 검색 상자로 이름을 찾으면 맞는 곡이 있는 폴더가 모두 열립니다. 곡을 누르면 <code>.muc</code>는 편집기에 열리고(음색·PCM 파일도 같은 폴더에서 가져옴) <code>.mub</code>/<code>.vgm</code>/<code>.vgz</code>는 재생됩니다.</p>
 <ul>
   <li>폴더 옆의 <b>📂</b>는 그 폴더의 곡 전체를 플레이리스트로 엽니다.</li>
   <li>목록은 GitHub에서 실시간으로 읽으므로, 저장소에 올린 곡이 바로 나옵니다. 10분 동안 기억하며 <b>새로고침</b>으로 다시 읽습니다.</li>
