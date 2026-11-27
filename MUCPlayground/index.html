@@ -626,6 +626,7 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 .s-list li button:hover,.s-list li button:focus-visible{background:var(--sel);outline:none}
 .s-list li .ext{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-left:auto}
 .s-empty{padding:16px;color:var(--muted)}
+.build{color:var(--muted);font-family:var(--mono);font-size:.78em}
 .drop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(20,18,14,.55);
       color:#fff;font-size:1.2rem;z-index:10;pointer-events:none}
 .drop.on{display:flex}
@@ -795,7 +796,7 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 </main>
 
 <footer>
-  <p><strong>MUCPlayground</strong> — Written by ToughkidCST</p>
+  <p><strong>MUCPlayground</strong> — Written by ToughkidCST <span class="build" title="build">· build 2026-11-27 b</span></p>
   <p data-i18n="credit1">Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: MDPlayer4Mac and MUCOMSX by ToughkidCST, mucomDotNET and MDSound by kuma4649. GPL-3.0.</p>
   <p><span data-i18n="credit2">MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.</span>
      <a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/MUCPlayground" target="_blank" rel="noopener" data-i18n="source">Source and licenses</a></p>
@@ -854,6 +855,8 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 
 <div class="drop" id="drop" data-i18n="drop">Drop .muc / .mgs / .mdx / .mub / .vgm / .vgz to play — voice and PCM files are attached</div>
 
-<script src="playground.js" type="module"></script>
+<!-- The number after ?v= is the build shown in the footer: a new one makes every browser fetch
+     this script again instead of using the copy it kept. Change both together. -->
+<script src="playground.js?v=20261127b" type="module"></script>
 </body>
 </html>
