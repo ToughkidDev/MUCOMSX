@@ -1,0 +1,51 @@
+#mucom88 1.7
+#title Winer
+#composer Takeaki Watanabe (Nava)
+#author ToughkidCST
+#comment Black Bird - Toritachi no Tooboe (PC-9801)
+#voice BBIRD.DAT
+#CarrierCorrection Yes
+#*1{o4c+32 d32 d+32 e32 f32 f+32 g32 g+32 a r16 b r16}
+#*2{>c+& c+2& c+2& c+2& q3 c+2}
+#*3{*4 <f+& f+2 f32& f+16. *4}
+#*4{c+ f+ >e4 d+4 c+ <a32& a+16. b >c+}
+#*5{f+& f+4 <f+4 a+16& b a+ r16 f+& f+2& q3 *6}
+#*6{f+2 r d+ f+ g+ g+16& a g+ r16}
+#*7{@16 v115 M1,1,-90,255}
+#*8{@30 v112 M1,1,-70,255}
+#*9{f%21& MF0 D-37 o1c+64}
+#*10{@13 v105 D0 o3c16 v107 c16}
+#*11{E217,255,0,255,0,20 v12 M91,4,-8,4}
+#*12{q2 o3g+32 a32 a+32 b32}
+#*13{>c32 c+32 d32 d+32 e r16 f+ r16 M91,4,-16,4 f& f2& f2& f2& q2 f2}
+#*14{P1 E224,9,1,210,0,24 v10}
+#*15{@77 r4 p1 v103 M69,3,8,4 D2 q3}
+
+A C192 l8 vm2 t229 @5 r4 v110 q4 o3a16 e16 a16 >d16 a16 d16 c+& c+2& c+2& c+2&
+A q4 c+2 L [ <f+16 r16 >f+ <f+4 ]4 [ e16 r16 >e <e4 ]4 [ b16 r16 >b <b4 ]4 [
+A d16 r16 >d <d4 ]2 e16 r16 >e <e4 e16 r16 >e16 r16 <e16 e16 g+
+B C192 l8 vm2 @77 v107 M69,3,8,4 D4 q3 *1 *2 L @8 v107 o3f32& f+16. *3 *5 f+&
+B f+4& {f+64g}& {g%23>c+}& {c+96d}& {d16f+}& {f+48g}& {g48g+} g+2 e2
+C C192 l8 vm2 @30 v92 M1,1,-70,255 o3f32 v95 f32 v97 f32 v100 f32 v103 f32 v105
+C f32 v107 f32 v110 f32 *7 >a+64 a+32. a+16 d16 *8 <f16 *7 o5c16 <a+16 *8
+C <f%21& MF0 D-37 o1c+64& MF1 D0 MF0 D-37 c+2& q0 c+2 @78 v115 D0 o3f4 f4 f4
+C @30 v112 MF1 f16 f16 *9 L [ @11 v115 M1,1,-50,255 D0 f%5& MF0 D-37 c+%19 *10
+C / *8 *9 *10 ]16 *8 f16 f16 *9
+D C192 l8 P1 *11 *12 *13 L D-16 c+2& c+2& q2 c+4 c+4 f+4 a+4 g+2& g+2& q2 g+4
+D e4 g+4 b4 d+2& d+2& q2 d+4 D-8 <b4 D-16 >d+4 D-8 <b4 D-16 >f+2& q2 f+2 g+2 e2
+E C192 l8 *14 M91,4,-8,4 D-4 *12 D-8 *13 L *11 <a+2& a+2& q2 a+4 g+4 a+4 D-16
+E >c+4 D-8 <b2& b2& q2 b4 g+4 b4 D-16 >e4 D-8 <f+2& f+2& q2 f+4 d+4 f+4 d+4 a2&
+E q2 a2 b2 g+2
+F C192 l8 r *14 M91,4,-16,4 D8 q2 *1 M91,4,-32,4 D16 >c+& c+2& c+2& c+2& q2 c+2
+F L E205,255,0,255,0,26 v9 M91,4,-16,4 D0 <f32& f+16. *3 M91,4,-32,4 f+& f+4
+F <f+4 M91,4,-16,4 a+16& b a+ r16 f+& f+2& q2 *6 f+& f+4& {f+%28>c+}& {c+%17g}&
+F {g64g+} M91,4,-32,4 g+2 e2
+G C192 l8 r4 [ v47,30,30,17,17,20,25 p48 p49 p34 p19 p52 p53 @28 c16 ]6 @15 c
+G r2 r2 [ @32 c4 ]4 L [ @13 c @12 c16 @8 c16 @14 c @12 c16 @8 c16 ]16
+H C192 l8 vm2 @77 r p2 v97 M69,3,8,4 D1 q3 *1 *2 L @8 v97 D-2 o3f32& f+16. *3
+H *5 f+& f+4& {f+64g}& {g%23>c+}& {c+96d}& {d16f+}& {f+48g}& {g48g+} g+2 e2
+I C192 l8 vm2 *15 o4a r16 b r16 *2 L @17 v100 D-1 <c+2& c+2& q3 c+4 c+4 f+4 a+4
+I g+2& g+2& q3 g+4 e4 g+4 b4 d+2& d+2& q3 d+4 <b4 >d+4 <b4 >f+2& q3 f+2 g+2 e2
+J C192 l8 vm2 *15 o4e r16 f+ r16 g+& g+2& g+2& g+2& q3 g+2 L @17 v100 D-1 <a+2&
+J a+2& q3 a+4 g+4 a+4 >c+4 <b2& b2& q3 b4 g+4 b4 >e4 <f+2& f+2& q3 f+4 d+4 f+4
+J d+4 a2& q3 a2 b2 g+2

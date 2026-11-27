@@ -1,0 +1,72 @@
+#mucom88 1.7
+#title Restoration Eimi
+#composer Takeaki Watanabe (Nava)
+#author ToughkidCST
+#comment Black Bird - Toritachi no Tooboe (PC-9801)
+#voice BBIRD.DAT
+#CarrierCorrection Yes
+#*1{[ *2 / d+ r *3 ]2 d+& d+4 r4 @79}
+#*2{MF0 f4 f+ f r *3 f4 f+ f r4 g32& g+%42 g+ f+ f c+ r <a+ r >f f4 f+}
+#*3{<g+16 r16 a+ >c+}
+#*4{<b a+ a c+ g+ e r f+ g+ b >d+ f+ f e d+8. e32 f32 f+ <b8.}
+#*5{c+32 d+ <g+8. a32 a+32 b d32& d+%42 e d+ e g+ b r >c+}
+#*6{<a >g+ f+ r <f+ a b >c+ d+ f+ <a g+4 a g+& g+4. g24 f+24 f24 e4 f+4 g+4}
+#*7{c+ c+ c+ c+ <c+ >c+ *8 >g+ d+32& e32& e c+8. e g+12 d+12 f+12}
+#*8{<b r >d32& d+%42 f+ d+ d c+ <b [ f+ g+ f+ g+ r ]2 r c+ d+ e f+ g+ a g+ a}
+#*9{*10 >c12 <f+12 a12 d+12 f+12 c12}
+#*10{d+12 <a12}
+#*11{E235,255,1,224,0,22 v11}
+#*12{E243,255,1,244,2,26 v9}
+#*13{E241,255,1,242,3,29 v8}
+#*14{E239,255,0,255,0,33 v7}
+#*15{>c64 c+64 d64}
+#*16{E244,255,0,255,0,24 v10}
+#*17{w4 E235,255,21,224,11,22 v11}
+#*18{o2c+%17& MF0 D214 <c+%7}
+#*19{w1 E237,255,20,226,10,20 v12}
+#*20{P3 w22 E238,255,18,223,9,19 v13}
+#*21{o7g+ P2 *19 o4c+}
+#*22{*17 MF1 *18}
+#*23{v100 M1,2,6,4 D2 q3}
+#*24{@31 v103 M21,2,8,6}
+#*25{@27 v103 M36,2,8,4 q8}
+
+A C192 l8 vm2 t224 r2 L [ @23 v112 q3 o4c+4 r <g+4. g+4 a+4 r >f4. {c+8d}& d
+A d+4 r <a+4. >d+4 <g+4 r >{g8g+}& g+4 <g+4 ]2 [ >f+4 r c+4. f+4 <b4 r >f+4.
+A d+4 e4 r <b4 b >e& d+ c+4 r e& g+ b& g+ e ]3 f+4 r c+4. f+4 d <a >d f+& f+ <a
+A >d d c+ c+ c+ c+ r d4. c+ v107 c+ r v112 <g+4 >g+4 <g+
+B C192 l8 vm2 @66 r v105 q3 o4g+16 r16 a+ >c+ L *1 v110 M39,2,5,6 c32& c+16. c
+B *4 >c32 *5 c c+ g+ *6 b4 >c32& c+16. *7 c12 *9 >c c c c r c+& c+4 c v105 c
+B v100 c v95 c @66 r v105 *3
+C C192 l8 vm2 @66 r r v95 D-4 q3 o4g+16 r16 a+ >c+ L *1 r32 v95 M39,2,5,6 D-2
+C c32& D-4 c+16. D-2 c D-4 *4 D-2 >c32 D-4 *5 D-2 c D-4 c+ g+ *6 b4 D-2 >c32&
+C D-4 c+16. *7 D-2 c12 D-4 *10 D-2 >c12 D-4 <f+12 a12 d+12 f+12 D-2 c12 >c c c
+C c r D-4 c+& c+4 D-2 c v90 c v85 c v73 c @66 r16. v95 D-4 *3
+D C192 l8 r2 L [ [ P1 *11 M51,2,-8,4 q2 o4g+ *12 g+ ]4 [ *11 a+ *12 a+ ]8 [ *11
+D f+ *12 f+ ]4 ]2 [ [ *11 g+ *13 e ]4 [ *11 a *13 f+ ]4 [ *11 g+ *13 e ]4 [ *11
+D e *13 g+ ]4 ]3 [ *11 g+ *13 e ]3 *14 <b64 *15 *13 d+64 e64 f64 f+64 *12 g64
+D g+64 a64 a+64 *16 b64 *15 *11 q4 d+12 c12 *9 *10 q2 >g+ g+ g+ g+ *13 g+ *11
+D a4. g+ *12 g+ r *11 f+& f+2
+E C192 l8 r2 L [ [ P1 *11 M51,2,-8,4 q2 o4f *12 f ]4 [ *11 f *12 f ]4 [ *11 f+
+E *12 f+ ]4 [ *11 d+ *12 d+ ]4 ]2 [ [ *11 e *13 c+ ]4 [ *11 f+ *13 d+ ]4 [ *11
+E d+ *13 d+ ]4 [ *11 <b *13 >c+ ]4 ]3 [ *11 e *13 c+ ]3 *14 <g+64 a64 a+64 b64
+E *13 *15 d+64 *12 e64 f64 f+64 g64 *16 g+64 a64 a+64 b64 *11 q4 >c12 *9 *10
+E f+12 q2 >f f f f *13 f *11 f+4. f *12 f r *11 d+& d+2
+F C192 l8 r2 L [ P2 *17 M1,1,240,255 *18 *19 D0 o4c+ / *20 *21 ]16 c+16 c+16
+F *20 o7g+64 g+%21 [ P2 *22 *19 D0 o4c+ *20 *21 ]26 [ *20 o7g+12 P2 *17 MF1
+F o2c+12 *19 MF0 o4c+12 ]4 *20 o7g+ g+ g+ g+ P2 *22 *20 D0 *21 *22 [ *19 D0
+F o4c+ *22 MF1 D0 >c+%17& MF0 D214 <c+%7 ]2 *20 D0 o7g+ P2 *19 o4c+16 c+16
+G C192 l8 r2 L [ v35,31,31,31,31,31,31 p48 p49 p34 p19 p52 p53 @9 c @8 c @4 c
+G @9 c ]44 [ @13 c ]4 r c4. c [ @8 c @1 c c ]2 [ @8 c16 ]2
+H C192 l8 vm2 r2 L [ @39 p2 *23 o4f4. f r4 f4 f4. f r4 d4 d+4. d+ r4 d+4 c+4.
+H d+ r4 d+4 ]2 [ *24 <e4 r e e4 e4 / r f+4 f+ f+4 f+4 d+4 r d+ d+4 d+4 r e4 e
+H e4 e4 ]4 d+4 r >c4 <a4 f+ *25 >c c v105 c v107 c v97 c v105 c+4. c v100 c r
+H v103 <a+2 v97 a+
+I C192 l8 vm2 r2 L [ @39 p1 *23 o4c4. c r4 c4 c+4. c+ r4 <g+4 a+4. a+ r4 a+4
+I a+4. >c r4 c4 ]2 [ *24 <c+4 r c+ c+4 c+4 / r d+4 d+ d+4 d+4 <b4 r b b4 b4 r
+I b4 b b4 b4 ]4 >c4 r a4 f+4 d+ *25 g+ g+ v105 g+ v107 g+ v97 g+ v105 a4. g+
+I v100 g+ r v103 f+2 v97 f+
+J C192 l8 vm2 r2 L [ @39 *23 o3g+4. g+ r4 g+4 a+4. a+ r4 a+4 f+4. f+ r4 f+4
+J f+4. g+ r4 f+4 ]2 [ *24 <a4 r a a4 a4 / r a4 a a4 a4 g+4 r g+ g+4 g+4 r g+4
+J g+ g+4 g+4 ]4 a4 r >f+4 d+4 c *25 f f v105 f v107 f v97 f v105 f+4. f v100 f
+J r v103 d+2 v97 d+
