@@ -62,7 +62,7 @@ const T = {
     prevSong: 'Previous song in the playlist (in Random, the one played before)', nextSong: 'Next song in the playlist (in Random, another song at random)',
     loopOff: 'The loop button works with a playlist of two songs or more; a single song plays once (1+1).',
     loopOnce: 'Once', loopLoop: 'Loop', loopRandom: 'Random',
-    loopOnceTip: 'Once: the song plays through and, if it has a loop, the loop once more (1+1), then fades out. Click for Loop.',
+    loopOnceTip: 'Once: the song plays through and, if it has a loop, the loop once more (1+1), then fades out and the next song of the playlist follows; after the last song it stops. Click for Loop.',
     loopLoopTip: 'Loop: the song plays over and over until you stop it (a song without a loop starts again). Click for Random.',
     loopRandomTip: 'Random: the playlist\'s songs one after another in random order, each once (1+1). A single song plays once. Click for Once.',
     play: '▶ Play', pause: '❚❚ Pause', resume: '▶ Resume', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
@@ -254,7 +254,7 @@ const T = {
     prevSong: '플레이리스트의 이전 곡 (랜덤에서는 바로 전에 들은 곡)', nextSong: '플레이리스트의 다음 곡 (랜덤에서는 무작위로 다른 곡)',
     loopOff: '루프 버튼은 2곡 이상인 플레이리스트에서 쓸 수 있습니다. 곡이 하나면 한 번(1+1) 연주합니다.',
     loopOnce: '한 번', loopLoop: '반복', loopRandom: '랜덤',
-    loopOnceTip: '한 번: 곡을 끝까지 연주하고, 루프가 있으면 루프를 한 번 더(1+1) 연주한 뒤 페이드아웃합니다. 누르면 반복.',
+    loopOnceTip: '한 번: 곡을 끝까지 연주하고, 루프가 있으면 루프를 한 번 더(1+1) 연주한 뒤 페이드아웃하고 플레이리스트의 다음 곡으로 넘어갑니다. 마지막 곡이 끝나면 멈춥니다. 누르면 반복.',
     loopLoopTip: '반복: 정지할 때까지 곡을 계속 반복합니다(루프가 없는 곡은 처음부터 다시). 누르면 랜덤.',
     loopRandomTip: '랜덤: 플레이리스트의 곡을 무작위 순서로 하나씩, 각각 한 번(1+1) 연주합니다. 곡이 하나뿐이면 한 번만. 누르면 한 번.',
     play: '▶ 재생', pause: '❚❚ 일시정지', resume: '▶ 계속', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
@@ -446,7 +446,7 @@ const T = {
     prevSong: 'プレイリストの前の曲（ランダムでは直前に聴いた曲）', nextSong: 'プレイリストの次の曲（ランダムでは別の曲をランダムに）',
     loopOff: 'ループボタンは2曲以上のプレイリストで使えます。1曲だけなら1回（1+1）演奏します。',
     loopOnce: '1回', loopLoop: 'ループ', loopRandom: 'ランダム',
-    loopOnceTip: '1回: 曲を最後まで演奏し、ループがあればループをもう1回（1+1）演奏してからフェードアウトします。押すとループ。',
+    loopOnceTip: '1回: 曲を最後まで演奏し、ループがあればループをもう1回（1+1）演奏してからフェードアウトし、プレイリストの次の曲へ進みます。最後の曲が終わると止まります。押すとループ。',
     loopLoopTip: 'ループ: 停止するまで曲を繰り返します（ループのない曲は最初から）。押すとランダム。',
     loopRandomTip: 'ランダム: プレイリストの曲をランダムな順で1曲ずつ、それぞれ1回（1+1）演奏します。1曲だけなら1回。押すと1回。',
     play: '▶ 再生', pause: '❚❚ 一時停止', resume: '▶ 再開', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
@@ -2389,8 +2389,10 @@ function stop() {
 }
 
 // ---------- loop button ----------
-// once: a song with a loop plays 1+1 (through, then its loop again) and fades out; loop: the
-// song over and over; random: the playlist in random order, each song once (one song: once).
+// once: a song with a loop plays 1+1 (through, then its loop again) and fades out, and the
+// playlist's next song follows (after the last one it stops); loop: the song over and over;
+// random: the same 1+1, then another song of the playlist at random. Without a playlist of
+// two songs or more a song plays 1+1 and stops.
 const LOOP_MODES = ['once', 'loop', 'random'];
 const LOOP_ICONS = {
   // an arrow up to a bar, with a 1: play through, then stop
@@ -2463,7 +2465,11 @@ function afterSongEnded(rows) {
     else play(rows);
     return;
   }
-  if (mode === 'random') stepSong(1);
+  if (rows) return;   // lines played with a line's own button: nothing follows them
+  if (mode === 'random') { stepSong(1); return; }
+  // once: on to the next song of the playlist, and after its last song it stops
+  const at = manySongs() ? playlist.items.indexOf(playlist.current) : -1;
+  if (at >= 0 && at < playlist.items.length - 1) stepSong(1);
 }
 // Previous (-1) / next (1): in the playlist's order, round from the end to the start; in
 // Random, another song at random, and back through the ones played.

@@ -105,9 +105,9 @@ export default [
 <p>Each press of the button right of Stop changes the mode, and the mode you pick is remembered.</p>
 <table>
   <tr><th>Mode</th><th>Icon</th><th>What it does</th></tr>
-  <tr><td>Once (default)</td><td>⇥ an arrow to a bar</td><td>A song with a loop (<code>L</code>) plays through once, then the loop section once more (1+1), then fades out over 3 seconds. A song without a loop stops at the end.</td></tr>
+  <tr><td>Once (default)</td><td>⇥ an arrow to a bar</td><td>A song with a loop (<code>L</code>) plays through once, then the loop section once more (1+1), then fades out over 3 seconds. A song without a loop plays to its end. Then the playlist's next song follows; after the last song it stops.</td></tr>
   <tr><td>Loop</td><td>🔁</td><td>Plays over and over until you stop it. A song without a loop starts again from the beginning when it ends.</td></tr>
-  <tr><td>Random</td><td>🔀</td><td>Plays the playlist's songs one at a time in random order, each once (1+1). No song comes again until every song has played.</td></tr>
+  <tr><td>Random</td><td>🔀</td><td>Plays the playlist's songs one at a time in random order, each once (1+1, as in Once): when a song ends, another follows at random. No song comes again until every song has played.</td></tr>
 </table>
 <div class="note">The loop button and ⏮ ⏭ are on only when <b>a playlist of two songs or more</b> is open. Otherwise they are dimmed and off, and the song plays "Once". If you change the mode during playback, the change takes effect at the song's next loop point.</div>
 
@@ -378,7 +378,7 @@ export default [
 </ul>
 
 <h3>Playing one after another</h3>
-<p>With two songs or more, ⏮ ⏭ and the loop button turn on. In <b>Random</b> mode, another song follows at random each time a song ends. See <a href="#play">Playback</a> for details.</p>
+<p>With two songs or more, ⏮ ⏭ and the loop button turn on. In <b>Once</b> mode the next song follows each time a song ends (1+1 for a song with a loop), up to the last; in <b>Random</b> mode, another song follows at random. See <a href="#play">Playback</a> for details.</p>
 
 <h3>Sharing a playlist</h3>
 <p>A playlist made from one repository folder can be shared as a link with <b>🔗 Share</b> at the top of the playlist or the Share button in the header (<code>?playlist=VGMs/MSX_VampireKiller_Enhanced&amp;song=…</code>). Songs added to that folder later also appear when the link is opened.</p>
