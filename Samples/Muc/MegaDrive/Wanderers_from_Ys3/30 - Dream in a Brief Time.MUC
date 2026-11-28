@@ -1,0 +1,59 @@
+#mucom88 1.7
+#title BGM $25
+#composer Nihon Falcom
+#author ToughkidCST
+#comment Ys III: Wanderers from Ys (U)
+#driver mucomDotNET
+#voice YS3WANDR.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F), K = DAC
+; G = tempo only (t follows the driver tick times)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{M23,5,3,255 o6e%31 r}
+#*2{D6 M23,5,4,255}
+#*3{D7 M23,5,4,255 o6d%31 r}
+#*4{D12 M23,5,8,255}
+#*5{r D8 o6e%31 r e%31 r}
+#*6{M23,5,3,255 o6a%31}
+#*7{M23,5,4,255 o6g%31}
+#*8{*2 o6c%31 r}
+#*9{M19,1,-8,5 o4b3 M19,1,-16,5 >c3}
+#*10{*4 o6b%31 r M23,5,8,255 b%31 r%33}
+#*11{D12 M19,1,-16,5}
+#*12{D11 M23,5,3,255}
+#*13{D26 o5d3 D12}
+#*14{*3 *8 *4 o5b%31}
+#*15{D9 M23,5,3,255}
+#*16{P1 E255,255,0,255,0,255}
+
+A C96 l96 vm2 r @5 v107 p1 *2 o4c%31 r D8 [ *1 ]2 *15 o4f%31 r D8 [ *1 ]2 D9
+A M23,5,4,255 o4g%31 r D7 [ M23,5,4,255 o6d%31 r ]2 *2 o4c%31 r D8 [ *1 ]2 *12
+A o3a%31 r D8 [ *1 ]2 *15 o4f%31 r D8 [ *1 ]2 *14 r *2 <c%31 r M23,1,-2,5
+A o6c%39 r48
+
+B C96 l96 vm2 r16 @5 v99 p2 D6 M21,1,-3,4 o4c%31 *5 D9 o4f%31 *5 D9 o4g%31 r D7
+B o6d%31 r d%31 r D6 o4c%31 *5 D11 o3a%31 *5 D9 o4f%31 *5 D7 d%31 r D6 c%31 r
+B D12 M21,1,-6,4 <b%31 r D6 M21,1,-3,4 <c%31 r M19,1,-2,5 o6c%34 r48
+
+C C96 l96 vm2 r%33 @5 v99 p3 *10 D11 *6 r *6 r%33 *10 *2 >c%31 r *4 <b%31 r%33
+C D11 *6 r *6 r%33 [ *6 r ]2 *4 b%31 r D11 *6 r D9 *7 r D8 *1 M23,1,-2,5 >e%39
+C r48
+
+D C96 l96 @0 r *16 v5 D20 MF0 o5f+ r%5 v10 D12 M19,1,-12,5 e%64 MF0 g6 D21 f6
+D *11 e3 D26 d3 D14 c3 *9 *13 e3 r3 M19,1,-12,5 e%64 D14 *9 D29 M19,1,-8,5 <a3
+D D26 M19,1,-16,5 >d3 D14 c3 D23 b3 r3 D12 g3 D32 M19,1,-25,5 >c2. r
+
+E C96 l96 @0 r%7 *16 v10 D12 M19,1,-13,5 o5g%64 D23 MF0 b6 D38 a6 *11 g3 D21 f3
+E D12 e3 *13 e3 D21 f3 D12 g3 r3 g3 D14 c3 *13 e3 D14 c3 D29 M19,1,-8,5 <a3 *11
+E >e3 g3 r3 *13 M19,1,-12,5 e2. r
+
+G C96 l96 t199 r%101 [ t198 r%75 t199 r%202 ]2 t198 r%76 t199 r%21
+
+H C96 l96 vm2 r @6 v111 p3 D8 M23,1,-2,5 o6e%63 r D9 MF0 g%15 r f%15 r D8 *1
+H *14 r *8 *3 D8 M23,5,3,255 e%31 r%33 M23,1,-2,5 e%63 r *4 <b%31 r *8 *12
+H <a%31 r *14 r%33 D9 *7 r D6 M23,1,-2,5 >c%71 r48
+
+I C96 l96 vm2 r @6 v111 p3 D9 M23,1,-2,5 o6g%63 r D12 MF0 b%15 r D11 a%15 r D9
+I *7 r M23,5,3,255 f%31 r D8 *1 *3 D8 *1 *15 f%31 r *7 r%33 *7 r *8 *3 D8 *1 *8
+I *12 <a%31 r D8 *1 D9 *7 r%33 *3 D8 M23,1,-2,5 e%71 r48

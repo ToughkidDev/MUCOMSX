@@ -1,0 +1,93 @@
+#mucom88 1.7
+#title BGM $15
+#composer Nihon Falcom
+#author ToughkidCST
+#comment Ys III: Wanderers from Ys (U)
+#driver mucomDotNET
+#voice YS3WANDR.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F), K = DAC
+; G = tempo only (t follows the driver tick times)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{D9 o5g D11 a+ D7 >d D8 e D9 g}
+#*2{D11 o6a D10 f+ D7 d c+ D11 <a}
+#*3{D8 o6e D7 d D11}
+#*4{*1 D11 o6a+ a D10 f+ D12 b D11 a D7}
+#*5{D7 o5d D8 e}
+#*6{D21 o4g D9 a+ D26 >d D12 e g}
+#*7{D8 o7e D7 d}
+#*8{r96 D9 o4g%95 r96}
+#*9{D38 o5a D20 f+ D26 d D-22 c+ D29 <a}
+#*10{D12 o5e D26 d}
+#*11{D12 o4b *5 D11 g+ D12 b}
+#*12{D8 o5e D7 d}
+#*13{D30 o6e D44 d}
+#*14{o5a+ D9 g}
+#*15{D8 o4d D12 e}
+#*16{D11 o6a+ D9 g}
+#*17{H0,0,0 D12 M23,1,-4,5 o4b%95 r96 D11 M23,1,-2,5 a%95 r96 D7}
+#*18{*5 *4 o7d c+ *7}
+#*19{*8 D10 o4f+%95 r96 f+%95}
+#*20{D11 M23,1,-2,5 o4a%47 r96 a%47 r96 D7 >d%47 r96 d%47 r96}
+#*21{D10 o5f+ D7 o7d *16 f *3 *14 *18 D9 g D10}
+#*22{D11 o4a D10 f+ *3 *14 *12 D11 <a+ D9 g D7}
+#*23{D8 o5e *18 D10 f+ D7 d c+ *2 *5 *1 D11}
+#*24{D10 o7f+ *7 c+ *16 D8 e D7 c+ D11 *14 *23}
+#*25{D9 o4g D11 a+ *5 D9 g D10 f+ *12 *1 D10}
+#*26{p3 *17 o4d%95 *19 r96 D11 a+%95 *8 D11 a%95 r96 a%95}
+#*27{D7 MF0 o6d D12 <b D11 g+ D9 f D7 d D12}
+#*28{H0,0,0 *27 o4b D11 g+ D9 f D7 o6d c+ *2}
+#*29{D10 o6f+ *3 <a D10 f+}
+#*30{r96 D11 o4a+%95 r96 a%95 r96 D7}
+#*31{D20 o5f+ D23 b D38 a D44 >d D32 c+ *13}
+#*32{*29 *12 *22 o6c+ D12 <b D11 a *12 c+ D11}
+#*33{D10 o4f+ D7 d c+ D8 e D7 d D10 f+ D8}
+#*34{*19 *8 o4g%95 r96 D7 d%95 *30 >d%95 r96 c+%95 r96 D11}
+#*35{*28 *21 o7f+ D12 b D11 a D9 g *24 a+}
+#*36{*2 D10 o5f+ D7 d c+ D11 <a *33 e *25}
+#*37{D8 o6e D7 d D9 f D8 e D9 g f *36}
+#*38{o6e D7 d c+ D12 <b D11 g+ D7 d *11}
+#*39{*32 o4a D8 e D7 d D8 e D11 g+ *11}
+#*40{p3 *20 o5c+%47 r96 c+%47 r96 D11 <g+%47 r96 g+%47 r96}
+#*41{D9 o4a+ D21 g}
+#*42{D12 o4e D8 d}
+#*43{t198 r%75 t199}
+#*44{D11 *14 D7 o5d D11 <a+ D7 >d}
+#*45{D18 o5a+}
+#*46{D7 o6d c+ *37 f+ *3 a+}
+#*47{o7a *7 c+ D11 <a D8 *38}
+#*48{D-22 o5c+}
+#*49{P1 E255,255,0,255,0,255}
+#*50{*15 *6 *45 D38 o5a *31}
+
+A C96 l8 vm2 r96 @43 v111 *40 L @43 v111 *26 r96 a+%95 *34 <g+%95 r96
+
+B C96 l8 vm2 r%25 @43 v99 *40 L @43 v99 *26 r96 a+%95 *34 <g+%95 r96
+
+C C96 l8 vm2 r96 @43 v111 p3 D10 M23,1,-2,5 o4f+%47 r96 f+%47 r96 D11 a+%47 r96
+C a+%47 r96 a%47 r96 a%47 r96 D7 d%47 r96 d%47 r96 L @43 v111 p3 H0,0,0 D9
+C M23,1,-2,5 f%95 r96 D10 f+%95 r96 D11 <a+%95 r96 D8 >e%95 r96 D7 d%95 r96
+C d%95 *8 D7 d%95 r96 D10 f+%95 r96 f+%95 *8 D11 <a+%95 r96 D7 [ >d%95 r96 ]4
+C D11 <a+%95 *8 D10 f+%95 *30 d%95 r96
+
+D C96 l8 @0 r96 *49 v5 D20 MF0 o5f+96 r%19 v10 >a f+ *13 D38 <a D20 f+ *10 D0
+D >a+ D12 g *13 *45 D12 g e D26 d D20 >a *13 D32 c+ D38 <a *10 *48 D14 <b D12
+D g+ D8 d D9 <b *15 g+ D14 b L *49 v10 D26 MF0 >d D14 <b D12 g+ f D8 d D9 <b D8
+D g+ D7 f D26 o5d *48 *9 D11 f+ D44 o6d *45 D12 g D21 f *10 *41 *50 D12 g D20
+D f+ D-13 b D20 a D12 g D20 f+ *13 D32 c+ *45 D12 g e *48 *41 D12 e *50 D20 f+
+D D44 d D32 c+ *9 *15 *6 *45 D26 d *48 *10 D21 f D12 e g D21 f *9 D11 f+ D8 d
+D D14 c+ D15 <a D7 f+ D4 d D10 c+ D8 e D4 d D7 f+ D8 e g D9 a+ *15 D21 g D11 f+
+D *42 *6 D20 f+ *10 *45 [ D12 g D26 d ]2 *41 D8 d D9 <a+ D8 >d [ D21 g D9 a+ ]2
+D D26 >d D20 f+ *10 D29 <a D11 f+ *42 D15 <a D7 f+ *10 *41 *42 D9 <a+ D8 g *48
+D D14 <b D29 a *42 D14 c+ D15 <a D8 e D4 d D8 e g+ D9 b *15 g+ D14 b
+
+G C96 l8 t199 r%102 *43 r%201 t198 r%31 L t198 r%37 t199 r%202 t198 r%76 t199
+G r%204 *43 r%202 t198 r%76 t199 r%203 [ *43 r%202 ]2 t198 r%76 t199 r%204 *43
+G r%128
+
+H C96 l8 vm2 r32 @6 v116 p2 D11 MF0 o7a D10 f+ *7 D11 <a D10 f+ *3 >a+ D9 g *7
+H *16 *3 *47 L @6 v116 p2 *35 *46 [ D9 g D7 d ]2 *44 [ D9 g D11 a+ ]2 D7 >d *39
+
+I C96 l8 vm2 r32 @6 v111 p1 D10 MF0 o7f+ D7 d D11 <a *29 D9 o7g D8 e *16 *3 *14
+I r D11 *47 L @6 v111 p1 *35 *46 [ D9 g D7 d ]2 *44 [ D9 g D11 a+ ]2 D7 >d *39
