@@ -113,12 +113,14 @@ h1.logo{margin:0;font:800 28px/1 "JetBrains Mono",var(--mono);letter-spacing:0;d
 .vol.speed.off output{color:var(--accent);font-weight:700}
 .vol output{font-family:var(--mono);font-size:.8rem;min-width:2.6em;color:var(--muted)}
 .spacer{flex:1}
-.save-group{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg);font-size:.9rem}
-.save-group .save-main{font-family:var(--sans);font-size:.9rem;font-weight:600;color:var(--ink);white-space:nowrap}
-.save-group button{border:0;border-right:1px solid var(--line);background:transparent;padding:6px 10px;cursor:pointer;font-family:var(--mono);font-size:.85rem}
-.save-group button:last-child{border-right:0}
-.save-group button:hover{color:var(--accent2);background:var(--panel)}
-.save-group button:focus-visible{outline:2px solid var(--accent2);outline-offset:-2px}
+.save-btn{font-weight:600}
+.save-btn [data-i18n="save"]::after{content:"…"}
+/* the Save dialog: one row a format, its extension and what it is for */
+.ask-buttons.choices{flex-direction:column;align-items:stretch;gap:6px}
+.ask-buttons.choices .btn{justify-content:flex-start;text-align:left;white-space:normal;padding:8px 12px}
+.ask-buttons.choices .btn b{font-family:var(--mono);min-width:3.4em}
+.ask-buttons.choices .btn small{color:inherit;opacity:.8;font-size:.82rem}
+.ask-buttons.choices .btn.cancel{align-self:flex-end;justify-content:center}
 select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 8px;font-size:.9rem;max-width:170px}
 .status{width:100%;font-size:.85rem;color:var(--muted);min-height:1.3em}
 .status.err{color:var(--accent)}
@@ -688,12 +690,7 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
   <button class="btn" id="browse" type="button" data-i18n="browse">Samples…</button>
   <button class="btn" id="open" type="button" data-i18n="open">Open…</button>
   <button class="btn" id="openFolder" type="button" data-i18n="openFolder">Folder…</button>
-  <div class="save-group" role="group" aria-labelledby="saveLabel">
-    <button type="button" class="save-main" id="saveLabel" data-i18n="save" data-i18n-title="saveTip">Save</button>
-    <button type="button" id="save" title="MML source (Shift-JIS)">.muc</button>
-    <button type="button" id="saveMub" title="Compiled song">.mub</button>
-    <button type="button" id="saveVgm" title="Chip log">.vgm</button>
-  </div>
+  <button type="button" class="btn save-btn" id="save" data-i18n-title="saveTip"><span aria-hidden="true">💾</span> <span data-i18n="save">Save</span></button>
   <input id="openInput" type="file" multiple accept=".muc,.mgs,.mdx,.pdx,.mub,.vgm,.vgz,.MUC,.MGS,.MDX,.PDX,.MUB,.VGM,.VGZ,.txt,.dat,.DAT,.pcm,.PCM,.bin,.BIN,.wav,.WAV" hidden>
   <input id="folderInput" type="file" webkitdirectory multiple hidden>
   <input id="filesInput" type="file" multiple hidden>
@@ -796,7 +793,7 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 </main>
 
 <footer>
-  <p><strong>MUCPlayground</strong> — Written by ToughkidCST <span class="build" title="build">· build 2026-11-28 a</span></p>
+  <p><strong>MUCPlayground</strong> — Written by ToughkidCST <span class="build" title="build">· build 2026-11-28 b</span></p>
   <p data-i18n="credit1">Compiler, driver and chip emulation are MDPlayer4Mac's, built for the browser: MDPlayer4Mac and MUCOMSX by ToughkidCST, mucomDotNET and MDSound by kuma4649. GPL-3.0.</p>
   <p><span data-i18n="credit2">MUCOM88 © Yuzo Koshiro, CC BY-NC-SA 4.0.</span>
      <a href="https://github.com/ToughkidDev/MUCOMSX/tree/main/MUCPlayground" target="_blank" rel="noopener" data-i18n="source">Source and licenses</a></p>
@@ -857,6 +854,6 @@ body.player-mode [inert]{opacity:.38;filter:grayscale(.7);user-select:none}
 
 <!-- The number after ?v= is the build shown in the footer: a new one makes every browser fetch
      this script again instead of using the copy it kept. Change both together. -->
-<script src="playground.js?v=20261128a" type="module"></script>
+<script src="playground.js?v=20261128b" type="module"></script>
 </body>
 </html>

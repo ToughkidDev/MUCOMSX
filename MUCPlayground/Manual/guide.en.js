@@ -65,7 +65,7 @@ export default [
   <tr><td>Volume / Speed</td><td>Overall volume; playback speed (25–200 %, the pitch stays the same).</td></tr>
   <tr><td>Examples list</td><td>Pick a demo, a template or your recent song.</td></tr>
   <tr><td>New / Samples… / Open… / Folder…</td><td>Start from a template, open a sample from the repository, open your own files, open a folder on your computer.</td></tr>
-  <tr><td>Save · .muc · .mub · .vgm</td><td>Save and export the song.</td></tr>
+  <tr><td>💾 Save…</td><td>Save the song as <code>.muc</code>, <code>.mub</code> or <code>.vgm</code>, picked in a dialog.</td></tr>
 </table>
 
 <h3>The editor and the bottom bar</h3>
@@ -314,9 +314,10 @@ export default [
 <p>The song you are editing is saved automatically in the browser with its attached files, so it is there when you come back. If a sample or another file is about to replace your song while it has unsaved changes, you are asked first: <b>Save as .muc, then go on</b>, <b>Go on without saving</b> or <b>Cancel</b>. Even if you go on, your song is kept aside, and <b>Bring it back</b> returns it.</p>
 
 <h3>Saving and exporting</h3>
+<p><b>💾 Save…</b> opens a dialog with the three forms below; the one you picked last is first. <kbd>Ctrl+S</kbd> saves the <code>.muc</code> at once, without the dialog.</p>
 <table>
-  <tr><th>Button</th><th>What it does</th></tr>
-  <tr><td>Save / .muc (<kbd>Ctrl+S</kbd>)</td><td>Saves the song in Shift-JIS with CR+LF (a form the MSX can use as it is). Characters that Shift-JIS cannot hold (Korean, emoji and so on) turn into <code>?</code>, so you are told first.</td></tr>
+  <tr><th>Form</th><th>What it does</th></tr>
+  <tr><td>.muc (<kbd>Ctrl+S</kbd>)</td><td>Saves the song in Shift-JIS with CR+LF (a form the MSX can use as it is). Characters that Shift-JIS cannot hold (Korean, emoji and so on) turn into <code>?</code>, so you are told first.</td></tr>
   <tr><td>.mub</td><td>The output of MUCPlayground's compiler (the same as MDPlayer4Mac). Check it on real hardware before relying on it there. A song with a <code>#pcm</code> tag asks whether the PCM goes <b>inside the .mub</b> (one file, like MUC2MUB <code>/P</code>) or <b>into a separate file</b> (like MUC2MUB without <code>/P</code>). Separate, you get one ZIP with the .mub without its PCM and the <code>#pcm</code> file (<code>MUCOMPCM.BIN</code> for a <code>#pcm</code> without a name); kept in the same folder, the player reads the PCM from it. Without a <code>#pcm</code> tag the .mub is saved as compiled, with no question.</td></tr>
   <tr><td>.vgm</td><td>A VGM 1.71 that records every chip write. A song with a loop is recorded once through plus the loop once more, up to 10 minutes.</td></tr>
 </table>

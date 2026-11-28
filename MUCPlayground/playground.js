@@ -66,7 +66,7 @@ const T = {
     loopLoopTip: 'Loop: the song plays over and over until you stop it (a song without a loop starts again). Click for Random.',
     loopRandomTip: 'Random: the playlist\'s songs one after another in random order, each once (1+1). A single song plays once. Click for Once.',
     play: '▶ Play', pause: '❚❚ Pause', resume: '▶ Resume', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
-    addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc (Ctrl+S)', nowPlaying: 'Now playing', messages: 'Compiler messages',
+    addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc, .mub or .vgm (Ctrl+S saves the .muc at once)', saveTitle: (n) => `Save “${n}” as`, saveAsMuc: 'The MML text (Shift-JIS), for MUCOM88, MUCOMSX and this page', saveAsMub: 'The compiled song with its voices, for MDPlayer and other MUCOM88 players', saveAsVgm: 'What the song writes to the chips, for any VGM player (1+1 for a song with a loop, up to 10 minutes)', nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
     share: 'Share', shareTip: 'Make a link to this song that opens it ready to play',
     docLink: 'Guide', docLinkTip: 'The user\'s guide: how to use MUCPlayground, the full MML reference and the messages explained (opens in a new tab)',
@@ -258,7 +258,7 @@ const T = {
     loopLoopTip: '반복: 정지할 때까지 곡을 계속 반복합니다(루프가 없는 곡은 처음부터 다시). 누르면 랜덤.',
     loopRandomTip: '랜덤: 플레이리스트의 곡을 무작위 순서로 하나씩, 각각 한 번(1+1) 연주합니다. 곡이 하나뿐이면 한 번만. 누르면 한 번.',
     play: '▶ 재생', pause: '❚❚ 일시정지', resume: '▶ 계속', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
-    addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc로 저장 (Ctrl+S)', nowPlaying: '재생 중', messages: '컴파일 메시지',
+    addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc, .mub, .vgm 중 하나로 저장 (Ctrl+S는 바로 .muc로 저장)', saveTitle: (n) => `“${n}” 저장 형식`, saveAsMuc: 'MML 텍스트(Shift-JIS). MUCOM88, MUCOMSX, 이 페이지에서 엽니다', saveAsMub: '음색을 포함한 컴파일된 곡. MDPlayer 등 MUCOM88 플레이어용', saveAsVgm: '곡이 칩에 쓰는 레지스터 기록. 어떤 VGM 플레이어로도 재생 (루프가 있으면 1+1, 최대 10분)', nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
     share: '공유', shareTip: '이 곡을 바로 재생할 수 있는 링크로 만듭니다',
     docLink: '사용 설명서', docLinkTip: '사용 설명서: MUCPlayground 사용법, MML 문법 레퍼런스 전체, 메시지 설명 (새 탭으로 열림)',
@@ -450,7 +450,7 @@ const T = {
     loopLoopTip: 'ループ: 停止するまで曲を繰り返します（ループのない曲は最初から）。押すとランダム。',
     loopRandomTip: 'ランダム: プレイリストの曲をランダムな順で1曲ずつ、それぞれ1回（1+1）演奏します。1曲だけなら1回。押すと1回。',
     play: '▶ 再生', pause: '❚❚ 一時停止', resume: '▶ 再開', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
-    addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.mucで保存 (Ctrl+S)', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
+    addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.muc・.mub・.vgmのいずれかで保存（Ctrl+Sはすぐに.mucで保存）', saveTitle: (n) => `「${n}」の保存形式`, saveAsMuc: 'MMLテキスト（Shift-JIS）。MUCOM88・MUCOMSX・このページで開きます', saveAsMub: '音色を含むコンパイル済みの曲。MDPlayerなどMUCOM88プレイヤー用', saveAsVgm: '曲がチップに書くレジスタの記録。どのVGMプレイヤーでも再生（ループがあれば1+1、最大10分）', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
     share: '共有', shareTip: 'この曲をすぐ再生できるリンクにします',
     docLink: 'ガイド', docLinkTip: 'ユーザーガイド: MUCPlaygroundの使い方、MML文法リファレンス全体、メッセージの説明（新しいタブで開きます）',
@@ -1737,8 +1737,21 @@ async function saveMuc() {
   if (lost.length && !confirm(t('sjisLoss', lost.slice(0, 12).join(' ') + (lost.length > 12 ? ' …' : ''), lost.length))) return;
   download(sourceName, await encodeSjis(text), 'application/octet-stream');
 }
-$('save').addEventListener('click', saveMuc);
-$('saveLabel').addEventListener('click', saveMuc);
+// Save: which form, in a dialog (the one chosen last comes first). Ctrl+S saves the .muc at once.
+const STORE_SAVE_KIND = 'mucplayground.saveKind';
+async function chooseSave() {
+  const last = ['muc', 'mub', 'vgm'].includes(store.get(STORE_SAVE_KIND)) ? store.get(STORE_SAVE_KIND) : 'muc';
+  const kind = await ask(t('saveTitle', sourceName.replace(/\.[^.]*$/, '')), '', [
+    ['muc', '.muc', last === 'muc', t('saveAsMuc')],
+    ['mub', '.mub', last === 'mub', t('saveAsMub')],
+    ['vgm', '.vgm', last === 'vgm', t('saveAsVgm')],
+    ['cancel', t('guardCancel')],
+  ], { choices: true });
+  if (kind === 'cancel') return;
+  store.set(STORE_SAVE_KIND, kind);
+  if (kind === 'muc') saveMuc(); else exportAs(kind);
+}
+$('save').addEventListener('click', chooseSave);
 
 let exportId = 0;
 const pendingExports = new Map();
@@ -1750,7 +1763,6 @@ function exportAs(kind) {
   setStatus(t('exporting', kind));
   worker.postMessage({ type: 'export', id, kind, text: code.value });
 }
-$('saveMub').addEventListener('click', () => exportAs('mub'));
 // A .mub of a song with a #pcm tag: the bank inside the MUB (one file, as MucoMSX's MUC2MUB
 // /P), or beside it (MUC2MUB without /P): the MUB without its PCM block and the #pcm file,
 // saved together in a ZIP. Without a #pcm tag the MUB is saved as compiled. The last choice
@@ -1777,7 +1789,6 @@ async function saveMub(name, bytes) {
   download(zipName, zip(entries), 'application/zip');
   setStatus(t('mubPcmZipped', zipName, name, tag.name));
 }
-$('saveVgm').addEventListener('click', () => exportAs('vgm'));
 
 let dragDepth = 0;
 window.addEventListener('dragenter', (e) => { e.preventDefault(); if (playerMode) return; dragDepth++; $('drop').classList.add('on'); });
@@ -1819,18 +1830,23 @@ window.addEventListener('drop', async (e) => {
 // ---------- keeping your song safe ----------
 // A question with buttons ([id, label, primary]); resolves to the id pressed, 'cancel' when
 // the dialog is closed (Esc).
-function ask(title, text, buttons) {
+// choices: the buttons one under another, each [id, label, primary, detail] with the label
+// in bold and the detail beside it (the Save dialog); the one with id 'cancel' stays a plain button.
+function ask(title, text, buttons, { choices = false } = {}) {
   return new Promise((resolve) => {
     const dlg = $('askDlg'), box = $('askButtons');
     $('askTitle').textContent = title;
     $('askText').textContent = text;
+    $('askText').hidden = !text;
     box.innerHTML = '';
+    box.classList.toggle('choices', choices);
     let answer = 'cancel';
-    for (const [id, label, primary] of buttons) {
+    for (const [id, label, primary, detail] of buttons) {
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'btn' + (primary ? ' primary' : '');
-      b.textContent = label;
+      b.className = 'btn' + (primary ? ' primary' : '') + (id === 'cancel' ? ' cancel' : '');
+      if (detail) { b.innerHTML = '<b></b><small></small>'; b.querySelector('b').textContent = label; b.querySelector('small').textContent = detail; }
+      else b.textContent = label;
       b.addEventListener('click', () => { answer = id; dlg.close(); });
       box.appendChild(b);
     }

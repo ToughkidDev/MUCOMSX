@@ -65,7 +65,7 @@ export default [
   <tr><td>음량 / 속도</td><td>전체 음량, 재생 속도(25–200 %, 음 높이는 그대로).</td></tr>
   <tr><td>예제 목록</td><td>데모, 템플릿, 최근 곡을 고릅니다.</td></tr>
   <tr><td>새로 / 샘플… / 열기… / 폴더…</td><td>템플릿으로 시작, 저장소 샘플 열기, 내 파일 열기, 내 컴퓨터 폴더 열기.</td></tr>
-  <tr><td>저장 · .muc · .mub · .vgm</td><td>곡 저장과 내보내기.</td></tr>
+  <tr><td>💾 저장…</td><td>곡을 <code>.muc</code>, <code>.mub</code>, <code>.vgm</code> 중 하나로 저장합니다(대화상자에서 고름).</td></tr>
 </table>
 
 <h3>편집기와 아래 막대</h3>
@@ -314,9 +314,10 @@ export default [
 <p>편집 중인 곡은 첨부 파일과 함께 브라우저에 자동 저장되어, 다음에 열면 그대로 이어집니다. 샘플이나 다른 파일이 내 곡을 대신하려 할 때 저장하지 않은 변경이 있으면 먼저 묻습니다: <b>.muc로 저장하고 계속</b>, <b>저장하지 않고 계속</b>, <b>취소</b>. 계속하더라도 내 곡은 따로 보관되어 <b>되돌리기</b>로 다시 불러올 수 있습니다.</p>
 
 <h3>저장과 내보내기</h3>
+<p><b>💾 저장…</b>을 누르면 아래 세 형식을 고르는 대화상자가 열립니다. 마지막으로 고른 형식이 맨 앞에 옵니다. <kbd>Ctrl+S</kbd>는 대화상자 없이 바로 <code>.muc</code>로 저장합니다.</p>
 <table>
-  <tr><th>버튼</th><th>내용</th></tr>
-  <tr><td>저장 / .muc (<kbd>Ctrl+S</kbd>)</td><td>곡을 Shift-JIS, CR+LF로 저장합니다(MSX에서 바로 쓸 수 있는 형식). Shift-JIS로 쓸 수 없는 글자(한글, 이모지 등)가 있으면 <code>?</code>로 바뀌므로 먼저 알려 줍니다.</td></tr>
+  <tr><th>형식</th><th>내용</th></tr>
+  <tr><td>.muc (<kbd>Ctrl+S</kbd>)</td><td>곡을 Shift-JIS, CR+LF로 저장합니다(MSX에서 바로 쓸 수 있는 형식). Shift-JIS로 쓸 수 없는 글자(한글, 이모지 등)가 있으면 <code>?</code>로 바뀌므로 먼저 알려 줍니다.</td></tr>
   <tr><td>.mub</td><td>MUCPlayground 컴파일러의 출력(MDPlayer4Mac과 같음). 실기에서 쓰기 전에는 확인하세요. MUC에 <code>#pcm</code> 태그가 있으면 저장할 때 PCM을 <b>.mub 안에 넣을지</b>(한 파일, MUC2MUB <code>/P</code>와 같음), <b>따로 저장할지</b>(MUC2MUB에서 <code>/P</code>를 뺀 것과 같음) 묻습니다. 따로 저장하면 PCM을 뺀 .mub와 <code>#pcm</code> 파일(이름이 없으면 <code>MUCOMPCM.BIN</code>)을 ZIP 하나로 받으며, 두 파일을 같은 폴더에 두면 플레이어가 PCM을 읽습니다. <code>#pcm</code> 태그가 없으면 묻지 않고 컴파일한 .mub를 그대로 저장합니다.</td></tr>
   <tr><td>.vgm</td><td>모든 칩 쓰기를 기록한 VGM 1.71. 루프가 있는 곡은 처음부터 한 번 + 루프 한 번 더, 최대 10분.</td></tr>
 </table>
