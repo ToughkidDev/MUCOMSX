@@ -315,6 +315,7 @@ export default [
 
 <h3>Saving and exporting</h3>
 <p><b>💾 Save…</b> opens a dialog with the five forms below; the one you picked last is first. <kbd>Ctrl+S</kbd> saves the <code>.muc</code> at once, without the dialog.</p>
+<p>With a <b>playlist of two songs or more</b> open, it then asks which songs: <b>this song</b> (as it is in the editor) or <b>the whole playlist</b>. The whole playlist is saved in one ZIP: every song read from its file with the voice and PCM files it names (from its folder, as opening it finds them), and an <code>.mgs</code> or <code>.mdx</code> converted, without opening any of them in the editor. A <code>.mub</code> in the list is saved as it is, as a <code>.vgm</code>, or as sound; a <code>.vgm</code>/<code>.vgz</code> as it is or as sound. A song that cannot be had in the form asked (a <code>.vgm</code> as a <code>.muc</code>, …) is left out, and the status line says which and why. A progress window shows the song it is on; Cancel stops it.</p>
 <table>
   <tr><th>Form</th><th>What it does</th></tr>
   <tr><td>.muc (<kbd>Ctrl+S</kbd>)</td><td>Saves the song in Shift-JIS with CR+LF (a form the MSX can use as it is). Characters that Shift-JIS cannot hold (Korean, emoji and so on) turn into <code>?</code>, so you are told first.</td></tr>

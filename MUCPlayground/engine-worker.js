@@ -4,7 +4,8 @@
 //   engine-worker.js             MUC editor engine: compile, MUB playback, exports
 //   engine-worker.js?engine=vgm  VGM/VGZ playback (separate, loaded on first use)
 //   a second engine-worker.js   only exportFile: a .mub's VGM for the note views (on first use)
-//   a third, for a while         renderSong: the song as PCM for an MP3 / WAV file (audio-encoder.js)
+//   a third, for a while         renderSong / renderFile: a song as PCM for an MP3 / WAV file (audio-encoder.js),
+//                                and export for the songs of a playlist saved together
 import { CHIP_LEVELS } from './chip-levels.js';
 
 const ENGINE_DIR = new URL(import.meta.url).searchParams.get('engine') === 'vgm' ? './engine-vgm/' : './engine/';
@@ -240,6 +241,13 @@ onmessage = async (event) => {
         const result = JSON.parse(E.Compile(m.text));
         if (!result.ok) { postMessage({ type: 'renderDone', id: m.id, error: (result.errors || []).map((x) => (x.code ? x.code + ' ' : '') + (x.text || x.message || '')).join('; ') || 'compile error' }); break; }
         renderSong(m.id, () => E.Start(), m.maxSeconds || 600);
+        break;
+      }
+      case 'renderFile': {
+        // a .mub (this engine) or a .vgm / .vgz (the VGM engine) as PCM, as renderSong does a MUC
+        stopPlayback();
+        const data = new Uint8Array(m.data);
+        renderSong(m.id, () => E.StartFile(data), m.maxSeconds || 600);
         break;
       }
       case 'export': {
