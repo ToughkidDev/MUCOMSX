@@ -1,0 +1,48 @@
+#mucom88 1.7
+#title BGM $91
+#composer Sega
+#author ToughkidCST
+#comment Shinobi III: Return of the Ninja Master (U)
+#driver mucomDotNET
+#voice SHINOBI3.DAT
+#pcm SHINOB91.BIN
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F), K = DAC
+; G = tempo only (t follows the driver tick times)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{D0 M3,1,-38,255 o5a+24& MF0 a+48 E255,255,0,255,2,255 D-6}
+#*2{E255,255,0,255,0,255 v11 D4 MF0 o3d D8 e D4 d D3}
+#*3{o3e D5 b E255,255,0,255,2,255 D6 M23,1,-20,3 a%31}
+#*4{D2 M6,1,4,255 o4e%7& MF0 e24& M0,1,-2,255 e& MF0 e96}
+#*5{P1 *2 o3f D8 *3 E255,255,0,255,0,255 v6 D2}
+#*6{D0 MF0 o4d D2 e D0 d f D2 e D-3 b}
+#*7{E255,255,0,255,0,255 v0 D-77 MF0 o6e96 r%11}
+#*8{MF0 o7e96& M0,1,4,255 e24& MF0}
+
+A C96 l16 vm2 r%30 @38 v115 p3 D0 MF0 o3g r D1 a D0 f8. f+8. g d+%31 r8 c%108
+
+B C96 l16 vm2 r%54 @33 v109 p3 *6 D1 M23,1,4,3 a%31 @21 v101 MF0 o6a D0 a+ D2
+B M23,1,4,255 >e%25& MF0 e96& M0,3,-4,255 e8& *8 e96& M0,1,-5,255 e32& *8
+B e96& M0,1,-6,255 e32& MF0 e96& M0,3,4,255 e%13& MF0 e96& M0,1,-3,255 e96
+
+C C96 l16 vm2 r2 @16 v111 p1 *4 D1 M6,1,4,255 a%7& MF0 a24& M0,1,-2,255 a& MF0
+C a96 D0 f M3,4,4,3 g%31 r8 M5,1,1,11 >d2.
+
+D C96 l16 @0 r%55 *5 M4,1,-38,255 o5a%5& MF0 a96 *1 M4,1,-20,6 >e4. r4 *7
+
+E C96 l16 @0 r%60 *5 M3,1,-38,255 o5a24& MF0 a48 *1 M3,1,-20,6 >e%37 r%23 *7
+
+G C96 l16 t187 r%84 t186 r%61 t192 r1
+
+H C96 l16 vm2 r2 @16 v111 p2 D-3 M6,1,8,255 o3b%7& MF0 b24& M0,1,-4,255 b& MF0
+H b96 *4 D0 c M3,4,4,3 d%31 r8 D1 M5,1,1,11 a2.
+
+I C96 l16 vm2 r%58 @33 v107 p2 *6 D1 M22,1,4,3 a%31 r24 @21 v99 MF0 o6a D0 a+
+I D2 M25,1,2,255 >e%28& MF0 e48& M0,1,-2,255 e%7& MF0 e48& M0,1,2,255 e%7& MF0
+I e48& M0,3,-7,255 e& MF0 e32& M0,1,2,255 e%7& MF0 e32& M0,2,-5,255 e24& MF0
+I e96
+
+K C96 l16 p3 @2 v62 D3423 o1b24 D5490 b24 b24 D-834 a+ D-705 f+ @3 D19788 b @1
+K D869 a+8 a+ @3 D19188 b @4 D19912 b96 r%5 @1 D484 a+ a+8 @2 D4924 b D650 a
+K D508 f8

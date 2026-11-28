@@ -1,0 +1,54 @@
+#mucom88 1.7
+#title BGM $8A
+#composer Sega
+#author ToughkidCST
+#comment Shinobi III: Return of the Ninja Master (U)
+#driver mucomDotNET
+#voice SHINOBI3.DAT
+#pcm SHINOB8A.BIN
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F), K = DAC
+; G = tempo only (t follows the driver tick times)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{M0,1,3,255 o4b& MF0 b& M0,1,-2,255 b32& MF0}
+#*2{M0,1,-3,255 o4b& MF0 b& M0,1,2,255 b32& MF0}
+#*3{M0,1,1,255 o4e32& MF0 e32& M0,4,-3,255 e24& MF0}
+#*4{M0,1,-1,255 o4e32& MF0 e32& M0,1,1,255 e24& MF0}
+#*5{*1 o4b& *1 b& *1}
+#*6{*4 o4e32& M0,2,-4,255 e32& MF0}
+#*7{M0,1,1,255 o4e32& MF0}
+#*8{*2 o4b& *2 b& *2}
+#*9{MF0 o5b& M0,2,-3,255 b24& MF0 b& M0,2,3,255}
+#*10{MF0 o5b& M0,1,3,255 b24& MF0 b& M0,1,-3,255}
+#*11{M0,1,-1,255 o4e32& MF0 e24& *3 e32& *7 e%5& *6}
+#*12{*7 o4e24& *11 e24& *7 e24& *6 e%5& *3}
+#*13{M0,1,2,255 o4b32& MF0 b& *8 b& *2}
+#*14{*5 o4b& *1 b& *1}
+#*15{D4924 o1b16 b%13 @2 D5156 b96}
+#*16{D-3 M21,1,4,255 o5b%22& MF0 b& M0,1,-3,255 b24& *10}
+#*17{M0,1,-2,255 o4b32& MF0 b& *14 b32& *14 b& *13}
+#*18{MF0 o5b D1 a16 D-3 b16 D1 M20,2,3,2 >a1& a%33}
+#*19{D0 MF0 o6c16 D-3}
+#*20{D2 MF0 o5e32 D0 f32 D1 a32}
+
+A C96 l48 vm2 @60 v111 p3 D0 M29,1,1,4 o3f1& f1& f1& f1& f%67
+
+B C96 l48 vm2 @60 v111 p1 D2 M39,1,2,255 o4e%40& MF0 e32& M0,2,-4,255 e32& MF0
+B e%5& *3 e32& *12 e32& *12 e32& *12 e32& *12 e24& M0,1,2,255 e96& MF0 e96
+
+C C96 l48 vm2 @60 v111 p2 D-3 M38,1,4,255 o4b%39& MF0 b& M0,1,-4,255 b& MF0
+C b& M0,1,3,255 b32& MF0 b32& M0,1,-4,255 b& MF0 b& *13 b& *17 b& *2 b32& *8
+C b& *2 b& *2 b& *17 b& *2 b32& *2 b& M0,1,-2,255 b32& MF0 b& M0,1,3,255 b
+
+G C96 l48 t179 r%203 t178 r%64 t179 r%210
+
+H C96 l48 vm2 r%84 @21 v99 p3 *20 *16 b24& *10 b24& *10 b24& *10 b32 r8. *19
+H M20,1,2,6 <b%60 r8 D0 MF0 >c16 *16 b24& *18 r8.
+
+I C96 l48 vm2 r%90 @21 v97 p2 *20 D-3 M21,1,2,255 b%22& *9 b24& *9 b24& *9
+I b24& *9 b24& MF0 b& M0,2,-4,255 b32 r8. *19 M20,1,1,6 <b%60 r8 *19
+I M21,1,2,255 <b%22& *9 b24& MF0 b& M0,2,-3,255 b24& *18 r8.
+
+K C96 l48 p3 r%90 @1 v62 *15 r%82 @1 D4924 b%13 @2 D5156 b96 r%112 @1 *15 r%22
+K [ @1 *15 r24 ]2 @1 D4924 b16 b8 b16 b8
