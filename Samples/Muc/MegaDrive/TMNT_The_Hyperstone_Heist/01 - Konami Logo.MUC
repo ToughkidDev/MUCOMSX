@@ -1,0 +1,35 @@
+#mucom88 1.7
+#title BGM $A0
+#composer Konami Kukeiha Club
+#author ToughkidCST
+#comment Teenage Mutant Ninja Turtles: The Hyperstone Heist (U)
+#driver mucomDotNET
+#voice TMNTHH.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F), K = DAC
+; G = tempo only (t follows the driver tick times)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{@62 v105 p3 H2,0,0 D0 MF0}
+#*2{o7c48 r e48 r c48 r}
+#*3{r o6e48 r}
+
+A C96 l96 vm2 r *1 o5b%5 r24 >g%5 r24 >e%5 r24 <g%5 r24 <b8& H2,1,0 b12& H2,2,1
+A b24 r%25
+
+B C96 l96 vm2 r24 *1 o6c%5 r24 b%5 r24 >c%5 r24 <e8& H2,1,0 e%7& H2,2,1 e%5
+B r%26
+
+C C96 l96 vm2 r%7 *1 o6e%5 r24 >c%5 r24 <b%5 r24 c%11& H2,1,0 c12& H2,2,1 c%5
+C r%26
+
+G C96 l96 t140 r t152 r%65 t153 r%20
+
+H C96 l96 vm2 r%13 @62 v96 p1 H2,0,0 D4 MF0 o5b48 r D2 >c48 *3 g48 r D4 b48 r
+H D2 *2 D4 <b48 r D2 g48 *3 c48 r D4 <b8. r%19
+
+I C96 l96 vm2 r%19 @16 v90 p2 H2,0,0 D8 MF0 o5b48 r D4 >c48 *3 D5 g48 r D8 b48
+I r D4 *2 D8 <b48 r D5 g48 r D4 e48 r c48 r D8 <b8& H2,1,0 b12& H2,2,1 b r%10
+
+J C96 l96 vm2 r%5 @62 v96 p3 H2,0,0 D6 MF0 o5b48 r D3 >c48 *3 g48 r D6 b48 r D3
+J *2 D6 <b48 r D3 g48 *3 c48 r D6 <b8& H2,1,0 b16 r%20
