@@ -16,6 +16,8 @@
 //   whole chips      YM2151  YM2413  AY8910  K051649  SN76489 … (any MDSound chip name)
 
 export const CHIP_LEVELS = {
-  // The real YM2608's SSG sounds about 20% quieter against its FM than in the emulator.
-  'YM2608 SSG': -4,
+  // The real YM2608's SSG sounds 6 dB quieter against its FM than in the emulator (x0.5):
+  // measured on a recording of the chip (MUCScope on an MSX turbo R with a YM2608 cartridge,
+  // Ys III "Premonition"), from 0.5 to 7 kHz, 5.0 to 7.0 dB in every band the SSG leads.
+  'YM2608 SSG': -12,
 };

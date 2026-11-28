@@ -77,11 +77,17 @@ SSG / rhythm / ADPCM, OPNB, OPN, OPN2 …), plays, in MDPlayer4Mac's Balance uni
 steps). Edit it to change them: no engine rebuild is needed. The workers hand the list to
 both engines when they start, and `src/Engine/ChipLevels.cs` applies it after MDSound.Init to
 every song (MUC / .mub, and VGM files), with the MDSound setters MDPlayer4Mac's Balance
-settings use; `NativeCheck` reads the same file (`CHIP_LEVELS="YM2608 SSG=-4;…"` overrides
-it). It sets the OPNA's SSG to -4 (2 dB, ×0.79): on the real YM2608 the SSG sounds about 20%
-quieter against the FM than in the emulator, so an OPNA song's SSG parts here sound about
-20% quieter than in MDPlayer4Mac, whose default leaves them at 0. Measured natively and in the
-browser: an SSG note ×0.794, an FM note ×1.000.
+settings use; `NativeCheck` reads the same file (`CHIP_LEVELS="YM2608 SSG=-12;…"` overrides
+it). It sets the OPNA's SSG to -12 (6 dB, ×0.5): on the real YM2608 the SSG sounds 6 dB
+quieter against the FM than in the emulator, so an OPNA song's SSG parts here sound half as
+loud as in MDPlayer4Mac, whose default leaves them at 0. The value is measured on a recording
+of the chip: MUCScope on an MSX turbo R with a YM2608 cartridge playing Ys III "Premonition",
+fitted in short frames and 1/6-octave bands as a sum of the engine's FM and SSG rendered
+apart (a gain for each band, so the recording's own tone does not count). In every band from
+0.5 to 7 kHz where the SSG leads it comes out 5.0 to 7.0 dB below the engine's (weighted mean
+6.35 dB), and the same, 5.7 to 6.2 dB, for the loud and the middling SSG notes; only the
+quietest quarter, 17 dB and more below the loudest, comes out at 4.3 dB, within the
+recording's noise. (It was -4, 2 dB, by ear.)
 `src/Engine/ChannelScope.cs` reads each channel's output from inside the chip emulators for
 the oscilloscope view.
 `src/Engine/MsxTrace.cs` recovers the source positions of MUCOMSX songs for the playback
