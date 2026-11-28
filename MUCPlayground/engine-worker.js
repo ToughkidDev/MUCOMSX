@@ -4,6 +4,7 @@
 //   engine-worker.js             MUC editor engine: compile, MUB playback, exports
 //   engine-worker.js?engine=vgm  VGM/VGZ playback (separate, loaded on first use)
 //   a second engine-worker.js   only exportFile: a .mub's VGM for the note views (on first use)
+//   a third, for a while         renderSong: the song as PCM for an MP3 / WAV file (audio-encoder.js)
 import { CHIP_LEVELS } from './chip-levels.js';
 
 const ENGINE_DIR = new URL(import.meta.url).searchParams.get('engine') === 'vgm' ? './engine-vgm/' : './engine/';
@@ -115,6 +116,57 @@ async function play(id, start) {
   }
 }
 
+// The song in the editor as PCM for a file, as fast as the engine goes: to its end, or for a
+// song with a loop through it and its loop once more (1+1) with the 3-second fade-out the
+// loop button's Once plays. At most maxSeconds (then faded out at the end too). Pieces go
+// out as { type: 'pcm', id, data }, with how far it is; 'stop' (or a new job) ends it.
+async function renderSong(id, start, maxSeconds) {
+  start = JSON.parse(start());
+  if (!start.ok) { postMessage({ type: 'renderDone', id, error: start.error }); return; }
+  const mine = ++session;
+  const PIECE = SAMPLE_RATE / 2;                // half a second a message
+  const most = Math.max(FADE, Math.round(maxSeconds * SAMPLE_RATE));
+  let done = 0, loop = 0, fadeFrom = -1, capped = false, last = 0;
+  const drain = [E.TakeTrace, E.TakeChipLog, E.TakeLevels, E.TakeScope].filter(Boolean);
+  while (mine === session) {
+    const out = new Int16Array(PIECE * 2);
+    let n = 0, ended = false;
+    while (n < PIECE) {
+      const bytes = E.Render(Math.min(CHUNK * 4, PIECE - n));
+      if (bytes.length === 0) { ended = true; break; }
+      const pcm = new Int16Array(bytes.buffer, bytes.byteOffset, bytes.length >> 1);
+      out.set(pcm, n * 2);
+      const frames = pcm.length >> 1;
+      for (const take of drain) take();          // (kept for the views; nobody asks here)
+      const status = JSON.parse(E.Status());
+      if (status.loop !== loop) {
+        loop = status.loop;
+        if (loop >= 2 && fadeFrom < 0) fadeFrom = done + n + frames;
+      }
+      n += frames;
+      if (fadeFrom < 0 && done + n >= most - FADE) { fadeFrom = done + n; capped = true; }
+      if (fadeFrom >= 0 && done + n >= fadeFrom + FADE) { ended = true; break; }
+    }
+    if (fadeFrom >= 0) {
+      for (let f = 0; f < n; f++) {
+        const g = Math.max(0, 1 - (done + f - fadeFrom) / FADE);
+        if (g < 1) { out[2 * f] = Math.round(out[2 * f] * g); out[2 * f + 1] = Math.round(out[2 * f + 1] * g); }
+      }
+    }
+    const piece = out.slice(0, n * 2);
+    done += n;
+    postMessage({ type: 'pcm', id, data: piece.buffer, seconds: done / SAMPLE_RATE, loop }, [piece.buffer]);
+    if (ended) break;
+    // let a 'stop' in between pieces (every second or so)
+    if (done - last >= SAMPLE_RATE) { last = done; await new Promise((resolve) => setTimeout(resolve, 0)); }
+  }
+  if (mine !== session) return;
+  const status = JSON.parse(E.Status());
+  postMessage({ type: 'renderDone', id, seconds: done / SAMPLE_RATE, loops: loop, capped, error: status.error || '',
+    title: start.title || '', composer: start.composer || '' });
+  E.Stop();
+}
+
 let booted = null;
 
 onmessage = async (event) => {
@@ -183,6 +235,13 @@ onmessage = async (event) => {
         stopPlayback();
         postMessage({ type: 'stopped' });
         break;
+      case 'renderSong': {
+        stopPlayback();
+        const result = JSON.parse(E.Compile(m.text));
+        if (!result.ok) { postMessage({ type: 'renderDone', id: m.id, error: (result.errors || []).map((x) => (x.code ? x.code + ' ' : '') + (x.text || x.message || '')).join('; ') || 'compile error' }); break; }
+        renderSong(m.id, () => E.Start(), m.maxSeconds || 600);
+        break;
+      }
       case 'export': {
         const bytes = m.kind === 'vgm' ? E.ExportVgm(m.text, 600) : E.ExportMub(m.text);
         if (!bytes) {

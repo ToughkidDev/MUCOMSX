@@ -66,7 +66,7 @@ const T = {
     loopLoopTip: 'Loop: the song plays over and over until you stop it (a song without a loop starts again). Click for Random.',
     loopRandomTip: 'Random: the playlist\'s songs one after another in random order, each once (1+1). A single song plays once. Click for Once.',
     play: '▶ Play', pause: '❚❚ Pause', resume: '▶ Resume', stop: '■ Stop', volume: 'Volume', speed: 'Speed', examples: 'Examples', open: 'Open…',
-    addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc, .mub or .vgm (Ctrl+S saves the .muc at once)', saveTitle: (n) => `Save “${n}” as`, saveAsMuc: 'The MML text (Shift-JIS), for MUCOM88, MUCOMSX and this page', saveAsMub: 'The compiled song with its voices, for MDPlayer and other MUCOM88 players', saveAsVgm: 'What the song writes to the chips, for any VGM player (1+1 for a song with a loop, up to 10 minutes)', nowPlaying: 'Now playing', messages: 'Compiler messages',
+    addFiles: 'Add voice / PCM', save: 'Save', saveTip: 'Save the song to your computer as .muc, .mub, .vgm, .mp3 or .wav (Ctrl+S saves the .muc at once)', saveTitle: (n) => `Save “${n}” as`, saveAsMuc: 'The MML text (Shift-JIS), for MUCOM88, MUCOMSX and this page', saveAsMub: 'The compiled song with its voices, for MDPlayer and other MUCOM88 players', saveAsVgm: 'What the song writes to the chips, for any VGM player (1+1 for a song with a loop, up to 10 minutes)', saveAsMp3: 'The sound, compressed, for any music player (1+1 and a fade-out for a song with a loop, up to 10 minutes)', saveAsWav: 'The sound as it is, 44.1 kHz 16-bit stereo (about 10 MB a minute)', mp3Title: 'MP3 quality', mp3Q_cbr192: '192 kbps', mp3Qd_cbr192: 'Constant bitrate: good quality, about 1.4 MB a minute', mp3Q_cbr320: '320 kbps', mp3Qd_cbr320: 'Constant bitrate: the best, about 2.3 MB a minute', mp3Q_cbr128: '128 kbps', mp3Qd_cbr128: 'Constant bitrate: smaller, about 0.9 MB a minute', mp3Q_vbr0: 'VBR V0', mp3Qd_vbr0: 'Variable bitrate, highest quality (about 245 kbps on average)', mp3Q_vbr2: 'VBR V2', mp3Qd_vbr2: 'Variable bitrate, standard (about 190 kbps on average)', audioTitle: (n) => `Making ${n}`, audioStarting: 'Starting the engine…', audioProgress: (time, loop) => `Rendering: ${time}${loop ? ` (loop ${loop})` : ''}`, audioEncoding: (time) => `Finishing the file (${time})…`, audioSaved: (n, mb, time, looped, capped) => `Saved ${n}: ${time}, ${mb} MB${looped ? ' (1+1 with a fade-out)' : ''}${capped ? ', cut at 10 minutes' : ''}.`, audioCancelled: (n) => `${n}: cancelled.`, audioFileFailed: (n) => `${n} could not be made: `, nowPlaying: 'Now playing', messages: 'Compiler messages',
     files: 'Voice / PCM files', filesHint: 'Files named by #voice, #sccvoice, #pcm or #@pcm. Add them with the button, or drop them on the page. FM / SCC / PCM bank show and edit their voices, waves and samples.',
     share: 'Share', shareTip: 'Make a link to this song that opens it ready to play',
     docLink: 'Guide', docLinkTip: 'The user\'s guide: how to use MUCPlayground, the full MML reference and the messages explained (opens in a new tab)',
@@ -258,7 +258,7 @@ const T = {
     loopLoopTip: '반복: 정지할 때까지 곡을 계속 반복합니다(루프가 없는 곡은 처음부터 다시). 누르면 랜덤.',
     loopRandomTip: '랜덤: 플레이리스트의 곡을 무작위 순서로 하나씩, 각각 한 번(1+1) 연주합니다. 곡이 하나뿐이면 한 번만. 누르면 한 번.',
     play: '▶ 재생', pause: '❚❚ 일시정지', resume: '▶ 계속', stop: '■ 정지', volume: '음량', speed: '속도', examples: '예제', open: '열기…',
-    addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc, .mub, .vgm 중 하나로 저장 (Ctrl+S는 바로 .muc로 저장)', saveTitle: (n) => `“${n}” 저장 형식`, saveAsMuc: 'MML 텍스트(Shift-JIS). MUCOM88, MUCOMSX, 이 페이지에서 엽니다', saveAsMub: '음색을 포함한 컴파일된 곡. MDPlayer 등 MUCOM88 플레이어용', saveAsVgm: '곡이 칩에 쓰는 레지스터 기록. 어떤 VGM 플레이어로도 재생 (루프가 있으면 1+1, 최대 10분)', nowPlaying: '재생 중', messages: '컴파일 메시지',
+    addFiles: '음색 / PCM 추가', save: '저장', saveTip: '곡을 내 컴퓨터에 .muc, .mub, .vgm, .mp3, .wav 중 하나로 저장 (Ctrl+S는 바로 .muc로 저장)', saveTitle: (n) => `“${n}” 저장 형식`, saveAsMuc: 'MML 텍스트(Shift-JIS). MUCOM88, MUCOMSX, 이 페이지에서 엽니다', saveAsMub: '음색을 포함한 컴파일된 곡. MDPlayer 등 MUCOM88 플레이어용', saveAsVgm: '곡이 칩에 쓰는 레지스터 기록. 어떤 VGM 플레이어로도 재생 (루프가 있으면 1+1, 최대 10분)', saveAsMp3: '압축한 소리. 어떤 음악 플레이어로도 재생 (루프가 있으면 1+1 후 페이드아웃, 최대 10분)', saveAsWav: '압축하지 않은 소리, 44.1 kHz 16비트 스테레오 (1분에 약 10 MB)', mp3Title: 'MP3 음질', mp3Q_cbr192: '192 kbps', mp3Qd_cbr192: '고정 비트레이트: 좋은 음질, 1분에 약 1.4 MB', mp3Q_cbr320: '320 kbps', mp3Qd_cbr320: '고정 비트레이트: 최고 음질, 1분에 약 2.3 MB', mp3Q_cbr128: '128 kbps', mp3Qd_cbr128: '고정 비트레이트: 작은 파일, 1분에 약 0.9 MB', mp3Q_vbr0: 'VBR V0', mp3Qd_vbr0: '가변 비트레이트, 최고 음질 (평균 약 245 kbps)', mp3Q_vbr2: 'VBR V2', mp3Qd_vbr2: '가변 비트레이트, 표준 (평균 약 190 kbps)', audioTitle: (n) => `${n} 만드는 중`, audioStarting: '엔진을 준비하는 중…', audioProgress: (time, loop) => `렌더링: ${time}${loop ? ` (루프 ${loop})` : ''}`, audioEncoding: (time) => `파일 마무리 중 (${time})…`, audioSaved: (n, mb, time, looped, capped) => `${n} 저장: ${time}, ${mb} MB${looped ? ' (1+1 후 페이드아웃)' : ''}${capped ? ', 10분에서 자름' : ''}.`, audioCancelled: (n) => `${n}: 취소했습니다.`, audioFileFailed: (n) => `${n}을(를) 만들지 못했습니다: `, nowPlaying: '재생 중', messages: '컴파일 메시지',
     files: '음색 / PCM 파일', filesHint: '#voice, #sccvoice, #pcm, #@pcm으로 지정한 파일입니다. 버튼으로 추가하거나 페이지에 끌어다 놓으세요. FM / SCC / PCM 뱅크에서 음색·파형·샘플을 보고 편집합니다.',
     share: '공유', shareTip: '이 곡을 바로 재생할 수 있는 링크로 만듭니다',
     docLink: '사용 설명서', docLinkTip: '사용 설명서: MUCPlayground 사용법, MML 문법 레퍼런스 전체, 메시지 설명 (새 탭으로 열림)',
@@ -450,7 +450,7 @@ const T = {
     loopLoopTip: 'ループ: 停止するまで曲を繰り返します（ループのない曲は最初から）。押すとランダム。',
     loopRandomTip: 'ランダム: プレイリストの曲をランダムな順で1曲ずつ、それぞれ1回（1+1）演奏します。1曲だけなら1回。押すと1回。',
     play: '▶ 再生', pause: '❚❚ 一時停止', resume: '▶ 再開', stop: '■ 停止', volume: '音量', speed: '速度', examples: 'サンプル', open: '開く…',
-    addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.muc・.mub・.vgmのいずれかで保存（Ctrl+Sはすぐに.mucで保存）', saveTitle: (n) => `「${n}」の保存形式`, saveAsMuc: 'MMLテキスト（Shift-JIS）。MUCOM88・MUCOMSX・このページで開きます', saveAsMub: '音色を含むコンパイル済みの曲。MDPlayerなどMUCOM88プレイヤー用', saveAsVgm: '曲がチップに書くレジスタの記録。どのVGMプレイヤーでも再生（ループがあれば1+1、最大10分）', nowPlaying: '再生中', messages: 'コンパイルメッセージ',
+    addFiles: '音色 / PCMを追加', save: '保存', saveTip: '曲を自分のパソコンに.muc・.mub・.vgm・.mp3・.wavのいずれかで保存（Ctrl+Sはすぐに.mucで保存）', saveTitle: (n) => `「${n}」の保存形式`, saveAsMuc: 'MMLテキスト（Shift-JIS）。MUCOM88・MUCOMSX・このページで開きます', saveAsMub: '音色を含むコンパイル済みの曲。MDPlayerなどMUCOM88プレイヤー用', saveAsVgm: '曲がチップに書くレジスタの記録。どのVGMプレイヤーでも再生（ループがあれば1+1、最大10分）', saveAsMp3: '圧縮した音。どの音楽プレイヤーでも再生（ループがあれば1+1のあとフェードアウト、最大10分）', saveAsWav: '圧縮しない音、44.1 kHz 16ビットステレオ（1分で約10 MB）', mp3Title: 'MP3の音質', mp3Q_cbr192: '192 kbps', mp3Qd_cbr192: '固定ビットレート: 良い音質、1分で約1.4 MB', mp3Q_cbr320: '320 kbps', mp3Qd_cbr320: '固定ビットレート: 最高音質、1分で約2.3 MB', mp3Q_cbr128: '128 kbps', mp3Qd_cbr128: '固定ビットレート: 小さいファイル、1分で約0.9 MB', mp3Q_vbr0: 'VBR V0', mp3Qd_vbr0: '可変ビットレート、最高音質（平均約245 kbps）', mp3Q_vbr2: 'VBR V2', mp3Qd_vbr2: '可変ビットレート、標準（平均約190 kbps）', audioTitle: (n) => `${n}を作成中`, audioStarting: 'エンジンを準備中…', audioProgress: (time, loop) => `レンダリング: ${time}${loop ? `（ループ${loop}）` : ''}`, audioEncoding: (time) => `ファイルを仕上げ中（${time}）…`, audioSaved: (n, mb, time, looped, capped) => `${n}を保存: ${time}、${mb} MB${looped ? '（1+1のあとフェードアウト）' : ''}${capped ? '、10分で切りました' : ''}。`, audioCancelled: (n) => `${n}: キャンセルしました。`, audioFileFailed: (n) => `${n}を作成できませんでした: `, nowPlaying: '再生中', messages: 'コンパイルメッセージ',
     files: '音色 / PCMファイル', filesHint: '#voice・#sccvoice・#pcm・#@pcmで指定したファイルです。ボタンで追加するか、ページにドロップしてください。FM / SCC / PCMバンクで音色・波形・サンプルを表示・編集します。',
     share: '共有', shareTip: 'この曲をすぐ再生できるリンクにします',
     docLink: 'ガイド', docLinkTip: 'ユーザーガイド: MUCPlaygroundの使い方、MML文法リファレンス全体、メッセージの説明（新しいタブで開きます）',
@@ -1740,16 +1740,112 @@ async function saveMuc() {
 // Save: which form, in a dialog (the one chosen last comes first). Ctrl+S saves the .muc at once.
 const STORE_SAVE_KIND = 'mucplayground.saveKind';
 async function chooseSave() {
-  const last = ['muc', 'mub', 'vgm'].includes(store.get(STORE_SAVE_KIND)) ? store.get(STORE_SAVE_KIND) : 'muc';
+  const last = ['muc', 'mub', 'vgm', 'mp3', 'wav'].includes(store.get(STORE_SAVE_KIND)) ? store.get(STORE_SAVE_KIND) : 'muc';
   const kind = await ask(t('saveTitle', sourceName.replace(/\.[^.]*$/, '')), '', [
     ['muc', '.muc', last === 'muc', t('saveAsMuc')],
     ['mub', '.mub', last === 'mub', t('saveAsMub')],
     ['vgm', '.vgm', last === 'vgm', t('saveAsVgm')],
+    ['mp3', '.mp3', last === 'mp3', t('saveAsMp3')],
+    ['wav', '.wav', last === 'wav', t('saveAsWav')],
     ['cancel', t('guardCancel')],
   ], { choices: true });
   if (kind === 'cancel') return;
   store.set(STORE_SAVE_KIND, kind);
-  if (kind === 'muc') saveMuc(); else exportAs(kind);
+  if (kind === 'muc') saveMuc();
+  else if (kind === 'mp3' || kind === 'wav') saveAudio(kind);
+  else exportAs(kind);
+}
+
+// ---------- the song as audio: .mp3 / .wav ----------
+// A third engine worker renders the song in the editor (with its files, the chip levels and
+// the channel faders of the channel view, at speed 100%) as fast as it goes: to its end, or
+// 1+1 with the 3-second fade for a song with a loop, at most 10 minutes. audio-encoder.js
+// makes the file from the pieces (an MP3 with LAME, at the quality asked; a WAV as it is).
+// The song playing is not stopped. Both workers go when the file is made or cancelled.
+const STORE_MP3 = 'mucplayground.mp3Quality';
+const MP3_QUALITIES = { cbr192: { bitrate: 192 }, cbr320: { bitrate: 320 }, cbr128: { bitrate: 128 }, vbr0: { vbr: 0 }, vbr2: { vbr: 2 } };
+const AUDIO_MAX_SECONDS = 600;
+let audioJob = null;
+async function saveAudio(kind) {
+  if (!engineReady) { setStatus(t('loading')); return; }
+  if (audioJob) return;
+  let quality = null;
+  if (kind === 'mp3') {
+    const last = MP3_QUALITIES[store.get(STORE_MP3)] ? store.get(STORE_MP3) : 'cbr192';
+    const q = await ask(t('mp3Title'), '', [
+      ...Object.keys(MP3_QUALITIES).map((k) => [k, t('mp3Q_' + k), last === k, t('mp3Qd_' + k)]),
+      ['cancel', t('guardCancel')],
+    ], { choices: true });
+    if (q === 'cancel') return;
+    store.set(STORE_MP3, q);
+    quality = MP3_QUALITIES[q];
+  }
+  const base = sourceName.replace(/\.[^.]*$/, '');
+  const name = `${base}.${kind.toUpperCase()}`;
+  const render = new Worker('engine-worker.js', { type: 'module' });
+  const encoder = new Worker('audio-encoder.js');
+  const job = audioJob = { render, encoder, cancelled: false };
+  const box = progressBox(t('audioTitle', name), () => { job.cancelled = true; finish(); setStatus(t('audioCancelled', name)); });
+  function finish() { render.terminate(); encoder.terminate(); box.close(); if (audioJob === job) audioJob = null; }
+  const fail = (message) => { if (job.cancelled) return; finish(); setStatus(t('audioFileFailed', name) + message, true); };
+  render.onerror = (e) => fail(e.message || 'engine');
+  encoder.onerror = (e) => fail(e.message || 'encoder');
+  let info = null;
+  render.onmessage = (e) => {
+    const m = e.data;
+    if (m.type === 'pcm') {
+      encoder.postMessage({ type: 'pcm', data: m.data }, [m.data]);
+      box.set(t('audioProgress', clockText(m.seconds), m.loop));
+    } else if (m.type === 'renderDone') {
+      if (m.error && !m.seconds) { fail(m.error); return; }
+      info = m;
+      box.set(t('audioEncoding', clockText(m.seconds)));
+      encoder.postMessage({ type: 'end' });
+    } else if (m.type === 'error') fail(m.message);
+  };
+  encoder.onmessage = (e) => {
+    const m = e.data;
+    if (m.type === 'error') { fail(m.message); return; }
+    if (m.type !== 'file' || job.cancelled) return;
+    finish();
+    download(name, new Uint8Array(m.data), kind === 'mp3' ? 'audio/mpeg' : 'audio/wav');
+    setStatus(t('audioSaved', name, (m.bytes / 1048576).toFixed(1), clockText(info.seconds), info.loops > 0, info.capped));
+  };
+  const title = (code.value.match(/^#title[ \t]+(.*)$/m) || [])[1]?.trim() || base;
+  const composer = (code.value.match(/^#composer[ \t]+(.*)$/m) || [])[1]?.trim() || '';
+  encoder.postMessage({ type: 'start', kind, ...(quality || {}), title, composer });
+  render.postMessage({ type: 'boot', language: 'en' });
+  for (const f of files.values()) render.postMessage({ type: 'setFile', name: f.name, data: f.data.slice(0) });
+  for (const [key, vol] of channelView.volumes) {
+    if (!vol) continue;
+    const [chip, id, ch] = key.split(':');
+    render.postMessage({ type: 'channelVolume', chip, id: +id, ch: +ch, vol });
+  }
+  render.postMessage({ type: 'renderSong', id: 1, text: code.value, maxSeconds: AUDIO_MAX_SECONDS });
+  box.set(t('audioStarting'));
+}
+const clockText = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+// A dialog that shows how a job goes, with Cancel (the ask dialog's box, not answered: closed by the job).
+function progressBox(title, onCancel) {
+  const dlg = $('askDlg'), box = $('askButtons');
+  $('askTitle').textContent = title;
+  $('askText').textContent = '';
+  $('askText').hidden = false;
+  box.innerHTML = '';
+  box.classList.remove('choices');
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'btn';
+  b.textContent = t('guardCancel');
+  let open = true;
+  const cancel = () => { if (open) onCancel(); };
+  b.addEventListener('click', cancel);
+  box.appendChild(b);
+  const onEsc = (e) => { e.preventDefault(); cancel(); };
+  dlg.addEventListener('cancel', onEsc);
+  dlg.showModal();
+  b.focus();
+  return { set: (text) => { $('askText').textContent = text; }, close: () => { open = false; dlg.removeEventListener('cancel', onEsc); if (dlg.open) dlg.close(); } };
 }
 $('save').addEventListener('click', chooseSave);
 

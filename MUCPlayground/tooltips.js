@@ -43,7 +43,7 @@ const TIPS = [
   ['#folderSearch', 'Type part of a song\'s or folder\'s name to narrow the list', '곡이나 폴더 이름의 일부를 입력하면 목록이 좁혀집니다', '曲やフォルダの名前の一部を入力すると一覧が絞られます'],
   ['#folderPick', 'Choose another folder', '다른 폴더를 고릅니다', '別のフォルダを選びます'],
   ['#folderClose', 'Close the list (Esc)', '목록을 닫습니다 (Esc)', '一覧を閉じます（Esc）'],
-  ['#save', 'Save the song to your computer: pick .muc (the MML text), .mub (the compiled song) or .vgm (the chip log) in the dialog. Key: Ctrl+S (⌘+S) saves the .muc at once', '곡을 내 컴퓨터에 저장합니다. 대화상자에서 .muc(MML 텍스트), .mub(컴파일된 곡), .vgm(칩 기록) 중 하나를 고릅니다. 단축키 Ctrl+S (⌘+S)는 바로 .muc로 저장', '曲を自分のパソコンに保存します。ダイアログで.muc（MMLテキスト）・.mub（コンパイル済みの曲）・.vgm（チップの記録）から選びます。キー: Ctrl+S（⌘+S）ですぐに.mucで保存'],
+  ['#save', 'Save the song to your computer: pick .muc (the MML text), .mub (the compiled song), .vgm (the chip log), .mp3 or .wav (the sound) in the dialog. Key: Ctrl+S (⌘+S) saves the .muc at once', '곡을 내 컴퓨터에 저장합니다. 대화상자에서 .muc(MML 텍스트), .mub(컴파일된 곡), .vgm(칩 기록), .mp3·.wav(소리) 중 하나를 고릅니다. 단축키 Ctrl+S (⌘+S)는 바로 .muc로 저장', '曲を自分のパソコンに保存します。ダイアログで.muc（MMLテキスト）・.mub（コンパイル済みの曲）・.vgm（チップの記録）・.mp3・.wav（音）から選びます。キー: Ctrl+S（⌘+S）ですぐに.mucで保存'],
 
   // ---------- under the editor ----------
   ['[data-split="off"]', 'One view of the text', '텍스트를 창 하나로 봅니다', 'テキストを1画面で表示'],
