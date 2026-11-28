@@ -1,0 +1,70 @@
+#mucom88 1.7
+#title BGM $8E
+#composer Treasure
+#author ToughkidCST
+#comment Gunstar Heroes (U)
+#driver mucomDotNET
+#voice GUNSTAR.DAT
+#pcm GUNSTAR.BIN
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F), K = DAC
+; G = tempo only (t follows the driver tick times)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{p3 o6f+48& p2 f+96& p3 f+48& p1 f+96}
+#*2{p3 o6f+48& p2 f+48& p3 f+96& p1 f+96}
+#*3{@1 D22599 o1b24 r48}
+#*4{o6d d}
+#*5{D-740 o1b%5 r96 D-796 g+ *3}
+#*6{o6a a}
+#*7{M41,1,15,3 p3}
+#*8{@2 D22410 o1b}
+#*9{p3 o5a+48& p2 a+48& p3 a+96& p1 a+%13 p3}
+#*10{P1 E255,255,0,255,0,255 v12}
+#*11{o5g8. f8. e8. r e f g}
+#*12{o5g48& p2 g48& p3 g96& p1 g%7}
+#*13{o6c48& p2 c48& p3 c96& p1 c%13}
+#*14{p3 o6e48& p2 e48& p3 e96& p1}
+
+A C96 l16 vm2 @31 v119 D0 M4,1,19,5 p3 o3d8. >d8. D2 e8. D0 c8. <g8 >g8 <a+8.
+A >a+8. <a+8 >c >c c <c >c <g c >c <d <d d d r8 >d <d d >d r8 @147 v119 <d1.
+A r1.
+
+B C96 l16 vm2 @12 v115 D0 *7 o6d8. a8. >c8. D-3 M41,1,31,3 <b8. D0 M41,1,15,3
+B g8 d8 a8. g8. f8. D2 e8. r e f g @148 v115 D0 [ d ]4 r8 [ d ]4 v107 d
+B M40,1,15,3 d v99 *4 v91 *4 v83 M41,1,15,3 *4 v75 *4 v67 *4 v59 *4 v51 *4 v43
+B *4 v35 *4 r
+
+C C96 l16 vm2 @149 v108 D0 MF0 p1 o6d g p3 a >g p2 a >d p3 g a p1 d a p3 g <d
+C p2 <a g p3 d <a p1 d f p3 a+ >d p2 f a+ p3 >d <a+ p1 >g D2 e D0 p3 c <g D2 p2
+C e g D0 p3 c g v111 p1 *6 p3 *6 p2 a r a p3 *6 p1 a r6 @147 v111 D2 M4,1,19,5
+C o3d1. r1.
+
+D C96 l16 @0 *10 D8 MF0 o5d8. D2 a8. D-4 >c8. <b8. D-6 g8 d8 D2 a8. D-6 g8. D3
+D f8. D12 e8. r e D3 f D-6 g v11 [ *4 *4 r8 ]2
+
+E C96 l16 @0 r12 *10 D-27 MF0 o5d8. D-34 a8. D-75 >c8. D-31 <b8. D-41 g8 D-27
+E d8 D-34 a8. D-41 *11 v10 D-63 [ *4 *4 r8 ]2
+
+F C96 l16 @0 P2 w1 E255,255,0,255,13,255 v14 D0 MF0 [ o4c16. r%15 ]10 c16. r32
+F c24 c24 c24 r1
+
+G C96 l16 t188 r%58 [ t189 r%104 t188 r%117 ]2 t189 r%56
+
+H C96 l16 vm2 r48 @1 v109 D1 *7 o5a48& p2 a48& p3 a96& p1 a%13 p3 >d48& p2
+H d48& p3 d96& p1 d%13 *14 e%13 p3 *13 D-3 M41,1,31,3 p3 <b48& p2 b48& p3
+H b96& p1 b%7 D0 *7 *12 *9 f48& p2 f48& p3 f96& p1 f%13 *9 *13 p3 *12 D2 *14
+H e%7 [ *2 ]4 r8 [ *2 ]4 @150 v100 *2 M40,1,15,3 *2 v91 [ *2 ]2 v82 *2 p3
+H f+48& p2 f+48& p1 f+48 v73 M41,1,15,3 [ *1 ]2 v64 [ *1 ]2 v55 [ *1 ]2 v46 [
+H *1 ]2 v37 [ *1 ]2 v28 [ *1 ]2 v19 [ *1 ]2 r
+
+I C96 l16 vm2 r48 @151 v121 D1 *7 o5d8. a8. >c8. D-1 M41,1,31,3 <b8. D2
+I M41,1,15,3 g8 d8 a8. *11 @17 v101 p1 [ o7d ]4 r8 [ d ]4 v92 <a M40,1,15,3 a
+I v83 *6 v74 *6 v65 M41,1,15,3 *6 v56 *6 v47 *6 v38 *6 v29 *6 v20 *6 v11 *6 r
+
+K C96 l16 p3 @1 v62 D22599 o1b24 r48 *8 @26 D22390 b *3 @3 *5 *8 @3 *5 @3 D3613
+K b%5 r96 *5 @2 D22410 b%5 r96 @29 D22363 b *3 b24 r48 *8 *3 @2 D23031 b D22410
+K b *3 b24 @3 D3613 b24 D-740 b24 b24 D-796 g+24 D-464 g+24 @2 D23031 b @29
+K D22363 b *3 *8 @1 D22013 b24 r48 @3 D-740 b%5 r96 @5 D20921 b24 @3 D-796 g+24
+K @1 D22599 b32 @28 D-133 a96 @1 D23358 b24 r48 b24 r48 @5 D21438 b D20921 b *3
+K @6 D20921 b%14 r24 @1 D22013 b24 r%20
