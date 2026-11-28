@@ -1,0 +1,19 @@
+#mucom88 1.7
+#title Konami Logo
+#composer Miki Higashino, Yoshiaki Hatano
+#author ToughkidCST
+#comment Gradius (PC Engine)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension PSG/SCC parts, msPb0102).
+
+  @W0:{ -4,92,60,12,60,92,44,-4,60,116,84,12,44,60,-4,-76,-4,68,-4,-68,-52,-20,-92,-124,-68,-4,-52,-100,-68,-20,-68,-100 }
+#*1{ @0 E239,16,22,87,1,255 v9 }
+SCCA t201 @0 E165,45,26,149,6,255 v9 D-10 o4 b%24 D0 > b%24
+SCCA E163,46,37,173,7,255 v6 b%24 E178,77,48,160,3,255 v4 D-10 < b%60
+SCCB r%6 *1 D-8 o5 c%24 D-24 > c%24 E191,22,41,88,1,255 v6 < g%60
+SCCC r%12 *1 D-11 o5 e%24 > e%24 E239,16,19,113,1,255 v4 < e%60
+SCCD r%18 *1 D-24 o5 g%24 > c%24 E239,16,19,113,1,255 v4 D-8 < c%60
+SCCE r%3 @0 E154,77,26,147,11,255 v4 D-2 o4 b%12 > e%12 D7 b%12 > e%12
+SCCE E128,96,47,148,14,255 v3 < b%12 E171,32,43,128,0,255 v2 D-2 e%12
+SCCE E223,32,22,128,0,255 < b%48
+MSXD P1 r%9 E205,25,29,186,4,255 v12 D4 o5 c%12 g%12 D9 > c%12 c%12
+MSXD E233,32,10,187,0,255 v10 < g%12 E195,30,34,173,5,255 D0 c%12

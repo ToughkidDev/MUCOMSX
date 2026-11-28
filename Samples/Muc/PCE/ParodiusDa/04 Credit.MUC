@@ -1,0 +1,20 @@
+#mucom88 1.7
+#title Credit
+#composer Kazuki Muraoka et al. (Konami Kukeiha Club)
+#author ToughkidCST
+#comment Parodius Da! (PC Engine)
+; Requires MucoMSX v1.5-Stable+ (MucoMSXExtension PSG/SCC parts, msPb0102).
+
+  @W0:{ -4,92,60,12,60,92,44,-4,60,116,84,12,44,60,-4,-76,-4,68,-4,-68,-52,-20,-92,-124,-68,-4,-52,-100,-68,-20,-68,-100 }
+SCCA t198 @0 E239,16,26,108,1,255 v4 M17,3,12,2 D-14 o4 b%28
+SCCA E223,32,15,29,0,255 v8 MF0 D-28 > g%70
+SCCB r%7 @0 E239,16,13,104,1,255 v4 M20,1,16,2 D0 o5 d%21 E255,0,95,143,1,255
+SCCB v1 MF0 d%70
+SCCC r%14 @0 E239,16,21,131,1,255 v5 D-14 o5 g%14 E255,0,95,143,1,255 v1
+SCCC M17,2,8,4 < b%70
+SCCD r%21 @0 E207,16,36,84,1,255 v6 M18,8,12,1 D-2 o5 b%77
+SCCE r%10 @0 E128,0,0,0,0,255 v1 D-2 o4 b%7 E86,169,32,0,0,255 v2 D9 > d%7
+SCCE E171,32,85,128,0,255 D0 g%7 E171,32,43,128,0,255 b%7 E255,0,15,109,1,255
+SCCE g%60
+MSXD P1 E205,10,32,0,0,255 v9 D4 o3 b%7 > d%7 g%7 D-2 b%7 E177,13,25,221,4,255
+MSXD v10 D4 g%70

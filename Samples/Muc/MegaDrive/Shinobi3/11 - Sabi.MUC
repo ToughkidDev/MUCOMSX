@@ -1,0 +1,26 @@
+#mucom88 1.7
+#title BGM $8D
+#composer Sega
+#author ToughkidCST
+#comment Shinobi III: Return of the Ninja Master (U)
+#driver mucomDotNET
+#voice SHINOBI3.DAT
+#CarrierCorrection Yes
+; A B C H I J = YM2612 FM1-6, D E F = SN76489 tone 1-3 (noise on F), K = DAC
+; G = tempo only (t follows the driver tick times)
+
+; macros (#*n{...} is pasted where *n stands)
+#*1{o6a+32 D-3 M2,2,-4,1 b32 D0 M2,2,-2,1 >d+%42 d+32 f}
+
+A C96 l2 vm2 @64 v111 D0 M2,2,-2,1 p3 o6a+8. g+8. f+8 *1 r%45
+
+B C96 l2 vm2 r24 @64 v111 D0 M2,2,-2,1 p2 o6a+8. g+8. f+8 *1 r%45
+
+C C96 l2 vm2 @45 v107 D-3 M4,1,4,4 p2 o2b& b& M0,1,-62,255 b96& MF0 b%47& b
+
+G C96 l2 t169 r%196
+
+H C96 l2 vm2 @45 v107 D0 M3,2,3,2 p1 o3d+& d+& M0,1,91,255 d+96& MF0 d+%47& d+
+
+I C96 l2 vm2 r1 @25 v105 D0 M2,1,-24,1 p3 o4d8. d8. v102 d8 d8 v98 d8 v94 d8
+I v90 d8
